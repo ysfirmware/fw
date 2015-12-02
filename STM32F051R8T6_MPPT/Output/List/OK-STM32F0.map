@@ -1,0 +1,347 @@
+###############################################################################
+#                                                                             #
+# IAR ELF Linker V6.40.4.54170/W32 for ARM              02/Dec/2015  12:04:11 #
+# Copyright 2007-2012 IAR Systems AB.                                         #
+#                                                                             #
+#    Output file  =  C:\IAR Systems\STM32F051R8T6_MPPT\Output\Exe\OK-STM32F0. #
+#                    out                                                      #
+#    Map file     =  C:\IAR Systems\STM32F051R8T6_MPPT\Output\List\OK-STM32F0 #
+#                    .map                                                     #
+#    Command line =  "C:\IAR Systems\STM32F051R8T6_MPPT\Output\Obj\MPPT.o"    #
+#                    "C:\IAR Systems\STM32F051R8T6_MPPT\Output\Obj\startup_st #
+#                    m32f0xx.o" --redirect _Printf=_PrintfFull --redirect     #
+#                    _Scanf=_ScanfFull -o "C:\IAR                             #
+#                    Systems\STM32F051R8T6_MPPT\Output\Exe\OK-STM32F0.out"    #
+#                    --map "C:\IAR Systems\STM32F051R8T6_MPPT\Output\List\OK- #
+#                    STM32F0.map" --config "C:\IAR                            #
+#                    Systems\STM32F051R8T6_MPPT\stm32f0xx_flash.icf"          #
+#                    --semihosting --entry __iar_program_start --vfe          #
+#                                                                             #
+#                                                                             #
+###############################################################################
+
+*******************************************************************************
+*** RUNTIME MODEL ATTRIBUTES
+***
+
+CppFlavor       = *
+__SystemLibrary = DLib
+
+
+*******************************************************************************
+*** PLACEMENT SUMMARY
+***
+
+"A1":  place at 0x08000000 { ro section .intvec };
+"P1":  place in [from 0x08000000 to 0x0800ffff] { ro };
+"P2":  place in [from 0x20000000 to 0x20001fff] { rw, block CSTACK, block HEAP };
+
+  Section            Kind        Address    Size  Object
+  -------            ----        -------    ----  ------
+"A1":                                       0xc0
+  .intvec            ro code  0x08000000    0xc0  startup_stm32f0xx.o [1]
+                            - 0x080000c0    0xc0
+
+"P1":                                     0x1800
+  .text              ro code  0x080000c0   0xf24  MPPT.o [1]
+  .text              ro code  0x08000fe4    0xb4  FltMul.o [4]
+  .text              ro code  0x08001098    0x32  FltToDbl.o [4]
+  .text              ro code  0x080010ca   0x1a8  DblAddSub.o [4]
+  .text              ro code  0x08001272    0x2a  zero_init3.o [5]
+  .text              ro code  0x0800129c    0x2e  DblToI32.o [4]
+  .text              ro code  0x080012ca     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x080012cc    0x2e  I32DivMod.o [5]
+  .text              ro code  0x080012fa     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x080012fc    0x36  I32ToFlt.o [4]
+  .text              ro code  0x08001332   0x184  DblMul.o [4]
+  .text              ro code  0x080014b6    0x62  DblToFlt.o [4]
+  .text              ro code  0x08001518   0x116  FltAddSub.o [4]
+  .text              ro code  0x0800162e     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001630    0x28  FltCmpGe.o [4]
+  .text              ro code  0x08001658    0x26  FltCmpLe.o [4]
+  .text              ro code  0x0800167e     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001680    0x30  I32ToDbl.o [4]
+  .text              ro code  0x080016b0    0xc2  DblDiv.o [4]
+  .text              ro code  0x08001772     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001774     0x2  IntDivZer.o [5]
+  .text              ro code  0x08001776    0x30  copy_init3.o [5]
+  .text              ro code  0x080017a6     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x080017a8    0x28  data_init3.o [5]
+  .iar.init_table    const    0x080017d0    0x24  - Linker created -
+  .rodata            const    0x080017f4    0x1c  MPPT.o [1]
+  .text              ro code  0x08001810    0x16  cmain.o [5]
+  .text              ro code  0x08001826     0x4  low_level_init.o [3]
+  .text              ro code  0x0800182a     0x8  exit.o [3]
+  .text              ro code  0x08001832     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001834     0xa  cexit.o [5]
+  .text              ro code  0x0800183e     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001840    0x14  exit.o [6]
+  .text              ro code  0x08001854    0x10  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001864     0xc  cstartup_M.o [5]
+  .text              ro code  0x08001870     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001872     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001874     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001876     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001878     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800187a     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800187c     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800187e     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001880     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001882     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001884     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001886     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001888     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800188a     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800188c     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800188e     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001890     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001892     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001894     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001896     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x08001898     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800189a     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800189c     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x0800189e     0x2  startup_stm32f0xx.o [1]
+  .text              ro code  0x080018a0     0x2  startup_stm32f0xx.o [1]
+  .rodata            const    0x080018a2     0x0  zero_init3.o [5]
+  .rodata            const    0x080018a2     0x0  copy_init3.o [5]
+  Initializer bytes  ro data  0x080018a4    0x1c  <for P2 s0>
+                            - 0x080018c0  0x1800
+
+"P2", part 1 of 3:                          0x1c
+  P2 s0                       0x20000000    0x1c  <Init block>
+    .data            inited   0x20000000    0x1c  MPPT.o [1]
+                            - 0x2000001c    0x1c
+
+"P2", part 2 of 3:                          0x34
+  .bss               zero     0x2000001c    0x30  MPPT.o [1]
+                            - 0x2000004c    0x30
+
+"P2", part 3 of 3:                        0x1000
+  CSTACK                      0x20000050  0x1000  <Block>
+    CSTACK           uninit   0x20000050  0x1000  <Block tail>
+                            - 0x20001050  0x1000
+
+
+*******************************************************************************
+*** INIT TABLE
+***
+
+          Address     Size
+          -------     ----
+Zero (__iar_zero_init3)
+    1 destination range, total size 0x30:
+          0x2000001c  0x30
+
+Copy (__iar_copy_init3)
+    1 source range, total size 0x1c:
+          0x080018a4  0x1c
+    1 destination range, total size 0x1c:
+          0x20000000  0x1c
+
+
+
+*******************************************************************************
+*** MODULE SUMMARY
+***
+
+    Module               ro code  ro data  rw data
+    ------               -------  -------  -------
+C:\IAR Systems\STM32F051R8T6_MPPT\Output\Obj: [1]
+    MPPT.o                 3 876       56       76
+    startup_stm32f0xx.o      274
+    ----------------------------------------------
+    Total:                 4 150       56       76
+
+command line: [2]
+    ----------------------------------------------
+    Total:
+
+dl6M_tln.a: [3]
+    exit.o                     8
+    low_level_init.o           4
+    ----------------------------------------------
+    Total:                    12
+
+m6M_tl.a: [4]
+    DblAddSub.o              424
+    DblDiv.o                 194
+    DblMul.o                 388
+    DblToFlt.o                98
+    DblToI32.o                46
+    FltAddSub.o              278
+    FltCmpGe.o                40
+    FltCmpLe.o                38
+    FltMul.o                 180
+    FltToDbl.o                50
+    I32ToDbl.o                48
+    I32ToFlt.o                54
+    ----------------------------------------------
+    Total:                 1 838
+
+rt6M_tl.a: [5]
+    I32DivMod.o               46
+    IntDivZer.o                2
+    cexit.o                   10
+    cmain.o                   22
+    copy_init3.o              48
+    cstartup_M.o              12
+    data_init3.o              40
+    zero_init3.o              42
+    ----------------------------------------------
+    Total:                   222
+
+shb_l.a: [6]
+    exit.o                    20
+    ----------------------------------------------
+    Total:                    20
+
+    Linker created                     38    4 096
+--------------------------------------------------
+    Grand Total:           6 242       94    4 172
+
+
+*******************************************************************************
+*** ENTRY LIST
+***
+
+Entry                    Address   Size  Type      Object
+-----                    -------   ----  ----      ------
+?main                 0x08001811         Code  Gb  cmain.o [5]
+ADC1_COMP_IRQHandler  0x08001883         Code  Wk  startup_stm32f0xx.o [1]
+CEC_IRQHandler        0x080018a1         Code  Wk  startup_stm32f0xx.o [1]
+CSTACK$$Base          0x20000050          --   Gb  - Linker created -
+CSTACK$$Limit         0x20001050          --   Gb  - Linker created -
+DMA1_Channel1_IRQHandler
+                      0x0800187d         Code  Wk  startup_stm32f0xx.o [1]
+DMA1_Channel2_3_IRQHandler
+                      0x0800187f         Code  Wk  startup_stm32f0xx.o [1]
+DMA1_Channel4_5_IRQHandler
+                      0x08001881         Code  Wk  startup_stm32f0xx.o [1]
+Delay_us              0x08000175   0x62  Code  Gb  MPPT.o [1]
+EXTI0_1_IRQHandler    0x08001875         Code  Wk  startup_stm32f0xx.o [1]
+EXTI2_3_IRQHandler    0x08001877         Code  Wk  startup_stm32f0xx.o [1]
+EXTI4_15_IRQHandler   0x08001879         Code  Wk  startup_stm32f0xx.o [1]
+FLASH_IRQHandler      0x08001871         Code  Wk  startup_stm32f0xx.o [1]
+HardFault_Handler     0x080012fb         Code  Wk  startup_stm32f0xx.o [1]
+I                     0x20000020    0x2  Data  Gb  MPPT.o [1]
+I2C1_IRQHandler       0x08001895         Code  Wk  startup_stm32f0xx.o [1]
+I2C2_IRQHandler       0x08001897         Code  Wk  startup_stm32f0xx.o [1]
+Initialize_LCD        0x080001e5   0x5a  Code  Gb  MPPT.o [1]
+Initialize_MCU        0x080000c5   0xb0  Code  Gb  MPPT.o [1]
+Initialize_TFT_LCD    0x080003c5  0x77a  Code  Gb  MPPT.o [1]
+Iout_m_avg            0x20000034    0x4  Data  Gb  MPPT.o [1]
+LCD_command           0x08000245   0x2a  Code  Gb  MPPT.o [1]
+LCD_data              0x08000289   0x2a  Code  Gb  MPPT.o [1]
+LCD_unsigned_float    0x080002e1   0xdc  Code  Gb  MPPT.o [1]
+NMI_Handler           0x080012cb         Code  Wk  startup_stm32f0xx.o [1]
+P                     0x20000038    0x4  Data  Gb  MPPT.o [1]
+PVD_IRQHandler        0x08001833         Code  Wk  startup_stm32f0xx.o [1]
+P_diff                0x2000003c    0x4  Data  Gb  MPPT.o [1]
+P_pri                 0x20000040    0x4  Data  Gb  MPPT.o [1]
+PendSV_Handler        0x0800167f         Code  Wk  startup_stm32f0xx.o [1]
+RCC_IRQHandler        0x08001873         Code  Wk  startup_stm32f0xx.o [1]
+RTC_IRQHandler        0x0800183f         Code  Wk  startup_stm32f0xx.o [1]
+Region$$Table$$Base   0x080017d0          --   Gb  - Linker created -
+Region$$Table$$Limit  0x080017f4          --   Gb  - Linker created -
+Reset_Handler         0x08001855         Code  Wk  startup_stm32f0xx.o [1]
+SPI1_IRQHandler       0x08001899         Code  Wk  startup_stm32f0xx.o [1]
+SPI2_IRQHandler       0x0800189b         Code  Wk  startup_stm32f0xx.o [1]
+SVC_Handler           0x0800162f         Code  Wk  startup_stm32f0xx.o [1]
+ScreenMode            0x20000000    0x1  Data  Gb  MPPT.o [1]
+Start_1               0x2000001c    0x1  Data  Gb  MPPT.o [1]
+SysTick_Handler       0x08001773         Code  Wk  startup_stm32f0xx.o [1]
+SystemInit            0x080000c1    0x4  Code  Gb  MPPT.o [1]
+TFT_GRAM_address      0x08000b73  0x102  Code  Gb  MPPT.o [1]
+TFT_clear_screen      0x08000b3f   0x34  Code  Gb  MPPT.o [1]
+TIM14_IRQHandler      0x0800188d         Code  Wk  startup_stm32f0xx.o [1]
+TIM15_IRQHandler      0x0800188f         Code  Wk  startup_stm32f0xx.o [1]
+TIM16_IRQHandler      0x08001891         Code  Wk  startup_stm32f0xx.o [1]
+TIM17_IRQHandler      0x08001893         Code  Wk  startup_stm32f0xx.o [1]
+TIM1_BRK_UP_TRG_COM_IRQHandler
+                      0x08000c85   0x1e  Code  Gb  MPPT.o [1]
+TIM1_CC_IRQHandler    0x08001885         Code  Wk  startup_stm32f0xx.o [1]
+TIM2_IRQHandler       0x08001887         Code  Wk  startup_stm32f0xx.o [1]
+TIM3_IRQHandler       0x08001889         Code  Wk  startup_stm32f0xx.o [1]
+TIM6_DAC_IRQHandler   0x0800188b         Code  Wk  startup_stm32f0xx.o [1]
+TS_IRQHandler         0x0800187b         Code  Wk  startup_stm32f0xx.o [1]
+USART1_IRQHandler     0x0800189d         Code  Wk  startup_stm32f0xx.o [1]
+USART2_IRQHandler     0x0800189f         Code  Wk  startup_stm32f0xx.o [1]
+V_diff                0x20000044    0x4  Data  Gb  MPPT.o [1]
+V_pri                 0x20000048    0x4  Data  Gb  MPPT.o [1]
+Vout_m_avg            0x20000030    0x4  Data  Gb  MPPT.o [1]
+WWDG_IRQHandler       0x080017a7         Code  Wk  startup_stm32f0xx.o [1]
+Xcharacter            0x20000003    0x1  Data  Gb  MPPT.o [1]
+XcharacterLimit       0x20000001    0x1  Data  Gb  MPPT.o [1]
+Xcursor               0x20000005    0x1  Data  Gb  MPPT.o [1]
+Ycharacter            0x20000004    0x1  Data  Gb  MPPT.o [1]
+YcharacterLimit       0x20000002    0x1  Data  Gb  MPPT.o [1]
+Ycursor               0x20000006    0x1  Data  Gb  MPPT.o [1]
+__ICFEDIT_region_RAM_end__ {Abs}
+                      0x20001fff          --   Gb  command line/config [2]
+__ICFEDIT_region_RAM_start__ {Abs}
+                      0x20000000          --   Gb  command line/config [2]
+__aeabi_cfcmple       0x08001659         Code  Gb  FltCmpLe.o [4]
+__aeabi_cfrcmple      0x08001631         Code  Gb  FltCmpGe.o [4]
+__aeabi_d2f           0x080014b7         Code  Gb  DblToFlt.o [4]
+__aeabi_d2uiz         0x0800129d         Code  Gb  DblToI32.o [4]
+__aeabi_dadd          0x080010cb         Code  Gb  DblAddSub.o [4]
+__aeabi_ddiv          0x080016b1         Code  Gb  DblDiv.o [4]
+__aeabi_dmul          0x08001333         Code  Gb  DblMul.o [4]
+__aeabi_f2d           0x08001099         Code  Gb  FltToDbl.o [4]
+__aeabi_fmul          0x08000fe5         Code  Gb  FltMul.o [4]
+__aeabi_fsub          0x0800157f         Code  Gb  FltAddSub.o [4]
+__aeabi_i2d           0x08001681         Code  Gb  I32ToDbl.o [4]
+__aeabi_i2f           0x080012fd         Code  Gb  I32ToFlt.o [4]
+__aeabi_idiv0         0x08001775         Code  Gb  IntDivZer.o [5]
+__aeabi_ui2f          0x08001315         Code  Gb  I32ToFlt.o [4]
+__aeabi_uidiv         0x080012cd         Code  Gb  I32DivMod.o [5]
+__aeabi_uidivmod      0x080012cd         Code  Gb  I32DivMod.o [5]
+__cmain               0x08001811         Code  Gb  cmain.o [5]
+__exit                0x08001841   0x14  Code  Gb  exit.o [6]
+__iar_copy_init3      0x08001777   0x30  Code  Gb  copy_init3.o [5]
+__iar_d2uiz           0x080012a1         Code  Gb  DblToI32.o [4]
+__iar_data_init3      0x080017a9   0x28  Code  Gb  data_init3.o [5]
+__iar_program_start   0x08001865         Code  Gb  cstartup_M.o [5]
+__iar_ui2d            0x08001695         Code  Gb  I32ToDbl.o [4]
+__iar_ui2f            0x08001319         Code  Gb  I32ToFlt.o [4]
+__iar_zero_init3      0x08001273   0x2a  Code  Gb  zero_init3.o [5]
+__low_level_init      0x08001827    0x4  Code  Gb  low_level_init.o [3]
+__vector_table        0x08000000         Data  Gb  startup_stm32f0xx.o [1]
+_call_main            0x0800181d         Code  Gb  cmain.o [5]
+_exit                 0x08001835         Code  Gb  cexit.o [5]
+_main                 0x08001823         Code  Gb  cmain.o [5]
+background            0x20000012    0x2  Data  Gb  MPPT.o [1]
+cursor                0x2000000a    0x2  Data  Gb  MPPT.o [1]
+cursor_flag           0x20000007    0x1  Data  Gb  MPPT.o [1]
+duty                  0x20000024    0x4  Data  Gb  MPPT.o [1]
+exit                  0x0800182b    0x8  Code  Gb  exit.o [3]
+foreground            0x20000010    0x2  Data  Gb  MPPT.o [1]
+i                     0x2000001d    0x1  Data  Gb  MPPT.o [1]
+int_cnt               0x2000001e    0x1  Data  Gb  MPPT.o [1]
+main                  0x08000cad  0x2e6  Code  Gb  MPPT.o [1]
+outline               0x2000000e    0x2  Data  Gb  MPPT.o [1]
+outline_flag          0x20000009    0x1  Data  Gb  MPPT.o [1]
+result                0x20000028    0x4  Data  Gb  MPPT.o [1]
+result_1              0x2000002c    0x4  Data  Gb  MPPT.o [1]
+underscore            0x2000000c    0x2  Data  Gb  MPPT.o [1]
+underscore_flag       0x20000008    0x1  Data  Gb  MPPT.o [1]
+x_12bit               0x20000014    0x2  Data  Gb  MPPT.o [1]
+x_touch               0x20000018    0x2  Data  Gb  MPPT.o [1]
+y_12bit               0x20000016    0x2  Data  Gb  MPPT.o [1]
+y_touch               0x2000001a    0x2  Data  Gb  MPPT.o [1]
+
+
+[1] = C:\IAR Systems\STM32F051R8T6_MPPT\Output\Obj
+[2] = command line
+[3] = dl6M_tln.a
+[4] = m6M_tl.a
+[5] = rt6M_tl.a
+[6] = shb_l.a
+
+  6 242 bytes of readonly  code memory
+     94 bytes of readonly  data memory
+  4 172 bytes of readwrite data memory
+
+Errors: none
+Warnings: none
