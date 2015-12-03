@@ -1,0 +1,334 @@
+                              - Cross-reference -                      Page    1
+
+################################################################################
+#                                                                              #
+#      IAR Universal Linker V4.53O/WIN                                         #
+#                                                                              #
+#           Link time     =  01/Feb/2005  09:22:56                             #
+#           Target CPU    =  A90                                               #
+#           List file     =  "D:\BOOK\ATmega128_√•_√•_√•\∫Œ∑œ CD ROM\¡¶ 3 ¿Â ø #
+#                            π¡¶\IAR AVR øπ¡¶\Release\List\sample.map"         #
+#           Output file 1 =  "D:\BOOK\ATmega128_√•_√•_√•\∫Œ∑œ CD ROM\¡¶ 3 ¿Â ø #
+#                            π¡¶\IAR AVR øπ¡¶\Release\Exe\sample.HEX"          #
+#                            Format: intel-standard, variant: -Y0              #
+#           Command line  =  "D:\BOOK\ATmega128_√•_√•_√•\∫Œ∑œ CD ROM\¡¶ 3 ¿Â ø #
+#                            π¡¶\IAR AVR øπ¡¶\Release\Obj\test.r90"            #
+#                            "C:\Program Files\IAR Systems\Ew23\avr\lib\cl3s-e #
+#                            c.r90"                                            #
+#                            -o                                                #
+#                            "D:\BOOK\ATmega128_√•_√•_√•\∫Œ∑œ CD ROM\¡¶ 3 ¿Â ø #
+#                            π¡¶\IAR AVR øπ¡¶\Release\Exe\sample.HEX"          #
+#                            -Fintel-standard -Y0 -l                           #
+#                            "D:\BOOK\ATmega128_√•_√•_√•\∫Œ∑œ CD ROM\¡¶ 3 ¿Â ø #
+#                            π¡¶\IAR AVR øπ¡¶\Release\List\sample.map"         #
+#                            -xms -p80                                         #
+#                            "-IC:\Program Files\IAR Systems\Ew23\avr\LIB\"    #
+#                            -f                                                #
+#                            "C:\Program Files\IAR Systems\Ew23\avr\config\lnk #
+#                            m128s.xcl"                                        #
+#                            (-D_..X_INTVEC_SIZE=8C -D_..X_FLASH_TEND=FF       #
+#                            -D_..X_FLASH_NEND=FFFF -D_..X_FLASH_END=1FFFF     #
+#                            -D_..X_SRAM_BASE=100 -D_..X_SRAM_TEND=100         #
+#                            -D_..X_SRAM_END=10FF -D_..X_EEPROM_END=FFF        #
+#                            -D_..X_CSTACK_SIZE=200 -D_..X_RSTACK_SIZE=40      #
+#                            -D_..X_HEAP_SIZE=100                              #
+#                            -D_..X_EXT_SRAM_BASE=_..X_SRAM_BASE               #
+#                            -D_..X_EXT_SRAM_END=_..X_SRAM_END                 #
+#                            -D_..X_EXT_EPROM_BASE=_..X_SRAM_BASE              #
+#                            -D_..X_EXT_EPROM_END=_..X_SRAM_END                #
+#                            -D_..X_EXT_EEPROM_BASE=_..X_SRAM_BASE             #
+#                            -D_..X_EXT_EEPROM_END=_..X_SRAM_END -ca90         #
+#                            -Z(CODE)INTVEC=0-(_..X_INTVEC_SIZE-1) -H1895      #
+#                            -h(CODE)0-_..X_INTVEC_SIZE                        #
+#                            -Z(CODE)TINY_F=_..X_INTVEC_SIZE-_..X_FLASH_TEND   #
+#                            -Z(CODE)NEAR_F,SWITCH,DIFUNCT=_..X_INTVEC_SIZE-_. #
+#                            .X_FLASH_NEND                                     #
+#                            -Z(CODE)CODE=_..X_INTVEC_SIZE-_..X_FLASH_END      #
+#                            -Z(FARCODE)FAR_F,INITTAB=_..X_INTVEC_SIZE-_..X_FL #
+#                            ASH_END                                           #
+#                            -Z(CODE)HUGE_F=_..X_INTVEC_SIZE-_..X_FLASH_END    #
+#                            -Z(CODE)TINY_ID,NEAR_ID,CHECKSUM=_..X_INTVEC_SIZE #
+#                            -_..X_FLASH_END                                   #
+#                            -Z(DATA)TINY_I,TINY_Z,TINY_N=_..X_SRAM_BASE-_..X_ #
+#                            SRAM_TEND                                         #
+#                            -Z(DATA)NEAR_I,NEAR_Z=_..X_SRAM_BASE-_..X_SRAM_EN #
+#                            D,_..X_EXT_SRAM_BASE-_..X_EXT_SRAM_END            #
+#                            -Z(DATA)RSTACK+_..X_RSTACK_SIZE=_..X_SRAM_BASE-_. #
+#                            .X_SRAM_END                                       #
+#                            -Z(DATA)CSTACK+_..X_CSTACK_SIZE=_..X_SRAM_BASE-_. #
+#                            .X_SRAM_END                                       #
+#                            -Z(DATA)HEAP+_..X_HEAP_SIZE=_..X_SRAM_BASE-_..X_S #
+#                            RAM_END,_..X_EXT_SRAM_BASE-_..X_EXT_SRAM_END      #
+#                            -Z(XDATA)EEPROM_I,EEPROM_N=0-_..X_EEPROM_END      #
+#                            -Z(CONST)NEAR_C=_..X_EXT_EPROM_BASE-_..X_EXT_EPRO #
+#                            M_END                                             #
+#                            -Z(DATA)NEAR_N=_..X_EXT_EEPROM_BASE-_..X_EXT_EEPR #
+#                            OM_END                                            #
+#                            -e_Printf_1=_Printf                               #
+#                            -e_small_write=_formatted_write                   #
+#                            -e_small_write_P=_formatted_write_P               #
+#                            -e_Scanf_1=_Scanf                                 #
+#                            -e_medium_read=_formatted_read                    #
+#                            -e_medium_read_P=_formatted_read_P -w29)          #
+#                                                                              #
+#                        Copyright 1987-2002 IAR Systems. All rights reserved. #
+################################################################################
+
+                              - Cross-reference -                      Page    2
+
+
+
+                ****************************************
+                *                                      *
+                *           CROSS REFERENCE            *
+                *                                      *
+                ****************************************
+
+                  There are no program entries.
+
+
+
+
+                ****************************************
+                *                                      *
+                *            RUNTIME MODEL             *
+                *                                      *
+                ****************************************
+
+  __64bit_doubles = disabled
+  __cpu           = 3
+  __cpu_name      = AT90Mega128
+  __enhanced_core = enabled
+  __has_elpm      = true
+  __memory_model  = 2
+  __no_rampd      = enabled
+  __rt_version    = 2.30
+
+
+
+                ****************************************
+                *                                      *
+                *              MODULE MAP              *
+                *                                      *
+                ****************************************
+
+
+  DEFINED ABSOLUTE ENTRIES
+  PROGRAM MODULE, NAME : ?ABS_ENTRY_MOD
+
+Absolute parts
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _..X_EXT_EEPROM_END     000010FF 
+           _..X_EXT_EEPROM_BASE    00000100 
+           _..X_EXT_EPROM_END      000010FF 
+           _..X_EXT_EPROM_BASE     00000100 
+           _..X_EXT_SRAM_END       000010FF 
+           _..X_EXT_SRAM_BASE      00000100 
+           _..X_HEAP_SIZE          00000100 
+           _..X_RSTACK_SIZE        00000040 
+           _..X_CSTACK_SIZE        00000200 
+           _..X_EEPROM_END         00000FFF 
+           _..X_SRAM_END           000010FF 
+           _..X_SRAM_TEND          00000100 
+           _..X_SRAM_BASE          00000100 
+           _..X_FLASH_END          0001FFFF 
+           _..X_FLASH_NEND         0000FFFF 
+           _..X_FLASH_TEND         000000FF 
+           _..X_INTVEC_SIZE        0000008C 
+    *************************************************************************
+
+  FILE NAME : D:\BOOK\ATmega128_^Ê_^Ê_^Ê\^^ CD ROM\^Á 3 ^& ^˙^Á\IAR AVR ^˙^Á\Release\Obj\test.r90
+  PROGRAM MODULE, NAME : test
+
+  SEGMENTS IN THE MODULE
+  ======================
+ABSOLUTE (ABS)
+  Relative segment, address: DATA 00000037 - 00000037 (1 bytes), align: 0
+  Segment part 1. ROOT.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_DDRB                 00000037 
+    -------------------------------------------------------------------------
+ABSOLUTE (ABS)
+  Relative segment, address: DATA 00000038 - 00000038 (1 bytes), align: 0
+  Segment part 2. ROOT.
+           ENTRY                   ADDRESS         REF BY
+                              - Cross-reference -                      Page    3
+
+           =====                   =======         ======
+           _A_PORTB                00000038 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: CODE 0000008C - 0000009F (14 bytes), align: 1
+  Segment part 9.             Intra module refs:   main
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           delay                   0000008C 
+               non_banked function
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: CODE 000000A0 - 000000CD (2e bytes), align: 1
+  Segment part 10.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           main                    000000A0        ?cstartup_call_main (?C_STARTUP)
+               non_banked function
+               calls direct
+               stack 1 = 00000000 ( 00000002 )
+               stack 2 = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+ABSOLUTE (ABS)
+  Relative segment, address: DATA 0000001C, align: 0
+  Segment part 3. ROOT.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __?EECR                 0000001C 
+    -------------------------------------------------------------------------
+ABSOLUTE (ABS)
+  Relative segment, address: DATA 0000001D, align: 0
+  Segment part 4. ROOT.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __?EEDR                 0000001D 
+    -------------------------------------------------------------------------
+ABSOLUTE (ABS)
+  Relative segment, address: DATA 0000001E, align: 0
+  Segment part 5. ROOT.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __?EEARL                0000001E 
+    -------------------------------------------------------------------------
+ABSOLUTE (ABS)
+  Relative segment, address: DATA 0000001F, align: 0
+  Segment part 6. ROOT.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __?EEARH                0000001F 
+
+    *************************************************************************
+
+  FILE NAME : C:\Program Files\IAR Systems\Ew23\avr\lib\cl3s-ec.r90
+  PROGRAM MODULE, NAME : ?RESET
+
+  SEGMENTS IN THE MODULE
+  ======================
+INTVEC
+  Common segment, address: CODE 00000000 - 00000003 (4 bytes), align: 1
+  Segment part 0. ROOT.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?C_STARTUP
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: CODE 000000CE, align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?C_STARTUP              000000CE        Segment part 0 (?RESET)
+           __RESTART               000000CE 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: CODE 000000CE - 000000D9 (c bytes), align: 1
+  Segment part 4.             Intra module refs:   ?C_STARTUP
+    -------------------------------------------------------------------------
+                              - Cross-reference -                      Page    4
+
+CODE
+  Relative segment, address: CODE 000000DA - 000000DD (4 bytes), align: 1
+  Segment part 6.             Intra module refs:   Segment part 4
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?call_low_level_init    000000DA 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: CODE 000000DE - 000000ED (10 bytes), align: 1
+  Segment part 8.             Intra module refs:   ?call_low_level_init
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?cstartup_call_main     000000DE 
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : low_level_init
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: CODE 000000EE - 000000F1 (4 bytes), align: 1
+  Segment part 3.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __low_level_init        000000EE        ?call_low_level_init (?C_STARTUP)
+               non_banked function
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?__exit
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: CODE 000000F2 - 000000F7 (6 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __exit                  000000F4 
+           ?C_EXIT                 000000F4 
+           ?C_FUNCALL              000000F2 
+           _exit                   000000F2        ?cstartup_call_main (?C_STARTUP)
+           exit                    000000F2        ?cstartup_call_main (?C_STARTUP)
+
+    *************************************************************************
+
+  DEFINED ABSOLUTE ENTRIES
+  PROGRAM MODULE, NAME : ?FILLER_BYTES
+
+  SEGMENTS IN THE MODULE
+  ======================
+INTVEC
+  Common segment, address: CODE 00000000 - 00000003 (4 bytes), align: 0
+  Segment part 1.
+    -------------------------------------------------------------------------
+?FILL1
+  Relative segment, address: CODE 00000004 - 0000008B (88 bytes), align: 0
+  Segment part 0.
+
+
+
+
+                ****************************************
+                *                                      *
+                *      SEGMENTS IN ADDRESS ORDER       *
+                *                                      *
+                ****************************************
+
+
+SEGMENT              SPACE   START ADDRESS    END ADDRESS      SIZE  TYPE  ALIGN
+=======              =====   =============    ===========      ====  ====  =====
+INTVEC               CODE         00000000 - 00000003             4   com    1
+?FILL1               CODE         00000004 - 0000008B            88   rel    0
+CODE                 CODE         0000008C - 000000F7            6C   rel    1
+ABSOLUTE (ABS)       DATA              0000001C                       rel    0
+                     DATA              0000001D                     
+                     DATA              0000001E                     
+                     DATA              0000001F                     
+                     DATA         00000037 - 00000037             1 
+                              - Cross-reference -                      Page    5
+
+                     DATA         00000038 - 00000038             1 
+RSTACK               DATA         00000100 - 0000013F            40   dse    0
+CSTACK               DATA         00000140 - 0000033F           200   dse    0
+
+                ****************************************
+                *                                      *
+                *        END OF CROSS REFERENCE        *
+                *                                      *
+                ****************************************
+
+  112 bytes of CODE memory (136 range fill)
+  578 bytes of DATA memory
+
+Errors: none
+Warnings: none
+

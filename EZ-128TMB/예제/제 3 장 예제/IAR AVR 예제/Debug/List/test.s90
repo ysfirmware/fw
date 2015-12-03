@@ -1,0 +1,132 @@
+        NAME test
+
+        RTMODEL "__64bit_doubles", "disabled"
+        RTMODEL "__cpu", "3"
+        RTMODEL "__cpu_name", "AT90Mega16"
+        RTMODEL "__enhanced_core", "enabled"
+        RTMODEL "__has_elpm", "false"
+        RTMODEL "__memory_model", "2"
+        RTMODEL "__rt_version", "2.30"
+
+        RSEG CSTACK:DATA:NOROOT(0)
+        RSEG RSTACK:DATA:NOROOT(0)
+
+
+        PUBWEAK _A_DDRB
+        PUBWEAK _A_PORTB
+        PUBWEAK __?EEARH
+        PUBWEAK __?EEARL
+        PUBWEAK __?EECR
+        PUBWEAK __?EEDR
+        PUBLIC delay
+        FUNCTION delay,0203H
+        PUBLIC main
+        FUNCTION main,021a03H
+        LOCFRAME CSTACK, 2, STACK
+        LOCFRAME RSTACK, 2, STACK
+;     1 //
+;     2 //  Atmega16의 PORTB에 연결된 LED를 이동하는 프로그램 
+;     3 //
+;     4 
+;     5 #include<ina90.h>
+;     6 #include<iom16.h>
+
+        ASEGN ABSOLUTE:DATA:NOROOT,037H
+; union <unnamed> volatile __io _A_DDRB;
+_A_DDRB:
+	DS 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,038H
+; union <unnamed> volatile __io _A_PORTB;
+_A_PORTB:
+	DS 1
+;     7 
+
+        RSEG CODE:CODE:NOROOT(1)
+;     8 void delay(unsigned int i)
+;     9 {
+;    10     while(--i);
+; __nearfunc void delay(unsigned int);
+delay:
+??delay_0:
+	SUBI	R16,1
+	SBCI	R17,0
+	BRNE	??delay_0
+;    11 }
+	RET
+;    12 
+
+        RSEG CODE:CODE:NOROOT(1)
+;    13 void main(void)
+;    14 {
+; __nearfunc void main();
+main:
+        FUNCALL main, delay
+        LOCFRAME CSTACK, 2, STACK
+        LOCFRAME RSTACK, 2, STACK
+	ST	-Y,R25
+	ST	-Y,R24
+;    15     unsigned int number = 0xFE;
+	LDI	R24,254
+	LDI	R25,0
+;    16     
+;    17     DDRB = 0xFF;
+	LDI	R16,255
+	OUT	0x17,R16
+;    18     PORTB = 0xFF;
+	LDI	R16,255
+	OUT	0x18,R16
+;    19     
+;    20     do{
+;    21         PORTB = number;
+??main_0:
+	MOV	R16,R24
+	OUT	0x18,R16
+;    22         number = (number << 1) | 0x01;
+	LSL	R24
+	ROL	R25
+	ORI	R24,0x01
+	ORI	R25,0x00
+;    23         
+;    24         if((number & 0xFF) == 0xFF)
+	MOV	R16,R24
+	CPI	R16,255
+	BRNE	??main_1
+;    25            number = 0xFE;
+	LDI	R24,254
+	LDI	R25,0
+;    26         delay(60000);
+??main_1:
+	LDI	R16,96
+	LDI	R17,234
+	RCALL	delay
+;    27         
+;    28        }while(1);
+	RJMP	??main_0
+;    29 }           
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01cH
+__?EECR:
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01dH
+__?EEDR:
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01eH
+__?EEARL:
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01fH
+__?EEARH:
+
+        END
+;    30     
+;    31     
+;    32         
+; 
+;      2 bytes in segment ABSOLUTE
+;     54 bytes in segment CODE
+; 
+;     54 bytes of CODE memory
+;      0 bytes of DATA memory (+ 2 bytes shared)
+;
+;Errors: none
+;Warnings: none

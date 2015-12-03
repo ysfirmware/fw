@@ -1,0 +1,194 @@
+        NAME timer0_OV
+
+        RTMODEL "__64bit_doubles", "disabled"
+        RTMODEL "__cpu", "3"
+        RTMODEL "__cpu_name", "AT90Mega16"
+        RTMODEL "__enhanced_core", "enabled"
+        RTMODEL "__has_elpm", "false"
+        RTMODEL "__memory_model", "2"
+        RTMODEL "__rt_version", "2.30"
+
+        RSEG CSTACK:DATA:NOROOT(0)
+        RSEG NEAR_Z:DATA:NOROOT(0)
+        RSEG RSTACK:DATA:NOROOT(0)
+
+        EXTERN ?need_segment_init
+
+        PUBWEAK `?<Segment init: NEAR_Z>`
+        PUBLIC T0_overflow
+        FUNCTION T0_overflow,0233H
+        LOCFRAME CSTACK, 4, STACK
+        PUBWEAK _A_DDRB
+        PUBWEAK _A_PORTB
+        PUBWEAK _A_TCCR0
+        PUBWEAK _A_TCNT0
+        PUBWEAK _A_TIFR
+        PUBWEAK _A_TIMSK
+        PUBWEAK __?EEARH
+        PUBWEAK __?EEARL
+        PUBWEAK __?EECR
+        PUBWEAK __?EEDR
+        PUBLIC main
+        FUNCTION main,0a03H
+        PUBLIC temp
+;     1 //
+;     2 //  Atmega128의 PORTB에 연결된 LED를 TIMER0 OVERFLOW를 이용하여 이동하는 프로그램 
+;     3 //
+;     4 
+;     5 #include<ina90.h>
+;     6 #include<iom128.h>
+
+        ASEGN ABSOLUTE:DATA:NOROOT,037H
+; union <unnamed> volatile __io _A_DDRB;
+_A_DDRB:
+	DS 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,038H
+; union <unnamed> volatile __io _A_PORTB;
+_A_PORTB:
+	DS 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,052H
+; union <unnamed> volatile __io _A_TCNT0;
+_A_TCNT0:
+	DS 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,053H
+; union <unnamed> volatile __io _A_TCCR0;
+_A_TCCR0:
+	DS 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,056H
+; union <unnamed> volatile __io _A_TIFR;
+_A_TIFR:
+	DS 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,057H
+; union <unnamed> volatile __io _A_TIMSK;
+_A_TIMSK:
+	DS 1
+;     7 
+
+        RSEG NEAR_Z:DATA:NOROOT(0)
+	REQUIRE `?<Segment init: NEAR_Z>`
+;     8 unsigned char temp=0;
+; unsigned char __near temp;
+temp:
+	DS 1
+;     9 
+;    10 
+
+        RSEG CODE:CODE:NOROOT(1)
+;    11 void main(void)
+;    12 {
+;    13         
+;    14     DDRB = 0xFF;     // PORTB is all OUTPORT
+; __nearfunc void main();
+main:
+	LDI	R16,255
+	OUT	0x17,R16
+;    15     PORTB = 0xFF;    // LED OFF
+	LDI	R16,255
+	OUT	0x18,R16
+;    16     
+;    17     TCCR0=0x05;      // system clock/1024
+	LDI	R16,5
+	OUT	0x33,R16
+;    18     TCNT0=0x80;      // TiMER0 start at 0x80
+	LDI	R16,128
+	OUT	0x32,R16
+;    19     
+;    20     TIMSK=0x01;      // TiMER0 overflow interrupt MASK
+	LDI	R16,1
+	OUT	0x37,R16
+;    21     TIFR=0x00;
+	LDI	R16,0
+	OUT	0x36,R16
+;    22     
+;    23     __enable_interrupt();    // Global interrupt enable
+	SEI
+;    24     
+;    25      
+;    26     
+;    27     while(1)
+;    28     {
+;    29       PORTB = temp;
+??main_0:
+	LDS	R16,temp
+	OUT	0x18,R16
+	RJMP	??main_0
+;    30      }
+;    31 }           
+;    32 
+;    33 #pragma vector=TIMER0_OVF_vect              // Refer iom128.h !!!!!
+
+        RSEG CODE:CODE:NOROOT(1)
+;    34 __interrupt void T0_overflow(void)   
+;    35 {
+; __nearfunc __interrupt void T0_overflow();
+T0_overflow:
+	ST	-Y,R31
+	ST	-Y,R30
+	ST	-Y,R17
+	ST	-Y,R16
+	IN	R17,0x3F
+;    36     __disable_interrupt();   
+	CLI
+;    37      
+;    38     TCNT0=0x80; 
+	LDI	R16,128
+	OUT	0x32,R16
+;    39         
+;    40     temp++;
+	LDI	R30,LOW(temp)
+	LDI	R31,(temp) >> 8
+	LD	R16,Z
+	INC	R16
+	ST	Z,R16
+;    41             
+;    42     __enable_interrupt();
+	SEI
+;    43 }
+	OUT	0x3F,R17
+	LD	R16,Y+
+	LD	R17,Y+
+	LD	R30,Y+
+	LD	R31,Y+
+	RETI
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01cH
+__?EECR:
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01dH
+__?EEDR:
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01eH
+__?EEARL:
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01fH
+__?EEARH:
+
+        COMMON INTVEC:CODE:ROOT(1)
+        ORG 64
+	JMP	T0_overflow
+
+        RSEG INITTAB:CODE:NOROOT(0)
+`?<Segment init: NEAR_Z>`:
+	DW	SFE(NEAR_Z) - SFB(NEAR_Z)
+	DW	SFB(NEAR_Z)
+	DW	0
+	REQUIRE ?need_segment_init
+
+        END
+; 
+;      6 bytes in segment ABSOLUTE
+;     74 bytes in segment CODE
+;      6 bytes in segment INITTAB
+;      4 bytes in segment INTVEC
+;      1 byte  in segment NEAR_Z
+; 
+;     78 bytes of CODE memory (+ 6 bytes shared)
+;      1 byte  of DATA memory (+ 6 bytes shared)
+;
+;Errors: none
+;Warnings: none

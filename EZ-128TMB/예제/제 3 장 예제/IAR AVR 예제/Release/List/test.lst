@@ -1,0 +1,137 @@
+##############################################################################
+#                                                                            #
+# IAR Atmel AVR C/EC++ Compiler V2.28A/WIN             01/Feb/2005  09:22:55 #
+# Copyright 1996-2002 IAR Systems. All rights reserved.                      #
+#                                                                            #
+#    Source file  =  D:\BOOK\ATmega128_책_책_책\부록 CD ROM\제 3 장          #
+#                    예제\IAR AVR 예제\test.c                                #
+#    Command line =  --cpu=m128 -ms -o "D:\BOOK\ATmega128_책_책_책\부록 CD   #
+#                    ROM\제 3 장 예제\IAR AVR 예제\Release\Obj\" -I          #
+#                    "C:\Program Files\IAR Systems\Ew23\avr\SRC\CLIB\INC\"   #
+#                    -lC "D:\BOOK\ATmega128_책_책_책\부록 CD ROM\제 3 장     #
+#                    예제\IAR AVR 예제\Release\List\" -lA                    #
+#                    "D:\BOOK\ATmega128_책_책_책\부록 CD ROM\제 3 장         #
+#                    예제\IAR AVR 예제\Release\List\" -e -y                  #
+#                    --initializers_in_flash -z3 --no_cse --no_inline        #
+#                    --no_code_motion -DENABLE_BIT_DEFINITIONS               #
+#                    "D:\BOOK\ATmega128_책_책_책\부록 CD ROM\제 3 장         #
+#                    예제\IAR AVR 예제\test.c"                               #
+#    List file    =  D:\BOOK\ATmega128_책_책_책\부록 CD ROM\제 3 장          #
+#                    예제\IAR AVR 예제\Release\List\test.lst                 #
+#    Object file  =  D:\BOOK\ATmega128_책_책_책\부록 CD ROM\제 3 장          #
+#                    예제\IAR AVR 예제\Release\Obj\test.r90                  #
+#                                                                            #
+#                                                                            #
+##############################################################################
+
+      1          //
+      2          //  Atmega128의 PORTB에 연결된 LED를 이동하는 프로그램 
+      3          //
+      4          // 16MHz
+      5          
+      6          #include<ina90.h>
+      7          #include<iom128.h>
+
+   \                                 In segment ABSOLUTE, at 0x37
+   \   union <unnamed> volatile __io _A_DDRB;
+   \                     _A_DDRB:
+   \   00000000                              DS 1
+
+   \                                 In segment ABSOLUTE, at 0x38
+   \   union <unnamed> volatile __io _A_PORTB;
+   \                     _A_PORTB:
+   \   00000000                              DS 1
+      8          
+
+   \                                 In segment CODE, align 2, keep-with-next
+      9          void delay(unsigned int i)
+     10          {
+   \   __nearfunc void delay(unsigned int);
+   \                     delay:
+   \   00000000   01F8                       MOVW    R31 : R30,R17 : R16
+     11              while(--i);
+   \                     ??delay_0:
+   \   00000002   9731                       SBIW    R31 : R30,1
+   \   00000004   F7F1                       BRNE    ??delay_0
+     12              while(--i);
+   \                     ??delay_1:
+   \   00000006   9731                       SBIW    R31 : R30,1
+   \   00000008   F7F1                       BRNE    ??delay_1
+     13              while(--i);
+   \                     ??delay_2:
+   \   0000000A   9731                       SBIW    R31 : R30,1
+   \   0000000C   F7F1                       BRNE    ??delay_2
+     14              while(--i);
+   \                     ??delay_3:
+   \   0000000E   9731                       SBIW    R31 : R30,1
+   \   00000010   F7F1                       BRNE    ??delay_3
+     15          }
+   \   00000012   9508                       RET
+     16          
+
+   \                                 In segment CODE, align 2, keep-with-next
+     17          void main(void)
+     18          {
+   \   __nearfunc void main();
+   \                     main:
+   \   00000000   939A                       ST      -Y,R25
+   \   00000002   938A                       ST      -Y,R24
+     19              unsigned int number = 0xFE;
+   \   00000004   EF8E                       LDI     R24,254
+   \   00000006   E090                       LDI     R25,0
+     20              
+     21              DDRB = 0xFF;
+   \   00000008   EF0F                       LDI     R16,255
+   \   0000000A   BB07                       OUT     0x17,R16
+     22              PORTB = 0xFF;
+   \   0000000C   EF0F                       LDI     R16,255
+   \   0000000E   BB08                       OUT     0x18,R16
+     23              
+     24              do{
+     25                  PORTB = number;
+   \                     ??main_0:
+   \   00000010   2F08                       MOV     R16,R24
+   \   00000012   BB08                       OUT     0x18,R16
+     26                  number = (number << 1) | 0x01;
+   \   00000014   0F88                       LSL     R24
+   \   00000016   1F99                       ROL     R25
+   \   00000018   6081                       ORI     R24,0x01
+   \   0000001A   6090                       ORI     R25,0x00
+     27                  
+     28                  if((number & 0xFF) == 0xFF)
+   \   0000001C   2F08                       MOV     R16,R24
+   \   0000001E   3F0F                       CPI     R16,255
+   \   00000020   F411                       BRNE    ??main_1
+     29                     number = 0xFE;
+   \   00000022   EF8E                       LDI     R24,254
+   \   00000024   E090                       LDI     R25,0
+     30                  delay(60000);
+   \                     ??main_1:
+   \   00000026   E600                       LDI     R16,96
+   \   00000028   EE1A                       LDI     R17,234
+   \   0000002A   ....                       RCALL   delay
+     31                  
+     32                 }while(1);
+   \   0000002C   CFF1                       RJMP    ??main_0
+     33          }           
+     34              
+     35              
+     36                  
+
+   Maximum stack usage in bytes:
+
+     Function    CSTACK  RSTACK
+     --------    ------  ------
+     delay           0       0 
+     main            2       2 
+       -> delay      2       2 
+
+ 
+      2 bytes in segment ABSOLUTE
+     66 bytes in segment CODE
+ 
+     66 bytes of CODE memory
+      0 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

@@ -1,0 +1,124 @@
+##############################################################################
+#                                                                            #
+# IAR Atmel AVR C/EC++ Compiler V2.28A/WIN, Evaluation Version30/Oct/2003  11:57:53 #
+# Copyright 1996-2002 IAR Systems. All rights reserved.                      #
+#                                                                            #
+#    Source file  =  C:\IAR Systems\Ew23 Evaluation                          #
+#                    version\avr\work_atmega16\test.c                        #
+#    Command line =  --cpu=m16 -ms -o "C:\IAR Systems\Ew23 Evaluation        #
+#                    version\avr\work_atmega16\Debug\Obj\" -I "C:\IAR        #
+#                    Systems\Ew23 Evaluation version\avr\SRC\CLIB\INC\" -lC  #
+#                    "C:\IAR Systems\Ew23 Evaluation                         #
+#                    version\avr\work_atmega16\Debug\List\" -lA "C:\IAR      #
+#                    Systems\Ew23 Evaluation version\avr\work_atmega16\Debug #
+#                    \List\" -e --initializers_in_flash -z3 --no_cse         #
+#                    --no_inline --no_code_motion --no_cross_call            #
+#                    --no_clustering --debug -DENABLE_BIT_DEFINITIONS        #
+#                    "C:\IAR Systems\Ew23 Evaluation                         #
+#                    version\avr\work_atmega16\test.c"                       #
+#    List file    =  C:\IAR Systems\Ew23 Evaluation                          #
+#                    version\avr\work_atmega16\Debug\List\test.lst           #
+#    Object file  =  C:\IAR Systems\Ew23 Evaluation                          #
+#                    version\avr\work_atmega16\Debug\Obj\test.r90            #
+#                                                                            #
+#                                                                            #
+##############################################################################
+
+      1          //
+      2          //  Atmega16의 PORTB에 연결된 LED를 이동하는 프로그램 
+      3          //
+      4          
+      5          #include<ina90.h>
+      6          #include<iom16.h>
+
+   \                                 In segment ABSOLUTE, at 0x37
+   \   union <unnamed> volatile __io _A_DDRB;
+   \                     _A_DDRB:
+   \   00000000                              DS 1
+
+   \                                 In segment ABSOLUTE, at 0x38
+   \   union <unnamed> volatile __io _A_PORTB;
+   \                     _A_PORTB:
+   \   00000000                              DS 1
+      7          
+
+   \                                 In segment CODE, align 2, keep-with-next
+      8          void delay(unsigned int i)
+      9          {
+     10              while(--i);
+   \   __nearfunc void delay(unsigned int);
+   \                     delay:
+   \                     ??delay_0:
+   \   00000000   5001                       SUBI    R16,1
+   \   00000002   4010                       SBCI    R17,0
+   \   00000004   F7E9                       BRNE    ??delay_0
+     11          }
+   \   00000006   9508                       RET
+     12          
+
+   \                                 In segment CODE, align 2, keep-with-next
+     13          void main(void)
+     14          {
+   \   __nearfunc void main();
+   \                     main:
+   \   00000000   939A                       ST      -Y,R25
+   \   00000002   938A                       ST      -Y,R24
+     15              unsigned int number = 0xFE;
+   \   00000004   EF8E                       LDI     R24,254
+   \   00000006   E090                       LDI     R25,0
+     16              
+     17              DDRB = 0xFF;
+   \   00000008   EF0F                       LDI     R16,255
+   \   0000000A   BB07                       OUT     0x17,R16
+     18              PORTB = 0xFF;
+   \   0000000C   EF0F                       LDI     R16,255
+   \   0000000E   BB08                       OUT     0x18,R16
+     19              
+     20              do{
+     21                  PORTB = number;
+   \                     ??main_0:
+   \   00000010   2F08                       MOV     R16,R24
+   \   00000012   BB08                       OUT     0x18,R16
+     22                  number = (number << 1) | 0x01;
+   \   00000014   0F88                       LSL     R24
+   \   00000016   1F99                       ROL     R25
+   \   00000018   6081                       ORI     R24,0x01
+   \   0000001A   6090                       ORI     R25,0x00
+     23                  
+     24                  if((number & 0xFF) == 0xFF)
+   \   0000001C   2F08                       MOV     R16,R24
+   \   0000001E   3F0F                       CPI     R16,255
+   \   00000020   F411                       BRNE    ??main_1
+     25                     number = 0xFE;
+   \   00000022   EF8E                       LDI     R24,254
+   \   00000024   E090                       LDI     R25,0
+     26                  delay(60000);
+   \                     ??main_1:
+   \   00000026   E600                       LDI     R16,96
+   \   00000028   EE1A                       LDI     R17,234
+   \   0000002A   ....                       RCALL   delay
+     27                  
+     28                 }while(1);
+   \   0000002C   CFF1                       RJMP    ??main_0
+     29          }           
+     30              
+     31              
+     32                  
+
+   Maximum stack usage in bytes:
+
+     Function    CSTACK  RSTACK
+     --------    ------  ------
+     delay           0       0 
+     main            2       2 
+       -> delay      2       2 
+
+ 
+      2 bytes in segment ABSOLUTE
+     54 bytes in segment CODE
+ 
+     54 bytes of CODE memory
+      0 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

@@ -1,0 +1,15 @@
+Creating   'LED_test.eep'
+Creating   'LED_test.obj'
+Creating   'LED_test.lst'
+
+Assembling 'LED_test.asm'
+Including  'LED_test.vec'
+Including  'LED_test.inc'
+
+Program memory usage:
+Code             :  169 words
+Constants (dw/db):    1 words
+Unused           :    0 words
+Total            :  170 words
+
+Assembly complete with no errors.
