@@ -1,0 +1,900 @@
+
+AVRASM ver. 2.1.9  C:\Atmel\OK2561asm\Exp20_1.asm Mon Aug 28 14:07:30 2006
+
+C:\Atmel\OK2561asm\Exp20_1.asm(13): Including file 'C:\Atmel\AVR Tools\AvrAssembler2\Appnotes\m2561def.inc'
+C:\Atmel\OK2561asm\Exp20_1.asm(124): Including file 'C:\Atmel\OK2561asm\OK2561.INC'
+                 
+                 
+                 ;[]								   []
+                 ;[]	      Exp20_1.asm : Read/Write ATmega2561 EEPROM	   []
+                 ;[]								   []
+                 ;[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+                 ;
+                 ;		Designed and programmed by Duck-Yong Yoon in 2006.
+                 ;
+                 ;------------------------------------------------
+                 ;	Include Header File
+                 ;------------------------------------------------
+                 .list
+                 
+                 ;====================================================================
+                 ;	Main Program
+                 ;====================================================================
+                 .cseg
+                 	.org	0x0000
+000000 e211      	LDI	AH,high(RAMEND)		; initialize SP
+000001 ef0f      	LDI	AL,low(RAMEND)
+000002 bf1e      	OUT	SPH,AH
+000003 bf0d      	OUT	SPL,AL
+                 
+000004 940e 0080 	CALL	INIT_MCU		; initialize MCU and kit
+000006 940e 01d7 	CALL	D50MS			; wait for system stabilization
+000008 940e 00a2 	CALL	INIT_LCD		; initialize text LCD
+00000a 940e 01a4 	CALL	BEEP
+                 
+                 ;------------------------------------------------
+                 ;	Write/Read Test
+                 ;------------------------------------------------
+00000c 940e 00ad         CALL    LCD_HOME1               ; display title on LCD
+00000e 940e 00d5 	CALL	LCD_STRING
+000010 4120
+000011 6d54
+000012 6765
+000013 3261
+000014 3635
+000015 2031
+000016 4545
+000017 2050
+000018 0000              .db     " ATmega2561 EEP ",0,0
+000019 940e 00af 	CALL	LCD_HOME2
+00001b 940e 00d5 	CALL	LCD_STRING
+00001d 7830
+00001e 3030
+00001f 3030
+000020 303d
+000021 3078
+000022 2f30
+000023 7830
+000024 3030
+000025 0000              .db     "0x0000=0x00/0x00",0,0
+                 
+000026 e000      	LDI	AL,0b00000000		; can erase and write EEPROM
+000027 bb0f      	OUT	EECR,AL			;  (EEPM1=EEPM0=0)
+                 
+000028 e030      	LDI	BH,0			; initial address
+000029 e020      	LDI	BL,0
+00002a ec82      LOOP:	LDI	LCD_BUFFER,0xC2		; display address
+00002b 940e 00b1 	CALL	LCD_COMMAND
+00002d 2f13      	MOV	AH,BH
+00002e 2f02      	MOV	AL,BL
+00002f 940e 00f4 	CALL	LCD_4HEX
+000031 ec89      	LDI	LCD_BUFFER,0xC9		; display write data
+000032 940e 00b1 	CALL	LCD_COMMAND
+000034 e585      	LDI	LCD_BUFFER,0x55
+000035 940e 00f9 	CALL	LCD_2HEX
+000037 e565      	LDI	DL,0x55			; write 0x55
+000038 940e 0074 	CALL	WRITE
+00003a 940e 006d 	CALL	READ			; read
+00003c ec8e      	LDI	LCD_BUFFER,0xCE		; display read data
+00003d 940e 00b1 	CALL	LCD_COMMAND
+00003f 2f86      	MOV	LCD_BUFFER,DL
+000040 940e 00f9 	CALL	LCD_2HEX
+000042 940e 01e0 	CALL	D500MS
+000044 3565      	CPI	DL,0x55			; if error, beep
+000045 f021      	BREQ	LOOP1
+000046 940e 01a4 	CALL	BEEP
+000048 940e 01e7 	CALL	D2SEC
+                 
+00004a ec89      LOOP1:	LDI	LCD_BUFFER,0xC9		; display write data
+00004b 940e 00b1 	CALL	LCD_COMMAND
+00004d ea8a      	LDI	LCD_BUFFER,0xAA
+00004e 940e 00f9 	CALL	LCD_2HEX
+000050 ea6a      	LDI	DL,0xAA			; write 0xAA
+000051 940e 0074 	CALL	WRITE
+000053 940e 006d 	CALL	READ			; read
+000055 ec8e      	LDI	LCD_BUFFER,0xCE		; display read data
+000056 940e 00b1 	CALL	LCD_COMMAND
+000058 2f86      	MOV	LCD_BUFFER,DL
+000059 940e 00f9 	CALL	LCD_2HEX
+00005b 940e 01e0 	CALL	D500MS
+00005d 3a6a      	CPI	DL,0xAA			; if error, beep
+00005e f021      	BREQ	LOOP2
+00005f 940e 01a4 	CALL	BEEP
+000061 940e 01e7 	CALL	D2SEC
+                 
+000063 e001      LOOP2:	LDI	AL,1			; loop from 0x0000 to 0x0FFF
+000064 0f20      	ADD	BL,AL
+000065 2700      	CLR	AL
+000066 1f30      	ADC	BH,AL
+000067 3130      	CPI	BH,0x10
+000068 f609      	BRNE	LOOP
+                 
+000069 940e 01a4 	CALL	BEEP
+00006b 940c 006b LOOP3:	JMP	LOOP3
+                 
+                 ;------------------------------------------------
+                 ;	Read EEPROM (BH:BL=address, DL= read data)
+                 ;------------------------------------------------
+00006d 99f9      READ:	SBIC	EECR,EEPE		; if EEPE=1, wait
+00006e cffe      	RJMP	READ
+00006f bd32      	OUT	EEARH,BH		; if EEPE=0, read
+000070 bd21      	OUT	EEARL,BL
+000071 9af8      	SBI	EECR,EERE
+000072 b560      	IN	DL,EEDR
+000073 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Write EEPROM (BH:BL=address, DL=data)
+                 ;------------------------------------------------
+000074 99f9      WRITE:	SBIC	EECR,EEPE		; if EEPE=1, wait
+000075 cffe      	RJMP	WRITE
+000076 9100 0037 WRITE1:	LDS	AL,SPMCSR		; if SPMEM=1, wait
+000078 fd00      	SBRC	AL,SPMEN
+000079 cffc      	RJMP	WRITE1
+00007a bd32      	OUT	EEARH,BH		; if not, write
+00007b bd21      	OUT	EEARL,BL
+00007c bd60      	OUT	EEDR,DL
+00007d 9afa      	SBI	EECR,EEMPE
+00007e 9af9      	SBI	EECR,EEPE
+00007f 9508      	RET
+                 
+                 ;====================================================================
+                 ;	Include User Subroutine File
+                 ;====================================================================
+                 .include "OK2561.INC"			; OK-2561 I/O and subroutine file
+                 
+                 ;	User Register Definitions in OK-2561 V1.0 Training Kit
+                 ;====================================================================
+                 .def	RAMPZ_BUFFER	= r11		; can't use immediate addressing
+                 .def	KEY_FLAG	= r12
+                 .def	ZERO_FLAG	= r13
+                 .def	TXD_BUFFER	= r14
+                 .def	RXD_BUFFER	= r15
+                 
+                 .def	AL		= r16		; can use immediate addressing
+                 .def	AH		= r17
+                 .def	BL		= r18
+                 .def	BH		= r19
+                 .def	CL		= r20
+                 .def	CH		= r21
+                 .def	DL		= r22
+                 .def	DH		= r23
+                 
+                 .def	LCD_BUFFER	= r24
+                 .def	DELAY_COUNT	= r25
+                 
+                 ;====================================================================
+                 ;	External I/O Address in OK-2561 V1.0 Training Kit
+                 ;====================================================================
+                 ;------------------------------------------------
+                 ;	LCD, GLCD, and 7-Segment LED
+                 ;------------------------------------------------
+                 .equ	LCD_DATABUS	= 0x4000	; LCD/GLCD data
+                 					; 7-segment LED pattern
+                 .equ	LCD_CONTROL	= 0x4100	; LCD/GLCD control signal
+                 .equ	DIG_SELECT	= 0x4200	; 7-segment LED digit select
+                 					; 8-bit parallel data
+                 
+                 ;------------------------------------------------
+                 ;	DS12C887 RTC
+                 ;------------------------------------------------
+                 .equ	RTC_SECOND	= 0x4300	; second   (00-59, BCD)
+                 .equ	RTC_SEC_ALM	= 0x4301	; second alarm  
+                 .equ	RTC_MINUTE	= 0x4302	; minute   (00-59, BCD)
+                 .equ	RTC_MIN_ALM	= 0x4303	; minute alarm
+                 .equ	RTC_HOUR	= 0x4304	; hour     (AM = 01-12, PM = 81-92, BCD)
+                 .equ	RTC_HOUR_ALM	= 0x4305	; hour alarm
+                 .equ	RTC_WEEKDAY	= 0x4306	; week day (SUN = 1, SAT = 7)
+                 .equ	RTC_DATE	= 0x4307	; date     (01-31, BCD)
+                 .equ	RTC_MONTH	= 0x4308	; month    (01-12, BCD)
+                 .equ	RTC_YEAR	= 0x4309	; year     (00-99, BCD)
+                 .equ	RTC_A		= 0x430A	; Reg. A : b7 = UIP flag(read only)
+                 					;	   b6-4 = 010   oscillator on
+                 					;	   b3-0 = 0000  no SQW frequency
+                 					;		  0011  8192 Hz
+                 					;		  1111  2 Hz
+                 .equ	RTC_B		= 0x430B	; Reg. B : b7 = set UIP transfer
+                 					;	   b6 = PIE(periodic interrupt enable)
+                 					;	   b5 = AIE(alarm interrupt enable)
+                 					;	   b4 = UIE(update ended interrupt enable)
+                 					;	   b3 = square wave enable(SQW)
+                 					;	   b2 = data mode(0=BCD, 1=binary)
+                 					;	   b1 = 12/24 bit control(0=12, 1=24)
+                 					;	   b0 = daylight saving enable
+                 .equ	RTC_C		= 0x430C	; Reg. C : b7 = interrupt request flag
+                 					;	   b6 = PF(periodic interrupt flag)
+                 					;	   b5 = AF(alarm interrupt flag)
+                 					;	   b4 = UF(update ended interrupt flag)
+                 					;	   b3-0 = not used
+                 .equ	RTC_D		= 0x430D	; Reg. D : b7 = VRT(valid RAM and time, read only)
+                 					;	   b6-0 = not used
+                 .equ	RTC_FLAG	= 0x430F	; battery backup and time OK("G") flag
+                 
+                 ;********************************************************************
+                 ;*	Common Subroutines for OK-2561 V1.0 Training Kit	    *
+                 ;********************************************************************
+                 ;====================================================================
+                 ;	Initialize ATmega2561 MCU and OK-2561 Kit
+                 ;====================================================================
+000080 ec01      INIT_MCU:LDI	AL,0b11000001		; 0x2200-0x7FFF = 1 wait
+000081 9300 0074 	STS	XMCRA,AL		; 0x8000-0xFFFF = 0 wait
+000083 e800      	LDI	AL,0b10000000		; enable bus keeper
+000084 9300 0075 	STS	XMCRB,AL		; use PC0-PC7 as high byte of address bus
+                 
+000086 ef0f      	LDI	AL,0xFF			; PORTB = output (D/A, LED1-4, matrix LED)
+000087 b904      	OUT	DDRB,AL
+000088 e000      	LDI	AL,0x00
+000089 b905      	OUT	PORTB,AL
+00008a ef0f      	LDI	AL,0xFF			; PORTD = output (matrix LED)
+00008b b90a      	OUT	DDRD,AL
+00008c e000      	LDI	AL,0x00
+00008d b90b      	OUT	PORTD,AL
+00008e e00c      	LDI	AL,0x0C			; PORTE = output for PE3, PE2
+00008f b90d      	OUT	DDRE,AL
+000090 e000      	LDI	AL,0x00
+000091 b90e      	OUT	PORTE,AL
+000092 e000      	LDI	AL,0x00			; PORTF = input (KEY1-4)
+000093 9300 0010 	STS	DDRF,AL
+000095 e000      	LDI	AL,0x00
+000096 9300 0011 	STS	PORTF,AL
+                 
+000098 e000      	LDI	AL,0b00000000		; clear LCD/GLCD control signal
+000099 9300 4100 	STS	LCD_CONTROL,AL
+                 
+00009b e000      	LDI	AL,0b00000000		; clear 7-segment LED
+00009c 9300 4200 	STS	DIG_SELECT,AL
+                 
+00009e 2700      	CLR	AL			; initialize system variables
+00009f 2ed0      	MOV	ZERO_FLAG,AL
+0000a0 2ec0      	MOV	KEY_FLAG,AL
+0000a1 9508      	RET
+                 
+                 ;====================================================================
+                 ;	Text LCD Display
+                 ;====================================================================
+                 ;------------------------------------------------
+                 ;	Initialize LCD Module
+                 ;------------------------------------------------
+0000a2 e388      INIT_LCD:LDI	LCD_BUFFER,0x38		; function set(8 bit, 2 line, 5x7 dot)
+0000a3 d00d      	RCALL	LCD_COMMAND
+0000a4 e08c      	LDI	LCD_BUFFER,0x0C		; display control(display ON, cursor OFF)
+0000a5 d00b      	RCALL	LCD_COMMAND
+0000a6 e086      	LDI	LCD_BUFFER,0x06		; entry mode set(increment, not shift)
+0000a7 d009      	RCALL	LCD_COMMAND
+0000a8 e081      	LDI	LCD_BUFFER,0x01		; clear display
+0000a9 d007      	RCALL	LCD_COMMAND
+0000aa 940e 01cb 	CALL	D2MS
+0000ac 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Set LCD Cursor Position
+                 ;------------------------------------------------
+0000ad e880      LCD_HOME1:LDI	LCD_BUFFER,0x80		; go home 1 (line 1, column 1)
+0000ae c002      	RJMP	LCD_COMMAND
+0000af ec80      LCD_HOME2:LDI	LCD_BUFFER,0xC0		; go home 2 (line 2, column 1)
+0000b0 c000      	RJMP	LCD_COMMAND
+                 
+                 ;------------------------------------------------
+                 ;	Write a Command to LCD(LCD_BUFFER)
+                 ;------------------------------------------------
+                 LCD_COMMAND:
+0000b1 930f      	PUSH	AL
+0000b2 e000      	LDI	AL,0b00000000		; E = 0, Rs = 0
+0000b3 9300 4100 	STS	LCD_CONTROL,AL
+0000b5 9380 4000 	STS	LCD_DATABUS,LCD_BUFFER	; output command
+0000b7 e001      	LDI	AL,0b00000001		; E = 1
+0000b8 9300 4100 	STS	LCD_CONTROL,AL
+0000ba 920f      	PUSH	R0			; delay 4 cycles(about 250 ns)
+0000bb 900f      	POP	R0
+0000bc e000      	LDI	AL,0b00000000		; E = 0
+0000bd 9300 4100 	STS	LCD_CONTROL,AL
+0000bf 940e 01bb 	CALL	D50US
+0000c1 910f      	POP	AL
+0000c2 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Display a Character on LCD(LCD_BUFFER)
+                 ;------------------------------------------------
+0000c3 930f      LCD_DATA:PUSH	AL
+0000c4 e002      	LDI	AL,0b00000010		; E = 0, Rs = 1
+0000c5 9300 4100 	STS	LCD_CONTROL,AL
+0000c7 9380 4000 	STS	LCD_DATABUS,LCD_BUFFER	; output data
+0000c9 e003      	LDI	AL,0b00000011		; E = 1
+0000ca 9300 4100 	STS	LCD_CONTROL,AL
+0000cc 920f      	PUSH	R0			; delay 4 cycles(about 250 ns)
+0000cd 900f      	POP	R0
+0000ce e002      	LDI	AL,0b00000010		; E = 0
+0000cf 9300 4100 	STS	LCD_CONTROL,AL
+0000d1 940e 01bb 	CALL	D50US
+0000d3 910f      	POP	AL
+0000d4 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Display String on LCD
+                 ;------------------------------------------------
+0000d5 bbee      LCD_STRING:OUT	GPIOR0,ZL		; store RAMPZ:ZH:ZL
+0000d6 bdfa      	OUT	GPIOR1,ZH
+0000d7 b7eb      	IN	ZL,RAMPZ
+0000d8 bdeb      	OUT	GPIOR2,ZL
+                 #if(defined(__ATmega2560__) || defined(__ATmega2561__))
+0000d9 90bf      	POP	RAMPZ_BUFFER		; get start address of string(3-byte PC)
+                 #else
+                 #endif
+0000da 91ff      	POP	ZH
+0000db 91ef      	POP	ZL
+0000dc 0fee      	LSL	ZL			; convert into byte address
+0000dd 1fff      	ROL	ZH
+0000de 1cbb      	ROL	RAMPZ_BUFFER
+0000df bebb      	OUT	RAMPZ,RAMPZ_BUFFER
+0000e0 9187      LCD_STR1:ELPM	LCD_BUFFER,Z+		; read a character. end string ?
+0000e1 3080      	CPI	LCD_BUFFER,0
+0000e2 f019      	BREQ	LCD_STR2		; if yes, return
+0000e3 940e 00c3 	CALL	LCD_DATA		; if no, display a character
+0000e5 cffa      	RJMP	LCD_STR1
+0000e6 fde0      LCD_STR2:SBRC	ZL,0			; if odd address, skip 1 address
+0000e7 9187      	ELPM	LCD_BUFFER,Z+
+0000e8 b6bb      	IN	RAMPZ_BUFFER,RAMPZ	; convert into word address
+0000e9 94b6      	LSR	RAMPZ_BUFFER
+0000ea 95f7      	ROR	ZH
+0000eb 95e7      	ROR	ZL
+0000ec 93ef      	PUSH	ZL			; store new return address
+0000ed 93ff      	PUSH	ZH
+                 #if(defined(__ATmega2560__) || defined(__ATmega2561__))
+0000ee 92bf      	PUSH	RAMPZ_BUFFER
+                 #endif
+0000ef b5eb      	IN	ZL,GPIOR2		; restore RAMPZ:ZH:ZL
+0000f0 bfeb      	OUT	RAMPZ,ZL
+0000f1 b5fa      	IN	ZH,GPIOR1
+0000f2 b3ee      	IN	ZL,GPIOR0
+0000f3 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Display 4 Digit HEX Data(AH:AL)
+                 ;------------------------------------------------
+0000f4 2f81      LCD_4HEX:MOV	LCD_BUFFER,AH		; high byte
+0000f5 d003      	RCALL	LCD_2HEX
+0000f6 2f80      	MOV	LCD_BUFFER,AL		; low byte
+0000f7 d001      	RCALL	LCD_2HEX
+0000f8 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Display 2 Digit HEX Data(LCD_BUFFER)
+                 ;------------------------------------------------
+0000f9 938f      LCD_2HEX:PUSH	LCD_BUFFER
+0000fa 9586      	LSR	LCD_BUFFER		; upper digit
+0000fb 9586      	LSR	LCD_BUFFER
+0000fc 9586      	LSR	LCD_BUFFER
+0000fd 9586      	LSR	LCD_BUFFER
+0000fe 308a      	CPI	LCD_BUFFER,0x0A
+0000ff f410      	BRSH	LCD_2HEX1
+000100 6380      	ORI	LCD_BUFFER,'0'
+000101 c005      	RJMP	LCD_2HEX2
+000102 508a      LCD_2HEX1:SUBI	LCD_BUFFER,0x0A
+000103 930f      	PUSH	AL
+000104 e401      	LDI	AL,'A'
+000105 0f80      	ADD	LCD_BUFFER,AL
+000106 910f      	POP	AL
+000107 940e 00c3 LCD_2HEX2:CALL	LCD_DATA
+000109 918f      	POP	LCD_BUFFER		; lower digit
+00010a 708f      	ANDI	LCD_BUFFER,0x0F
+00010b 308a      	CPI	LCD_BUFFER,0x0A
+00010c f410      	BRSH	LCD_2HEX3
+00010d 6380      	ORI	LCD_BUFFER,'0'
+00010e c005      	RJMP	LCD_2HEX4
+00010f 508a      LCD_2HEX3:SUBI	LCD_BUFFER,0x0A
+000110 930f      	PUSH	AL
+000111 e401      	LDI	AL,'A'
+000112 0f80      	ADD	LCD_BUFFER,AL
+000113 910f      	POP	AL
+000114 940e 00c3 LCD_2HEX4:CALL	LCD_DATA
+000116 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Display 5/4/3-Digit Decimal Number(AH:AL)
+                 ;	Display     2-Digit Decimal Number(AL)
+                 ;------------------------------------------------
+000117 937f      LCD_5DEC:PUSH	DH			; push registers
+000118 936f      	PUSH	DL
+000119 933f      	PUSH	BH
+00011a 932f      	PUSH	BL
+00011b 24dd      	CLR	ZERO_FLAG		; clear zero zone flag
+00011c 2733      	CLR	BH
+00011d 2722      	CLR	BL
+00011e e277      	LDI	DH,high(10000)		; display 10^4 digit
+00011f e160      	LDI	DL,low(10000)
+000120 d105      	RCALL	DIV16
+000121 2f80      	MOV	LCD_BUFFER,AL
+000122 6380      	ORI	LCD_BUFFER,'0'
+000123 3380      	CPI	LCD_BUFFER,'0'
+000124 f411      	BRNE	LCD_5DEC1
+000125 e280      	LDI	LCD_BUFFER,' '
+000126 c002      	RJMP	LCD_5DEC2
+000127 24dd      LCD_5DEC1:CLR	ZERO_FLAG
+000128 94d0      	COM	ZERO_FLAG
+000129 df99      LCD_5DEC2:RCALL	LCD_DATA
+00012a 0189      	MOVW	AH:AL,BH:BL
+00012b c005      	RJMP	LCD_4DEC1
+                 
+00012c 937f      LCD_4DEC:PUSH	DH			; push registers
+00012d 936f      	PUSH	DL
+00012e 933f      	PUSH	BH
+00012f 932f      	PUSH	BL
+000130 24dd      	CLR	ZERO_FLAG		; clear zero zone flag
+000131 2733      LCD_4DEC1:CLR	BH
+000132 2722      	CLR	BL
+000133 e073      	LDI	DH,high(1000)		; display 10^3 digit
+000134 ee68      	LDI	DL,low(1000)
+000135 d0f0      	RCALL	DIV16
+000136 2f80      	MOV	LCD_BUFFER,AL
+000137 6380      	ORI	LCD_BUFFER,'0'
+000138 2711      	CLR	AH
+000139 16d1      	CP	ZERO_FLAG,AH
+00013a f431      	BRNE	LCD_4DEC3
+00013b 3380      	CPI	LCD_BUFFER,'0'
+00013c f411      	BRNE	LCD_4DEC2
+00013d e280      	LDI	LCD_BUFFER,' '
+00013e c002      	RJMP	LCD_4DEC3
+00013f 24dd      LCD_4DEC2:CLR	ZERO_FLAG
+000140 94d0      	COM	ZERO_FLAG
+000141 df81      LCD_4DEC3:RCALL	LCD_DATA
+000142 0189      	MOVW	AH:AL,BH:BL
+000143 c005      	RJMP	LCD_3DEC1
+                 
+000144 937f      LCD_3DEC:PUSH	DH			; push registers
+000145 936f      	PUSH	DL
+000146 933f      	PUSH	BH
+000147 932f      	PUSH	BL
+000148 24dd      	CLR	ZERO_FLAG		; clear zero zone flag
+000149 e624      LCD_3DEC1:LDI	BL,100			; display 10^2 digit
+00014a d112      	RCALL	DIV8
+00014b 2f80      	MOV	LCD_BUFFER,AL
+00014c 6380      	ORI	LCD_BUFFER,'0'
+00014d 2733      	CLR	BH
+00014e 16d3      	CP	ZERO_FLAG,BH
+00014f f431      	BRNE	LCD_3DEC3
+000150 3380      	CPI	LCD_BUFFER,'0'
+000151 f411      	BRNE	LCD_3DEC2
+000152 e280      	LDI	LCD_BUFFER,' '
+000153 c002      	RJMP	LCD_3DEC3
+000154 24dd      LCD_3DEC2:CLR	ZERO_FLAG
+000155 94d0      	COM	ZERO_FLAG
+000156 df6c      LCD_3DEC3:RCALL	LCD_DATA
+000157 2f01      	MOV	AL,AH
+000158 c005      	RJMP	LCD_2DEC1
+                 
+000159 937f      LCD_2DEC:PUSH	DH			; push registers
+00015a 936f      	PUSH	DL
+00015b 933f      	PUSH	BH
+00015c 932f      	PUSH	BL
+00015d 24dd      	CLR	ZERO_FLAG		; clear zero zone flag
+00015e 2711      LCD_2DEC1:CLR	AH
+00015f e02a      	LDI	BL,10			; display 10^1 digit
+000160 d0fc      	RCALL	DIV8
+000161 2f80      	MOV	LCD_BUFFER,AL
+000162 6380      	ORI	LCD_BUFFER,'0'
+000163 2733      	CLR	BH
+000164 16d3      	CP	ZERO_FLAG,BH
+000165 f419      	BRNE	LCD_2DEC2
+000166 3380      	CPI	LCD_BUFFER,'0'
+000167 f409      	BRNE	LCD_2DEC2
+000168 e280      	LDI	LCD_BUFFER,' '
+000169 df59      LCD_2DEC2:RCALL	LCD_DATA
+00016a 2f81      	MOV	LCD_BUFFER,AH		; display 10^0 digit
+00016b 6380      	ORI	LCD_BUFFER,'0'
+00016c df56      	RCALL	LCD_DATA
+00016d 912f      	POP	BL
+00016e 913f      	POP	BH
+00016f 916f      	POP	DL
+000170 917f      	POP	DH
+000171 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Display 8-Bit Binary Data(LCD_BUFFER)
+                 ;------------------------------------------------
+000172 931f      LCD_8BIN:PUSH	AH
+000173 930f      	PUSH	AL
+000174 e018      	LDI	AH,8
+000175 2f08      	MOV	AL,LCD_BUFFER
+000176 2f80      LCD_8B1:MOV	LCD_BUFFER,AL
+000177 1f88      	ROL	LCD_BUFFER
+000178 2f08      	MOV	AL,LCD_BUFFER
+000179 1f88      	ROL	LCD_BUFFER
+00017a 7081      	ANDI	LCD_BUFFER,0b00000001
+00017b 6380      	ORI	LCD_BUFFER,'0'
+00017c 940e 00c3 	CALL	LCD_DATA
+00017e 951a      	DEC	AH
+00017f f7b1      	BRNE	LCD_8B1
+000180 910f      	POP	AL
+000181 911f      	POP	AH
+000182 9508      	RET
+                 
+                 ;====================================================================
+                 ;	Input Key Switch with Beep & Debounce(AL=key value)
+                 ;====================================================================
+000183 d019      KEY_IN:	RCALL	KEY_CHECK		; read 1st
+000184 2f10      	MOV	AH,AL
+000185 940e 01c8 	CALL	D1MS
+000187 940e 019d 	CALL	KEY_CHECK		; read 2nd
+000189 1310      	CPSE	AH,AL
+00018a cff8      	RJMP	KEY_IN
+00018b 3f00      	CPI	AL,0b11110000		; if no key, check key off
+00018c f439      	BRNE	KEY_IN2
+00018d 2711      	CLR	AH
+00018e 16c1      	CP	KEY_FLAG,AH
+00018f f019      	BREQ	KEY_IN1
+000190 940e 01d4 	CALL	D20MS
+000192 24cc      	CLR	KEY_FLAG
+000193 9508      KEY_IN1:RET
+000194 2711      KEY_IN2:CLR	AH			; if key input, check continuous key
+000195 16c1      	CP	KEY_FLAG,AH
+000196 f011      	BREQ	KEY_IN3
+000197 ef00      	LDI	AL,0b11110000		; if continuous, treat as no key input
+000198 9508      	RET
+000199 94c0      KEY_IN3:COM	KEY_FLAG		; if new key, beep & delay for debounce
+00019a 940e 01a4 	CALL	BEEP
+00019c 9508      	RET
+                 
+00019d b10f      KEY_CHECK:IN	AL,PINF			; read key input
+00019e 7f00      	ANDI	AL,0b11110000
+00019f 9508      	RET
+                 
+                 ;====================================================================
+                 ;	Buzzer Sound
+                 ;====================================================================
+                 ;------------------------------------------------
+                 ;	Buzzer ON or OFF
+                 ;------------------------------------------------
+                 BUZZER_ON:
+0001a0 9a72      	SBI	PORTE,2
+0001a1 9508      	RET
+                 
+                 BUZZER_OFF:
+0001a2 9872      	CBI	PORTE,2
+0001a3 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Sound Beep
+                 ;------------------------------------------------
+0001a4 dffb      BEEP:	RCALL	BUZZER_ON
+0001a5 d031      	RCALL	D50MS
+0001a6 dffb      	RCALL	BUZZER_OFF
+0001a7 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Sound Error
+                 ;------------------------------------------------
+0001a8 dffb      ERROR:	RCALL	BEEP			; beep 2 times
+0001a9 d030      	RCALL	D100MS
+0001aa dff9      	RCALL	BEEP
+0001ab 9508      	RET
+                 
+                 ;====================================================================
+                 ;	Time Delay (for 16MHz clock)
+                 ;====================================================================
+0001ac 939f      D1US:	PUSH	DELAY_COUNT
+0001ad e091      	LDI	DELAY_COUNT,1
+0001ae c03f      	RJMP	BASE1US
+                 
+0001af 939f      D2US:	PUSH	DELAY_COUNT
+0001b0 e092      	LDI	DELAY_COUNT,2
+0001b1 c03c      	RJMP	BASE1US
+                 
+0001b2 939f      D5US:	PUSH	DELAY_COUNT
+0001b3 e095      	LDI	DELAY_COUNT,5
+0001b4 c039      	RJMP	BASE1US
+                 
+0001b5 939f      D10US:	PUSH	DELAY_COUNT
+0001b6 e09a      	LDI	DELAY_COUNT,10
+0001b7 c036      	RJMP	BASE1US
+                 
+0001b8 939f      D20US:	PUSH	DELAY_COUNT
+0001b9 e194      	LDI	DELAY_COUNT,20
+0001ba c033      	RJMP	BASE1US
+                 
+0001bb 939f      D50US:	PUSH	DELAY_COUNT
+0001bc e392      	LDI	DELAY_COUNT,50
+0001bd c030      	RJMP	BASE1US
+                 
+0001be 939f      D100US: PUSH	DELAY_COUNT
+0001bf e694      	LDI	DELAY_COUNT,100
+0001c0 c02d      	RJMP	BASE1US
+                 
+0001c1 939f      D200US: PUSH	DELAY_COUNT
+0001c2 ec98      	LDI	DELAY_COUNT,200
+0001c3 c02a      	RJMP	BASE1US
+                 
+0001c4 dff9      D500US: RCALL	D100US
+0001c5 dffb      	RCALL	D200US
+0001c6 dffa      	RCALL	D200US
+0001c7 9508      	RET
+                 
+0001c8 939f      D1MS:	PUSH	DELAY_COUNT
+0001c9 e091      	LDI	DELAY_COUNT,1
+0001ca c02e      	RJMP	BASE1MS
+                 
+0001cb 939f      D2MS:	PUSH	DELAY_COUNT
+0001cc e092      	LDI	DELAY_COUNT,2
+0001cd c02b      	RJMP	BASE1MS
+                 
+0001ce 939f      D5MS:	PUSH	DELAY_COUNT
+0001cf e095      	LDI	DELAY_COUNT,5
+0001d0 c028      	RJMP	BASE1MS
+                 
+0001d1 939f      D10MS:	PUSH	DELAY_COUNT
+0001d2 e09a      	LDI	DELAY_COUNT,10
+0001d3 c025      	RJMP	BASE1MS
+                 
+0001d4 939f      D20MS:	PUSH	DELAY_COUNT
+0001d5 e194      	LDI	DELAY_COUNT,20
+0001d6 c022      	RJMP	BASE1MS
+                 
+0001d7 939f      D50MS:	PUSH	DELAY_COUNT
+0001d8 e392      	LDI	DELAY_COUNT,50
+0001d9 c01f      	RJMP	BASE1MS
+                 
+0001da 939f      D100MS: PUSH	DELAY_COUNT
+0001db e694      	LDI	DELAY_COUNT,100
+0001dc c01c      	RJMP	BASE1MS
+                 
+0001dd 939f      D200MS: PUSH	DELAY_COUNT
+0001de ec98      	LDI	DELAY_COUNT,200
+0001df c019      	RJMP	BASE1MS
+                 
+0001e0 dff9      D500MS: RCALL	D100MS
+0001e1 dffb      	RCALL	D200MS
+0001e2 dffa      	RCALL	D200MS
+0001e3 9508      	RET
+                 
+0001e4 dffb      D1SEC:	RCALL	D500MS
+0001e5 dffa      	RCALL	D500MS
+0001e6 9508      	RET
+                 
+0001e7 dffc      D2SEC:	RCALL	D1SEC
+0001e8 dffb      	RCALL	D1SEC
+0001e9 9508      	RET
+                 
+0001ea dff9      D5SEC:	RCALL	D1SEC
+0001eb dffb      	RCALL	D2SEC
+0001ec dffa      	RCALL	D2SEC
+0001ed 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Basic 1 us Delay
+                 ;------------------------------------------------
+0001ee 0000      BASE1US:NOP				; 1
+0001ef 939f      	PUSH	DELAY_COUNT		; 2
+0001f0 919f      	POP	DELAY_COUNT		; 2
+0001f1 939f      	PUSH	DELAY_COUNT		; 2
+0001f2 919f      	POP	DELAY_COUNT		; 2
+0001f3 939f      	PUSH	DELAY_COUNT		; 2
+0001f4 919f      	POP	DELAY_COUNT		; 2
+0001f5 959a      	DEC	DELAY_COUNT		; 1
+0001f6 f7b9      	BRNE	BASE1US			; 2 (total 16 cycles = 1 us)
+0001f7 919f      	POP	DELAY_COUNT
+0001f8 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	Basic 1 ms Delay
+                 ;------------------------------------------------
+0001f9 dfc7      BASE1MS:RCALL	D200US			; 200 us
+0001fa dfc6      	RCALL	D200US			; 200 us
+0001fb dfc5      	RCALL	D200US			; 200 us
+0001fc dfc4      	RCALL	D200US			; 200 us
+0001fd dfc3      	RCALL	D200US			; 200 us
+0001fe 959a      	DEC	DELAY_COUNT
+0001ff f7c9      	BRNE	BASE1MS			; (total = 1 ms)
+000200 919f      	POP	DELAY_COUNT
+000201 9508      	RET
+                 
+                 ;====================================================================
+                 ;	16-Bit Arithmetic
+                 ;====================================================================
+                 ;------------------------------------------------
+                 ;	16-Bit Addition (AH:AL = AH:AL + BH:BL)
+                 ;------------------------------------------------
+000202 0f02      ADD16:	ADD	AL,BL			; add low bytes
+000203 1f13      	ADC	AH,BH			; add high bytes
+000204 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	16-Bit Subtraction (AH:AL = AH:AL - BH:BL)
+                 ;------------------------------------------------
+000205 1b02      SUB16:	SUB	AL,BL			; subtract low bytes
+000206 0b13      	SBC	AH,BH			; subtract high bytes
+000207 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	16-Bit * 16-Bit = 32-Bit Unsigned Multiplication
+                 ;	(BH:BL:AH:AL = AH:AL * BH:BL)
+                 ;------------------------------------------------
+000208 920f      MUL16:	PUSH	R0
+000209 921f      	PUSH	R1
+00020a 922f      	PUSH	R2
+00020b 934f      	PUSH	CL
+00020c 935f      	PUSH	CH
+00020d 936f      	PUSH	DL
+00020e 937f      	PUSH	DH
+00020f 2422      	CLR	R2
+000210 9f13      	MUL	AH,BH			; AH * BH
+000211 01b0      	MOVW	DH:DL,R1:R0
+000212 9f02      	MUL	AL,BL			; AL * BL
+000213 01a0      	MOVW	CH:CL,R1:R0
+000214 9f12      	MUL	AH,BL			; AH * BL
+000215 0d50      	ADD	CH,R0
+000216 1d61      	ADC	DL,R1
+000217 1d72      	ADC	DH,R2
+000218 9f30      	MUL	BH,AL			; BH * AL
+000219 0d50      	ADD	CH,R0
+00021a 1d61      	ADC	DL,R1
+00021b 1d72      	ADC	DH,R2
+00021c 018a      	MOVW	AH:AL,CH:CL		; BH:BL:AH:AL <-- DH:DL:CH:CL
+00021d 019b      	MOVW	BH:BL,DH:DL
+00021e 917f      	POP	DH
+00021f 916f      	POP	DL
+000220 915f      	POP	CH
+000221 914f      	POP	CL
+000222 902f      	POP	R2
+000223 901f      	POP	R1
+000224 900f      	POP	R0
+000225 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	32-Bit / 16-Bit = 16-Bit Unsigned Division
+                 ;	(BH:BL:AH:AL / DH:DL --> Q = AH:AL, R = BH:BL)
+                 ;------------------------------------------------
+000226 920f      DIV16:	PUSH	R0			; quotient
+000227 921f      	PUSH	R1
+000228 922f      	PUSH	R2			; remainder
+000229 923f      	PUSH	R3
+00022a 924f      	PUSH	R4
+00022b 925f      	PUSH	R5
+00022c 934f      	PUSH	CL			; bit counter
+00022d 935f      	PUSH	CH			; zero value register
+                 
+00022e 2422      	CLR	R2			; clear remainder
+00022f 2433      	CLR	R3
+000230 2444      	CLR	R4
+000231 2455      	CLR	R5
+000232 2755      	CLR	CH			; clear zero value register
+                 
+000233 e240      	LDI	CL,32			; loop counter
+000234 0f00      DIV16A:	LSL	AL			; shift dividend by 1 bit to left
+000235 1f11      	ROL	AH
+000236 1f22      	ROL	BL
+000237 1f33      	ROL	BH
+000238 1c22      	ROL	R2
+000239 1c33      	ROL	R3
+00023a 1c44      	ROL	R4
+00023b 1c55      	ROL	R5
+00023c 1655      	CP	R5,CH			; remainder >= divisor ?
+00023d f439      	BRNE	DIV16B
+00023e 1645      	CP	R4,CH
+00023f f429      	BRNE	DIV16B
+000240 1637      	CP	R3,DH
+000241 f048      	BRLO	DIV16C
+000242 f411      	BRNE	DIV16B
+000243 1626      	CP	R2,DL
+000244 f030      	BRLO	DIV16C
+000245 1a26      DIV16B:	SUB	R2,DL			; if yes, remainder - divisor
+000246 0a37      	SBC	R3,DH
+000247 0a45      	SBC	R4,CH
+000248 0a55      	SBC	R5,CH
+000249 9408      	SEC				;   and shift 1 into quotient
+00024a c001      	RJMP	DIV16D
+00024b 9488      DIV16C:	CLC				; if no, shift 0 into quotient
+00024c 1c00      DIV16D:	ROL	R0			; shift quotient by 1 bit to left
+00024d 1c11      	ROL	R1
+00024e 954a      	DEC	CL
+00024f f721      	BRNE	DIV16A
+                 
+000250 2d33      	MOV	BH,R3			; make remainder
+000251 2d22      	MOV	BL,R2
+000252 2d11      	MOV	AH,R1			; make quotient
+000253 2d00      	MOV	AL,R0
+                 
+000254 915f      	POP	CH
+000255 914f      	POP	CL
+000256 905f      	POP	R5
+000257 904f      	POP	R4
+000258 903f      	POP	R3
+000259 902f      	POP	R2
+00025a 901f      	POP	R1
+00025b 900f      	POP	R0
+00025c 9508      	RET
+                 
+                 ;------------------------------------------------
+                 ;	16-Bit / 8-Bit = 8-Bit Unsigned Division
+                 ;	(AH:AL / BL --> Q = AL, R = AH)
+                 ;------------------------------------------------
+00025d 920f      DIV8:	PUSH	R0			; quotient
+00025e 921f      	PUSH	R1			; remainder
+00025f 922f      	PUSH	R2
+000260 934f      	PUSH	CL			; bit counter
+000261 935f      	PUSH	CH			; zero value register
+                 
+000262 2411      	CLR	R1			; clear remainder
+000263 2422      	CLR	R2
+000264 2755      	CLR	CH			; clear zero value register
+                 
+000265 e140      	LDI	CL,16			; loop counter
+000266 0f00      DIV8A:	LSL	AL			; shift dividend by 1 bit to left
+000267 1f11      	ROL	AH
+000268 1c11      	ROL	R1
+000269 1c22      	ROL	R2
+00026a 1625      	CP	R2,CH			; remainder >= divisor ?
+00026b f411      	BRNE	DIV8B
+00026c 1612      	CP	R1,BL
+00026d f020      	BRLO	DIV8C
+00026e 1a12      DIV8B:	SUB	R1,BL			; if yes, remainder - divisor
+00026f 0a25      	SBC	R2,CH			;   and shift 1 into quotient
+000270 9408      	SEC
+000271 c001      	RJMP	DIV8D
+000272 9488      DIV8C:	CLC				; if no, shift 0 into quotient
+000273 1c00      DIV8D:	ROL	R0			; shift quotient by 1 bit to left
+000274 954a      	DEC	CL
+000275 f781      	BRNE	DIV8A
+                 
+000276 2d11      	MOV	AH,R1			; make remainder
+000277 2d00      	MOV	AL,R0			; make quotient
+                 
+000278 915f      	POP	CH
+000279 914f      	POP	CL
+00027a 902f      	POP	R2
+00027b 901f      	POP	R1
+00027c 900f      	POP	R0
+00027d 9508      	RET
+
+
+RESOURCE USE INFORMATION
+------------------------
+
+Notice:
+The register and instruction counts are symbol table hit counts,
+and hence implicitly used resources are not counted, eg, the
+'lpm' instruction without operands implicitly uses r0 and z,
+none of which are counted.
+
+x,y,z are separate entities in the symbol table and are
+counted separately from r26..r31 here.
+
+.dseg memory usage only counts static data declared with .byte
+
+ATmega2561 register use summary:
+r0 :  18 r1 :  17 r2 :  18 r3 :   7 r4 :   6 r5 :   6 r6 :   0 r7 :   0 
+r8 :   0 r9 :   0 r10:   0 r11:   6 r12:   5 r13:  14 r14:   0 r15:   0 
+r16:  90 r17:  30 r18:  25 r19:  26 r20:  12 r21:  18 r22:  23 r23:  15 
+r24:  62 r25:  42 r26:   0 r27:   0 r28:   0 r29:   0 r30:  11 r31:   6 
+x  :   0 y  :   0 z  :   2 
+Registers used: 22 out of 35 (62.9%)
+
+ATmega2561 instruction use summary:
+adc   :   6 add   :   6 adiw  :   0 and   :   0 andi  :   3 asr   :   0 
+bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 brcc  :   0 brcs  :   0 
+break :   0 breq  :   5 brge  :   0 brhc  :   0 brhs  :   0 brid  :   0 
+brie  :   0 brlo  :   3 brlt  :   0 brmi  :   0 brne  :  18 brpl  :   0 
+brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 brvs  :   0 bset  :   0 
+bst   :   0 call  :  40 cbi   :   1 cbr   :   0 clc   :   2 clh   :   0 
+cli   :   0 cln   :   0 clr   :  29 cls   :   0 clt   :   0 clv   :   0 
+clz   :   0 com   :   4 cp    :  11 cpc   :   0 cpi   :  11 cpse  :   1 
+dec   :   5 eicall:   0 eijmp :   0 elpm  :   2 eor   :   0 fmul  :   0 
+fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   7 inc   :   0 
+jmp   :   1 ld    :   0 ldd   :   0 ldi   :  71 lds   :   1 lpm   :   0 
+lsl   :   3 lsr   :   5 mov   :  24 movw  :   6 mul   :   4 muls  :   0 
+mulsu :   0 neg   :   0 nop   :   1 or    :   0 ori   :   8 out   :  19 
+pop   :  41 push  :  67 rcall :  40 ret   :  31 reti  :   0 rjmp  :  33 
+rol   :  17 ror   :   2 sbc   :   5 sbci  :   0 sbi   :   4 sbic  :   2 
+sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   2 sbrs  :   0 sec   :   2 
+seh   :   0 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 
+sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 
+sts   :  14 sub   :   3 subi  :   2 swap  :   0 tst   :   0 wdr   :   0 
+
+Instructions used: 44 out of 114 (38.6%)
+
+ATmega2561 memory use summary [bytes]:
+Segment   Begin    End      Code   Data   Used    Size   Use%
+---------------------------------------------------------------
+[.cseg] 0x000000 0x0004fc   1240     36   1276  262144   0.5%
+[.dseg] 0x000200 0x000200      0      0      0    8192   0.0%
+[.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
+
+Assembly complete, 0 errors, 0 warnings
