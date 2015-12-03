@@ -1,0 +1,482 @@
+   1               		.file	"TESTUART.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  19               	Putchar:
+  20               	.LFB3:
+  21               	.LM1:
+  22               	.LVL0:
+  23               	/* prologue: function */
+  24               	/* frame size = 0 */
+  25 0000 982F      		mov r25,r24
+  26               	.LVL1:
+  27               	.L2:
+  28               	.LBB12:
+  29               	.LBB13:
+  30               	.LM2:
+  31 0002 5D9B      		sbis 43-32,5
+  32 0004 00C0      		rjmp .L2
+  33               	.LM3:
+  34 0006 9CB9      		out 44-32,r25
+  35               	.L3:
+  36               	.LBE13:
+  37               	.LBE12:
+  38               	.LBB14:
+  39               	.LBB15:
+  40               	.LM4:
+  41 0008 8091 9B00 		lds r24,155
+  42 000c 85FF      		sbrs r24,5
+  43 000e 00C0      		rjmp .L3
+  44               	.LM5:
+  45 0010 9093 9C00 		sts 156,r25
+  46               	.LBE15:
+  47               	.LBE14:
+  48               	.LM6:
+  49 0014 80E0      		ldi r24,lo8(0)
+  50 0016 90E0      		ldi r25,hi8(0)
+  51               	/* epilogue start */
+  52 0018 0895      		ret
+  53               	.LFE3:
+  55               	.global	tx0Char
+  57               	tx0Char:
+  58               	.LFB4:
+  59               	.LM7:
+  60               	/* prologue: function */
+  61               	/* frame size = 0 */
+  62               	.LVL2:
+  63               	.L8:
+  64               	.LM8:
+  65 001a 5D9B      		sbis 43-32,5
+  66 001c 00C0      		rjmp .L8
+  67               	.LM9:
+  68 001e 8CB9      		out 44-32,r24
+  69               	/* epilogue start */
+  70               	.LM10:
+  71 0020 0895      		ret
+  72               	.LFE4:
+  74               	.global	tx1Char
+  76               	tx1Char:
+  77               	.LFB5:
+  78               	.LM11:
+  79               	.LVL3:
+  80               	/* prologue: function */
+  81               	/* frame size = 0 */
+  82 0022 982F      		mov r25,r24
+  83               	.LVL4:
+  84               	.L12:
+  85               	.LM12:
+  86 0024 8091 9B00 		lds r24,155
+  87 0028 85FF      		sbrs r24,5
+  88 002a 00C0      		rjmp .L12
+  89               	.LM13:
+  90 002c 9093 9C00 		sts 156,r25
+  91               	/* epilogue start */
+  92               	.LM14:
+  93 0030 0895      		ret
+  94               	.LFE5:
+  96               	.global	port_init
+  98               	port_init:
+  99               	.LFB6:
+ 100               	.LM15:
+ 101               	/* prologue: function */
+ 102               	/* frame size = 0 */
+ 103               	.LM16:
+ 104 0032 1BBA      		out 59-32,__zero_reg__
+ 105               	.LM17:
+ 106 0034 83E8      		ldi r24,lo8(-125)
+ 107 0036 8ABB      		out 58-32,r24
+ 108               	.LM18:
+ 109 0038 18BA      		out 56-32,__zero_reg__
+ 110               	.LM19:
+ 111 003a 17BA      		out 55-32,__zero_reg__
+ 112               	.LM20:
+ 113 003c 15BA      		out 53-32,__zero_reg__
+ 114               	.LM21:
+ 115 003e 14BA      		out 52-32,__zero_reg__
+ 116               	.LM22:
+ 117 0040 12BA      		out 50-32,__zero_reg__
+ 118               	.LM23:
+ 119 0042 11BA      		out 49-32,__zero_reg__
+ 120               	.LM24:
+ 121 0044 82E0      		ldi r24,lo8(2)
+ 122 0046 83B9      		out 35-32,r24
+ 123               	.LM25:
+ 124 0048 12B8      		out 34-32,__zero_reg__
+ 125               	.LM26:
+ 126 004a 1092 6200 		sts 98,__zero_reg__
+ 127               	.LM27:
+ 128 004e 8FEF      		ldi r24,lo8(-1)
+ 129 0050 8093 6100 		sts 97,r24
+ 130               	.LM28:
+ 131 0054 1092 6500 		sts 101,__zero_reg__
+ 132               	.LM29:
+ 133 0058 83E0      		ldi r24,lo8(3)
+ 134 005a 8093 6400 		sts 100,r24
+ 135               	/* epilogue start */
+ 136               	.LM30:
+ 137 005e 0895      		ret
+ 138               	.LFE6:
+ 140               	.global	uart0_init
+ 142               	uart0_init:
+ 143               	.LFB7:
+ 144               	.LM31:
+ 145               	/* prologue: function */
+ 146               	/* frame size = 0 */
+ 147               	.LM32:
+ 148 0060 1AB8      		out 42-32,__zero_reg__
+ 149               	.LM33:
+ 150 0062 1BB8      		out 43-32,__zero_reg__
+ 151               	.LM34:
+ 152 0064 86E0      		ldi r24,lo8(6)
+ 153 0066 8093 9500 		sts 149,r24
+ 154               	.LM35:
+ 155 006a 87E6      		ldi r24,lo8(103)
+ 156 006c 89B9      		out 41-32,r24
+ 157               	.LM36:
+ 158 006e 1092 9000 		sts 144,__zero_reg__
+ 159               	.LM37:
+ 160 0072 88E1      		ldi r24,lo8(24)
+ 161 0074 8AB9      		out 42-32,r24
+ 162               	/* epilogue start */
+ 163               	.LM38:
+ 164 0076 0895      		ret
+ 165               	.LFE7:
+ 167               	.global	uart1_init
+ 169               	uart1_init:
+ 170               	.LFB8:
+ 171               	.LM39:
+ 172               	/* prologue: function */
+ 173               	/* frame size = 0 */
+ 174               	.LM40:
+ 175 0078 EAE9      		ldi r30,lo8(154)
+ 176 007a F0E0      		ldi r31,hi8(154)
+ 177 007c 1082      		st Z,__zero_reg__
+ 178               	.LM41:
+ 179 007e 1092 9B00 		sts 155,__zero_reg__
+ 180               	.LM42:
+ 181 0082 86E0      		ldi r24,lo8(6)
+ 182 0084 8093 9D00 		sts 157,r24
+ 183               	.LM43:
+ 184 0088 87E6      		ldi r24,lo8(103)
+ 185 008a 8093 9900 		sts 153,r24
+ 186               	.LM44:
+ 187 008e 1092 9800 		sts 152,__zero_reg__
+ 188               	.LM45:
+ 189 0092 88E1      		ldi r24,lo8(24)
+ 190 0094 8083      		st Z,r24
+ 191               	/* epilogue start */
+ 192               	.LM46:
+ 193 0096 0895      		ret
+ 194               	.LFE8:
+ 196               	.global	delay
+ 198               	delay:
+ 199               	.LFB10:
+ 200               	.LM47:
+ 201               	.LVL5:
+ 202 0098 DF93      		push r29
+ 203 009a CF93      		push r28
+ 204 009c 00D0      		rcall .
+ 205 009e 00D0      		rcall .
+ 206 00a0 CDB7      		in r28,__SP_L__
+ 207 00a2 DEB7      		in r29,__SP_H__
+ 208               	/* prologue: function */
+ 209               	/* frame size = 4 */
+ 210 00a4 9C01      		movw r18,r24
+ 211               	.LM48:
+ 212 00a6 81E0      		ldi r24,lo8(1)
+ 213 00a8 90E0      		ldi r25,hi8(1)
+ 214               	.LVL6:
+ 215 00aa 9A83      		std Y+2,r25
+ 216 00ac 8983      		std Y+1,r24
+ 217               	.LVL7:
+ 218               	.LM49:
+ 219 00ae 41E0      		ldi r20,lo8(1)
+ 220 00b0 50E0      		ldi r21,hi8(1)
+ 221 00b2 00C0      		rjmp .L22
+ 222               	.LVL8:
+ 223               	.L25:
+ 224 00b4 5C83      		std Y+4,r21
+ 225 00b6 4B83      		std Y+3,r20
+ 226               	.LVL9:
+ 227 00b8 00C0      		rjmp .L23
+ 228               	.L24:
+ 229 00ba 8B81      		ldd r24,Y+3
+ 230 00bc 9C81      		ldd r25,Y+4
+ 231 00be 0196      		adiw r24,1
+ 232 00c0 9C83      		std Y+4,r25
+ 233 00c2 8B83      		std Y+3,r24
+ 234               	.LVL10:
+ 235               	.L23:
+ 236 00c4 8B81      		ldd r24,Y+3
+ 237 00c6 9C81      		ldd r25,Y+4
+ 238 00c8 8855      		subi r24,lo8(600)
+ 239 00ca 9240      		sbci r25,hi8(600)
+ 240 00cc 04F0      		brlt .L24
+ 241               	.LM50:
+ 242 00ce 8981      		ldd r24,Y+1
+ 243 00d0 9A81      		ldd r25,Y+2
+ 244 00d2 0196      		adiw r24,1
+ 245 00d4 9A83      		std Y+2,r25
+ 246 00d6 8983      		std Y+1,r24
+ 247               	.LVL11:
+ 248               	.L22:
+ 249 00d8 8981      		ldd r24,Y+1
+ 250 00da 9A81      		ldd r25,Y+2
+ 251 00dc 8217      		cp r24,r18
+ 252 00de 9307      		cpc r25,r19
+ 253 00e0 04F0      		brlt .L25
+ 254               	/* epilogue start */
+ 255               	.LM51:
+ 256 00e2 0F90      		pop __tmp_reg__
+ 257 00e4 0F90      		pop __tmp_reg__
+ 258 00e6 0F90      		pop __tmp_reg__
+ 259 00e8 0F90      		pop __tmp_reg__
+ 260 00ea CF91      		pop r28
+ 261 00ec DF91      		pop r29
+ 262 00ee 0895      		ret
+ 263               	.LFE10:
+ 265               	.global	init_devices
+ 267               	init_devices:
+ 268               	.LFB9:
+ 269               	.LM52:
+ 270               	/* prologue: function */
+ 271               	/* frame size = 0 */
+ 272               	.LM53:
+ 273               	/* #APP */
+ 274               	 ;  118 "TESTUART.c" 1
+ 275 00f0 F894      		cli
+ 276               	 ;  0 "" 2
+ 277               	.LM54:
+ 278               	/* #NOAPP */
+ 279 00f2 1CBE      		out 92-32,__zero_reg__
+ 280               	.LM55:
+ 281 00f4 1092 6D00 		sts 109,__zero_reg__
+ 282               	.LM56:
+ 283 00f8 0E94 0000 		call port_init
+ 284               	.LBB16:
+ 285               	.LBB17:
+ 286               	.LM57:
+ 287 00fc 1AB8      		out 42-32,__zero_reg__
+ 288               	.LM58:
+ 289 00fe 1BB8      		out 43-32,__zero_reg__
+ 290               	.LM59:
+ 291 0100 26E0      		ldi r18,lo8(6)
+ 292 0102 2093 9500 		sts 149,r18
+ 293               	.LM60:
+ 294 0106 97E6      		ldi r25,lo8(103)
+ 295 0108 99B9      		out 41-32,r25
+ 296               	.LM61:
+ 297 010a 1092 9000 		sts 144,__zero_reg__
+ 298               	.LM62:
+ 299 010e 88E1      		ldi r24,lo8(24)
+ 300 0110 8AB9      		out 42-32,r24
+ 301               	.LBE17:
+ 302               	.LBE16:
+ 303               	.LBB18:
+ 304               	.LBB19:
+ 305               	.LM63:
+ 306 0112 EAE9      		ldi r30,lo8(154)
+ 307 0114 F0E0      		ldi r31,hi8(154)
+ 308 0116 1082      		st Z,__zero_reg__
+ 309               	.LM64:
+ 310 0118 1092 9B00 		sts 155,__zero_reg__
+ 311               	.LM65:
+ 312 011c 2093 9D00 		sts 157,r18
+ 313               	.LM66:
+ 314 0120 9093 9900 		sts 153,r25
+ 315               	.LM67:
+ 316 0124 1092 9800 		sts 152,__zero_reg__
+ 317               	.LM68:
+ 318 0128 8083      		st Z,r24
+ 319               	.LBE19:
+ 320               	.LBE18:
+ 321               	.LM69:
+ 322 012a 60E0      		ldi r22,lo8(0)
+ 323 012c 70E0      		ldi r23,hi8(0)
+ 324 012e 80E0      		ldi r24,lo8(gs(Putchar))
+ 325 0130 90E0      		ldi r25,hi8(gs(Putchar))
+ 326 0132 0E94 0000 		call fdevopen
+ 327               	.LM70:
+ 328 0136 15BE      		out 85-32,__zero_reg__
+ 329               	.LM71:
+ 330 0138 1092 6A00 		sts 106,__zero_reg__
+ 331               	.LM72:
+ 332 013c 1ABE      		out 90-32,__zero_reg__
+ 333               	.LM73:
+ 334 013e 19BE      		out 89-32,__zero_reg__
+ 335               	.LM74:
+ 336 0140 17BE      		out 87-32,__zero_reg__
+ 337               	.LM75:
+ 338 0142 1092 7D00 		sts 125,__zero_reg__
+ 339               	.LM76:
+ 340               	/* #APP */
+ 341               	 ;  132 "TESTUART.c" 1
+ 342 0146 7894      		sei
+ 343               	 ;  0 "" 2
+ 344               	/* epilogue start */
+ 345               	.LM77:
+ 346               	/* #NOAPP */
+ 347 0148 0895      		ret
+ 348               	.LFE9:
+ 350               		.data
+ 351               	.LC0:
+ 352 0000 0A0D 0A74 		.string	"\n\r\ntesting...\n\r"
+ 352      6573 7469 
+ 352      6E67 2E2E 
+ 352      2E0A 0D00 
+ 353               	.LC1:
+ 354 0010 7072 696E 		.string	"printf \305\327\275\272\306\256 \307\301\267\316\261\327\267\245...\n\r"
+ 354      7466 20C5 
+ 354      D7BD BAC6 
+ 354      AE20 C7C1 
+ 354      B7CE B1D7 
+ 355               	.LC2:
+ 356 002c C5D7 BDBA 		.string	"\305\327\275\272\306\256 i : %d\n\r"
+ 356      C6AE 2069 
+ 356      203A 2025 
+ 356      640A 0D00 
+ 357               		.text
+ 358               	.global	main
+ 360               	main:
+ 361               	.LFB11:
+ 362               	.LM78:
+ 363 014a CF92      		push r12
+ 364 014c DF92      		push r13
+ 365 014e EF92      		push r14
+ 366 0150 FF92      		push r15
+ 367 0152 0F93      		push r16
+ 368 0154 1F93      		push r17
+ 369 0156 DF93      		push r29
+ 370 0158 CF93      		push r28
+ 371 015a 00D0      		rcall .
+ 372 015c 00D0      		rcall .
+ 373 015e CDB7      		in r28,__SP_L__
+ 374 0160 DEB7      		in r29,__SP_H__
+ 375               	/* prologue: function */
+ 376               	/* frame size = 4 */
+ 377               	.LM79:
+ 378 0162 0E94 0000 		call init_devices
+ 379               	.LM80:
+ 380 0166 80E0      		ldi r24,lo8(.LC0)
+ 381 0168 90E0      		ldi r25,hi8(.LC0)
+ 382 016a 9F93      		push r25
+ 383 016c 8F93      		push r24
+ 384 016e 0E94 0000 		call printf
+ 385               	.LM81:
+ 386 0172 80E0      		ldi r24,lo8(.LC1)
+ 387 0174 90E0      		ldi r25,hi8(.LC1)
+ 388 0176 9F93      		push r25
+ 389 0178 8F93      		push r24
+ 390 017a 0E94 0000 		call printf
+ 391 017e 00E0      		ldi r16,lo8(0)
+ 392 0180 10E0      		ldi r17,hi8(0)
+ 393               	.LVL12:
+ 394 0182 0F90      		pop __tmp_reg__
+ 395 0184 0F90      		pop __tmp_reg__
+ 396 0186 0F90      		pop __tmp_reg__
+ 397 0188 0F90      		pop __tmp_reg__
+ 398               	.LM82:
+ 399 018a 90E0      		ldi r25,lo8(.LC2)
+ 400 018c C92E      		mov r12,r25
+ 401 018e 90E0      		ldi r25,hi8(.LC2)
+ 402 0190 D92E      		mov r13,r25
+ 403               	.LBB20:
+ 404               	.LBB21:
+ 405               	.LM83:
+ 406 0192 81E0      		ldi r24,lo8(1)
+ 407 0194 E82E      		mov r14,r24
+ 408 0196 F12C      		mov r15,__zero_reg__
+ 409               	.LVL13:
+ 410               	.L34:
+ 411               	.LBE21:
+ 412               	.LBE20:
+ 413               	.LM84:
+ 414 0198 1F93      		push r17
+ 415 019a 0F93      		push r16
+ 416 019c DF92      		push r13
+ 417 019e CF92      		push r12
+ 418 01a0 0E94 0000 		call printf
+ 419               	.LM85:
+ 420 01a4 0F5F      		subi r16,lo8(-(1))
+ 421 01a6 1F4F      		sbci r17,hi8(-(1))
+ 422               	.LM86:
+ 423 01a8 0BBB      		out 59-32,r16
+ 424               	.LM87:
+ 425 01aa 0093 6500 		sts 101,r16
+ 426               	.LBB23:
+ 427               	.LBB22:
+ 428               	.LM88:
+ 429 01ae FA82      		std Y+2,r15
+ 430 01b0 E982      		std Y+1,r14
+ 431               	.LVL14:
+ 432 01b2 0F90      		pop __tmp_reg__
+ 433 01b4 0F90      		pop __tmp_reg__
+ 434 01b6 0F90      		pop __tmp_reg__
+ 435 01b8 0F90      		pop __tmp_reg__
+ 436 01ba 00C0      		rjmp .L30
+ 437               	.L36:
+ 438               	.LM89:
+ 439 01bc FC82      		std Y+4,r15
+ 440 01be EB82      		std Y+3,r14
+ 441               	.LVL15:
+ 442 01c0 00C0      		rjmp .L31
+ 443               	.L32:
+ 444 01c2 8B81      		ldd r24,Y+3
+ 445 01c4 9C81      		ldd r25,Y+4
+ 446 01c6 0196      		adiw r24,1
+ 447 01c8 9C83      		std Y+4,r25
+ 448 01ca 8B83      		std Y+3,r24
+ 449               	.LVL16:
+ 450               	.L31:
+ 451 01cc 8B81      		ldd r24,Y+3
+ 452 01ce 9C81      		ldd r25,Y+4
+ 453 01d0 8855      		subi r24,lo8(600)
+ 454 01d2 9240      		sbci r25,hi8(600)
+ 455 01d4 04F0      		brlt .L32
+ 456               	.LM90:
+ 457 01d6 8981      		ldd r24,Y+1
+ 458 01d8 9A81      		ldd r25,Y+2
+ 459 01da 0196      		adiw r24,1
+ 460 01dc 9A83      		std Y+2,r25
+ 461 01de 8983      		std Y+1,r24
+ 462               	.LVL17:
+ 463               	.L30:
+ 464 01e0 8981      		ldd r24,Y+1
+ 465 01e2 9A81      		ldd r25,Y+2
+ 466 01e4 8436      		cpi r24,100
+ 467 01e6 9105      		cpc r25,__zero_reg__
+ 468 01e8 04F4      		brge .L34
+ 469 01ea 00C0      		rjmp .L36
+ 470               	.LBE22:
+ 471               	.LBE23:
+ 472               	.LFE11:
+ 562               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 TESTUART.c
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:19     .text:00000000 Putchar
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:57     .text:0000001a tx0Char
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:76     .text:00000022 tx1Char
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:98     .text:00000032 port_init
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:142    .text:00000060 uart0_init
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:169    .text:00000078 uart1_init
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:198    .text:00000098 delay
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:267    .text:000000f0 init_devices
+C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccCPd7TT.s:360    .text:0000014a main
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+fdevopen
+printf

@@ -1,0 +1,415 @@
+
+test.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000296  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .debug_aranges 00000020  00000000  00000000  000002ea  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  2 .debug_pubnames 00000044  00000000  00000000  0000030a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  3 .debug_info   000000f1  00000000  00000000  0000034e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_abbrev 0000008b  00000000  00000000  0000043f  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_line   000001bd  00000000  00000000  000004ca  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_frame  00000050  00000000  00000000  00000688  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_str    000000fa  00000000  00000000  000006d8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 46 00 	jmp	0x8c	; 0x8c <__ctors_end>
+   4:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+   8:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+   c:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  10:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  14:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  18:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  1c:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  20:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  24:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  28:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  2c:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  30:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  34:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  38:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  3c:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  40:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  44:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  48:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  4c:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  50:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  54:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  58:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  5c:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  60:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  64:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  68:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  6c:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  70:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  74:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  78:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  7c:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  80:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  84:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+  88:	0c 94 5d 00 	jmp	0xba	; 0xba <__bad_interrupt>
+
+0000008c <__ctors_end>:
+  8c:	11 24       	eor	r1, r1
+  8e:	1f be       	out	0x3f, r1	; 63
+  90:	cf ef       	ldi	r28, 0xFF	; 255
+  92:	d0 e1       	ldi	r29, 0x10	; 16
+  94:	de bf       	out	0x3e, r29	; 62
+  96:	cd bf       	out	0x3d, r28	; 61
+
+00000098 <__do_copy_data>:
+  98:	11 e0       	ldi	r17, 0x01	; 1
+  9a:	a0 e0       	ldi	r26, 0x00	; 0
+  9c:	b1 e0       	ldi	r27, 0x01	; 1
+  9e:	e6 e9       	ldi	r30, 0x96	; 150
+  a0:	f2 e0       	ldi	r31, 0x02	; 2
+  a2:	00 e0       	ldi	r16, 0x00	; 0
+  a4:	0b bf       	out	0x3b, r16	; 59
+  a6:	02 c0       	rjmp	.+4      	; 0xac <__do_copy_data+0x14>
+  a8:	07 90       	elpm	r0, Z+
+  aa:	0d 92       	st	X+, r0
+  ac:	a0 30       	cpi	r26, 0x00	; 0
+  ae:	b1 07       	cpc	r27, r17
+  b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
+  b2:	0e 94 e9 00 	call	0x1d2	; 0x1d2 <main>
+  b6:	0c 94 49 01 	jmp	0x292	; 0x292 <_exit>
+
+000000ba <__bad_interrupt>:
+  ba:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000000be <port_init>:
+#include <avr/interrupt.h>
+#include <stdio.h>
+
+
+void port_init(void)
+{
+  be:	df 93       	push	r29
+  c0:	cf 93       	push	r28
+  c2:	cd b7       	in	r28, 0x3d	; 61
+  c4:	de b7       	in	r29, 0x3e	; 62
+ PORTA = 0x00;
+  c6:	eb e3       	ldi	r30, 0x3B	; 59
+  c8:	f0 e0       	ldi	r31, 0x00	; 0
+  ca:	10 82       	st	Z, r1
+ DDRA  = 0xFF;
+  cc:	ea e3       	ldi	r30, 0x3A	; 58
+  ce:	f0 e0       	ldi	r31, 0x00	; 0
+  d0:	8f ef       	ldi	r24, 0xFF	; 255
+  d2:	80 83       	st	Z, r24
+ PORTB = 0x00;
+  d4:	e8 e3       	ldi	r30, 0x38	; 56
+  d6:	f0 e0       	ldi	r31, 0x00	; 0
+  d8:	10 82       	st	Z, r1
+ DDRB  = 0xFF;
+  da:	e7 e3       	ldi	r30, 0x37	; 55
+  dc:	f0 e0       	ldi	r31, 0x00	; 0
+  de:	8f ef       	ldi	r24, 0xFF	; 255
+  e0:	80 83       	st	Z, r24
+ PORTC = 0x00; //m103 output only
+  e2:	e5 e3       	ldi	r30, 0x35	; 53
+  e4:	f0 e0       	ldi	r31, 0x00	; 0
+  e6:	10 82       	st	Z, r1
+ DDRC  = 0xFF;
+  e8:	e4 e3       	ldi	r30, 0x34	; 52
+  ea:	f0 e0       	ldi	r31, 0x00	; 0
+  ec:	8f ef       	ldi	r24, 0xFF	; 255
+  ee:	80 83       	st	Z, r24
+ PORTD = 0x00;
+  f0:	e2 e3       	ldi	r30, 0x32	; 50
+  f2:	f0 e0       	ldi	r31, 0x00	; 0
+  f4:	10 82       	st	Z, r1
+ DDRD  = 0xFF;
+  f6:	e1 e3       	ldi	r30, 0x31	; 49
+  f8:	f0 e0       	ldi	r31, 0x00	; 0
+  fa:	8f ef       	ldi	r24, 0xFF	; 255
+  fc:	80 83       	st	Z, r24
+ PORTE = 0x00;
+  fe:	e3 e2       	ldi	r30, 0x23	; 35
+ 100:	f0 e0       	ldi	r31, 0x00	; 0
+ 102:	10 82       	st	Z, r1
+ DDRE  = 0xFF;
+ 104:	e2 e2       	ldi	r30, 0x22	; 34
+ 106:	f0 e0       	ldi	r31, 0x00	; 0
+ 108:	8f ef       	ldi	r24, 0xFF	; 255
+ 10a:	80 83       	st	Z, r24
+ PORTF = 0x00;
+ 10c:	e2 e6       	ldi	r30, 0x62	; 98
+ 10e:	f0 e0       	ldi	r31, 0x00	; 0
+ 110:	10 82       	st	Z, r1
+ DDRF  = 0xFF;
+ 112:	e1 e6       	ldi	r30, 0x61	; 97
+ 114:	f0 e0       	ldi	r31, 0x00	; 0
+ 116:	8f ef       	ldi	r24, 0xFF	; 255
+ 118:	80 83       	st	Z, r24
+ PORTG = 0x00;
+ 11a:	e5 e6       	ldi	r30, 0x65	; 101
+ 11c:	f0 e0       	ldi	r31, 0x00	; 0
+ 11e:	10 82       	st	Z, r1
+ DDRG  = 0xFF;
+ 120:	e4 e6       	ldi	r30, 0x64	; 100
+ 122:	f0 e0       	ldi	r31, 0x00	; 0
+ 124:	8f ef       	ldi	r24, 0xFF	; 255
+ 126:	80 83       	st	Z, r24
+}
+ 128:	cf 91       	pop	r28
+ 12a:	df 91       	pop	r29
+ 12c:	08 95       	ret
+
+0000012e <init_devices>:
+
+//call this routine to initialize all peripherals
+void init_devices(void)
+{
+ 12e:	df 93       	push	r29
+ 130:	cf 93       	push	r28
+ 132:	cd b7       	in	r28, 0x3d	; 61
+ 134:	de b7       	in	r29, 0x3e	; 62
+ //stop errant interrupts until set up
+ cli(); //disable all interrupts
+ 136:	f8 94       	cli
+ XMCRA = 0x00; //external memory
+ 138:	ed e6       	ldi	r30, 0x6D	; 109
+ 13a:	f0 e0       	ldi	r31, 0x00	; 0
+ 13c:	10 82       	st	Z, r1
+ XMCRB = 0x00; //external memory
+ 13e:	ec e6       	ldi	r30, 0x6C	; 108
+ 140:	f0 e0       	ldi	r31, 0x00	; 0
+ 142:	10 82       	st	Z, r1
+ port_init();
+ 144:	0e 94 5f 00 	call	0xbe	; 0xbe <port_init>
+  
+ MCUCR = 0x00;
+ 148:	e5 e5       	ldi	r30, 0x55	; 85
+ 14a:	f0 e0       	ldi	r31, 0x00	; 0
+ 14c:	10 82       	st	Z, r1
+ EICRA = 0x00; //extended ext ints
+ 14e:	ea e6       	ldi	r30, 0x6A	; 106
+ 150:	f0 e0       	ldi	r31, 0x00	; 0
+ 152:	10 82       	st	Z, r1
+ EICRB = 0x00; //extended ext ints
+ 154:	ea e5       	ldi	r30, 0x5A	; 90
+ 156:	f0 e0       	ldi	r31, 0x00	; 0
+ 158:	10 82       	st	Z, r1
+ EIMSK = 0x00;
+ 15a:	e9 e5       	ldi	r30, 0x59	; 89
+ 15c:	f0 e0       	ldi	r31, 0x00	; 0
+ 15e:	10 82       	st	Z, r1
+ TIMSK = 0x00; //timer interrupt sources
+ 160:	e7 e5       	ldi	r30, 0x57	; 87
+ 162:	f0 e0       	ldi	r31, 0x00	; 0
+ 164:	10 82       	st	Z, r1
+ ETIMSK = 0x00; //extended timer interrupt sources
+ 166:	ed e7       	ldi	r30, 0x7D	; 125
+ 168:	f0 e0       	ldi	r31, 0x00	; 0
+ 16a:	10 82       	st	Z, r1
+ sei(); //re-enable interrupts
+ 16c:	78 94       	sei
+ //all peripherals are now initialized
+}
+ 16e:	cf 91       	pop	r28
+ 170:	df 91       	pop	r29
+ 172:	08 95       	ret
+
+00000174 <delay>:
+
+void delay(int cnt){
+ 174:	df 93       	push	r29
+ 176:	cf 93       	push	r28
+ 178:	00 d0       	rcall	.+0      	; 0x17a <delay+0x6>
+ 17a:	00 d0       	rcall	.+0      	; 0x17c <delay+0x8>
+ 17c:	00 d0       	rcall	.+0      	; 0x17e <delay+0xa>
+ 17e:	cd b7       	in	r28, 0x3d	; 61
+ 180:	de b7       	in	r29, 0x3e	; 62
+ 182:	9e 83       	std	Y+6, r25	; 0x06
+ 184:	8d 83       	std	Y+5, r24	; 0x05
+	 int i, j;
+	 for(i=0;i<=700;i++){
+ 186:	1c 82       	std	Y+4, r1	; 0x04
+ 188:	1b 82       	std	Y+3, r1	; 0x03
+ 18a:	14 c0       	rjmp	.+40     	; 0x1b4 <delay+0x40>
+	 	for(j=0;j<=cnt;j++){
+ 18c:	1a 82       	std	Y+2, r1	; 0x02
+ 18e:	19 82       	std	Y+1, r1	; 0x01
+ 190:	05 c0       	rjmp	.+10     	; 0x19c <delay+0x28>
+ 192:	89 81       	ldd	r24, Y+1	; 0x01
+ 194:	9a 81       	ldd	r25, Y+2	; 0x02
+ 196:	01 96       	adiw	r24, 0x01	; 1
+ 198:	9a 83       	std	Y+2, r25	; 0x02
+ 19a:	89 83       	std	Y+1, r24	; 0x01
+ 19c:	29 81       	ldd	r18, Y+1	; 0x01
+ 19e:	3a 81       	ldd	r19, Y+2	; 0x02
+ 1a0:	8d 81       	ldd	r24, Y+5	; 0x05
+ 1a2:	9e 81       	ldd	r25, Y+6	; 0x06
+ 1a4:	82 17       	cp	r24, r18
+ 1a6:	93 07       	cpc	r25, r19
+ 1a8:	a4 f7       	brge	.-24     	; 0x192 <delay+0x1e>
+ //all peripherals are now initialized
+}
+
+void delay(int cnt){
+	 int i, j;
+	 for(i=0;i<=700;i++){
+ 1aa:	8b 81       	ldd	r24, Y+3	; 0x03
+ 1ac:	9c 81       	ldd	r25, Y+4	; 0x04
+ 1ae:	01 96       	adiw	r24, 0x01	; 1
+ 1b0:	9c 83       	std	Y+4, r25	; 0x04
+ 1b2:	8b 83       	std	Y+3, r24	; 0x03
+ 1b4:	8b 81       	ldd	r24, Y+3	; 0x03
+ 1b6:	9c 81       	ldd	r25, Y+4	; 0x04
+ 1b8:	22 e0       	ldi	r18, 0x02	; 2
+ 1ba:	8d 3b       	cpi	r24, 0xBD	; 189
+ 1bc:	92 07       	cpc	r25, r18
+ 1be:	34 f3       	brlt	.-52     	; 0x18c <delay+0x18>
+	 	for(j=0;j<=cnt;j++){
+		}
+	}
+}
+ 1c0:	26 96       	adiw	r28, 0x06	; 6
+ 1c2:	0f b6       	in	r0, 0x3f	; 63
+ 1c4:	f8 94       	cli
+ 1c6:	de bf       	out	0x3e, r29	; 62
+ 1c8:	0f be       	out	0x3f, r0	; 63
+ 1ca:	cd bf       	out	0x3d, r28	; 61
+ 1cc:	cf 91       	pop	r28
+ 1ce:	df 91       	pop	r29
+ 1d0:	08 95       	ret
+
+000001d2 <main>:
+int main(void)
+{
+ 1d2:	df 93       	push	r29
+ 1d4:	cf 93       	push	r28
+ 1d6:	00 d0       	rcall	.+0      	; 0x1d8 <main+0x6>
+ 1d8:	cd b7       	in	r28, 0x3d	; 61
+ 1da:	de b7       	in	r29, 0x3e	; 62
+    int i;
+    init_devices();
+ 1dc:	0e 94 97 00 	call	0x12e	; 0x12e <init_devices>
+
+    
+ while(1){
+		
+		  for(i=0; i<8; i++)
+ 1e0:	1a 82       	std	Y+2, r1	; 0x02
+ 1e2:	19 82       	std	Y+1, r1	; 0x01
+ 1e4:	4f c0       	rjmp	.+158    	; 0x284 <main+0xb2>
+		  {
+
+//		      PORTA=(1<<i); 
+			  PORTA = 0XFF;
+ 1e6:	eb e3       	ldi	r30, 0x3B	; 59
+ 1e8:	f0 e0       	ldi	r31, 0x00	; 0
+ 1ea:	8f ef       	ldi	r24, 0xFF	; 255
+ 1ec:	80 83       	st	Z, r24
+			  PORTB=(1<<i);
+ 1ee:	e8 e3       	ldi	r30, 0x38	; 56
+ 1f0:	f0 e0       	ldi	r31, 0x00	; 0
+ 1f2:	81 e0       	ldi	r24, 0x01	; 1
+ 1f4:	90 e0       	ldi	r25, 0x00	; 0
+ 1f6:	09 80       	ldd	r0, Y+1	; 0x01
+ 1f8:	02 c0       	rjmp	.+4      	; 0x1fe <main+0x2c>
+ 1fa:	88 0f       	add	r24, r24
+ 1fc:	99 1f       	adc	r25, r25
+ 1fe:	0a 94       	dec	r0
+ 200:	e2 f7       	brpl	.-8      	; 0x1fa <main+0x28>
+ 202:	80 83       	st	Z, r24
+			  PORTC=(1<<i);
+ 204:	e5 e3       	ldi	r30, 0x35	; 53
+ 206:	f0 e0       	ldi	r31, 0x00	; 0
+ 208:	81 e0       	ldi	r24, 0x01	; 1
+ 20a:	90 e0       	ldi	r25, 0x00	; 0
+ 20c:	09 80       	ldd	r0, Y+1	; 0x01
+ 20e:	02 c0       	rjmp	.+4      	; 0x214 <main+0x42>
+ 210:	88 0f       	add	r24, r24
+ 212:	99 1f       	adc	r25, r25
+ 214:	0a 94       	dec	r0
+ 216:	e2 f7       	brpl	.-8      	; 0x210 <main+0x3e>
+ 218:	80 83       	st	Z, r24
+			  PORTD=(1<<i);
+ 21a:	e2 e3       	ldi	r30, 0x32	; 50
+ 21c:	f0 e0       	ldi	r31, 0x00	; 0
+ 21e:	81 e0       	ldi	r24, 0x01	; 1
+ 220:	90 e0       	ldi	r25, 0x00	; 0
+ 222:	09 80       	ldd	r0, Y+1	; 0x01
+ 224:	02 c0       	rjmp	.+4      	; 0x22a <main+0x58>
+ 226:	88 0f       	add	r24, r24
+ 228:	99 1f       	adc	r25, r25
+ 22a:	0a 94       	dec	r0
+ 22c:	e2 f7       	brpl	.-8      	; 0x226 <main+0x54>
+ 22e:	80 83       	st	Z, r24
+			  PORTE=(1<<i);
+ 230:	e3 e2       	ldi	r30, 0x23	; 35
+ 232:	f0 e0       	ldi	r31, 0x00	; 0
+ 234:	81 e0       	ldi	r24, 0x01	; 1
+ 236:	90 e0       	ldi	r25, 0x00	; 0
+ 238:	09 80       	ldd	r0, Y+1	; 0x01
+ 23a:	02 c0       	rjmp	.+4      	; 0x240 <main+0x6e>
+ 23c:	88 0f       	add	r24, r24
+ 23e:	99 1f       	adc	r25, r25
+ 240:	0a 94       	dec	r0
+ 242:	e2 f7       	brpl	.-8      	; 0x23c <main+0x6a>
+ 244:	80 83       	st	Z, r24
+			  PORTF=(1<<i);
+ 246:	e2 e6       	ldi	r30, 0x62	; 98
+ 248:	f0 e0       	ldi	r31, 0x00	; 0
+ 24a:	81 e0       	ldi	r24, 0x01	; 1
+ 24c:	90 e0       	ldi	r25, 0x00	; 0
+ 24e:	09 80       	ldd	r0, Y+1	; 0x01
+ 250:	02 c0       	rjmp	.+4      	; 0x256 <main+0x84>
+ 252:	88 0f       	add	r24, r24
+ 254:	99 1f       	adc	r25, r25
+ 256:	0a 94       	dec	r0
+ 258:	e2 f7       	brpl	.-8      	; 0x252 <main+0x80>
+ 25a:	80 83       	st	Z, r24
+			  PORTG=(1<<i);
+ 25c:	e5 e6       	ldi	r30, 0x65	; 101
+ 25e:	f0 e0       	ldi	r31, 0x00	; 0
+ 260:	81 e0       	ldi	r24, 0x01	; 1
+ 262:	90 e0       	ldi	r25, 0x00	; 0
+ 264:	09 80       	ldd	r0, Y+1	; 0x01
+ 266:	02 c0       	rjmp	.+4      	; 0x26c <main+0x9a>
+ 268:	88 0f       	add	r24, r24
+ 26a:	99 1f       	adc	r25, r25
+ 26c:	0a 94       	dec	r0
+ 26e:	e2 f7       	brpl	.-8      	; 0x268 <main+0x96>
+ 270:	80 83       	st	Z, r24
+
+		  	  delay(150);
+ 272:	86 e9       	ldi	r24, 0x96	; 150
+ 274:	90 e0       	ldi	r25, 0x00	; 0
+ 276:	0e 94 ba 00 	call	0x174	; 0x174 <delay>
+    init_devices();
+
+    
+ while(1){
+		
+		  for(i=0; i<8; i++)
+ 27a:	89 81       	ldd	r24, Y+1	; 0x01
+ 27c:	9a 81       	ldd	r25, Y+2	; 0x02
+ 27e:	01 96       	adiw	r24, 0x01	; 1
+ 280:	9a 83       	std	Y+2, r25	; 0x02
+ 282:	89 83       	std	Y+1, r24	; 0x01
+ 284:	89 81       	ldd	r24, Y+1	; 0x01
+ 286:	9a 81       	ldd	r25, Y+2	; 0x02
+ 288:	88 30       	cpi	r24, 0x08	; 8
+ 28a:	91 05       	cpc	r25, r1
+ 28c:	0c f4       	brge	.+2      	; 0x290 <main+0xbe>
+ 28e:	ab cf       	rjmp	.-170    	; 0x1e6 <main+0x14>
+ 290:	a7 cf       	rjmp	.-178    	; 0x1e0 <main+0xe>
+
+00000292 <_exit>:
+ 292:	f8 94       	cli
+
+00000294 <__stop_program>:
+ 294:	ff cf       	rjmp	.-2      	; 0x294 <__stop_program>

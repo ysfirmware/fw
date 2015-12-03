@@ -1,0 +1,3666 @@
+
+glcd_control.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         000000c6  00800100  00001a4c  00001ae0  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00001a4c  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          00000403  008001c6  008001c6  00001ba6  2**0
+                  ALLOC
+  3 .debug_aranges 00000020  00000000  00000000  00001ba6  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_pubnames 000001bd  00000000  00000000  00001bc6  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000008fd  00000000  00000000  00001d83  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000165  00000000  00000000  00002680  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000a8b  00000000  00000000  000027e5  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  000001c0  00000000  00000000  00003270  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000211  00000000  00000000  00003430  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+       0:	0c 94 46 00 	jmp	0x8c	; 0x8c <__ctors_end>
+       4:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+       8:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+       c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      10:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      14:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      18:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      1c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      20:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      24:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      28:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      2c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      30:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      34:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      38:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      3c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      40:	0c 94 b8 00 	jmp	0x170	; 0x170 <__vector_16>
+      44:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      48:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      4c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      50:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      54:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      58:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      5c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      60:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      64:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      68:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      6c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      70:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      74:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      78:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      7c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      80:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      84:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+      88:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+
+0000008c <__ctors_end>:
+      8c:	11 24       	eor	r1, r1
+      8e:	1f be       	out	0x3f, r1	; 63
+      90:	cf ef       	ldi	r28, 0xFF	; 255
+      92:	d0 e1       	ldi	r29, 0x10	; 16
+      94:	de bf       	out	0x3e, r29	; 62
+      96:	cd bf       	out	0x3d, r28	; 61
+
+00000098 <__do_copy_data>:
+      98:	11 e0       	ldi	r17, 0x01	; 1
+      9a:	a0 e0       	ldi	r26, 0x00	; 0
+      9c:	b1 e0       	ldi	r27, 0x01	; 1
+      9e:	ec e4       	ldi	r30, 0x4C	; 76
+      a0:	fa e1       	ldi	r31, 0x1A	; 26
+      a2:	00 e0       	ldi	r16, 0x00	; 0
+      a4:	0b bf       	out	0x3b, r16	; 59
+      a6:	02 c0       	rjmp	.+4      	; 0xac <__do_copy_data+0x14>
+      a8:	07 90       	elpm	r0, Z+
+      aa:	0d 92       	st	X+, r0
+      ac:	a6 3c       	cpi	r26, 0xC6	; 198
+      ae:	b1 07       	cpc	r27, r17
+      b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
+
+000000b2 <__do_clear_bss>:
+      b2:	15 e0       	ldi	r17, 0x05	; 5
+      b4:	a6 ec       	ldi	r26, 0xC6	; 198
+      b6:	b1 e0       	ldi	r27, 0x01	; 1
+      b8:	01 c0       	rjmp	.+2      	; 0xbc <.do_clear_bss_start>
+
+000000ba <.do_clear_bss_loop>:
+      ba:	1d 92       	st	X+, r1
+
+000000bc <.do_clear_bss_start>:
+      bc:	a9 3c       	cpi	r26, 0xC9	; 201
+      be:	b1 07       	cpc	r27, r17
+      c0:	e1 f7       	brne	.-8      	; 0xba <.do_clear_bss_loop>
+      c2:	0e 94 7e 0b 	call	0x16fc	; 0x16fc <main>
+      c6:	0c 94 24 0d 	jmp	0x1a48	; 0x1a48 <_exit>
+
+000000ca <__bad_interrupt>:
+      ca:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000000ce <port_init>:
+
+void DataInput(char data);
+void delay(int cnt);
+
+void port_init(void)
+{
+      ce:	df 93       	push	r29
+      d0:	cf 93       	push	r28
+      d2:	cd b7       	in	r28, 0x3d	; 61
+      d4:	de b7       	in	r29, 0x3e	; 62
+ PORTA = 0x00;
+      d6:	eb e3       	ldi	r30, 0x3B	; 59
+      d8:	f0 e0       	ldi	r31, 0x00	; 0
+      da:	10 82       	st	Z, r1
+ DDRA  = 0xFF;
+      dc:	ea e3       	ldi	r30, 0x3A	; 58
+      de:	f0 e0       	ldi	r31, 0x00	; 0
+      e0:	8f ef       	ldi	r24, 0xFF	; 255
+      e2:	80 83       	st	Z, r24
+ PORTB = 0x00;
+      e4:	e8 e3       	ldi	r30, 0x38	; 56
+      e6:	f0 e0       	ldi	r31, 0x00	; 0
+      e8:	10 82       	st	Z, r1
+ DDRB  = 0xFF;
+      ea:	e7 e3       	ldi	r30, 0x37	; 55
+      ec:	f0 e0       	ldi	r31, 0x00	; 0
+      ee:	8f ef       	ldi	r24, 0xFF	; 255
+      f0:	80 83       	st	Z, r24
+ PORTC = 0x00; //m103 output only
+      f2:	e5 e3       	ldi	r30, 0x35	; 53
+      f4:	f0 e0       	ldi	r31, 0x00	; 0
+      f6:	10 82       	st	Z, r1
+ DDRC  = 0xFF;
+      f8:	e4 e3       	ldi	r30, 0x34	; 52
+      fa:	f0 e0       	ldi	r31, 0x00	; 0
+      fc:	8f ef       	ldi	r24, 0xFF	; 255
+      fe:	80 83       	st	Z, r24
+ PORTD = 0x00;
+     100:	e2 e3       	ldi	r30, 0x32	; 50
+     102:	f0 e0       	ldi	r31, 0x00	; 0
+     104:	10 82       	st	Z, r1
+ DDRD  = 0xFF;
+     106:	e1 e3       	ldi	r30, 0x31	; 49
+     108:	f0 e0       	ldi	r31, 0x00	; 0
+     10a:	8f ef       	ldi	r24, 0xFF	; 255
+     10c:	80 83       	st	Z, r24
+ PORTE = 0xFC;
+     10e:	e3 e2       	ldi	r30, 0x23	; 35
+     110:	f0 e0       	ldi	r31, 0x00	; 0
+     112:	8c ef       	ldi	r24, 0xFC	; 252
+     114:	80 83       	st	Z, r24
+ DDRE  = 0xFC;
+     116:	e2 e2       	ldi	r30, 0x22	; 34
+     118:	f0 e0       	ldi	r31, 0x00	; 0
+     11a:	8c ef       	ldi	r24, 0xFC	; 252
+     11c:	80 83       	st	Z, r24
+ PORTF = 0x00;
+     11e:	e2 e6       	ldi	r30, 0x62	; 98
+     120:	f0 e0       	ldi	r31, 0x00	; 0
+     122:	10 82       	st	Z, r1
+ DDRF  = 0xFF;
+     124:	e1 e6       	ldi	r30, 0x61	; 97
+     126:	f0 e0       	ldi	r31, 0x00	; 0
+     128:	8f ef       	ldi	r24, 0xFF	; 255
+     12a:	80 83       	st	Z, r24
+ PORTG = 0x00;
+     12c:	e5 e6       	ldi	r30, 0x65	; 101
+     12e:	f0 e0       	ldi	r31, 0x00	; 0
+     130:	10 82       	st	Z, r1
+ DDRG  = 0x00;
+     132:	e4 e6       	ldi	r30, 0x64	; 100
+     134:	f0 e0       	ldi	r31, 0x00	; 0
+     136:	10 82       	st	Z, r1
+}
+     138:	cf 91       	pop	r28
+     13a:	df 91       	pop	r29
+     13c:	08 95       	ret
+
+0000013e <timer0_init>:
+//TIMER0 initialize - prescale:64
+// WGM: Normal
+// desired value: 1KHz
+// actual value:  1.000KHz (0.0%)
+void timer0_init(void)
+{
+     13e:	df 93       	push	r29
+     140:	cf 93       	push	r28
+     142:	cd b7       	in	r28, 0x3d	; 61
+     144:	de b7       	in	r29, 0x3e	; 62
+ TCCR0 = 0x00; //stop
+     146:	e3 e5       	ldi	r30, 0x53	; 83
+     148:	f0 e0       	ldi	r31, 0x00	; 0
+     14a:	10 82       	st	Z, r1
+ ASSR  = 0x00; //set async mode
+     14c:	e0 e5       	ldi	r30, 0x50	; 80
+     14e:	f0 e0       	ldi	r31, 0x00	; 0
+     150:	10 82       	st	Z, r1
+ TCNT0 = 0x06; //set count
+     152:	e2 e5       	ldi	r30, 0x52	; 82
+     154:	f0 e0       	ldi	r31, 0x00	; 0
+     156:	86 e0       	ldi	r24, 0x06	; 6
+     158:	80 83       	st	Z, r24
+ OCR0  = 0xFA;
+     15a:	e1 e5       	ldi	r30, 0x51	; 81
+     15c:	f0 e0       	ldi	r31, 0x00	; 0
+     15e:	8a ef       	ldi	r24, 0xFA	; 250
+     160:	80 83       	st	Z, r24
+ TCCR0 = 0x04; //start timer
+     162:	e3 e5       	ldi	r30, 0x53	; 83
+     164:	f0 e0       	ldi	r31, 0x00	; 0
+     166:	84 e0       	ldi	r24, 0x04	; 4
+     168:	80 83       	st	Z, r24
+}
+     16a:	cf 91       	pop	r28
+     16c:	df 91       	pop	r29
+     16e:	08 95       	ret
+
+00000170 <__vector_16>:
+
+ISR(TIMER0_OVF_vect)
+{
+     170:	1f 92       	push	r1
+     172:	0f 92       	push	r0
+     174:	0f b6       	in	r0, 0x3f	; 63
+     176:	0f 92       	push	r0
+     178:	00 90 5b 00 	lds	r0, 0x005B
+     17c:	0f 92       	push	r0
+     17e:	11 24       	eor	r1, r1
+     180:	8f 93       	push	r24
+     182:	9f 93       	push	r25
+     184:	af 93       	push	r26
+     186:	bf 93       	push	r27
+     188:	ef 93       	push	r30
+     18a:	ff 93       	push	r31
+     18c:	df 93       	push	r29
+     18e:	cf 93       	push	r28
+     190:	cd b7       	in	r28, 0x3d	; 61
+     192:	de b7       	in	r29, 0x3e	; 62
+ TCNT0 = 0x06; //reload counter value 
+     194:	e2 e5       	ldi	r30, 0x52	; 82
+     196:	f0 e0       	ldi	r31, 0x00	; 0
+     198:	86 e0       	ldi	r24, 0x06	; 6
+     19a:	80 83       	st	Z, r24
+ MOTOR ^= 0x04;
+     19c:	a3 e2       	ldi	r26, 0x23	; 35
+     19e:	b0 e0       	ldi	r27, 0x00	; 0
+     1a0:	e3 e2       	ldi	r30, 0x23	; 35
+     1a2:	f0 e0       	ldi	r31, 0x00	; 0
+     1a4:	90 81       	ld	r25, Z
+     1a6:	84 e0       	ldi	r24, 0x04	; 4
+     1a8:	89 27       	eor	r24, r25
+     1aa:	8c 93       	st	X, r24
+}
+     1ac:	cf 91       	pop	r28
+     1ae:	df 91       	pop	r29
+     1b0:	ff 91       	pop	r31
+     1b2:	ef 91       	pop	r30
+     1b4:	bf 91       	pop	r27
+     1b6:	af 91       	pop	r26
+     1b8:	9f 91       	pop	r25
+     1ba:	8f 91       	pop	r24
+     1bc:	0f 90       	pop	r0
+     1be:	00 92 5b 00 	sts	0x005B, r0
+     1c2:	0f 90       	pop	r0
+     1c4:	0f be       	out	0x3f, r0	; 63
+     1c6:	0f 90       	pop	r0
+     1c8:	1f 90       	pop	r1
+     1ca:	18 95       	reti
+
+000001cc <init_devices>:
+
+
+
+//call this routine to initialize all peripherals
+void init_devices(void)
+{
+     1cc:	df 93       	push	r29
+     1ce:	cf 93       	push	r28
+     1d0:	cd b7       	in	r28, 0x3d	; 61
+     1d2:	de b7       	in	r29, 0x3e	; 62
+ //stop errant interrupts until set up
+ cli(); //disable all interrupts
+     1d4:	f8 94       	cli
+ XMCRA = 0x00; //external memory
+     1d6:	ed e6       	ldi	r30, 0x6D	; 109
+     1d8:	f0 e0       	ldi	r31, 0x00	; 0
+     1da:	10 82       	st	Z, r1
+ port_init();
+     1dc:	0e 94 67 00 	call	0xce	; 0xce <port_init>
+ timer0_init();
+     1e0:	0e 94 9f 00 	call	0x13e	; 0x13e <timer0_init>
+
+ MCUCR = 0x00;
+     1e4:	e5 e5       	ldi	r30, 0x55	; 85
+     1e6:	f0 e0       	ldi	r31, 0x00	; 0
+     1e8:	10 82       	st	Z, r1
+ EICRA = 0x00; //extended ext ints
+     1ea:	ea e6       	ldi	r30, 0x6A	; 106
+     1ec:	f0 e0       	ldi	r31, 0x00	; 0
+     1ee:	10 82       	st	Z, r1
+ EICRB = 0x00; //extended ext ints
+     1f0:	ea e5       	ldi	r30, 0x5A	; 90
+     1f2:	f0 e0       	ldi	r31, 0x00	; 0
+     1f4:	10 82       	st	Z, r1
+ EIMSK = 0x00;
+     1f6:	e9 e5       	ldi	r30, 0x59	; 89
+     1f8:	f0 e0       	ldi	r31, 0x00	; 0
+     1fa:	10 82       	st	Z, r1
+ TIMSK = 0x01; //timer interrupt sources
+     1fc:	e7 e5       	ldi	r30, 0x57	; 87
+     1fe:	f0 e0       	ldi	r31, 0x00	; 0
+     200:	81 e0       	ldi	r24, 0x01	; 1
+     202:	80 83       	st	Z, r24
+ ETIMSK = 0x00; //extended timer interrupt sources
+     204:	ed e7       	ldi	r30, 0x7D	; 125
+     206:	f0 e0       	ldi	r31, 0x00	; 0
+     208:	10 82       	st	Z, r1
+ 
+ sei(); //re-enable interrupts
+     20a:	78 94       	sei
+ //all peripherals are now initialized
+}
+     20c:	cf 91       	pop	r28
+     20e:	df 91       	pop	r29
+     210:	08 95       	ret
+
+00000212 <E_Pulse>:
+
+void E_Pulse(void){
+     212:	df 93       	push	r29
+     214:	cf 93       	push	r28
+     216:	cd b7       	in	r28, 0x3d	; 61
+     218:	de b7       	in	r29, 0x3e	; 62
+EN_ON;
+     21a:	eb e3       	ldi	r30, 0x3B	; 59
+     21c:	f0 e0       	ldi	r31, 0x00	; 0
+     21e:	80 91 c8 05 	lds	r24, 0x05C8
+     222:	84 60       	ori	r24, 0x04	; 4
+     224:	80 93 c8 05 	sts	0x05C8, r24
+     228:	80 91 c8 05 	lds	r24, 0x05C8
+     22c:	80 83       	st	Z, r24
+delay(delaytime);
+     22e:	81 e0       	ldi	r24, 0x01	; 1
+     230:	90 e0       	ldi	r25, 0x00	; 0
+     232:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+EN_OFF;
+     236:	eb e3       	ldi	r30, 0x3B	; 59
+     238:	f0 e0       	ldi	r31, 0x00	; 0
+     23a:	80 91 c8 05 	lds	r24, 0x05C8
+     23e:	8b 7f       	andi	r24, 0xFB	; 251
+     240:	80 93 c8 05 	sts	0x05C8, r24
+     244:	80 91 c8 05 	lds	r24, 0x05C8
+     248:	80 83       	st	Z, r24
+}
+     24a:	cf 91       	pop	r28
+     24c:	df 91       	pop	r29
+     24e:	08 95       	ret
+
+00000250 <DisplayOnOff>:
+
+void DisplayOnOff(int onoff){
+     250:	df 93       	push	r29
+     252:	cf 93       	push	r28
+     254:	00 d0       	rcall	.+0      	; 0x256 <DisplayOnOff+0x6>
+     256:	cd b7       	in	r28, 0x3d	; 61
+     258:	de b7       	in	r29, 0x3e	; 62
+     25a:	9a 83       	std	Y+2, r25	; 0x02
+     25c:	89 83       	std	Y+1, r24	; 0x01
+RW_OFF;
+     25e:	eb e3       	ldi	r30, 0x3B	; 59
+     260:	f0 e0       	ldi	r31, 0x00	; 0
+     262:	80 91 c8 05 	lds	r24, 0x05C8
+     266:	8d 7f       	andi	r24, 0xFD	; 253
+     268:	80 93 c8 05 	sts	0x05C8, r24
+     26c:	80 91 c8 05 	lds	r24, 0x05C8
+     270:	80 83       	st	Z, r24
+RS_OFF;
+     272:	eb e3       	ldi	r30, 0x3B	; 59
+     274:	f0 e0       	ldi	r31, 0x00	; 0
+     276:	80 91 c8 05 	lds	r24, 0x05C8
+     27a:	8e 7f       	andi	r24, 0xFE	; 254
+     27c:	80 93 c8 05 	sts	0x05C8, r24
+     280:	80 91 c8 05 	lds	r24, 0x05C8
+     284:	80 83       	st	Z, r24
+if(onoff==ON){
+     286:	89 81       	ldd	r24, Y+1	; 0x01
+     288:	9a 81       	ldd	r25, Y+2	; 0x02
+     28a:	81 30       	cpi	r24, 0x01	; 1
+     28c:	91 05       	cpc	r25, r1
+     28e:	21 f4       	brne	.+8      	; 0x298 <DisplayOnOff+0x48>
+DataInput(0x3F);
+     290:	8f e3       	ldi	r24, 0x3F	; 63
+     292:	0e 94 54 01 	call	0x2a8	; 0x2a8 <DataInput>
+     296:	03 c0       	rjmp	.+6      	; 0x29e <DisplayOnOff+0x4e>
+}else{
+DataInput(0x3E);
+     298:	8e e3       	ldi	r24, 0x3E	; 62
+     29a:	0e 94 54 01 	call	0x2a8	; 0x2a8 <DataInput>
+}
+}
+     29e:	0f 90       	pop	r0
+     2a0:	0f 90       	pop	r0
+     2a2:	cf 91       	pop	r28
+     2a4:	df 91       	pop	r29
+     2a6:	08 95       	ret
+
+000002a8 <DataInput>:
+
+void DataInput(char data){
+     2a8:	df 93       	push	r29
+     2aa:	cf 93       	push	r28
+     2ac:	0f 92       	push	r0
+     2ae:	cd b7       	in	r28, 0x3d	; 61
+     2b0:	de b7       	in	r29, 0x3e	; 62
+     2b2:	89 83       	std	Y+1, r24	; 0x01
+RS_OFF;
+     2b4:	eb e3       	ldi	r30, 0x3B	; 59
+     2b6:	f0 e0       	ldi	r31, 0x00	; 0
+     2b8:	80 91 c8 05 	lds	r24, 0x05C8
+     2bc:	8e 7f       	andi	r24, 0xFE	; 254
+     2be:	80 93 c8 05 	sts	0x05C8, r24
+     2c2:	80 91 c8 05 	lds	r24, 0x05C8
+     2c6:	80 83       	st	Z, r24
+RW_OFF;
+     2c8:	eb e3       	ldi	r30, 0x3B	; 59
+     2ca:	f0 e0       	ldi	r31, 0x00	; 0
+     2cc:	80 91 c8 05 	lds	r24, 0x05C8
+     2d0:	8d 7f       	andi	r24, 0xFD	; 253
+     2d2:	80 93 c8 05 	sts	0x05C8, r24
+     2d6:	80 91 c8 05 	lds	r24, 0x05C8
+     2da:	80 83       	st	Z, r24
+GLCD_Control = data;
+     2dc:	89 81       	ldd	r24, Y+1	; 0x01
+     2de:	80 93 c8 05 	sts	0x05C8, r24
+E_Pulse();
+     2e2:	0e 94 09 01 	call	0x212	; 0x212 <E_Pulse>
+}
+     2e6:	0f 90       	pop	r0
+     2e8:	cf 91       	pop	r28
+     2ea:	df 91       	pop	r29
+     2ec:	08 95       	ret
+
+000002ee <DisplayStartLine>:
+void DisplayStartLine(int displayline){ 
+     2ee:	df 93       	push	r29
+     2f0:	cf 93       	push	r28
+     2f2:	00 d0       	rcall	.+0      	; 0x2f4 <DisplayStartLine+0x6>
+     2f4:	cd b7       	in	r28, 0x3d	; 61
+     2f6:	de b7       	in	r29, 0x3e	; 62
+     2f8:	9a 83       	std	Y+2, r25	; 0x02
+     2fa:	89 83       	std	Y+1, r24	; 0x01
+DataInput(displayline | 0xc0);
+     2fc:	89 81       	ldd	r24, Y+1	; 0x01
+     2fe:	80 6c       	ori	r24, 0xC0	; 192
+     300:	0e 94 54 01 	call	0x2a8	; 0x2a8 <DataInput>
+}
+     304:	0f 90       	pop	r0
+     306:	0f 90       	pop	r0
+     308:	cf 91       	pop	r28
+     30a:	df 91       	pop	r29
+     30c:	08 95       	ret
+
+0000030e <SetX>:
+void SetX(int X){
+     30e:	df 93       	push	r29
+     310:	cf 93       	push	r28
+     312:	00 d0       	rcall	.+0      	; 0x314 <SetX+0x6>
+     314:	cd b7       	in	r28, 0x3d	; 61
+     316:	de b7       	in	r29, 0x3e	; 62
+     318:	9a 83       	std	Y+2, r25	; 0x02
+     31a:	89 83       	std	Y+1, r24	; 0x01
+DataInput(X | 0xb8);
+     31c:	89 81       	ldd	r24, Y+1	; 0x01
+     31e:	88 6b       	ori	r24, 0xB8	; 184
+     320:	0e 94 54 01 	call	0x2a8	; 0x2a8 <DataInput>
+}
+     324:	0f 90       	pop	r0
+     326:	0f 90       	pop	r0
+     328:	cf 91       	pop	r28
+     32a:	df 91       	pop	r29
+     32c:	08 95       	ret
+
+0000032e <SetY>:
+void SetY(int Y){
+     32e:	df 93       	push	r29
+     330:	cf 93       	push	r28
+     332:	00 d0       	rcall	.+0      	; 0x334 <SetY+0x6>
+     334:	cd b7       	in	r28, 0x3d	; 61
+     336:	de b7       	in	r29, 0x3e	; 62
+     338:	9a 83       	std	Y+2, r25	; 0x02
+     33a:	89 83       	std	Y+1, r24	; 0x01
+DataInput(Y | 0x40);
+     33c:	89 81       	ldd	r24, Y+1	; 0x01
+     33e:	80 64       	ori	r24, 0x40	; 64
+     340:	0e 94 54 01 	call	0x2a8	; 0x2a8 <DataInput>
+}
+     344:	0f 90       	pop	r0
+     346:	0f 90       	pop	r0
+     348:	cf 91       	pop	r28
+     34a:	df 91       	pop	r29
+     34c:	08 95       	ret
+
+0000034e <Reset>:
+
+void Reset(void){
+     34e:	df 93       	push	r29
+     350:	cf 93       	push	r28
+     352:	cd b7       	in	r28, 0x3d	; 61
+     354:	de b7       	in	r29, 0x3e	; 62
+DataInput(0x10);
+     356:	80 e1       	ldi	r24, 0x10	; 16
+     358:	0e 94 54 01 	call	0x2a8	; 0x2a8 <DataInput>
+}
+     35c:	cf 91       	pop	r28
+     35e:	df 91       	pop	r29
+     360:	08 95       	ret
+
+00000362 <Init_Graph>:
+void Init_Graph(void){
+     362:	df 93       	push	r29
+     364:	cf 93       	push	r28
+     366:	cd b7       	in	r28, 0x3d	; 61
+     368:	de b7       	in	r29, 0x3e	; 62
+CS2_ON;
+     36a:	eb e3       	ldi	r30, 0x3B	; 59
+     36c:	f0 e0       	ldi	r31, 0x00	; 0
+     36e:	80 91 c8 05 	lds	r24, 0x05C8
+     372:	80 61       	ori	r24, 0x10	; 16
+     374:	80 93 c8 05 	sts	0x05C8, r24
+     378:	80 91 c8 05 	lds	r24, 0x05C8
+     37c:	80 83       	st	Z, r24
+CS1_ON;
+     37e:	eb e3       	ldi	r30, 0x3B	; 59
+     380:	f0 e0       	ldi	r31, 0x00	; 0
+     382:	80 91 c8 05 	lds	r24, 0x05C8
+     386:	88 60       	ori	r24, 0x08	; 8
+     388:	80 93 c8 05 	sts	0x05C8, r24
+     38c:	80 91 c8 05 	lds	r24, 0x05C8
+     390:	80 83       	st	Z, r24
+DisplayOnOff(ON);
+     392:	81 e0       	ldi	r24, 0x01	; 1
+     394:	90 e0       	ldi	r25, 0x00	; 0
+     396:	0e 94 28 01 	call	0x250	; 0x250 <DisplayOnOff>
+Reset();
+     39a:	0e 94 a7 01 	call	0x34e	; 0x34e <Reset>
+}
+     39e:	cf 91       	pop	r28
+     3a0:	df 91       	pop	r29
+     3a2:	08 95       	ret
+
+000003a4 <delay>:
+void delay(int cnt){
+     3a4:	df 93       	push	r29
+     3a6:	cf 93       	push	r28
+     3a8:	00 d0       	rcall	.+0      	; 0x3aa <delay+0x6>
+     3aa:	00 d0       	rcall	.+0      	; 0x3ac <delay+0x8>
+     3ac:	00 d0       	rcall	.+0      	; 0x3ae <delay+0xa>
+     3ae:	cd b7       	in	r28, 0x3d	; 61
+     3b0:	de b7       	in	r29, 0x3e	; 62
+     3b2:	9e 83       	std	Y+6, r25	; 0x06
+     3b4:	8d 83       	std	Y+5, r24	; 0x05
+int i , j;
+for(i=0; i<cnt; i++){
+     3b6:	1c 82       	std	Y+4, r1	; 0x04
+     3b8:	1b 82       	std	Y+3, r1	; 0x03
+     3ba:	12 c0       	rjmp	.+36     	; 0x3e0 <delay+0x3c>
+for(j=0; j<100; j++) ;
+     3bc:	1a 82       	std	Y+2, r1	; 0x02
+     3be:	19 82       	std	Y+1, r1	; 0x01
+     3c0:	05 c0       	rjmp	.+10     	; 0x3cc <delay+0x28>
+     3c2:	89 81       	ldd	r24, Y+1	; 0x01
+     3c4:	9a 81       	ldd	r25, Y+2	; 0x02
+     3c6:	01 96       	adiw	r24, 0x01	; 1
+     3c8:	9a 83       	std	Y+2, r25	; 0x02
+     3ca:	89 83       	std	Y+1, r24	; 0x01
+     3cc:	89 81       	ldd	r24, Y+1	; 0x01
+     3ce:	9a 81       	ldd	r25, Y+2	; 0x02
+     3d0:	84 36       	cpi	r24, 0x64	; 100
+     3d2:	91 05       	cpc	r25, r1
+     3d4:	b4 f3       	brlt	.-20     	; 0x3c2 <delay+0x1e>
+DisplayOnOff(ON);
+Reset();
+}
+void delay(int cnt){
+int i , j;
+for(i=0; i<cnt; i++){
+     3d6:	8b 81       	ldd	r24, Y+3	; 0x03
+     3d8:	9c 81       	ldd	r25, Y+4	; 0x04
+     3da:	01 96       	adiw	r24, 0x01	; 1
+     3dc:	9c 83       	std	Y+4, r25	; 0x04
+     3de:	8b 83       	std	Y+3, r24	; 0x03
+     3e0:	2b 81       	ldd	r18, Y+3	; 0x03
+     3e2:	3c 81       	ldd	r19, Y+4	; 0x04
+     3e4:	8d 81       	ldd	r24, Y+5	; 0x05
+     3e6:	9e 81       	ldd	r25, Y+6	; 0x06
+     3e8:	28 17       	cp	r18, r24
+     3ea:	39 07       	cpc	r19, r25
+     3ec:	3c f3       	brlt	.-50     	; 0x3bc <delay+0x18>
+for(j=0; j<100; j++) ;
+}
+}
+     3ee:	26 96       	adiw	r28, 0x06	; 6
+     3f0:	0f b6       	in	r0, 0x3f	; 63
+     3f2:	f8 94       	cli
+     3f4:	de bf       	out	0x3e, r29	; 62
+     3f6:	0f be       	out	0x3f, r0	; 63
+     3f8:	cd bf       	out	0x3d, r28	; 61
+     3fa:	cf 91       	pop	r28
+     3fc:	df 91       	pop	r29
+     3fe:	08 95       	ret
+
+00000400 <GWrite_Control>:
+
+void GWrite_Control(char CS, char cmd)
+{
+     400:	df 93       	push	r29
+     402:	cf 93       	push	r28
+     404:	00 d0       	rcall	.+0      	; 0x406 <GWrite_Control+0x6>
+     406:	cd b7       	in	r28, 0x3d	; 61
+     408:	de b7       	in	r29, 0x3e	; 62
+     40a:	89 83       	std	Y+1, r24	; 0x01
+     40c:	6a 83       	std	Y+2, r22	; 0x02
+delay(delaytime);
+     40e:	81 e0       	ldi	r24, 0x01	; 1
+     410:	90 e0       	ldi	r25, 0x00	; 0
+     412:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+EN_OFF;
+     416:	eb e3       	ldi	r30, 0x3B	; 59
+     418:	f0 e0       	ldi	r31, 0x00	; 0
+     41a:	80 91 c8 05 	lds	r24, 0x05C8
+     41e:	8b 7f       	andi	r24, 0xFB	; 251
+     420:	80 93 c8 05 	sts	0x05C8, r24
+     424:	80 91 c8 05 	lds	r24, 0x05C8
+     428:	80 83       	st	Z, r24
+delay(delaytime);
+     42a:	81 e0       	ldi	r24, 0x01	; 1
+     42c:	90 e0       	ldi	r25, 0x00	; 0
+     42e:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+RS_OFF;
+     432:	eb e3       	ldi	r30, 0x3B	; 59
+     434:	f0 e0       	ldi	r31, 0x00	; 0
+     436:	80 91 c8 05 	lds	r24, 0x05C8
+     43a:	8e 7f       	andi	r24, 0xFE	; 254
+     43c:	80 93 c8 05 	sts	0x05C8, r24
+     440:	80 91 c8 05 	lds	r24, 0x05C8
+     444:	80 83       	st	Z, r24
+delay(delaytime);
+     446:	81 e0       	ldi	r24, 0x01	; 1
+     448:	90 e0       	ldi	r25, 0x00	; 0
+     44a:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+RW_OFF;
+     44e:	eb e3       	ldi	r30, 0x3B	; 59
+     450:	f0 e0       	ldi	r31, 0x00	; 0
+     452:	80 91 c8 05 	lds	r24, 0x05C8
+     456:	8d 7f       	andi	r24, 0xFD	; 253
+     458:	80 93 c8 05 	sts	0x05C8, r24
+     45c:	80 91 c8 05 	lds	r24, 0x05C8
+     460:	80 83       	st	Z, r24
+delay(delaytime);
+     462:	81 e0       	ldi	r24, 0x01	; 1
+     464:	90 e0       	ldi	r25, 0x00	; 0
+     466:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+GLCD_C = CS;
+     46a:	eb e3       	ldi	r30, 0x3B	; 59
+     46c:	f0 e0       	ldi	r31, 0x00	; 0
+     46e:	89 81       	ldd	r24, Y+1	; 0x01
+     470:	80 83       	st	Z, r24
+delay(delaytime);
+     472:	81 e0       	ldi	r24, 0x01	; 1
+     474:	90 e0       	ldi	r25, 0x00	; 0
+     476:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+EN_ON;
+     47a:	eb e3       	ldi	r30, 0x3B	; 59
+     47c:	f0 e0       	ldi	r31, 0x00	; 0
+     47e:	80 91 c8 05 	lds	r24, 0x05C8
+     482:	84 60       	ori	r24, 0x04	; 4
+     484:	80 93 c8 05 	sts	0x05C8, r24
+     488:	80 91 c8 05 	lds	r24, 0x05C8
+     48c:	80 83       	st	Z, r24
+delay(delaytime);
+     48e:	81 e0       	ldi	r24, 0x01	; 1
+     490:	90 e0       	ldi	r25, 0x00	; 0
+     492:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+GLCD_D = cmd;
+     496:	e5 e3       	ldi	r30, 0x35	; 53
+     498:	f0 e0       	ldi	r31, 0x00	; 0
+     49a:	8a 81       	ldd	r24, Y+2	; 0x02
+     49c:	80 83       	st	Z, r24
+delay(delaytime);
+     49e:	81 e0       	ldi	r24, 0x01	; 1
+     4a0:	90 e0       	ldi	r25, 0x00	; 0
+     4a2:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+EN_OFF;
+     4a6:	eb e3       	ldi	r30, 0x3B	; 59
+     4a8:	f0 e0       	ldi	r31, 0x00	; 0
+     4aa:	80 91 c8 05 	lds	r24, 0x05C8
+     4ae:	8b 7f       	andi	r24, 0xFB	; 251
+     4b0:	80 93 c8 05 	sts	0x05C8, r24
+     4b4:	80 91 c8 05 	lds	r24, 0x05C8
+     4b8:	80 83       	st	Z, r24
+delay(delaytime);
+     4ba:	81 e0       	ldi	r24, 0x01	; 1
+     4bc:	90 e0       	ldi	r25, 0x00	; 0
+     4be:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+}   
+     4c2:	0f 90       	pop	r0
+     4c4:	0f 90       	pop	r0
+     4c6:	cf 91       	pop	r28
+     4c8:	df 91       	pop	r29
+     4ca:	08 95       	ret
+
+000004cc <GWrite_Data>:
+
+void GWrite_Data(char CS, char data){
+     4cc:	df 93       	push	r29
+     4ce:	cf 93       	push	r28
+     4d0:	00 d0       	rcall	.+0      	; 0x4d2 <GWrite_Data+0x6>
+     4d2:	cd b7       	in	r28, 0x3d	; 61
+     4d4:	de b7       	in	r29, 0x3e	; 62
+     4d6:	89 83       	std	Y+1, r24	; 0x01
+     4d8:	6a 83       	std	Y+2, r22	; 0x02
+delay(delaytime);
+     4da:	81 e0       	ldi	r24, 0x01	; 1
+     4dc:	90 e0       	ldi	r25, 0x00	; 0
+     4de:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+EN_OFF;
+     4e2:	eb e3       	ldi	r30, 0x3B	; 59
+     4e4:	f0 e0       	ldi	r31, 0x00	; 0
+     4e6:	80 91 c8 05 	lds	r24, 0x05C8
+     4ea:	8b 7f       	andi	r24, 0xFB	; 251
+     4ec:	80 93 c8 05 	sts	0x05C8, r24
+     4f0:	80 91 c8 05 	lds	r24, 0x05C8
+     4f4:	80 83       	st	Z, r24
+delay(delaytime);
+     4f6:	81 e0       	ldi	r24, 0x01	; 1
+     4f8:	90 e0       	ldi	r25, 0x00	; 0
+     4fa:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+RS_ON;
+     4fe:	eb e3       	ldi	r30, 0x3B	; 59
+     500:	f0 e0       	ldi	r31, 0x00	; 0
+     502:	80 91 c8 05 	lds	r24, 0x05C8
+     506:	81 60       	ori	r24, 0x01	; 1
+     508:	80 93 c8 05 	sts	0x05C8, r24
+     50c:	80 91 c8 05 	lds	r24, 0x05C8
+     510:	80 83       	st	Z, r24
+delay(delaytime);
+     512:	81 e0       	ldi	r24, 0x01	; 1
+     514:	90 e0       	ldi	r25, 0x00	; 0
+     516:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+RW_OFF;
+     51a:	eb e3       	ldi	r30, 0x3B	; 59
+     51c:	f0 e0       	ldi	r31, 0x00	; 0
+     51e:	80 91 c8 05 	lds	r24, 0x05C8
+     522:	8d 7f       	andi	r24, 0xFD	; 253
+     524:	80 93 c8 05 	sts	0x05C8, r24
+     528:	80 91 c8 05 	lds	r24, 0x05C8
+     52c:	80 83       	st	Z, r24
+delay(delaytime);
+     52e:	81 e0       	ldi	r24, 0x01	; 1
+     530:	90 e0       	ldi	r25, 0x00	; 0
+     532:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+GLCD_C = CS;
+     536:	eb e3       	ldi	r30, 0x3B	; 59
+     538:	f0 e0       	ldi	r31, 0x00	; 0
+     53a:	89 81       	ldd	r24, Y+1	; 0x01
+     53c:	80 83       	st	Z, r24
+delay(delaytime);
+     53e:	81 e0       	ldi	r24, 0x01	; 1
+     540:	90 e0       	ldi	r25, 0x00	; 0
+     542:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+EN_ON;
+     546:	eb e3       	ldi	r30, 0x3B	; 59
+     548:	f0 e0       	ldi	r31, 0x00	; 0
+     54a:	80 91 c8 05 	lds	r24, 0x05C8
+     54e:	84 60       	ori	r24, 0x04	; 4
+     550:	80 93 c8 05 	sts	0x05C8, r24
+     554:	80 91 c8 05 	lds	r24, 0x05C8
+     558:	80 83       	st	Z, r24
+delay(delaytime);
+     55a:	81 e0       	ldi	r24, 0x01	; 1
+     55c:	90 e0       	ldi	r25, 0x00	; 0
+     55e:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+GLCD_D = data;
+     562:	e5 e3       	ldi	r30, 0x35	; 53
+     564:	f0 e0       	ldi	r31, 0x00	; 0
+     566:	8a 81       	ldd	r24, Y+2	; 0x02
+     568:	80 83       	st	Z, r24
+delay(delaytime);
+     56a:	81 e0       	ldi	r24, 0x01	; 1
+     56c:	90 e0       	ldi	r25, 0x00	; 0
+     56e:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+EN_OFF;
+     572:	eb e3       	ldi	r30, 0x3B	; 59
+     574:	f0 e0       	ldi	r31, 0x00	; 0
+     576:	80 91 c8 05 	lds	r24, 0x05C8
+     57a:	8b 7f       	andi	r24, 0xFB	; 251
+     57c:	80 93 c8 05 	sts	0x05C8, r24
+     580:	80 91 c8 05 	lds	r24, 0x05C8
+     584:	80 83       	st	Z, r24
+delay(delaytime);
+     586:	81 e0       	ldi	r24, 0x01	; 1
+     588:	90 e0       	ldi	r25, 0x00	; 0
+     58a:	0e 94 d2 01 	call	0x3a4	; 0x3a4 <delay>
+}
+     58e:	0f 90       	pop	r0
+     590:	0f 90       	pop	r0
+     592:	cf 91       	pop	r28
+     594:	df 91       	pop	r29
+     596:	08 95       	ret
+
+00000598 <GLcd_Clear>:
+void GLcd_Clear(){
+     598:	df 93       	push	r29
+     59a:	cf 93       	push	r28
+     59c:	cd b7       	in	r28, 0x3d	; 61
+     59e:	de b7       	in	r29, 0x3e	; 62
+     5a0:	28 97       	sbiw	r28, 0x08	; 8
+     5a2:	0f b6       	in	r0, 0x3f	; 63
+     5a4:	f8 94       	cli
+     5a6:	de bf       	out	0x3e, r29	; 62
+     5a8:	0f be       	out	0x3f, r0	; 63
+     5aa:	cd bf       	out	0x3d, r28	; 61
+int i, j, x, y;
+GLCD_Control = 0x00;
+     5ac:	10 92 c8 05 	sts	0x05C8, r1
+GWrite_Control(CS_ALL, 0x3f);
+     5b0:	eb e3       	ldi	r30, 0x3B	; 59
+     5b2:	f0 e0       	ldi	r31, 0x00	; 0
+     5b4:	80 91 c8 05 	lds	r24, 0x05C8
+     5b8:	88 61       	ori	r24, 0x18	; 24
+     5ba:	80 93 c8 05 	sts	0x05C8, r24
+     5be:	80 91 c8 05 	lds	r24, 0x05C8
+     5c2:	80 83       	st	Z, r24
+     5c4:	80 81       	ld	r24, Z
+     5c6:	6f e3       	ldi	r22, 0x3F	; 63
+     5c8:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+GWrite_Control(CS_ALL, 0xc0);
+     5cc:	eb e3       	ldi	r30, 0x3B	; 59
+     5ce:	f0 e0       	ldi	r31, 0x00	; 0
+     5d0:	80 91 c8 05 	lds	r24, 0x05C8
+     5d4:	88 61       	ori	r24, 0x18	; 24
+     5d6:	80 93 c8 05 	sts	0x05C8, r24
+     5da:	80 91 c8 05 	lds	r24, 0x05C8
+     5de:	80 83       	st	Z, r24
+     5e0:	80 81       	ld	r24, Z
+     5e2:	60 ec       	ldi	r22, 0xC0	; 192
+     5e4:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+x=0xb8;
+     5e8:	88 eb       	ldi	r24, 0xB8	; 184
+     5ea:	90 e0       	ldi	r25, 0x00	; 0
+     5ec:	9c 83       	std	Y+4, r25	; 0x04
+     5ee:	8b 83       	std	Y+3, r24	; 0x03
+y=0x40;
+     5f0:	80 e4       	ldi	r24, 0x40	; 64
+     5f2:	90 e0       	ldi	r25, 0x00	; 0
+     5f4:	9a 83       	std	Y+2, r25	; 0x02
+     5f6:	89 83       	std	Y+1, r24	; 0x01
+for(i=0; i<=7; i++){
+     5f8:	18 86       	std	Y+8, r1	; 0x08
+     5fa:	1f 82       	std	Y+7, r1	; 0x07
+     5fc:	43 c0       	rjmp	.+134    	; 0x684 <GLcd_Clear+0xec>
+  GWrite_Control(CS_ALL, x);
+     5fe:	eb e3       	ldi	r30, 0x3B	; 59
+     600:	f0 e0       	ldi	r31, 0x00	; 0
+     602:	80 91 c8 05 	lds	r24, 0x05C8
+     606:	88 61       	ori	r24, 0x18	; 24
+     608:	80 93 c8 05 	sts	0x05C8, r24
+     60c:	80 91 c8 05 	lds	r24, 0x05C8
+     610:	80 83       	st	Z, r24
+     612:	80 81       	ld	r24, Z
+     614:	9b 81       	ldd	r25, Y+3	; 0x03
+     616:	69 2f       	mov	r22, r25
+     618:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Control(CS_ALL, y);
+     61c:	eb e3       	ldi	r30, 0x3B	; 59
+     61e:	f0 e0       	ldi	r31, 0x00	; 0
+     620:	80 91 c8 05 	lds	r24, 0x05C8
+     624:	88 61       	ori	r24, 0x18	; 24
+     626:	80 93 c8 05 	sts	0x05C8, r24
+     62a:	80 91 c8 05 	lds	r24, 0x05C8
+     62e:	80 83       	st	Z, r24
+     630:	80 81       	ld	r24, Z
+     632:	99 81       	ldd	r25, Y+1	; 0x01
+     634:	69 2f       	mov	r22, r25
+     636:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  for(j=0; j<64; j++){
+     63a:	1e 82       	std	Y+6, r1	; 0x06
+     63c:	1d 82       	std	Y+5, r1	; 0x05
+     63e:	13 c0       	rjmp	.+38     	; 0x666 <GLcd_Clear+0xce>
+   GWrite_Data(CS_ALL, 0x00);}
+     640:	eb e3       	ldi	r30, 0x3B	; 59
+     642:	f0 e0       	ldi	r31, 0x00	; 0
+     644:	80 91 c8 05 	lds	r24, 0x05C8
+     648:	88 61       	ori	r24, 0x18	; 24
+     64a:	80 93 c8 05 	sts	0x05C8, r24
+     64e:	80 91 c8 05 	lds	r24, 0x05C8
+     652:	80 83       	st	Z, r24
+     654:	80 81       	ld	r24, Z
+     656:	60 e0       	ldi	r22, 0x00	; 0
+     658:	0e 94 66 02 	call	0x4cc	; 0x4cc <GWrite_Data>
+x=0xb8;
+y=0x40;
+for(i=0; i<=7; i++){
+  GWrite_Control(CS_ALL, x);
+  GWrite_Control(CS_ALL, y);
+  for(j=0; j<64; j++){
+     65c:	8d 81       	ldd	r24, Y+5	; 0x05
+     65e:	9e 81       	ldd	r25, Y+6	; 0x06
+     660:	01 96       	adiw	r24, 0x01	; 1
+     662:	9e 83       	std	Y+6, r25	; 0x06
+     664:	8d 83       	std	Y+5, r24	; 0x05
+     666:	8d 81       	ldd	r24, Y+5	; 0x05
+     668:	9e 81       	ldd	r25, Y+6	; 0x06
+     66a:	80 34       	cpi	r24, 0x40	; 64
+     66c:	91 05       	cpc	r25, r1
+     66e:	44 f3       	brlt	.-48     	; 0x640 <GLcd_Clear+0xa8>
+   GWrite_Data(CS_ALL, 0x00);}
+  x++;
+     670:	8b 81       	ldd	r24, Y+3	; 0x03
+     672:	9c 81       	ldd	r25, Y+4	; 0x04
+     674:	01 96       	adiw	r24, 0x01	; 1
+     676:	9c 83       	std	Y+4, r25	; 0x04
+     678:	8b 83       	std	Y+3, r24	; 0x03
+GLCD_Control = 0x00;
+GWrite_Control(CS_ALL, 0x3f);
+GWrite_Control(CS_ALL, 0xc0);
+x=0xb8;
+y=0x40;
+for(i=0; i<=7; i++){
+     67a:	8f 81       	ldd	r24, Y+7	; 0x07
+     67c:	98 85       	ldd	r25, Y+8	; 0x08
+     67e:	01 96       	adiw	r24, 0x01	; 1
+     680:	98 87       	std	Y+8, r25	; 0x08
+     682:	8f 83       	std	Y+7, r24	; 0x07
+     684:	8f 81       	ldd	r24, Y+7	; 0x07
+     686:	98 85       	ldd	r25, Y+8	; 0x08
+     688:	88 30       	cpi	r24, 0x08	; 8
+     68a:	91 05       	cpc	r25, r1
+     68c:	0c f4       	brge	.+2      	; 0x690 <GLcd_Clear+0xf8>
+     68e:	b7 cf       	rjmp	.-146    	; 0x5fe <GLcd_Clear+0x66>
+  GWrite_Control(CS_ALL, y);
+  for(j=0; j<64; j++){
+   GWrite_Data(CS_ALL, 0x00);}
+  x++;
+  }  
+}
+     690:	28 96       	adiw	r28, 0x08	; 8
+     692:	0f b6       	in	r0, 0x3f	; 63
+     694:	f8 94       	cli
+     696:	de bf       	out	0x3e, r29	; 62
+     698:	0f be       	out	0x3f, r0	; 63
+     69a:	cd bf       	out	0x3d, r28	; 61
+     69c:	cf 91       	pop	r28
+     69e:	df 91       	pop	r29
+     6a0:	08 95       	ret
+
+000006a2 <GLcd_init>:
+
+void GLcd_init(){
+     6a2:	df 93       	push	r29
+     6a4:	cf 93       	push	r28
+     6a6:	cd b7       	in	r28, 0x3d	; 61
+     6a8:	de b7       	in	r29, 0x3e	; 62
+RESET_OFF;
+     6aa:	eb e3       	ldi	r30, 0x3B	; 59
+     6ac:	f0 e0       	ldi	r31, 0x00	; 0
+     6ae:	80 91 c8 05 	lds	r24, 0x05C8
+     6b2:	8f 7d       	andi	r24, 0xDF	; 223
+     6b4:	80 93 c8 05 	sts	0x05C8, r24
+     6b8:	80 91 c8 05 	lds	r24, 0x05C8
+     6bc:	80 83       	st	Z, r24
+RESET_ON;
+     6be:	eb e3       	ldi	r30, 0x3B	; 59
+     6c0:	f0 e0       	ldi	r31, 0x00	; 0
+     6c2:	80 91 c8 05 	lds	r24, 0x05C8
+     6c6:	80 62       	ori	r24, 0x20	; 32
+     6c8:	80 93 c8 05 	sts	0x05C8, r24
+     6cc:	80 91 c8 05 	lds	r24, 0x05C8
+     6d0:	80 83       	st	Z, r24
+CS_ALL;
+     6d2:	eb e3       	ldi	r30, 0x3B	; 59
+     6d4:	f0 e0       	ldi	r31, 0x00	; 0
+     6d6:	80 91 c8 05 	lds	r24, 0x05C8
+     6da:	88 61       	ori	r24, 0x18	; 24
+     6dc:	80 93 c8 05 	sts	0x05C8, r24
+     6e0:	80 91 c8 05 	lds	r24, 0x05C8
+     6e4:	80 83       	st	Z, r24
+GWrite_Control(CS_ALL, 0x3f);
+     6e6:	eb e3       	ldi	r30, 0x3B	; 59
+     6e8:	f0 e0       	ldi	r31, 0x00	; 0
+     6ea:	80 91 c8 05 	lds	r24, 0x05C8
+     6ee:	88 61       	ori	r24, 0x18	; 24
+     6f0:	80 93 c8 05 	sts	0x05C8, r24
+     6f4:	80 91 c8 05 	lds	r24, 0x05C8
+     6f8:	80 83       	st	Z, r24
+     6fa:	80 81       	ld	r24, Z
+     6fc:	6f e3       	ldi	r22, 0x3F	; 63
+     6fe:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+GWrite_Control(CS_ALL, 0xc0);
+     702:	eb e3       	ldi	r30, 0x3B	; 59
+     704:	f0 e0       	ldi	r31, 0x00	; 0
+     706:	80 91 c8 05 	lds	r24, 0x05C8
+     70a:	88 61       	ori	r24, 0x18	; 24
+     70c:	80 93 c8 05 	sts	0x05C8, r24
+     710:	80 91 c8 05 	lds	r24, 0x05C8
+     714:	80 83       	st	Z, r24
+     716:	80 81       	ld	r24, Z
+     718:	60 ec       	ldi	r22, 0xC0	; 192
+     71a:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+GWrite_Control(CS_ALL, 0xb8);
+     71e:	eb e3       	ldi	r30, 0x3B	; 59
+     720:	f0 e0       	ldi	r31, 0x00	; 0
+     722:	80 91 c8 05 	lds	r24, 0x05C8
+     726:	88 61       	ori	r24, 0x18	; 24
+     728:	80 93 c8 05 	sts	0x05C8, r24
+     72c:	80 91 c8 05 	lds	r24, 0x05C8
+     730:	80 83       	st	Z, r24
+     732:	80 81       	ld	r24, Z
+     734:	68 eb       	ldi	r22, 0xB8	; 184
+     736:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+GWrite_Control(CS_ALL, 0x40);
+     73a:	eb e3       	ldi	r30, 0x3B	; 59
+     73c:	f0 e0       	ldi	r31, 0x00	; 0
+     73e:	80 91 c8 05 	lds	r24, 0x05C8
+     742:	88 61       	ori	r24, 0x18	; 24
+     744:	80 93 c8 05 	sts	0x05C8, r24
+     748:	80 91 c8 05 	lds	r24, 0x05C8
+     74c:	80 83       	st	Z, r24
+     74e:	80 81       	ld	r24, Z
+     750:	60 e4       	ldi	r22, 0x40	; 64
+     752:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+}
+     756:	cf 91       	pop	r28
+     758:	df 91       	pop	r29
+     75a:	08 95       	ret
+
+0000075c <gotoxy>:
+      
+void gotoxy(int i, int j, char data){
+     75c:	df 93       	push	r29
+     75e:	cf 93       	push	r28
+     760:	cd b7       	in	r28, 0x3d	; 61
+     762:	de b7       	in	r29, 0x3e	; 62
+     764:	29 97       	sbiw	r28, 0x09	; 9
+     766:	0f b6       	in	r0, 0x3f	; 63
+     768:	f8 94       	cli
+     76a:	de bf       	out	0x3e, r29	; 62
+     76c:	0f be       	out	0x3f, r0	; 63
+     76e:	cd bf       	out	0x3d, r28	; 61
+     770:	9e 83       	std	Y+6, r25	; 0x06
+     772:	8d 83       	std	Y+5, r24	; 0x05
+     774:	78 87       	std	Y+8, r23	; 0x08
+     776:	6f 83       	std	Y+7, r22	; 0x07
+     778:	49 87       	std	Y+9, r20	; 0x09
+  int x1=i%128, y1=j%8;
+     77a:	8d 81       	ldd	r24, Y+5	; 0x05
+     77c:	9e 81       	ldd	r25, Y+6	; 0x06
+     77e:	20 e8       	ldi	r18, 0x80	; 128
+     780:	30 e0       	ldi	r19, 0x00	; 0
+     782:	b9 01       	movw	r22, r18
+     784:	0e 94 fd 0c 	call	0x19fa	; 0x19fa <__divmodhi4>
+     788:	9c 83       	std	Y+4, r25	; 0x04
+     78a:	8b 83       	std	Y+3, r24	; 0x03
+     78c:	8f 81       	ldd	r24, Y+7	; 0x07
+     78e:	98 85       	ldd	r25, Y+8	; 0x08
+     790:	28 e0       	ldi	r18, 0x08	; 8
+     792:	30 e0       	ldi	r19, 0x00	; 0
+     794:	b9 01       	movw	r22, r18
+     796:	0e 94 fd 0c 	call	0x19fa	; 0x19fa <__divmodhi4>
+     79a:	9a 83       	std	Y+2, r25	; 0x02
+     79c:	89 83       	std	Y+1, r24	; 0x01
+  if(x1<64){
+     79e:	8b 81       	ldd	r24, Y+3	; 0x03
+     7a0:	9c 81       	ldd	r25, Y+4	; 0x04
+     7a2:	80 34       	cpi	r24, 0x40	; 64
+     7a4:	91 05       	cpc	r25, r1
+     7a6:	ac f5       	brge	.+106    	; 0x812 <gotoxy+0xb6>
+   GWrite_Control(CS_ALL, x+y1);
+     7a8:	eb e3       	ldi	r30, 0x3B	; 59
+     7aa:	f0 e0       	ldi	r31, 0x00	; 0
+     7ac:	80 91 c8 05 	lds	r24, 0x05C8
+     7b0:	88 61       	ori	r24, 0x18	; 24
+     7b2:	80 93 c8 05 	sts	0x05C8, r24
+     7b6:	80 91 c8 05 	lds	r24, 0x05C8
+     7ba:	80 83       	st	Z, r24
+     7bc:	20 81       	ld	r18, Z
+     7be:	99 81       	ldd	r25, Y+1	; 0x01
+     7c0:	80 91 00 01 	lds	r24, 0x0100
+     7c4:	98 0f       	add	r25, r24
+     7c6:	82 2f       	mov	r24, r18
+     7c8:	69 2f       	mov	r22, r25
+     7ca:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+   GWrite_Control(CS_ALL, y+x1);
+     7ce:	eb e3       	ldi	r30, 0x3B	; 59
+     7d0:	f0 e0       	ldi	r31, 0x00	; 0
+     7d2:	80 91 c8 05 	lds	r24, 0x05C8
+     7d6:	88 61       	ori	r24, 0x18	; 24
+     7d8:	80 93 c8 05 	sts	0x05C8, r24
+     7dc:	80 91 c8 05 	lds	r24, 0x05C8
+     7e0:	80 83       	st	Z, r24
+     7e2:	20 81       	ld	r18, Z
+     7e4:	9b 81       	ldd	r25, Y+3	; 0x03
+     7e6:	80 91 01 01 	lds	r24, 0x0101
+     7ea:	98 0f       	add	r25, r24
+     7ec:	82 2f       	mov	r24, r18
+     7ee:	69 2f       	mov	r22, r25
+     7f0:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+   GWrite_Data(CS2_OFF, data);
+     7f4:	eb e3       	ldi	r30, 0x3B	; 59
+     7f6:	f0 e0       	ldi	r31, 0x00	; 0
+     7f8:	80 91 c8 05 	lds	r24, 0x05C8
+     7fc:	8f 7e       	andi	r24, 0xEF	; 239
+     7fe:	80 93 c8 05 	sts	0x05C8, r24
+     802:	80 91 c8 05 	lds	r24, 0x05C8
+     806:	80 83       	st	Z, r24
+     808:	80 81       	ld	r24, Z
+     80a:	69 85       	ldd	r22, Y+9	; 0x09
+     80c:	0e 94 66 02 	call	0x4cc	; 0x4cc <GWrite_Data>
+     810:	36 c0       	rjmp	.+108    	; 0x87e <gotoxy+0x122>
+   } else {
+   GWrite_Control(CS_ALL, x+y1);
+     812:	eb e3       	ldi	r30, 0x3B	; 59
+     814:	f0 e0       	ldi	r31, 0x00	; 0
+     816:	80 91 c8 05 	lds	r24, 0x05C8
+     81a:	88 61       	ori	r24, 0x18	; 24
+     81c:	80 93 c8 05 	sts	0x05C8, r24
+     820:	80 91 c8 05 	lds	r24, 0x05C8
+     824:	80 83       	st	Z, r24
+     826:	20 81       	ld	r18, Z
+     828:	99 81       	ldd	r25, Y+1	; 0x01
+     82a:	80 91 00 01 	lds	r24, 0x0100
+     82e:	98 0f       	add	r25, r24
+     830:	82 2f       	mov	r24, r18
+     832:	69 2f       	mov	r22, r25
+     834:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+   GWrite_Control(CS_ALL, y+x1-64);
+     838:	eb e3       	ldi	r30, 0x3B	; 59
+     83a:	f0 e0       	ldi	r31, 0x00	; 0
+     83c:	80 91 c8 05 	lds	r24, 0x05C8
+     840:	88 61       	ori	r24, 0x18	; 24
+     842:	80 93 c8 05 	sts	0x05C8, r24
+     846:	80 91 c8 05 	lds	r24, 0x05C8
+     84a:	80 83       	st	Z, r24
+     84c:	20 81       	ld	r18, Z
+     84e:	9b 81       	ldd	r25, Y+3	; 0x03
+     850:	80 91 01 01 	lds	r24, 0x0101
+     854:	89 0f       	add	r24, r25
+     856:	98 2f       	mov	r25, r24
+     858:	90 54       	subi	r25, 0x40	; 64
+     85a:	82 2f       	mov	r24, r18
+     85c:	69 2f       	mov	r22, r25
+     85e:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+   GWrite_Data(CS1_OFF, data);
+     862:	eb e3       	ldi	r30, 0x3B	; 59
+     864:	f0 e0       	ldi	r31, 0x00	; 0
+     866:	80 91 c8 05 	lds	r24, 0x05C8
+     86a:	87 7f       	andi	r24, 0xF7	; 247
+     86c:	80 93 c8 05 	sts	0x05C8, r24
+     870:	80 91 c8 05 	lds	r24, 0x05C8
+     874:	80 83       	st	Z, r24
+     876:	80 81       	ld	r24, Z
+     878:	69 85       	ldd	r22, Y+9	; 0x09
+     87a:	0e 94 66 02 	call	0x4cc	; 0x4cc <GWrite_Data>
+   }
+  }
+     87e:	29 96       	adiw	r28, 0x09	; 9
+     880:	0f b6       	in	r0, 0x3f	; 63
+     882:	f8 94       	cli
+     884:	de bf       	out	0x3e, r29	; 62
+     886:	0f be       	out	0x3f, r0	; 63
+     888:	cd bf       	out	0x3d, r28	; 61
+     88a:	cf 91       	pop	r28
+     88c:	df 91       	pop	r29
+     88e:	08 95       	ret
+
+00000890 <PointXY>:
+void PointXY(int xpoint, int ypoint){
+     890:	df 93       	push	r29
+     892:	cf 93       	push	r28
+     894:	cd b7       	in	r28, 0x3d	; 61
+     896:	de b7       	in	r29, 0x3e	; 62
+     898:	62 97       	sbiw	r28, 0x12	; 18
+     89a:	0f b6       	in	r0, 0x3f	; 63
+     89c:	f8 94       	cli
+     89e:	de bf       	out	0x3e, r29	; 62
+     8a0:	0f be       	out	0x3f, r0	; 63
+     8a2:	cd bf       	out	0x3d, r28	; 61
+     8a4:	9e 87       	std	Y+14, r25	; 0x0e
+     8a6:	8d 87       	std	Y+13, r24	; 0x0d
+     8a8:	78 8b       	std	Y+16, r23	; 0x10
+     8aa:	6f 87       	std	Y+15, r22	; 0x0f
+int point=0x01, value;
+     8ac:	81 e0       	ldi	r24, 0x01	; 1
+     8ae:	90 e0       	ldi	r25, 0x00	; 0
+     8b0:	9c 87       	std	Y+12, r25	; 0x0c
+     8b2:	8b 87       	std	Y+11, r24	; 0x0b
+int x1, y1, y2, y3;
+x1=xpoint%128;
+     8b4:	8d 85       	ldd	r24, Y+13	; 0x0d
+     8b6:	9e 85       	ldd	r25, Y+14	; 0x0e
+     8b8:	20 e8       	ldi	r18, 0x80	; 128
+     8ba:	30 e0       	ldi	r19, 0x00	; 0
+     8bc:	b9 01       	movw	r22, r18
+     8be:	0e 94 fd 0c 	call	0x19fa	; 0x19fa <__divmodhi4>
+     8c2:	98 87       	std	Y+8, r25	; 0x08
+     8c4:	8f 83       	std	Y+7, r24	; 0x07
+y1=ypoint%64;
+     8c6:	8f 85       	ldd	r24, Y+15	; 0x0f
+     8c8:	98 89       	ldd	r25, Y+16	; 0x10
+     8ca:	20 e4       	ldi	r18, 0x40	; 64
+     8cc:	30 e0       	ldi	r19, 0x00	; 0
+     8ce:	b9 01       	movw	r22, r18
+     8d0:	0e 94 fd 0c 	call	0x19fa	; 0x19fa <__divmodhi4>
+     8d4:	9e 83       	std	Y+6, r25	; 0x06
+     8d6:	8d 83       	std	Y+5, r24	; 0x05
+y2=y1/8;
+     8d8:	8d 81       	ldd	r24, Y+5	; 0x05
+     8da:	9e 81       	ldd	r25, Y+6	; 0x06
+     8dc:	9a 8b       	std	Y+18, r25	; 0x12
+     8de:	89 8b       	std	Y+17, r24	; 0x11
+     8e0:	89 89       	ldd	r24, Y+17	; 0x11
+     8e2:	9a 89       	ldd	r25, Y+18	; 0x12
+     8e4:	99 23       	and	r25, r25
+     8e6:	2c f4       	brge	.+10     	; 0x8f2 <PointXY+0x62>
+     8e8:	89 89       	ldd	r24, Y+17	; 0x11
+     8ea:	9a 89       	ldd	r25, Y+18	; 0x12
+     8ec:	07 96       	adiw	r24, 0x07	; 7
+     8ee:	9a 8b       	std	Y+18, r25	; 0x12
+     8f0:	89 8b       	std	Y+17, r24	; 0x11
+     8f2:	89 89       	ldd	r24, Y+17	; 0x11
+     8f4:	9a 89       	ldd	r25, Y+18	; 0x12
+     8f6:	95 95       	asr	r25
+     8f8:	87 95       	ror	r24
+     8fa:	95 95       	asr	r25
+     8fc:	87 95       	ror	r24
+     8fe:	95 95       	asr	r25
+     900:	87 95       	ror	r24
+     902:	9c 83       	std	Y+4, r25	; 0x04
+     904:	8b 83       	std	Y+3, r24	; 0x03
+y3=y1%8;
+     906:	8d 81       	ldd	r24, Y+5	; 0x05
+     908:	9e 81       	ldd	r25, Y+6	; 0x06
+     90a:	28 e0       	ldi	r18, 0x08	; 8
+     90c:	30 e0       	ldi	r19, 0x00	; 0
+     90e:	b9 01       	movw	r22, r18
+     910:	0e 94 fd 0c 	call	0x19fa	; 0x19fa <__divmodhi4>
+     914:	9a 83       	std	Y+2, r25	; 0x02
+     916:	89 83       	std	Y+1, r24	; 0x01
+compare[y2][x1]|=(point<<y3);
+     918:	4b 81       	ldd	r20, Y+3	; 0x03
+     91a:	5c 81       	ldd	r21, Y+4	; 0x04
+     91c:	6f 81       	ldd	r22, Y+7	; 0x07
+     91e:	78 85       	ldd	r23, Y+8	; 0x08
+     920:	8b 81       	ldd	r24, Y+3	; 0x03
+     922:	9c 81       	ldd	r25, Y+4	; 0x04
+     924:	2f 81       	ldd	r18, Y+7	; 0x07
+     926:	38 85       	ldd	r19, Y+8	; 0x08
+     928:	96 95       	lsr	r25
+     92a:	98 2f       	mov	r25, r24
+     92c:	88 27       	eor	r24, r24
+     92e:	97 95       	ror	r25
+     930:	87 95       	ror	r24
+     932:	82 0f       	add	r24, r18
+     934:	93 1f       	adc	r25, r19
+     936:	fc 01       	movw	r30, r24
+     938:	e8 53       	subi	r30, 0x38	; 56
+     93a:	fe 4f       	sbci	r31, 0xFE	; 254
+     93c:	80 81       	ld	r24, Z
+     93e:	28 2f       	mov	r18, r24
+     940:	8b 85       	ldd	r24, Y+11	; 0x0b
+     942:	9c 85       	ldd	r25, Y+12	; 0x0c
+     944:	09 80       	ldd	r0, Y+1	; 0x01
+     946:	02 c0       	rjmp	.+4      	; 0x94c <PointXY+0xbc>
+     948:	88 0f       	add	r24, r24
+     94a:	99 1f       	adc	r25, r25
+     94c:	0a 94       	dec	r0
+     94e:	e2 f7       	brpl	.-8      	; 0x948 <PointXY+0xb8>
+     950:	82 2b       	or	r24, r18
+     952:	28 2f       	mov	r18, r24
+     954:	ca 01       	movw	r24, r20
+     956:	96 95       	lsr	r25
+     958:	98 2f       	mov	r25, r24
+     95a:	88 27       	eor	r24, r24
+     95c:	97 95       	ror	r25
+     95e:	87 95       	ror	r24
+     960:	86 0f       	add	r24, r22
+     962:	97 1f       	adc	r25, r23
+     964:	fc 01       	movw	r30, r24
+     966:	e8 53       	subi	r30, 0x38	; 56
+     968:	fe 4f       	sbci	r31, 0xFE	; 254
+     96a:	20 83       	st	Z, r18
+value=compare[y2][x1];
+     96c:	8b 81       	ldd	r24, Y+3	; 0x03
+     96e:	9c 81       	ldd	r25, Y+4	; 0x04
+     970:	2f 81       	ldd	r18, Y+7	; 0x07
+     972:	38 85       	ldd	r19, Y+8	; 0x08
+     974:	96 95       	lsr	r25
+     976:	98 2f       	mov	r25, r24
+     978:	88 27       	eor	r24, r24
+     97a:	97 95       	ror	r25
+     97c:	87 95       	ror	r24
+     97e:	82 0f       	add	r24, r18
+     980:	93 1f       	adc	r25, r19
+     982:	fc 01       	movw	r30, r24
+     984:	e8 53       	subi	r30, 0x38	; 56
+     986:	fe 4f       	sbci	r31, 0xFE	; 254
+     988:	80 81       	ld	r24, Z
+     98a:	88 2f       	mov	r24, r24
+     98c:	90 e0       	ldi	r25, 0x00	; 0
+     98e:	9a 87       	std	Y+10, r25	; 0x0a
+     990:	89 87       	std	Y+9, r24	; 0x09
+if(x1<64){
+     992:	8f 81       	ldd	r24, Y+7	; 0x07
+     994:	98 85       	ldd	r25, Y+8	; 0x08
+     996:	80 34       	cpi	r24, 0x40	; 64
+     998:	91 05       	cpc	r25, r1
+     99a:	b4 f5       	brge	.+108    	; 0xa08 <PointXY+0x178>
+  GWrite_Control(CS_ALL, x+y2);
+     99c:	eb e3       	ldi	r30, 0x3B	; 59
+     99e:	f0 e0       	ldi	r31, 0x00	; 0
+     9a0:	80 91 c8 05 	lds	r24, 0x05C8
+     9a4:	88 61       	ori	r24, 0x18	; 24
+     9a6:	80 93 c8 05 	sts	0x05C8, r24
+     9aa:	80 91 c8 05 	lds	r24, 0x05C8
+     9ae:	80 83       	st	Z, r24
+     9b0:	20 81       	ld	r18, Z
+     9b2:	9b 81       	ldd	r25, Y+3	; 0x03
+     9b4:	80 91 00 01 	lds	r24, 0x0100
+     9b8:	98 0f       	add	r25, r24
+     9ba:	82 2f       	mov	r24, r18
+     9bc:	69 2f       	mov	r22, r25
+     9be:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Control(CS_ALL, y+x1);
+     9c2:	eb e3       	ldi	r30, 0x3B	; 59
+     9c4:	f0 e0       	ldi	r31, 0x00	; 0
+     9c6:	80 91 c8 05 	lds	r24, 0x05C8
+     9ca:	88 61       	ori	r24, 0x18	; 24
+     9cc:	80 93 c8 05 	sts	0x05C8, r24
+     9d0:	80 91 c8 05 	lds	r24, 0x05C8
+     9d4:	80 83       	st	Z, r24
+     9d6:	20 81       	ld	r18, Z
+     9d8:	9f 81       	ldd	r25, Y+7	; 0x07
+     9da:	80 91 01 01 	lds	r24, 0x0101
+     9de:	98 0f       	add	r25, r24
+     9e0:	82 2f       	mov	r24, r18
+     9e2:	69 2f       	mov	r22, r25
+     9e4:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Data(CS2_OFF, value);} else {
+     9e8:	eb e3       	ldi	r30, 0x3B	; 59
+     9ea:	f0 e0       	ldi	r31, 0x00	; 0
+     9ec:	80 91 c8 05 	lds	r24, 0x05C8
+     9f0:	8f 7e       	andi	r24, 0xEF	; 239
+     9f2:	80 93 c8 05 	sts	0x05C8, r24
+     9f6:	80 91 c8 05 	lds	r24, 0x05C8
+     9fa:	80 83       	st	Z, r24
+     9fc:	80 81       	ld	r24, Z
+     9fe:	99 85       	ldd	r25, Y+9	; 0x09
+     a00:	69 2f       	mov	r22, r25
+     a02:	0e 94 66 02 	call	0x4cc	; 0x4cc <GWrite_Data>
+     a06:	37 c0       	rjmp	.+110    	; 0xa76 <PointXY+0x1e6>
+  GWrite_Control(CS_ALL, x+y2);
+     a08:	eb e3       	ldi	r30, 0x3B	; 59
+     a0a:	f0 e0       	ldi	r31, 0x00	; 0
+     a0c:	80 91 c8 05 	lds	r24, 0x05C8
+     a10:	88 61       	ori	r24, 0x18	; 24
+     a12:	80 93 c8 05 	sts	0x05C8, r24
+     a16:	80 91 c8 05 	lds	r24, 0x05C8
+     a1a:	80 83       	st	Z, r24
+     a1c:	20 81       	ld	r18, Z
+     a1e:	9b 81       	ldd	r25, Y+3	; 0x03
+     a20:	80 91 00 01 	lds	r24, 0x0100
+     a24:	98 0f       	add	r25, r24
+     a26:	82 2f       	mov	r24, r18
+     a28:	69 2f       	mov	r22, r25
+     a2a:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Control(CS_ALL, y+x1-64);
+     a2e:	eb e3       	ldi	r30, 0x3B	; 59
+     a30:	f0 e0       	ldi	r31, 0x00	; 0
+     a32:	80 91 c8 05 	lds	r24, 0x05C8
+     a36:	88 61       	ori	r24, 0x18	; 24
+     a38:	80 93 c8 05 	sts	0x05C8, r24
+     a3c:	80 91 c8 05 	lds	r24, 0x05C8
+     a40:	80 83       	st	Z, r24
+     a42:	20 81       	ld	r18, Z
+     a44:	9f 81       	ldd	r25, Y+7	; 0x07
+     a46:	80 91 01 01 	lds	r24, 0x0101
+     a4a:	89 0f       	add	r24, r25
+     a4c:	98 2f       	mov	r25, r24
+     a4e:	90 54       	subi	r25, 0x40	; 64
+     a50:	82 2f       	mov	r24, r18
+     a52:	69 2f       	mov	r22, r25
+     a54:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Data(CS1_OFF, value);}
+     a58:	eb e3       	ldi	r30, 0x3B	; 59
+     a5a:	f0 e0       	ldi	r31, 0x00	; 0
+     a5c:	80 91 c8 05 	lds	r24, 0x05C8
+     a60:	87 7f       	andi	r24, 0xF7	; 247
+     a62:	80 93 c8 05 	sts	0x05C8, r24
+     a66:	80 91 c8 05 	lds	r24, 0x05C8
+     a6a:	80 83       	st	Z, r24
+     a6c:	80 81       	ld	r24, Z
+     a6e:	99 85       	ldd	r25, Y+9	; 0x09
+     a70:	69 2f       	mov	r22, r25
+     a72:	0e 94 66 02 	call	0x4cc	; 0x4cc <GWrite_Data>
+  }
+     a76:	62 96       	adiw	r28, 0x12	; 18
+     a78:	0f b6       	in	r0, 0x3f	; 63
+     a7a:	f8 94       	cli
+     a7c:	de bf       	out	0x3e, r29	; 62
+     a7e:	0f be       	out	0x3f, r0	; 63
+     a80:	cd bf       	out	0x3d, r28	; 61
+     a82:	cf 91       	pop	r28
+     a84:	df 91       	pop	r29
+     a86:	08 95       	ret
+
+00000a88 <Point_Del>:
+void Point_Del(int xpoint, int ypoint){
+     a88:	df 93       	push	r29
+     a8a:	cf 93       	push	r28
+     a8c:	cd b7       	in	r28, 0x3d	; 61
+     a8e:	de b7       	in	r29, 0x3e	; 62
+     a90:	62 97       	sbiw	r28, 0x12	; 18
+     a92:	0f b6       	in	r0, 0x3f	; 63
+     a94:	f8 94       	cli
+     a96:	de bf       	out	0x3e, r29	; 62
+     a98:	0f be       	out	0x3f, r0	; 63
+     a9a:	cd bf       	out	0x3d, r28	; 61
+     a9c:	9e 87       	std	Y+14, r25	; 0x0e
+     a9e:	8d 87       	std	Y+13, r24	; 0x0d
+     aa0:	78 8b       	std	Y+16, r23	; 0x10
+     aa2:	6f 87       	std	Y+15, r22	; 0x0f
+int point=0x01, value;
+     aa4:	81 e0       	ldi	r24, 0x01	; 1
+     aa6:	90 e0       	ldi	r25, 0x00	; 0
+     aa8:	9c 87       	std	Y+12, r25	; 0x0c
+     aaa:	8b 87       	std	Y+11, r24	; 0x0b
+int x1, y1, y2, y3;
+x1=xpoint%128;
+     aac:	8d 85       	ldd	r24, Y+13	; 0x0d
+     aae:	9e 85       	ldd	r25, Y+14	; 0x0e
+     ab0:	20 e8       	ldi	r18, 0x80	; 128
+     ab2:	30 e0       	ldi	r19, 0x00	; 0
+     ab4:	b9 01       	movw	r22, r18
+     ab6:	0e 94 fd 0c 	call	0x19fa	; 0x19fa <__divmodhi4>
+     aba:	98 87       	std	Y+8, r25	; 0x08
+     abc:	8f 83       	std	Y+7, r24	; 0x07
+y1=ypoint%64;
+     abe:	8f 85       	ldd	r24, Y+15	; 0x0f
+     ac0:	98 89       	ldd	r25, Y+16	; 0x10
+     ac2:	20 e4       	ldi	r18, 0x40	; 64
+     ac4:	30 e0       	ldi	r19, 0x00	; 0
+     ac6:	b9 01       	movw	r22, r18
+     ac8:	0e 94 fd 0c 	call	0x19fa	; 0x19fa <__divmodhi4>
+     acc:	9e 83       	std	Y+6, r25	; 0x06
+     ace:	8d 83       	std	Y+5, r24	; 0x05
+y2=y1/8;
+     ad0:	8d 81       	ldd	r24, Y+5	; 0x05
+     ad2:	9e 81       	ldd	r25, Y+6	; 0x06
+     ad4:	9a 8b       	std	Y+18, r25	; 0x12
+     ad6:	89 8b       	std	Y+17, r24	; 0x11
+     ad8:	89 89       	ldd	r24, Y+17	; 0x11
+     ada:	9a 89       	ldd	r25, Y+18	; 0x12
+     adc:	99 23       	and	r25, r25
+     ade:	2c f4       	brge	.+10     	; 0xaea <Point_Del+0x62>
+     ae0:	89 89       	ldd	r24, Y+17	; 0x11
+     ae2:	9a 89       	ldd	r25, Y+18	; 0x12
+     ae4:	07 96       	adiw	r24, 0x07	; 7
+     ae6:	9a 8b       	std	Y+18, r25	; 0x12
+     ae8:	89 8b       	std	Y+17, r24	; 0x11
+     aea:	89 89       	ldd	r24, Y+17	; 0x11
+     aec:	9a 89       	ldd	r25, Y+18	; 0x12
+     aee:	95 95       	asr	r25
+     af0:	87 95       	ror	r24
+     af2:	95 95       	asr	r25
+     af4:	87 95       	ror	r24
+     af6:	95 95       	asr	r25
+     af8:	87 95       	ror	r24
+     afa:	9c 83       	std	Y+4, r25	; 0x04
+     afc:	8b 83       	std	Y+3, r24	; 0x03
+y3=y1%8;
+     afe:	8d 81       	ldd	r24, Y+5	; 0x05
+     b00:	9e 81       	ldd	r25, Y+6	; 0x06
+     b02:	28 e0       	ldi	r18, 0x08	; 8
+     b04:	30 e0       	ldi	r19, 0x00	; 0
+     b06:	b9 01       	movw	r22, r18
+     b08:	0e 94 fd 0c 	call	0x19fa	; 0x19fa <__divmodhi4>
+     b0c:	9a 83       	std	Y+2, r25	; 0x02
+     b0e:	89 83       	std	Y+1, r24	; 0x01
+compare[y2][x1]&=(~(point<<y3));
+     b10:	4b 81       	ldd	r20, Y+3	; 0x03
+     b12:	5c 81       	ldd	r21, Y+4	; 0x04
+     b14:	6f 81       	ldd	r22, Y+7	; 0x07
+     b16:	78 85       	ldd	r23, Y+8	; 0x08
+     b18:	8b 81       	ldd	r24, Y+3	; 0x03
+     b1a:	9c 81       	ldd	r25, Y+4	; 0x04
+     b1c:	2f 81       	ldd	r18, Y+7	; 0x07
+     b1e:	38 85       	ldd	r19, Y+8	; 0x08
+     b20:	96 95       	lsr	r25
+     b22:	98 2f       	mov	r25, r24
+     b24:	88 27       	eor	r24, r24
+     b26:	97 95       	ror	r25
+     b28:	87 95       	ror	r24
+     b2a:	82 0f       	add	r24, r18
+     b2c:	93 1f       	adc	r25, r19
+     b2e:	fc 01       	movw	r30, r24
+     b30:	e8 53       	subi	r30, 0x38	; 56
+     b32:	fe 4f       	sbci	r31, 0xFE	; 254
+     b34:	80 81       	ld	r24, Z
+     b36:	28 2f       	mov	r18, r24
+     b38:	8b 85       	ldd	r24, Y+11	; 0x0b
+     b3a:	9c 85       	ldd	r25, Y+12	; 0x0c
+     b3c:	09 80       	ldd	r0, Y+1	; 0x01
+     b3e:	02 c0       	rjmp	.+4      	; 0xb44 <Point_Del+0xbc>
+     b40:	88 0f       	add	r24, r24
+     b42:	99 1f       	adc	r25, r25
+     b44:	0a 94       	dec	r0
+     b46:	e2 f7       	brpl	.-8      	; 0xb40 <Point_Del+0xb8>
+     b48:	80 95       	com	r24
+     b4a:	82 23       	and	r24, r18
+     b4c:	28 2f       	mov	r18, r24
+     b4e:	ca 01       	movw	r24, r20
+     b50:	96 95       	lsr	r25
+     b52:	98 2f       	mov	r25, r24
+     b54:	88 27       	eor	r24, r24
+     b56:	97 95       	ror	r25
+     b58:	87 95       	ror	r24
+     b5a:	86 0f       	add	r24, r22
+     b5c:	97 1f       	adc	r25, r23
+     b5e:	fc 01       	movw	r30, r24
+     b60:	e8 53       	subi	r30, 0x38	; 56
+     b62:	fe 4f       	sbci	r31, 0xFE	; 254
+     b64:	20 83       	st	Z, r18
+value=compare[y2][x1];
+     b66:	8b 81       	ldd	r24, Y+3	; 0x03
+     b68:	9c 81       	ldd	r25, Y+4	; 0x04
+     b6a:	2f 81       	ldd	r18, Y+7	; 0x07
+     b6c:	38 85       	ldd	r19, Y+8	; 0x08
+     b6e:	96 95       	lsr	r25
+     b70:	98 2f       	mov	r25, r24
+     b72:	88 27       	eor	r24, r24
+     b74:	97 95       	ror	r25
+     b76:	87 95       	ror	r24
+     b78:	82 0f       	add	r24, r18
+     b7a:	93 1f       	adc	r25, r19
+     b7c:	fc 01       	movw	r30, r24
+     b7e:	e8 53       	subi	r30, 0x38	; 56
+     b80:	fe 4f       	sbci	r31, 0xFE	; 254
+     b82:	80 81       	ld	r24, Z
+     b84:	88 2f       	mov	r24, r24
+     b86:	90 e0       	ldi	r25, 0x00	; 0
+     b88:	9a 87       	std	Y+10, r25	; 0x0a
+     b8a:	89 87       	std	Y+9, r24	; 0x09
+if(x1<64){
+     b8c:	8f 81       	ldd	r24, Y+7	; 0x07
+     b8e:	98 85       	ldd	r25, Y+8	; 0x08
+     b90:	80 34       	cpi	r24, 0x40	; 64
+     b92:	91 05       	cpc	r25, r1
+     b94:	b4 f5       	brge	.+108    	; 0xc02 <Point_Del+0x17a>
+  GWrite_Control(CS_ALL, x+y2);
+     b96:	eb e3       	ldi	r30, 0x3B	; 59
+     b98:	f0 e0       	ldi	r31, 0x00	; 0
+     b9a:	80 91 c8 05 	lds	r24, 0x05C8
+     b9e:	88 61       	ori	r24, 0x18	; 24
+     ba0:	80 93 c8 05 	sts	0x05C8, r24
+     ba4:	80 91 c8 05 	lds	r24, 0x05C8
+     ba8:	80 83       	st	Z, r24
+     baa:	20 81       	ld	r18, Z
+     bac:	9b 81       	ldd	r25, Y+3	; 0x03
+     bae:	80 91 00 01 	lds	r24, 0x0100
+     bb2:	98 0f       	add	r25, r24
+     bb4:	82 2f       	mov	r24, r18
+     bb6:	69 2f       	mov	r22, r25
+     bb8:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Control(CS_ALL, y+x1);
+     bbc:	eb e3       	ldi	r30, 0x3B	; 59
+     bbe:	f0 e0       	ldi	r31, 0x00	; 0
+     bc0:	80 91 c8 05 	lds	r24, 0x05C8
+     bc4:	88 61       	ori	r24, 0x18	; 24
+     bc6:	80 93 c8 05 	sts	0x05C8, r24
+     bca:	80 91 c8 05 	lds	r24, 0x05C8
+     bce:	80 83       	st	Z, r24
+     bd0:	20 81       	ld	r18, Z
+     bd2:	9f 81       	ldd	r25, Y+7	; 0x07
+     bd4:	80 91 01 01 	lds	r24, 0x0101
+     bd8:	98 0f       	add	r25, r24
+     bda:	82 2f       	mov	r24, r18
+     bdc:	69 2f       	mov	r22, r25
+     bde:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Data(CS2_OFF, value);} else {
+     be2:	eb e3       	ldi	r30, 0x3B	; 59
+     be4:	f0 e0       	ldi	r31, 0x00	; 0
+     be6:	80 91 c8 05 	lds	r24, 0x05C8
+     bea:	8f 7e       	andi	r24, 0xEF	; 239
+     bec:	80 93 c8 05 	sts	0x05C8, r24
+     bf0:	80 91 c8 05 	lds	r24, 0x05C8
+     bf4:	80 83       	st	Z, r24
+     bf6:	80 81       	ld	r24, Z
+     bf8:	99 85       	ldd	r25, Y+9	; 0x09
+     bfa:	69 2f       	mov	r22, r25
+     bfc:	0e 94 66 02 	call	0x4cc	; 0x4cc <GWrite_Data>
+     c00:	37 c0       	rjmp	.+110    	; 0xc70 <Point_Del+0x1e8>
+  GWrite_Control(CS_ALL, x+y2);
+     c02:	eb e3       	ldi	r30, 0x3B	; 59
+     c04:	f0 e0       	ldi	r31, 0x00	; 0
+     c06:	80 91 c8 05 	lds	r24, 0x05C8
+     c0a:	88 61       	ori	r24, 0x18	; 24
+     c0c:	80 93 c8 05 	sts	0x05C8, r24
+     c10:	80 91 c8 05 	lds	r24, 0x05C8
+     c14:	80 83       	st	Z, r24
+     c16:	20 81       	ld	r18, Z
+     c18:	9b 81       	ldd	r25, Y+3	; 0x03
+     c1a:	80 91 00 01 	lds	r24, 0x0100
+     c1e:	98 0f       	add	r25, r24
+     c20:	82 2f       	mov	r24, r18
+     c22:	69 2f       	mov	r22, r25
+     c24:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Control(CS_ALL, y+x1-64);
+     c28:	eb e3       	ldi	r30, 0x3B	; 59
+     c2a:	f0 e0       	ldi	r31, 0x00	; 0
+     c2c:	80 91 c8 05 	lds	r24, 0x05C8
+     c30:	88 61       	ori	r24, 0x18	; 24
+     c32:	80 93 c8 05 	sts	0x05C8, r24
+     c36:	80 91 c8 05 	lds	r24, 0x05C8
+     c3a:	80 83       	st	Z, r24
+     c3c:	20 81       	ld	r18, Z
+     c3e:	9f 81       	ldd	r25, Y+7	; 0x07
+     c40:	80 91 01 01 	lds	r24, 0x0101
+     c44:	89 0f       	add	r24, r25
+     c46:	98 2f       	mov	r25, r24
+     c48:	90 54       	subi	r25, 0x40	; 64
+     c4a:	82 2f       	mov	r24, r18
+     c4c:	69 2f       	mov	r22, r25
+     c4e:	0e 94 00 02 	call	0x400	; 0x400 <GWrite_Control>
+  GWrite_Data(CS1_OFF, value);}
+     c52:	eb e3       	ldi	r30, 0x3B	; 59
+     c54:	f0 e0       	ldi	r31, 0x00	; 0
+     c56:	80 91 c8 05 	lds	r24, 0x05C8
+     c5a:	87 7f       	andi	r24, 0xF7	; 247
+     c5c:	80 93 c8 05 	sts	0x05C8, r24
+     c60:	80 91 c8 05 	lds	r24, 0x05C8
+     c64:	80 83       	st	Z, r24
+     c66:	80 81       	ld	r24, Z
+     c68:	99 85       	ldd	r25, Y+9	; 0x09
+     c6a:	69 2f       	mov	r22, r25
+     c6c:	0e 94 66 02 	call	0x4cc	; 0x4cc <GWrite_Data>
+  }
+     c70:	62 96       	adiw	r28, 0x12	; 18
+     c72:	0f b6       	in	r0, 0x3f	; 63
+     c74:	f8 94       	cli
+     c76:	de bf       	out	0x3e, r29	; 62
+     c78:	0f be       	out	0x3f, r0	; 63
+     c7a:	cd bf       	out	0x3d, r28	; 61
+     c7c:	cf 91       	pop	r28
+     c7e:	df 91       	pop	r29
+     c80:	08 95       	ret
+
+00000c82 <Draw_Line>:
+  
+void Draw_Line(int X0, int Y0, int X1, int Y1){
+     c82:	df 93       	push	r29
+     c84:	cf 93       	push	r28
+     c86:	cd b7       	in	r28, 0x3d	; 61
+     c88:	de b7       	in	r29, 0x3e	; 62
+     c8a:	6c 97       	sbiw	r28, 0x1c	; 28
+     c8c:	0f b6       	in	r0, 0x3f	; 63
+     c8e:	f8 94       	cli
+     c90:	de bf       	out	0x3e, r29	; 62
+     c92:	0f be       	out	0x3f, r0	; 63
+     c94:	cd bf       	out	0x3d, r28	; 61
+     c96:	9e 8b       	std	Y+22, r25	; 0x16
+     c98:	8d 8b       	std	Y+21, r24	; 0x15
+     c9a:	78 8f       	std	Y+24, r23	; 0x18
+     c9c:	6f 8b       	std	Y+23, r22	; 0x17
+     c9e:	5a 8f       	std	Y+26, r21	; 0x1a
+     ca0:	49 8f       	std	Y+25, r20	; 0x19
+     ca2:	3c 8f       	std	Y+28, r19	; 0x1c
+     ca4:	2b 8f       	std	Y+27, r18	; 0x1b
+  int x0=X0, y0=Y0, x1=X1, y1=Y1; 
+     ca6:	8d 89       	ldd	r24, Y+21	; 0x15
+     ca8:	9e 89       	ldd	r25, Y+22	; 0x16
+     caa:	9c 8b       	std	Y+20, r25	; 0x14
+     cac:	8b 8b       	std	Y+19, r24	; 0x13
+     cae:	8f 89       	ldd	r24, Y+23	; 0x17
+     cb0:	98 8d       	ldd	r25, Y+24	; 0x18
+     cb2:	9a 8b       	std	Y+18, r25	; 0x12
+     cb4:	89 8b       	std	Y+17, r24	; 0x11
+     cb6:	89 8d       	ldd	r24, Y+25	; 0x19
+     cb8:	9a 8d       	ldd	r25, Y+26	; 0x1a
+     cba:	98 8b       	std	Y+16, r25	; 0x10
+     cbc:	8f 87       	std	Y+15, r24	; 0x0f
+     cbe:	8b 8d       	ldd	r24, Y+27	; 0x1b
+     cc0:	9c 8d       	ldd	r25, Y+28	; 0x1c
+     cc2:	9e 87       	std	Y+14, r25	; 0x0e
+     cc4:	8d 87       	std	Y+13, r24	; 0x0d
+  int dy = y1 - y0; 
+     cc6:	2d 85       	ldd	r18, Y+13	; 0x0d
+     cc8:	3e 85       	ldd	r19, Y+14	; 0x0e
+     cca:	89 89       	ldd	r24, Y+17	; 0x11
+     ccc:	9a 89       	ldd	r25, Y+18	; 0x12
+     cce:	a9 01       	movw	r20, r18
+     cd0:	48 1b       	sub	r20, r24
+     cd2:	59 0b       	sbc	r21, r25
+     cd4:	ca 01       	movw	r24, r20
+     cd6:	9c 87       	std	Y+12, r25	; 0x0c
+     cd8:	8b 87       	std	Y+11, r24	; 0x0b
+  int dx = x1 - x0; 
+     cda:	2f 85       	ldd	r18, Y+15	; 0x0f
+     cdc:	38 89       	ldd	r19, Y+16	; 0x10
+     cde:	8b 89       	ldd	r24, Y+19	; 0x13
+     ce0:	9c 89       	ldd	r25, Y+20	; 0x14
+     ce2:	a9 01       	movw	r20, r18
+     ce4:	48 1b       	sub	r20, r24
+     ce6:	59 0b       	sbc	r21, r25
+     ce8:	ca 01       	movw	r24, r20
+     cea:	9a 87       	std	Y+10, r25	; 0x0a
+     cec:	89 87       	std	Y+9, r24	; 0x09
+  int stepx, stepy; 
+  if (dy < 0) { 
+     cee:	8b 85       	ldd	r24, Y+11	; 0x0b
+     cf0:	9c 85       	ldd	r25, Y+12	; 0x0c
+     cf2:	99 23       	and	r25, r25
+     cf4:	64 f4       	brge	.+24     	; 0xd0e <Draw_Line+0x8c>
+   dy = -dy; 
+     cf6:	8b 85       	ldd	r24, Y+11	; 0x0b
+     cf8:	9c 85       	ldd	r25, Y+12	; 0x0c
+     cfa:	90 95       	com	r25
+     cfc:	81 95       	neg	r24
+     cfe:	9f 4f       	sbci	r25, 0xFF	; 255
+     d00:	9c 87       	std	Y+12, r25	; 0x0c
+     d02:	8b 87       	std	Y+11, r24	; 0x0b
+   stepy = -1; 
+     d04:	8f ef       	ldi	r24, 0xFF	; 255
+     d06:	9f ef       	ldi	r25, 0xFF	; 255
+     d08:	9e 83       	std	Y+6, r25	; 0x06
+     d0a:	8d 83       	std	Y+5, r24	; 0x05
+     d0c:	04 c0       	rjmp	.+8      	; 0xd16 <Draw_Line+0x94>
+   } else { 
+    stepy = 1; 
+     d0e:	81 e0       	ldi	r24, 0x01	; 1
+     d10:	90 e0       	ldi	r25, 0x00	; 0
+     d12:	9e 83       	std	Y+6, r25	; 0x06
+     d14:	8d 83       	std	Y+5, r24	; 0x05
+    } 
+  if (dx < 0) { 
+     d16:	89 85       	ldd	r24, Y+9	; 0x09
+     d18:	9a 85       	ldd	r25, Y+10	; 0x0a
+     d1a:	99 23       	and	r25, r25
+     d1c:	64 f4       	brge	.+24     	; 0xd36 <Draw_Line+0xb4>
+   dx = -dx; 
+     d1e:	89 85       	ldd	r24, Y+9	; 0x09
+     d20:	9a 85       	ldd	r25, Y+10	; 0x0a
+     d22:	90 95       	com	r25
+     d24:	81 95       	neg	r24
+     d26:	9f 4f       	sbci	r25, 0xFF	; 255
+     d28:	9a 87       	std	Y+10, r25	; 0x0a
+     d2a:	89 87       	std	Y+9, r24	; 0x09
+   stepx = -1; 
+     d2c:	8f ef       	ldi	r24, 0xFF	; 255
+     d2e:	9f ef       	ldi	r25, 0xFF	; 255
+     d30:	98 87       	std	Y+8, r25	; 0x08
+     d32:	8f 83       	std	Y+7, r24	; 0x07
+     d34:	04 c0       	rjmp	.+8      	; 0xd3e <Draw_Line+0xbc>
+   } else { 
+    stepx = 1; 
+     d36:	81 e0       	ldi	r24, 0x01	; 1
+     d38:	90 e0       	ldi	r25, 0x00	; 0
+     d3a:	98 87       	std	Y+8, r25	; 0x08
+     d3c:	8f 83       	std	Y+7, r24	; 0x07
+   } 
+  dy <<= 1;            
+     d3e:	8b 85       	ldd	r24, Y+11	; 0x0b
+     d40:	9c 85       	ldd	r25, Y+12	; 0x0c
+     d42:	88 0f       	add	r24, r24
+     d44:	99 1f       	adc	r25, r25
+     d46:	9c 87       	std	Y+12, r25	; 0x0c
+     d48:	8b 87       	std	Y+11, r24	; 0x0b
+  dx <<= 1;            
+     d4a:	89 85       	ldd	r24, Y+9	; 0x09
+     d4c:	9a 85       	ldd	r25, Y+10	; 0x0a
+     d4e:	88 0f       	add	r24, r24
+     d50:	99 1f       	adc	r25, r25
+     d52:	9a 87       	std	Y+10, r25	; 0x0a
+     d54:	89 87       	std	Y+9, r24	; 0x09
+  PointXY(x0, y0);     
+     d56:	8b 89       	ldd	r24, Y+19	; 0x13
+     d58:	9c 89       	ldd	r25, Y+20	; 0x14
+     d5a:	29 89       	ldd	r18, Y+17	; 0x11
+     d5c:	3a 89       	ldd	r19, Y+18	; 0x12
+     d5e:	b9 01       	movw	r22, r18
+     d60:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+  if (dx > dy) { 
+     d64:	29 85       	ldd	r18, Y+9	; 0x09
+     d66:	3a 85       	ldd	r19, Y+10	; 0x0a
+     d68:	8b 85       	ldd	r24, Y+11	; 0x0b
+     d6a:	9c 85       	ldd	r25, Y+12	; 0x0c
+     d6c:	82 17       	cp	r24, r18
+     d6e:	93 07       	cpc	r25, r19
+     d70:	0c f0       	brlt	.+2      	; 0xd74 <Draw_Line+0xf2>
+     d72:	41 c0       	rjmp	.+130    	; 0xdf6 <Draw_Line+0x174>
+   int fraction = dy - (dx >> 1);  
+     d74:	89 85       	ldd	r24, Y+9	; 0x09
+     d76:	9a 85       	ldd	r25, Y+10	; 0x0a
+     d78:	9c 01       	movw	r18, r24
+     d7a:	35 95       	asr	r19
+     d7c:	27 95       	ror	r18
+     d7e:	8b 85       	ldd	r24, Y+11	; 0x0b
+     d80:	9c 85       	ldd	r25, Y+12	; 0x0c
+     d82:	82 1b       	sub	r24, r18
+     d84:	93 0b       	sbc	r25, r19
+     d86:	9c 83       	std	Y+4, r25	; 0x04
+     d88:	8b 83       	std	Y+3, r24	; 0x03
+     d8a:	2d c0       	rjmp	.+90     	; 0xde6 <Draw_Line+0x164>
+   while (x0 != x1) { 
+    if (fraction >= 0) { 
+     d8c:	8b 81       	ldd	r24, Y+3	; 0x03
+     d8e:	9c 81       	ldd	r25, Y+4	; 0x04
+     d90:	99 23       	and	r25, r25
+     d92:	94 f0       	brlt	.+36     	; 0xdb8 <Draw_Line+0x136>
+      y0 += stepy; 
+     d94:	29 89       	ldd	r18, Y+17	; 0x11
+     d96:	3a 89       	ldd	r19, Y+18	; 0x12
+     d98:	8d 81       	ldd	r24, Y+5	; 0x05
+     d9a:	9e 81       	ldd	r25, Y+6	; 0x06
+     d9c:	82 0f       	add	r24, r18
+     d9e:	93 1f       	adc	r25, r19
+     da0:	9a 8b       	std	Y+18, r25	; 0x12
+     da2:	89 8b       	std	Y+17, r24	; 0x11
+      fraction -= dx;                  
+     da4:	2b 81       	ldd	r18, Y+3	; 0x03
+     da6:	3c 81       	ldd	r19, Y+4	; 0x04
+     da8:	89 85       	ldd	r24, Y+9	; 0x09
+     daa:	9a 85       	ldd	r25, Y+10	; 0x0a
+     dac:	a9 01       	movw	r20, r18
+     dae:	48 1b       	sub	r20, r24
+     db0:	59 0b       	sbc	r21, r25
+     db2:	ca 01       	movw	r24, r20
+     db4:	9c 83       	std	Y+4, r25	; 0x04
+     db6:	8b 83       	std	Y+3, r24	; 0x03
+      } 
+    x0 += stepx; 
+     db8:	2b 89       	ldd	r18, Y+19	; 0x13
+     dba:	3c 89       	ldd	r19, Y+20	; 0x14
+     dbc:	8f 81       	ldd	r24, Y+7	; 0x07
+     dbe:	98 85       	ldd	r25, Y+8	; 0x08
+     dc0:	82 0f       	add	r24, r18
+     dc2:	93 1f       	adc	r25, r19
+     dc4:	9c 8b       	std	Y+20, r25	; 0x14
+     dc6:	8b 8b       	std	Y+19, r24	; 0x13
+    fraction += dy;                    
+     dc8:	2b 81       	ldd	r18, Y+3	; 0x03
+     dca:	3c 81       	ldd	r19, Y+4	; 0x04
+     dcc:	8b 85       	ldd	r24, Y+11	; 0x0b
+     dce:	9c 85       	ldd	r25, Y+12	; 0x0c
+     dd0:	82 0f       	add	r24, r18
+     dd2:	93 1f       	adc	r25, r19
+     dd4:	9c 83       	std	Y+4, r25	; 0x04
+     dd6:	8b 83       	std	Y+3, r24	; 0x03
+    PointXY(x0, y0); 
+     dd8:	8b 89       	ldd	r24, Y+19	; 0x13
+     dda:	9c 89       	ldd	r25, Y+20	; 0x14
+     ddc:	29 89       	ldd	r18, Y+17	; 0x11
+     dde:	3a 89       	ldd	r19, Y+18	; 0x12
+     de0:	b9 01       	movw	r22, r18
+     de2:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+  dy <<= 1;            
+  dx <<= 1;            
+  PointXY(x0, y0);     
+  if (dx > dy) { 
+   int fraction = dy - (dx >> 1);  
+   while (x0 != x1) { 
+     de6:	2b 89       	ldd	r18, Y+19	; 0x13
+     de8:	3c 89       	ldd	r19, Y+20	; 0x14
+     dea:	8f 85       	ldd	r24, Y+15	; 0x0f
+     dec:	98 89       	ldd	r25, Y+16	; 0x10
+     dee:	28 17       	cp	r18, r24
+     df0:	39 07       	cpc	r19, r25
+     df2:	61 f6       	brne	.-104    	; 0xd8c <Draw_Line+0x10a>
+     df4:	40 c0       	rjmp	.+128    	; 0xe76 <Draw_Line+0x1f4>
+    x0 += stepx; 
+    fraction += dy;                    
+    PointXY(x0, y0); 
+     } 
+    } else { 
+        int fraction = dx - (dy >> 1); 
+     df6:	8b 85       	ldd	r24, Y+11	; 0x0b
+     df8:	9c 85       	ldd	r25, Y+12	; 0x0c
+     dfa:	9c 01       	movw	r18, r24
+     dfc:	35 95       	asr	r19
+     dfe:	27 95       	ror	r18
+     e00:	89 85       	ldd	r24, Y+9	; 0x09
+     e02:	9a 85       	ldd	r25, Y+10	; 0x0a
+     e04:	82 1b       	sub	r24, r18
+     e06:	93 0b       	sbc	r25, r19
+     e08:	9a 83       	std	Y+2, r25	; 0x02
+     e0a:	89 83       	std	Y+1, r24	; 0x01
+     e0c:	2d c0       	rjmp	.+90     	; 0xe68 <Draw_Line+0x1e6>
+        while (y0 != y1) { 
+          if (fraction >= 0) { 
+     e0e:	89 81       	ldd	r24, Y+1	; 0x01
+     e10:	9a 81       	ldd	r25, Y+2	; 0x02
+     e12:	99 23       	and	r25, r25
+     e14:	94 f0       	brlt	.+36     	; 0xe3a <Draw_Line+0x1b8>
+              x0 += stepx; 
+     e16:	2b 89       	ldd	r18, Y+19	; 0x13
+     e18:	3c 89       	ldd	r19, Y+20	; 0x14
+     e1a:	8f 81       	ldd	r24, Y+7	; 0x07
+     e1c:	98 85       	ldd	r25, Y+8	; 0x08
+     e1e:	82 0f       	add	r24, r18
+     e20:	93 1f       	adc	r25, r19
+     e22:	9c 8b       	std	Y+20, r25	; 0x14
+     e24:	8b 8b       	std	Y+19, r24	; 0x13
+              fraction -= dy; 
+     e26:	29 81       	ldd	r18, Y+1	; 0x01
+     e28:	3a 81       	ldd	r19, Y+2	; 0x02
+     e2a:	8b 85       	ldd	r24, Y+11	; 0x0b
+     e2c:	9c 85       	ldd	r25, Y+12	; 0x0c
+     e2e:	a9 01       	movw	r20, r18
+     e30:	48 1b       	sub	r20, r24
+     e32:	59 0b       	sbc	r21, r25
+     e34:	ca 01       	movw	r24, r20
+     e36:	9a 83       	std	Y+2, r25	; 0x02
+     e38:	89 83       	std	Y+1, r24	; 0x01
+              } 
+          y0 += stepy; 
+     e3a:	29 89       	ldd	r18, Y+17	; 0x11
+     e3c:	3a 89       	ldd	r19, Y+18	; 0x12
+     e3e:	8d 81       	ldd	r24, Y+5	; 0x05
+     e40:	9e 81       	ldd	r25, Y+6	; 0x06
+     e42:	82 0f       	add	r24, r18
+     e44:	93 1f       	adc	r25, r19
+     e46:	9a 8b       	std	Y+18, r25	; 0x12
+     e48:	89 8b       	std	Y+17, r24	; 0x11
+          fraction += dx;      
+     e4a:	29 81       	ldd	r18, Y+1	; 0x01
+     e4c:	3a 81       	ldd	r19, Y+2	; 0x02
+     e4e:	89 85       	ldd	r24, Y+9	; 0x09
+     e50:	9a 85       	ldd	r25, Y+10	; 0x0a
+     e52:	82 0f       	add	r24, r18
+     e54:	93 1f       	adc	r25, r19
+     e56:	9a 83       	std	Y+2, r25	; 0x02
+     e58:	89 83       	std	Y+1, r24	; 0x01
+          PointXY(x0, y0); 
+     e5a:	8b 89       	ldd	r24, Y+19	; 0x13
+     e5c:	9c 89       	ldd	r25, Y+20	; 0x14
+     e5e:	29 89       	ldd	r18, Y+17	; 0x11
+     e60:	3a 89       	ldd	r19, Y+18	; 0x12
+     e62:	b9 01       	movw	r22, r18
+     e64:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+    fraction += dy;                    
+    PointXY(x0, y0); 
+     } 
+    } else { 
+        int fraction = dx - (dy >> 1); 
+        while (y0 != y1) { 
+     e68:	29 89       	ldd	r18, Y+17	; 0x11
+     e6a:	3a 89       	ldd	r19, Y+18	; 0x12
+     e6c:	8d 85       	ldd	r24, Y+13	; 0x0d
+     e6e:	9e 85       	ldd	r25, Y+14	; 0x0e
+     e70:	28 17       	cp	r18, r24
+     e72:	39 07       	cpc	r19, r25
+     e74:	61 f6       	brne	.-104    	; 0xe0e <Draw_Line+0x18c>
+          y0 += stepy; 
+          fraction += dx;      
+          PointXY(x0, y0); 
+            } 
+        } 
+    } 
+     e76:	6c 96       	adiw	r28, 0x1c	; 28
+     e78:	0f b6       	in	r0, 0x3f	; 63
+     e7a:	f8 94       	cli
+     e7c:	de bf       	out	0x3e, r29	; 62
+     e7e:	0f be       	out	0x3f, r0	; 63
+     e80:	cd bf       	out	0x3d, r28	; 61
+     e82:	cf 91       	pop	r28
+     e84:	df 91       	pop	r29
+     e86:	08 95       	ret
+
+00000e88 <Line_Del>:
+void Line_Del(int X0, int Y0, int X1, int Y1){
+     e88:	df 93       	push	r29
+     e8a:	cf 93       	push	r28
+     e8c:	cd b7       	in	r28, 0x3d	; 61
+     e8e:	de b7       	in	r29, 0x3e	; 62
+     e90:	6c 97       	sbiw	r28, 0x1c	; 28
+     e92:	0f b6       	in	r0, 0x3f	; 63
+     e94:	f8 94       	cli
+     e96:	de bf       	out	0x3e, r29	; 62
+     e98:	0f be       	out	0x3f, r0	; 63
+     e9a:	cd bf       	out	0x3d, r28	; 61
+     e9c:	9e 8b       	std	Y+22, r25	; 0x16
+     e9e:	8d 8b       	std	Y+21, r24	; 0x15
+     ea0:	78 8f       	std	Y+24, r23	; 0x18
+     ea2:	6f 8b       	std	Y+23, r22	; 0x17
+     ea4:	5a 8f       	std	Y+26, r21	; 0x1a
+     ea6:	49 8f       	std	Y+25, r20	; 0x19
+     ea8:	3c 8f       	std	Y+28, r19	; 0x1c
+     eaa:	2b 8f       	std	Y+27, r18	; 0x1b
+  int x0=X0, y0=Y0, x1=X1, y1=Y1; 
+     eac:	8d 89       	ldd	r24, Y+21	; 0x15
+     eae:	9e 89       	ldd	r25, Y+22	; 0x16
+     eb0:	9c 8b       	std	Y+20, r25	; 0x14
+     eb2:	8b 8b       	std	Y+19, r24	; 0x13
+     eb4:	8f 89       	ldd	r24, Y+23	; 0x17
+     eb6:	98 8d       	ldd	r25, Y+24	; 0x18
+     eb8:	9a 8b       	std	Y+18, r25	; 0x12
+     eba:	89 8b       	std	Y+17, r24	; 0x11
+     ebc:	89 8d       	ldd	r24, Y+25	; 0x19
+     ebe:	9a 8d       	ldd	r25, Y+26	; 0x1a
+     ec0:	98 8b       	std	Y+16, r25	; 0x10
+     ec2:	8f 87       	std	Y+15, r24	; 0x0f
+     ec4:	8b 8d       	ldd	r24, Y+27	; 0x1b
+     ec6:	9c 8d       	ldd	r25, Y+28	; 0x1c
+     ec8:	9e 87       	std	Y+14, r25	; 0x0e
+     eca:	8d 87       	std	Y+13, r24	; 0x0d
+  int dy = y1 - y0; 
+     ecc:	2d 85       	ldd	r18, Y+13	; 0x0d
+     ece:	3e 85       	ldd	r19, Y+14	; 0x0e
+     ed0:	89 89       	ldd	r24, Y+17	; 0x11
+     ed2:	9a 89       	ldd	r25, Y+18	; 0x12
+     ed4:	a9 01       	movw	r20, r18
+     ed6:	48 1b       	sub	r20, r24
+     ed8:	59 0b       	sbc	r21, r25
+     eda:	ca 01       	movw	r24, r20
+     edc:	9c 87       	std	Y+12, r25	; 0x0c
+     ede:	8b 87       	std	Y+11, r24	; 0x0b
+  int dx = x1 - x0; 
+     ee0:	2f 85       	ldd	r18, Y+15	; 0x0f
+     ee2:	38 89       	ldd	r19, Y+16	; 0x10
+     ee4:	8b 89       	ldd	r24, Y+19	; 0x13
+     ee6:	9c 89       	ldd	r25, Y+20	; 0x14
+     ee8:	a9 01       	movw	r20, r18
+     eea:	48 1b       	sub	r20, r24
+     eec:	59 0b       	sbc	r21, r25
+     eee:	ca 01       	movw	r24, r20
+     ef0:	9a 87       	std	Y+10, r25	; 0x0a
+     ef2:	89 87       	std	Y+9, r24	; 0x09
+  int stepx, stepy; 
+  if (dy < 0) { 
+     ef4:	8b 85       	ldd	r24, Y+11	; 0x0b
+     ef6:	9c 85       	ldd	r25, Y+12	; 0x0c
+     ef8:	99 23       	and	r25, r25
+     efa:	64 f4       	brge	.+24     	; 0xf14 <Line_Del+0x8c>
+   dy = -dy; 
+     efc:	8b 85       	ldd	r24, Y+11	; 0x0b
+     efe:	9c 85       	ldd	r25, Y+12	; 0x0c
+     f00:	90 95       	com	r25
+     f02:	81 95       	neg	r24
+     f04:	9f 4f       	sbci	r25, 0xFF	; 255
+     f06:	9c 87       	std	Y+12, r25	; 0x0c
+     f08:	8b 87       	std	Y+11, r24	; 0x0b
+   stepy = -1; 
+     f0a:	8f ef       	ldi	r24, 0xFF	; 255
+     f0c:	9f ef       	ldi	r25, 0xFF	; 255
+     f0e:	9e 83       	std	Y+6, r25	; 0x06
+     f10:	8d 83       	std	Y+5, r24	; 0x05
+     f12:	04 c0       	rjmp	.+8      	; 0xf1c <Line_Del+0x94>
+   } else { 
+    stepy = 1; 
+     f14:	81 e0       	ldi	r24, 0x01	; 1
+     f16:	90 e0       	ldi	r25, 0x00	; 0
+     f18:	9e 83       	std	Y+6, r25	; 0x06
+     f1a:	8d 83       	std	Y+5, r24	; 0x05
+    } 
+  if (dx < 0) { 
+     f1c:	89 85       	ldd	r24, Y+9	; 0x09
+     f1e:	9a 85       	ldd	r25, Y+10	; 0x0a
+     f20:	99 23       	and	r25, r25
+     f22:	64 f4       	brge	.+24     	; 0xf3c <Line_Del+0xb4>
+   dx = -dx; 
+     f24:	89 85       	ldd	r24, Y+9	; 0x09
+     f26:	9a 85       	ldd	r25, Y+10	; 0x0a
+     f28:	90 95       	com	r25
+     f2a:	81 95       	neg	r24
+     f2c:	9f 4f       	sbci	r25, 0xFF	; 255
+     f2e:	9a 87       	std	Y+10, r25	; 0x0a
+     f30:	89 87       	std	Y+9, r24	; 0x09
+   stepx = -1; 
+     f32:	8f ef       	ldi	r24, 0xFF	; 255
+     f34:	9f ef       	ldi	r25, 0xFF	; 255
+     f36:	98 87       	std	Y+8, r25	; 0x08
+     f38:	8f 83       	std	Y+7, r24	; 0x07
+     f3a:	04 c0       	rjmp	.+8      	; 0xf44 <Line_Del+0xbc>
+   } else { 
+    stepx = 1; 
+     f3c:	81 e0       	ldi	r24, 0x01	; 1
+     f3e:	90 e0       	ldi	r25, 0x00	; 0
+     f40:	98 87       	std	Y+8, r25	; 0x08
+     f42:	8f 83       	std	Y+7, r24	; 0x07
+   } 
+  dy <<= 1;            
+     f44:	8b 85       	ldd	r24, Y+11	; 0x0b
+     f46:	9c 85       	ldd	r25, Y+12	; 0x0c
+     f48:	88 0f       	add	r24, r24
+     f4a:	99 1f       	adc	r25, r25
+     f4c:	9c 87       	std	Y+12, r25	; 0x0c
+     f4e:	8b 87       	std	Y+11, r24	; 0x0b
+  dx <<= 1;            
+     f50:	89 85       	ldd	r24, Y+9	; 0x09
+     f52:	9a 85       	ldd	r25, Y+10	; 0x0a
+     f54:	88 0f       	add	r24, r24
+     f56:	99 1f       	adc	r25, r25
+     f58:	9a 87       	std	Y+10, r25	; 0x0a
+     f5a:	89 87       	std	Y+9, r24	; 0x09
+  Point_Del(x0, y0);     
+     f5c:	8b 89       	ldd	r24, Y+19	; 0x13
+     f5e:	9c 89       	ldd	r25, Y+20	; 0x14
+     f60:	29 89       	ldd	r18, Y+17	; 0x11
+     f62:	3a 89       	ldd	r19, Y+18	; 0x12
+     f64:	b9 01       	movw	r22, r18
+     f66:	0e 94 44 05 	call	0xa88	; 0xa88 <Point_Del>
+  if (dx > dy) { 
+     f6a:	29 85       	ldd	r18, Y+9	; 0x09
+     f6c:	3a 85       	ldd	r19, Y+10	; 0x0a
+     f6e:	8b 85       	ldd	r24, Y+11	; 0x0b
+     f70:	9c 85       	ldd	r25, Y+12	; 0x0c
+     f72:	82 17       	cp	r24, r18
+     f74:	93 07       	cpc	r25, r19
+     f76:	0c f0       	brlt	.+2      	; 0xf7a <Line_Del+0xf2>
+     f78:	41 c0       	rjmp	.+130    	; 0xffc <Line_Del+0x174>
+   int fraction = dy - (dx >> 1);  
+     f7a:	89 85       	ldd	r24, Y+9	; 0x09
+     f7c:	9a 85       	ldd	r25, Y+10	; 0x0a
+     f7e:	9c 01       	movw	r18, r24
+     f80:	35 95       	asr	r19
+     f82:	27 95       	ror	r18
+     f84:	8b 85       	ldd	r24, Y+11	; 0x0b
+     f86:	9c 85       	ldd	r25, Y+12	; 0x0c
+     f88:	82 1b       	sub	r24, r18
+     f8a:	93 0b       	sbc	r25, r19
+     f8c:	9c 83       	std	Y+4, r25	; 0x04
+     f8e:	8b 83       	std	Y+3, r24	; 0x03
+     f90:	2d c0       	rjmp	.+90     	; 0xfec <Line_Del+0x164>
+   while (x0 != x1) { 
+    if (fraction >= 0) { 
+     f92:	8b 81       	ldd	r24, Y+3	; 0x03
+     f94:	9c 81       	ldd	r25, Y+4	; 0x04
+     f96:	99 23       	and	r25, r25
+     f98:	94 f0       	brlt	.+36     	; 0xfbe <Line_Del+0x136>
+      y0 += stepy; 
+     f9a:	29 89       	ldd	r18, Y+17	; 0x11
+     f9c:	3a 89       	ldd	r19, Y+18	; 0x12
+     f9e:	8d 81       	ldd	r24, Y+5	; 0x05
+     fa0:	9e 81       	ldd	r25, Y+6	; 0x06
+     fa2:	82 0f       	add	r24, r18
+     fa4:	93 1f       	adc	r25, r19
+     fa6:	9a 8b       	std	Y+18, r25	; 0x12
+     fa8:	89 8b       	std	Y+17, r24	; 0x11
+      fraction -= dx;                  
+     faa:	2b 81       	ldd	r18, Y+3	; 0x03
+     fac:	3c 81       	ldd	r19, Y+4	; 0x04
+     fae:	89 85       	ldd	r24, Y+9	; 0x09
+     fb0:	9a 85       	ldd	r25, Y+10	; 0x0a
+     fb2:	a9 01       	movw	r20, r18
+     fb4:	48 1b       	sub	r20, r24
+     fb6:	59 0b       	sbc	r21, r25
+     fb8:	ca 01       	movw	r24, r20
+     fba:	9c 83       	std	Y+4, r25	; 0x04
+     fbc:	8b 83       	std	Y+3, r24	; 0x03
+      } 
+    x0 += stepx; 
+     fbe:	2b 89       	ldd	r18, Y+19	; 0x13
+     fc0:	3c 89       	ldd	r19, Y+20	; 0x14
+     fc2:	8f 81       	ldd	r24, Y+7	; 0x07
+     fc4:	98 85       	ldd	r25, Y+8	; 0x08
+     fc6:	82 0f       	add	r24, r18
+     fc8:	93 1f       	adc	r25, r19
+     fca:	9c 8b       	std	Y+20, r25	; 0x14
+     fcc:	8b 8b       	std	Y+19, r24	; 0x13
+    fraction += dy;                    
+     fce:	2b 81       	ldd	r18, Y+3	; 0x03
+     fd0:	3c 81       	ldd	r19, Y+4	; 0x04
+     fd2:	8b 85       	ldd	r24, Y+11	; 0x0b
+     fd4:	9c 85       	ldd	r25, Y+12	; 0x0c
+     fd6:	82 0f       	add	r24, r18
+     fd8:	93 1f       	adc	r25, r19
+     fda:	9c 83       	std	Y+4, r25	; 0x04
+     fdc:	8b 83       	std	Y+3, r24	; 0x03
+    Point_Del(x0, y0); 
+     fde:	8b 89       	ldd	r24, Y+19	; 0x13
+     fe0:	9c 89       	ldd	r25, Y+20	; 0x14
+     fe2:	29 89       	ldd	r18, Y+17	; 0x11
+     fe4:	3a 89       	ldd	r19, Y+18	; 0x12
+     fe6:	b9 01       	movw	r22, r18
+     fe8:	0e 94 44 05 	call	0xa88	; 0xa88 <Point_Del>
+  dy <<= 1;            
+  dx <<= 1;            
+  Point_Del(x0, y0);     
+  if (dx > dy) { 
+   int fraction = dy - (dx >> 1);  
+   while (x0 != x1) { 
+     fec:	2b 89       	ldd	r18, Y+19	; 0x13
+     fee:	3c 89       	ldd	r19, Y+20	; 0x14
+     ff0:	8f 85       	ldd	r24, Y+15	; 0x0f
+     ff2:	98 89       	ldd	r25, Y+16	; 0x10
+     ff4:	28 17       	cp	r18, r24
+     ff6:	39 07       	cpc	r19, r25
+     ff8:	61 f6       	brne	.-104    	; 0xf92 <Line_Del+0x10a>
+     ffa:	40 c0       	rjmp	.+128    	; 0x107c <Line_Del+0x1f4>
+    x0 += stepx; 
+    fraction += dy;                    
+    Point_Del(x0, y0); 
+     } 
+    } else { 
+        int fraction = dx - (dy >> 1); 
+     ffc:	8b 85       	ldd	r24, Y+11	; 0x0b
+     ffe:	9c 85       	ldd	r25, Y+12	; 0x0c
+    1000:	9c 01       	movw	r18, r24
+    1002:	35 95       	asr	r19
+    1004:	27 95       	ror	r18
+    1006:	89 85       	ldd	r24, Y+9	; 0x09
+    1008:	9a 85       	ldd	r25, Y+10	; 0x0a
+    100a:	82 1b       	sub	r24, r18
+    100c:	93 0b       	sbc	r25, r19
+    100e:	9a 83       	std	Y+2, r25	; 0x02
+    1010:	89 83       	std	Y+1, r24	; 0x01
+    1012:	2d c0       	rjmp	.+90     	; 0x106e <Line_Del+0x1e6>
+        while (y0 != y1) { 
+          if (fraction >= 0) { 
+    1014:	89 81       	ldd	r24, Y+1	; 0x01
+    1016:	9a 81       	ldd	r25, Y+2	; 0x02
+    1018:	99 23       	and	r25, r25
+    101a:	94 f0       	brlt	.+36     	; 0x1040 <Line_Del+0x1b8>
+              x0 += stepx; 
+    101c:	2b 89       	ldd	r18, Y+19	; 0x13
+    101e:	3c 89       	ldd	r19, Y+20	; 0x14
+    1020:	8f 81       	ldd	r24, Y+7	; 0x07
+    1022:	98 85       	ldd	r25, Y+8	; 0x08
+    1024:	82 0f       	add	r24, r18
+    1026:	93 1f       	adc	r25, r19
+    1028:	9c 8b       	std	Y+20, r25	; 0x14
+    102a:	8b 8b       	std	Y+19, r24	; 0x13
+              fraction -= dy; 
+    102c:	29 81       	ldd	r18, Y+1	; 0x01
+    102e:	3a 81       	ldd	r19, Y+2	; 0x02
+    1030:	8b 85       	ldd	r24, Y+11	; 0x0b
+    1032:	9c 85       	ldd	r25, Y+12	; 0x0c
+    1034:	a9 01       	movw	r20, r18
+    1036:	48 1b       	sub	r20, r24
+    1038:	59 0b       	sbc	r21, r25
+    103a:	ca 01       	movw	r24, r20
+    103c:	9a 83       	std	Y+2, r25	; 0x02
+    103e:	89 83       	std	Y+1, r24	; 0x01
+              } 
+          y0 += stepy; 
+    1040:	29 89       	ldd	r18, Y+17	; 0x11
+    1042:	3a 89       	ldd	r19, Y+18	; 0x12
+    1044:	8d 81       	ldd	r24, Y+5	; 0x05
+    1046:	9e 81       	ldd	r25, Y+6	; 0x06
+    1048:	82 0f       	add	r24, r18
+    104a:	93 1f       	adc	r25, r19
+    104c:	9a 8b       	std	Y+18, r25	; 0x12
+    104e:	89 8b       	std	Y+17, r24	; 0x11
+          fraction += dx;      
+    1050:	29 81       	ldd	r18, Y+1	; 0x01
+    1052:	3a 81       	ldd	r19, Y+2	; 0x02
+    1054:	89 85       	ldd	r24, Y+9	; 0x09
+    1056:	9a 85       	ldd	r25, Y+10	; 0x0a
+    1058:	82 0f       	add	r24, r18
+    105a:	93 1f       	adc	r25, r19
+    105c:	9a 83       	std	Y+2, r25	; 0x02
+    105e:	89 83       	std	Y+1, r24	; 0x01
+          Point_Del(x0, y0); 
+    1060:	8b 89       	ldd	r24, Y+19	; 0x13
+    1062:	9c 89       	ldd	r25, Y+20	; 0x14
+    1064:	29 89       	ldd	r18, Y+17	; 0x11
+    1066:	3a 89       	ldd	r19, Y+18	; 0x12
+    1068:	b9 01       	movw	r22, r18
+    106a:	0e 94 44 05 	call	0xa88	; 0xa88 <Point_Del>
+    fraction += dy;                    
+    Point_Del(x0, y0); 
+     } 
+    } else { 
+        int fraction = dx - (dy >> 1); 
+        while (y0 != y1) { 
+    106e:	29 89       	ldd	r18, Y+17	; 0x11
+    1070:	3a 89       	ldd	r19, Y+18	; 0x12
+    1072:	8d 85       	ldd	r24, Y+13	; 0x0d
+    1074:	9e 85       	ldd	r25, Y+14	; 0x0e
+    1076:	28 17       	cp	r18, r24
+    1078:	39 07       	cpc	r19, r25
+    107a:	61 f6       	brne	.-104    	; 0x1014 <Line_Del+0x18c>
+          y0 += stepy; 
+          fraction += dx;      
+          Point_Del(x0, y0); 
+            } 
+        } 
+    }                
+    107c:	6c 96       	adiw	r28, 0x1c	; 28
+    107e:	0f b6       	in	r0, 0x3f	; 63
+    1080:	f8 94       	cli
+    1082:	de bf       	out	0x3e, r29	; 62
+    1084:	0f be       	out	0x3f, r0	; 63
+    1086:	cd bf       	out	0x3d, r28	; 61
+    1088:	cf 91       	pop	r28
+    108a:	df 91       	pop	r29
+    108c:	08 95       	ret
+
+0000108e <Draw_Rect>:
+void Draw_Rect(int x1, int y1, int x2, int y2, int fill){
+    108e:	0f 93       	push	r16
+    1090:	1f 93       	push	r17
+    1092:	df 93       	push	r29
+    1094:	cf 93       	push	r28
+    1096:	cd b7       	in	r28, 0x3d	; 61
+    1098:	de b7       	in	r29, 0x3e	; 62
+    109a:	2a 97       	sbiw	r28, 0x0a	; 10
+    109c:	0f b6       	in	r0, 0x3f	; 63
+    109e:	f8 94       	cli
+    10a0:	de bf       	out	0x3e, r29	; 62
+    10a2:	0f be       	out	0x3f, r0	; 63
+    10a4:	cd bf       	out	0x3d, r28	; 61
+    10a6:	9a 83       	std	Y+2, r25	; 0x02
+    10a8:	89 83       	std	Y+1, r24	; 0x01
+    10aa:	7c 83       	std	Y+4, r23	; 0x04
+    10ac:	6b 83       	std	Y+3, r22	; 0x03
+    10ae:	5e 83       	std	Y+6, r21	; 0x06
+    10b0:	4d 83       	std	Y+5, r20	; 0x05
+    10b2:	38 87       	std	Y+8, r19	; 0x08
+    10b4:	2f 83       	std	Y+7, r18	; 0x07
+    10b6:	1a 87       	std	Y+10, r17	; 0x0a
+    10b8:	09 87       	std	Y+9, r16	; 0x09
+if(fill==1){
+    10ba:	89 85       	ldd	r24, Y+9	; 0x09
+    10bc:	9a 85       	ldd	r25, Y+10	; 0x0a
+    10be:	81 30       	cpi	r24, 0x01	; 1
+    10c0:	91 05       	cpc	r25, r1
+    10c2:	d1 f5       	brne	.+116    	; 0x1138 <__stack+0x39>
+  if(x1<x2){
+    10c4:	29 81       	ldd	r18, Y+1	; 0x01
+    10c6:	3a 81       	ldd	r19, Y+2	; 0x02
+    10c8:	8d 81       	ldd	r24, Y+5	; 0x05
+    10ca:	9e 81       	ldd	r25, Y+6	; 0x06
+    10cc:	28 17       	cp	r18, r24
+    10ce:	39 07       	cpc	r19, r25
+    10d0:	5c f5       	brge	.+86     	; 0x1128 <__stack+0x29>
+    10d2:	11 c0       	rjmp	.+34     	; 0x10f6 <Draw_Rect+0x68>
+   for(x1; x1<=x2; x1++){
+    Draw_Line(x1,y1,x1,y2);}
+    10d4:	89 81       	ldd	r24, Y+1	; 0x01
+    10d6:	9a 81       	ldd	r25, Y+2	; 0x02
+    10d8:	2b 81       	ldd	r18, Y+3	; 0x03
+    10da:	3c 81       	ldd	r19, Y+4	; 0x04
+    10dc:	49 81       	ldd	r20, Y+1	; 0x01
+    10de:	5a 81       	ldd	r21, Y+2	; 0x02
+    10e0:	ef 81       	ldd	r30, Y+7	; 0x07
+    10e2:	f8 85       	ldd	r31, Y+8	; 0x08
+    10e4:	b9 01       	movw	r22, r18
+    10e6:	9f 01       	movw	r18, r30
+    10e8:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+        } 
+    }                
+void Draw_Rect(int x1, int y1, int x2, int y2, int fill){
+if(fill==1){
+  if(x1<x2){
+   for(x1; x1<=x2; x1++){
+    10ec:	89 81       	ldd	r24, Y+1	; 0x01
+    10ee:	9a 81       	ldd	r25, Y+2	; 0x02
+    10f0:	01 96       	adiw	r24, 0x01	; 1
+    10f2:	9a 83       	std	Y+2, r25	; 0x02
+    10f4:	89 83       	std	Y+1, r24	; 0x01
+    10f6:	29 81       	ldd	r18, Y+1	; 0x01
+    10f8:	3a 81       	ldd	r19, Y+2	; 0x02
+    10fa:	8d 81       	ldd	r24, Y+5	; 0x05
+    10fc:	9e 81       	ldd	r25, Y+6	; 0x06
+    10fe:	82 17       	cp	r24, r18
+    1100:	93 07       	cpc	r25, r19
+    1102:	44 f7       	brge	.-48     	; 0x10d4 <Draw_Rect+0x46>
+    1104:	49 c0       	rjmp	.+146    	; 0x1198 <__stack+0x99>
+    Draw_Line(x1,y1,x1,y2);}
+        } else {
+           for(x1; x1>=x2; x1--){
+            Draw_Line(x1,y1,x1,y2);}
+    1106:	89 81       	ldd	r24, Y+1	; 0x01
+    1108:	9a 81       	ldd	r25, Y+2	; 0x02
+    110a:	2b 81       	ldd	r18, Y+3	; 0x03
+    110c:	3c 81       	ldd	r19, Y+4	; 0x04
+    110e:	49 81       	ldd	r20, Y+1	; 0x01
+    1110:	5a 81       	ldd	r21, Y+2	; 0x02
+    1112:	ef 81       	ldd	r30, Y+7	; 0x07
+    1114:	f8 85       	ldd	r31, Y+8	; 0x08
+    1116:	b9 01       	movw	r22, r18
+    1118:	9f 01       	movw	r18, r30
+    111a:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+if(fill==1){
+  if(x1<x2){
+   for(x1; x1<=x2; x1++){
+    Draw_Line(x1,y1,x1,y2);}
+        } else {
+           for(x1; x1>=x2; x1--){
+    111e:	89 81       	ldd	r24, Y+1	; 0x01
+    1120:	9a 81       	ldd	r25, Y+2	; 0x02
+    1122:	01 97       	sbiw	r24, 0x01	; 1
+    1124:	9a 83       	std	Y+2, r25	; 0x02
+    1126:	89 83       	std	Y+1, r24	; 0x01
+    1128:	29 81       	ldd	r18, Y+1	; 0x01
+    112a:	3a 81       	ldd	r19, Y+2	; 0x02
+    112c:	8d 81       	ldd	r24, Y+5	; 0x05
+    112e:	9e 81       	ldd	r25, Y+6	; 0x06
+    1130:	28 17       	cp	r18, r24
+    1132:	39 07       	cpc	r19, r25
+    1134:	44 f7       	brge	.-48     	; 0x1106 <__stack+0x7>
+    1136:	30 c0       	rjmp	.+96     	; 0x1198 <__stack+0x99>
+            Draw_Line(x1,y1,x1,y2);}
+                }} else { Draw_Line(x1,y1,x1,y2); 
+    1138:	89 81       	ldd	r24, Y+1	; 0x01
+    113a:	9a 81       	ldd	r25, Y+2	; 0x02
+    113c:	2b 81       	ldd	r18, Y+3	; 0x03
+    113e:	3c 81       	ldd	r19, Y+4	; 0x04
+    1140:	49 81       	ldd	r20, Y+1	; 0x01
+    1142:	5a 81       	ldd	r21, Y+2	; 0x02
+    1144:	ef 81       	ldd	r30, Y+7	; 0x07
+    1146:	f8 85       	ldd	r31, Y+8	; 0x08
+    1148:	b9 01       	movw	r22, r18
+    114a:	9f 01       	movw	r18, r30
+    114c:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+                                 Draw_Line(x1,y1,x2,y1);
+    1150:	89 81       	ldd	r24, Y+1	; 0x01
+    1152:	9a 81       	ldd	r25, Y+2	; 0x02
+    1154:	2b 81       	ldd	r18, Y+3	; 0x03
+    1156:	3c 81       	ldd	r19, Y+4	; 0x04
+    1158:	4d 81       	ldd	r20, Y+5	; 0x05
+    115a:	5e 81       	ldd	r21, Y+6	; 0x06
+    115c:	eb 81       	ldd	r30, Y+3	; 0x03
+    115e:	fc 81       	ldd	r31, Y+4	; 0x04
+    1160:	b9 01       	movw	r22, r18
+    1162:	9f 01       	movw	r18, r30
+    1164:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+                                 Draw_Line(x2,y2,x2,y1);
+    1168:	8d 81       	ldd	r24, Y+5	; 0x05
+    116a:	9e 81       	ldd	r25, Y+6	; 0x06
+    116c:	2f 81       	ldd	r18, Y+7	; 0x07
+    116e:	38 85       	ldd	r19, Y+8	; 0x08
+    1170:	4d 81       	ldd	r20, Y+5	; 0x05
+    1172:	5e 81       	ldd	r21, Y+6	; 0x06
+    1174:	eb 81       	ldd	r30, Y+3	; 0x03
+    1176:	fc 81       	ldd	r31, Y+4	; 0x04
+    1178:	b9 01       	movw	r22, r18
+    117a:	9f 01       	movw	r18, r30
+    117c:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+                                 Draw_Line(x2,y2,x1,y2);
+    1180:	8d 81       	ldd	r24, Y+5	; 0x05
+    1182:	9e 81       	ldd	r25, Y+6	; 0x06
+    1184:	2f 81       	ldd	r18, Y+7	; 0x07
+    1186:	38 85       	ldd	r19, Y+8	; 0x08
+    1188:	49 81       	ldd	r20, Y+1	; 0x01
+    118a:	5a 81       	ldd	r21, Y+2	; 0x02
+    118c:	ef 81       	ldd	r30, Y+7	; 0x07
+    118e:	f8 85       	ldd	r31, Y+8	; 0x08
+    1190:	b9 01       	movw	r22, r18
+    1192:	9f 01       	movw	r18, r30
+    1194:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+                                 }
+     }      
+    1198:	2a 96       	adiw	r28, 0x0a	; 10
+    119a:	0f b6       	in	r0, 0x3f	; 63
+    119c:	f8 94       	cli
+    119e:	de bf       	out	0x3e, r29	; 62
+    11a0:	0f be       	out	0x3f, r0	; 63
+    11a2:	cd bf       	out	0x3d, r28	; 61
+    11a4:	cf 91       	pop	r28
+    11a6:	df 91       	pop	r29
+    11a8:	1f 91       	pop	r17
+    11aa:	0f 91       	pop	r16
+    11ac:	08 95       	ret
+
+000011ae <Rect_Del>:
+void Rect_Del(int x1, int y1, int x2, int y2){
+    11ae:	df 93       	push	r29
+    11b0:	cf 93       	push	r28
+    11b2:	cd b7       	in	r28, 0x3d	; 61
+    11b4:	de b7       	in	r29, 0x3e	; 62
+    11b6:	28 97       	sbiw	r28, 0x08	; 8
+    11b8:	0f b6       	in	r0, 0x3f	; 63
+    11ba:	f8 94       	cli
+    11bc:	de bf       	out	0x3e, r29	; 62
+    11be:	0f be       	out	0x3f, r0	; 63
+    11c0:	cd bf       	out	0x3d, r28	; 61
+    11c2:	9a 83       	std	Y+2, r25	; 0x02
+    11c4:	89 83       	std	Y+1, r24	; 0x01
+    11c6:	7c 83       	std	Y+4, r23	; 0x04
+    11c8:	6b 83       	std	Y+3, r22	; 0x03
+    11ca:	5e 83       	std	Y+6, r21	; 0x06
+    11cc:	4d 83       	std	Y+5, r20	; 0x05
+    11ce:	38 87       	std	Y+8, r19	; 0x08
+    11d0:	2f 83       	std	Y+7, r18	; 0x07
+if(x1<x2){
+    11d2:	29 81       	ldd	r18, Y+1	; 0x01
+    11d4:	3a 81       	ldd	r19, Y+2	; 0x02
+    11d6:	8d 81       	ldd	r24, Y+5	; 0x05
+    11d8:	9e 81       	ldd	r25, Y+6	; 0x06
+    11da:	28 17       	cp	r18, r24
+    11dc:	39 07       	cpc	r19, r25
+    11de:	5c f5       	brge	.+86     	; 0x1236 <Rect_Del+0x88>
+    11e0:	11 c0       	rjmp	.+34     	; 0x1204 <Rect_Del+0x56>
+  for(x1; x1<=x2; x1++){
+   Line_Del(x1,y1,x1,y2);}
+    11e2:	89 81       	ldd	r24, Y+1	; 0x01
+    11e4:	9a 81       	ldd	r25, Y+2	; 0x02
+    11e6:	2b 81       	ldd	r18, Y+3	; 0x03
+    11e8:	3c 81       	ldd	r19, Y+4	; 0x04
+    11ea:	49 81       	ldd	r20, Y+1	; 0x01
+    11ec:	5a 81       	ldd	r21, Y+2	; 0x02
+    11ee:	ef 81       	ldd	r30, Y+7	; 0x07
+    11f0:	f8 85       	ldd	r31, Y+8	; 0x08
+    11f2:	b9 01       	movw	r22, r18
+    11f4:	9f 01       	movw	r18, r30
+    11f6:	0e 94 44 07 	call	0xe88	; 0xe88 <Line_Del>
+                                 Draw_Line(x2,y2,x1,y2);
+                                 }
+     }      
+void Rect_Del(int x1, int y1, int x2, int y2){
+if(x1<x2){
+  for(x1; x1<=x2; x1++){
+    11fa:	89 81       	ldd	r24, Y+1	; 0x01
+    11fc:	9a 81       	ldd	r25, Y+2	; 0x02
+    11fe:	01 96       	adiw	r24, 0x01	; 1
+    1200:	9a 83       	std	Y+2, r25	; 0x02
+    1202:	89 83       	std	Y+1, r24	; 0x01
+    1204:	29 81       	ldd	r18, Y+1	; 0x01
+    1206:	3a 81       	ldd	r19, Y+2	; 0x02
+    1208:	8d 81       	ldd	r24, Y+5	; 0x05
+    120a:	9e 81       	ldd	r25, Y+6	; 0x06
+    120c:	82 17       	cp	r24, r18
+    120e:	93 07       	cpc	r25, r19
+    1210:	44 f7       	brge	.-48     	; 0x11e2 <Rect_Del+0x34>
+    1212:	18 c0       	rjmp	.+48     	; 0x1244 <Rect_Del+0x96>
+   Line_Del(x1,y1,x1,y2);}
+  } else {
+          for(x1; x1>=x2; x1--){
+            Line_Del(x1,y1,x1,y2);}
+    1214:	89 81       	ldd	r24, Y+1	; 0x01
+    1216:	9a 81       	ldd	r25, Y+2	; 0x02
+    1218:	2b 81       	ldd	r18, Y+3	; 0x03
+    121a:	3c 81       	ldd	r19, Y+4	; 0x04
+    121c:	49 81       	ldd	r20, Y+1	; 0x01
+    121e:	5a 81       	ldd	r21, Y+2	; 0x02
+    1220:	ef 81       	ldd	r30, Y+7	; 0x07
+    1222:	f8 85       	ldd	r31, Y+8	; 0x08
+    1224:	b9 01       	movw	r22, r18
+    1226:	9f 01       	movw	r18, r30
+    1228:	0e 94 44 07 	call	0xe88	; 0xe88 <Line_Del>
+void Rect_Del(int x1, int y1, int x2, int y2){
+if(x1<x2){
+  for(x1; x1<=x2; x1++){
+   Line_Del(x1,y1,x1,y2);}
+  } else {
+          for(x1; x1>=x2; x1--){
+    122c:	89 81       	ldd	r24, Y+1	; 0x01
+    122e:	9a 81       	ldd	r25, Y+2	; 0x02
+    1230:	01 97       	sbiw	r24, 0x01	; 1
+    1232:	9a 83       	std	Y+2, r25	; 0x02
+    1234:	89 83       	std	Y+1, r24	; 0x01
+    1236:	29 81       	ldd	r18, Y+1	; 0x01
+    1238:	3a 81       	ldd	r19, Y+2	; 0x02
+    123a:	8d 81       	ldd	r24, Y+5	; 0x05
+    123c:	9e 81       	ldd	r25, Y+6	; 0x06
+    123e:	28 17       	cp	r18, r24
+    1240:	39 07       	cpc	r19, r25
+    1242:	44 f7       	brge	.-48     	; 0x1214 <Rect_Del+0x66>
+            Line_Del(x1,y1,x1,y2);}
+                }
+     }   
+    1244:	28 96       	adiw	r28, 0x08	; 8
+    1246:	0f b6       	in	r0, 0x3f	; 63
+    1248:	f8 94       	cli
+    124a:	de bf       	out	0x3e, r29	; 62
+    124c:	0f be       	out	0x3f, r0	; 63
+    124e:	cd bf       	out	0x3d, r28	; 61
+    1250:	cf 91       	pop	r28
+    1252:	df 91       	pop	r29
+    1254:	08 95       	ret
+
+00001256 <Draw_Circle>:
+void Draw_Circle(int x1, int y1, int radius, int fill){
+    1256:	df 93       	push	r29
+    1258:	cf 93       	push	r28
+    125a:	cd b7       	in	r28, 0x3d	; 61
+    125c:	de b7       	in	r29, 0x3e	; 62
+    125e:	2e 97       	sbiw	r28, 0x0e	; 14
+    1260:	0f b6       	in	r0, 0x3f	; 63
+    1262:	f8 94       	cli
+    1264:	de bf       	out	0x3e, r29	; 62
+    1266:	0f be       	out	0x3f, r0	; 63
+    1268:	cd bf       	out	0x3d, r28	; 61
+    126a:	98 87       	std	Y+8, r25	; 0x08
+    126c:	8f 83       	std	Y+7, r24	; 0x07
+    126e:	7a 87       	std	Y+10, r23	; 0x0a
+    1270:	69 87       	std	Y+9, r22	; 0x09
+    1272:	5c 87       	std	Y+12, r21	; 0x0c
+    1274:	4b 87       	std	Y+11, r20	; 0x0b
+    1276:	3e 87       	std	Y+14, r19	; 0x0e
+    1278:	2d 87       	std	Y+13, r18	; 0x0d
+int a, r, cond;
+a = 0;
+    127a:	1e 82       	std	Y+6, r1	; 0x06
+    127c:	1d 82       	std	Y+5, r1	; 0x05
+r = radius;
+    127e:	8b 85       	ldd	r24, Y+11	; 0x0b
+    1280:	9c 85       	ldd	r25, Y+12	; 0x0c
+    1282:	9c 83       	std	Y+4, r25	; 0x04
+    1284:	8b 83       	std	Y+3, r24	; 0x03
+cond = 1 - r;
+    1286:	21 e0       	ldi	r18, 0x01	; 1
+    1288:	30 e0       	ldi	r19, 0x00	; 0
+    128a:	8b 81       	ldd	r24, Y+3	; 0x03
+    128c:	9c 81       	ldd	r25, Y+4	; 0x04
+    128e:	a9 01       	movw	r20, r18
+    1290:	48 1b       	sub	r20, r24
+    1292:	59 0b       	sbc	r21, r25
+    1294:	ca 01       	movw	r24, r20
+    1296:	9a 83       	std	Y+2, r25	; 0x02
+    1298:	89 83       	std	Y+1, r24	; 0x01
+do{
+  if(fill==1){
+    129a:	8d 85       	ldd	r24, Y+13	; 0x0d
+    129c:	9e 85       	ldd	r25, Y+14	; 0x0e
+    129e:	81 30       	cpi	r24, 0x01	; 1
+    12a0:	91 05       	cpc	r25, r1
+    12a2:	09 f0       	breq	.+2      	; 0x12a6 <Draw_Circle+0x50>
+    12a4:	7d c0       	rjmp	.+250    	; 0x13a0 <Draw_Circle+0x14a>
+   Draw_Line(x1-a, y1+r, x1+a, y1+r);
+    12a6:	2f 81       	ldd	r18, Y+7	; 0x07
+    12a8:	38 85       	ldd	r19, Y+8	; 0x08
+    12aa:	8d 81       	ldd	r24, Y+5	; 0x05
+    12ac:	9e 81       	ldd	r25, Y+6	; 0x06
+    12ae:	b9 01       	movw	r22, r18
+    12b0:	68 1b       	sub	r22, r24
+    12b2:	79 0b       	sbc	r23, r25
+    12b4:	29 85       	ldd	r18, Y+9	; 0x09
+    12b6:	3a 85       	ldd	r19, Y+10	; 0x0a
+    12b8:	8b 81       	ldd	r24, Y+3	; 0x03
+    12ba:	9c 81       	ldd	r25, Y+4	; 0x04
+    12bc:	f9 01       	movw	r30, r18
+    12be:	e8 0f       	add	r30, r24
+    12c0:	f9 1f       	adc	r31, r25
+    12c2:	2f 81       	ldd	r18, Y+7	; 0x07
+    12c4:	38 85       	ldd	r19, Y+8	; 0x08
+    12c6:	8d 81       	ldd	r24, Y+5	; 0x05
+    12c8:	9e 81       	ldd	r25, Y+6	; 0x06
+    12ca:	a9 01       	movw	r20, r18
+    12cc:	48 0f       	add	r20, r24
+    12ce:	59 1f       	adc	r21, r25
+    12d0:	29 85       	ldd	r18, Y+9	; 0x09
+    12d2:	3a 85       	ldd	r19, Y+10	; 0x0a
+    12d4:	8b 81       	ldd	r24, Y+3	; 0x03
+    12d6:	9c 81       	ldd	r25, Y+4	; 0x04
+    12d8:	28 0f       	add	r18, r24
+    12da:	39 1f       	adc	r19, r25
+    12dc:	cb 01       	movw	r24, r22
+    12de:	bf 01       	movw	r22, r30
+    12e0:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+   Draw_Line(x1-a, y1-r, x1+a, y1-r);
+    12e4:	2f 81       	ldd	r18, Y+7	; 0x07
+    12e6:	38 85       	ldd	r19, Y+8	; 0x08
+    12e8:	8d 81       	ldd	r24, Y+5	; 0x05
+    12ea:	9e 81       	ldd	r25, Y+6	; 0x06
+    12ec:	b9 01       	movw	r22, r18
+    12ee:	68 1b       	sub	r22, r24
+    12f0:	79 0b       	sbc	r23, r25
+    12f2:	29 85       	ldd	r18, Y+9	; 0x09
+    12f4:	3a 85       	ldd	r19, Y+10	; 0x0a
+    12f6:	8b 81       	ldd	r24, Y+3	; 0x03
+    12f8:	9c 81       	ldd	r25, Y+4	; 0x04
+    12fa:	f9 01       	movw	r30, r18
+    12fc:	e8 1b       	sub	r30, r24
+    12fe:	f9 0b       	sbc	r31, r25
+    1300:	2f 81       	ldd	r18, Y+7	; 0x07
+    1302:	38 85       	ldd	r19, Y+8	; 0x08
+    1304:	8d 81       	ldd	r24, Y+5	; 0x05
+    1306:	9e 81       	ldd	r25, Y+6	; 0x06
+    1308:	a9 01       	movw	r20, r18
+    130a:	48 0f       	add	r20, r24
+    130c:	59 1f       	adc	r21, r25
+    130e:	29 85       	ldd	r18, Y+9	; 0x09
+    1310:	3a 85       	ldd	r19, Y+10	; 0x0a
+    1312:	8b 81       	ldd	r24, Y+3	; 0x03
+    1314:	9c 81       	ldd	r25, Y+4	; 0x04
+    1316:	28 1b       	sub	r18, r24
+    1318:	39 0b       	sbc	r19, r25
+    131a:	cb 01       	movw	r24, r22
+    131c:	bf 01       	movw	r22, r30
+    131e:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+   Draw_Line(x1-r, y1+a, x1+r, y1+a);
+    1322:	2f 81       	ldd	r18, Y+7	; 0x07
+    1324:	38 85       	ldd	r19, Y+8	; 0x08
+    1326:	8b 81       	ldd	r24, Y+3	; 0x03
+    1328:	9c 81       	ldd	r25, Y+4	; 0x04
+    132a:	b9 01       	movw	r22, r18
+    132c:	68 1b       	sub	r22, r24
+    132e:	79 0b       	sbc	r23, r25
+    1330:	29 85       	ldd	r18, Y+9	; 0x09
+    1332:	3a 85       	ldd	r19, Y+10	; 0x0a
+    1334:	8d 81       	ldd	r24, Y+5	; 0x05
+    1336:	9e 81       	ldd	r25, Y+6	; 0x06
+    1338:	f9 01       	movw	r30, r18
+    133a:	e8 0f       	add	r30, r24
+    133c:	f9 1f       	adc	r31, r25
+    133e:	2f 81       	ldd	r18, Y+7	; 0x07
+    1340:	38 85       	ldd	r19, Y+8	; 0x08
+    1342:	8b 81       	ldd	r24, Y+3	; 0x03
+    1344:	9c 81       	ldd	r25, Y+4	; 0x04
+    1346:	a9 01       	movw	r20, r18
+    1348:	48 0f       	add	r20, r24
+    134a:	59 1f       	adc	r21, r25
+    134c:	29 85       	ldd	r18, Y+9	; 0x09
+    134e:	3a 85       	ldd	r19, Y+10	; 0x0a
+    1350:	8d 81       	ldd	r24, Y+5	; 0x05
+    1352:	9e 81       	ldd	r25, Y+6	; 0x06
+    1354:	28 0f       	add	r18, r24
+    1356:	39 1f       	adc	r19, r25
+    1358:	cb 01       	movw	r24, r22
+    135a:	bf 01       	movw	r22, r30
+    135c:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+   Draw_Line(x1-r, y1-a, x1+r, y1-a);
+    1360:	2f 81       	ldd	r18, Y+7	; 0x07
+    1362:	38 85       	ldd	r19, Y+8	; 0x08
+    1364:	8b 81       	ldd	r24, Y+3	; 0x03
+    1366:	9c 81       	ldd	r25, Y+4	; 0x04
+    1368:	b9 01       	movw	r22, r18
+    136a:	68 1b       	sub	r22, r24
+    136c:	79 0b       	sbc	r23, r25
+    136e:	29 85       	ldd	r18, Y+9	; 0x09
+    1370:	3a 85       	ldd	r19, Y+10	; 0x0a
+    1372:	8d 81       	ldd	r24, Y+5	; 0x05
+    1374:	9e 81       	ldd	r25, Y+6	; 0x06
+    1376:	f9 01       	movw	r30, r18
+    1378:	e8 1b       	sub	r30, r24
+    137a:	f9 0b       	sbc	r31, r25
+    137c:	2f 81       	ldd	r18, Y+7	; 0x07
+    137e:	38 85       	ldd	r19, Y+8	; 0x08
+    1380:	8b 81       	ldd	r24, Y+3	; 0x03
+    1382:	9c 81       	ldd	r25, Y+4	; 0x04
+    1384:	a9 01       	movw	r20, r18
+    1386:	48 0f       	add	r20, r24
+    1388:	59 1f       	adc	r21, r25
+    138a:	29 85       	ldd	r18, Y+9	; 0x09
+    138c:	3a 85       	ldd	r19, Y+10	; 0x0a
+    138e:	8d 81       	ldd	r24, Y+5	; 0x05
+    1390:	9e 81       	ldd	r25, Y+6	; 0x06
+    1392:	28 1b       	sub	r18, r24
+    1394:	39 0b       	sbc	r19, r25
+    1396:	cb 01       	movw	r24, r22
+    1398:	bf 01       	movw	r22, r30
+    139a:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+    139e:	88 c0       	rjmp	.+272    	; 0x14b0 <Draw_Circle+0x25a>
+   } else {
+     PointXY(a+x1, r+y1);
+    13a0:	2d 81       	ldd	r18, Y+5	; 0x05
+    13a2:	3e 81       	ldd	r19, Y+6	; 0x06
+    13a4:	8f 81       	ldd	r24, Y+7	; 0x07
+    13a6:	98 85       	ldd	r25, Y+8	; 0x08
+    13a8:	a9 01       	movw	r20, r18
+    13aa:	48 0f       	add	r20, r24
+    13ac:	59 1f       	adc	r21, r25
+    13ae:	2b 81       	ldd	r18, Y+3	; 0x03
+    13b0:	3c 81       	ldd	r19, Y+4	; 0x04
+    13b2:	89 85       	ldd	r24, Y+9	; 0x09
+    13b4:	9a 85       	ldd	r25, Y+10	; 0x0a
+    13b6:	28 0f       	add	r18, r24
+    13b8:	39 1f       	adc	r19, r25
+    13ba:	ca 01       	movw	r24, r20
+    13bc:	b9 01       	movw	r22, r18
+    13be:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+     PointXY(r+x1, a+y1);
+    13c2:	2b 81       	ldd	r18, Y+3	; 0x03
+    13c4:	3c 81       	ldd	r19, Y+4	; 0x04
+    13c6:	8f 81       	ldd	r24, Y+7	; 0x07
+    13c8:	98 85       	ldd	r25, Y+8	; 0x08
+    13ca:	a9 01       	movw	r20, r18
+    13cc:	48 0f       	add	r20, r24
+    13ce:	59 1f       	adc	r21, r25
+    13d0:	2d 81       	ldd	r18, Y+5	; 0x05
+    13d2:	3e 81       	ldd	r19, Y+6	; 0x06
+    13d4:	89 85       	ldd	r24, Y+9	; 0x09
+    13d6:	9a 85       	ldd	r25, Y+10	; 0x0a
+    13d8:	28 0f       	add	r18, r24
+    13da:	39 1f       	adc	r19, r25
+    13dc:	ca 01       	movw	r24, r20
+    13de:	b9 01       	movw	r22, r18
+    13e0:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+     PointXY(x1-a, r+y1);
+    13e4:	2f 81       	ldd	r18, Y+7	; 0x07
+    13e6:	38 85       	ldd	r19, Y+8	; 0x08
+    13e8:	8d 81       	ldd	r24, Y+5	; 0x05
+    13ea:	9e 81       	ldd	r25, Y+6	; 0x06
+    13ec:	a9 01       	movw	r20, r18
+    13ee:	48 1b       	sub	r20, r24
+    13f0:	59 0b       	sbc	r21, r25
+    13f2:	2b 81       	ldd	r18, Y+3	; 0x03
+    13f4:	3c 81       	ldd	r19, Y+4	; 0x04
+    13f6:	89 85       	ldd	r24, Y+9	; 0x09
+    13f8:	9a 85       	ldd	r25, Y+10	; 0x0a
+    13fa:	28 0f       	add	r18, r24
+    13fc:	39 1f       	adc	r19, r25
+    13fe:	ca 01       	movw	r24, r20
+    1400:	b9 01       	movw	r22, r18
+    1402:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+     PointXY(x1-r, a+y1);
+    1406:	2f 81       	ldd	r18, Y+7	; 0x07
+    1408:	38 85       	ldd	r19, Y+8	; 0x08
+    140a:	8b 81       	ldd	r24, Y+3	; 0x03
+    140c:	9c 81       	ldd	r25, Y+4	; 0x04
+    140e:	a9 01       	movw	r20, r18
+    1410:	48 1b       	sub	r20, r24
+    1412:	59 0b       	sbc	r21, r25
+    1414:	2d 81       	ldd	r18, Y+5	; 0x05
+    1416:	3e 81       	ldd	r19, Y+6	; 0x06
+    1418:	89 85       	ldd	r24, Y+9	; 0x09
+    141a:	9a 85       	ldd	r25, Y+10	; 0x0a
+    141c:	28 0f       	add	r18, r24
+    141e:	39 1f       	adc	r19, r25
+    1420:	ca 01       	movw	r24, r20
+    1422:	b9 01       	movw	r22, r18
+    1424:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+     PointXY(x1+r, y1-a);
+    1428:	2f 81       	ldd	r18, Y+7	; 0x07
+    142a:	38 85       	ldd	r19, Y+8	; 0x08
+    142c:	8b 81       	ldd	r24, Y+3	; 0x03
+    142e:	9c 81       	ldd	r25, Y+4	; 0x04
+    1430:	a9 01       	movw	r20, r18
+    1432:	48 0f       	add	r20, r24
+    1434:	59 1f       	adc	r21, r25
+    1436:	29 85       	ldd	r18, Y+9	; 0x09
+    1438:	3a 85       	ldd	r19, Y+10	; 0x0a
+    143a:	8d 81       	ldd	r24, Y+5	; 0x05
+    143c:	9e 81       	ldd	r25, Y+6	; 0x06
+    143e:	28 1b       	sub	r18, r24
+    1440:	39 0b       	sbc	r19, r25
+    1442:	ca 01       	movw	r24, r20
+    1444:	b9 01       	movw	r22, r18
+    1446:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+     PointXY(x1+a, y1-r);
+    144a:	2f 81       	ldd	r18, Y+7	; 0x07
+    144c:	38 85       	ldd	r19, Y+8	; 0x08
+    144e:	8d 81       	ldd	r24, Y+5	; 0x05
+    1450:	9e 81       	ldd	r25, Y+6	; 0x06
+    1452:	a9 01       	movw	r20, r18
+    1454:	48 0f       	add	r20, r24
+    1456:	59 1f       	adc	r21, r25
+    1458:	29 85       	ldd	r18, Y+9	; 0x09
+    145a:	3a 85       	ldd	r19, Y+10	; 0x0a
+    145c:	8b 81       	ldd	r24, Y+3	; 0x03
+    145e:	9c 81       	ldd	r25, Y+4	; 0x04
+    1460:	28 1b       	sub	r18, r24
+    1462:	39 0b       	sbc	r19, r25
+    1464:	ca 01       	movw	r24, r20
+    1466:	b9 01       	movw	r22, r18
+    1468:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+     PointXY(x1-a, y1-r);
+    146c:	2f 81       	ldd	r18, Y+7	; 0x07
+    146e:	38 85       	ldd	r19, Y+8	; 0x08
+    1470:	8d 81       	ldd	r24, Y+5	; 0x05
+    1472:	9e 81       	ldd	r25, Y+6	; 0x06
+    1474:	a9 01       	movw	r20, r18
+    1476:	48 1b       	sub	r20, r24
+    1478:	59 0b       	sbc	r21, r25
+    147a:	29 85       	ldd	r18, Y+9	; 0x09
+    147c:	3a 85       	ldd	r19, Y+10	; 0x0a
+    147e:	8b 81       	ldd	r24, Y+3	; 0x03
+    1480:	9c 81       	ldd	r25, Y+4	; 0x04
+    1482:	28 1b       	sub	r18, r24
+    1484:	39 0b       	sbc	r19, r25
+    1486:	ca 01       	movw	r24, r20
+    1488:	b9 01       	movw	r22, r18
+    148a:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+     PointXY(x1-r, y1-a);
+    148e:	2f 81       	ldd	r18, Y+7	; 0x07
+    1490:	38 85       	ldd	r19, Y+8	; 0x08
+    1492:	8b 81       	ldd	r24, Y+3	; 0x03
+    1494:	9c 81       	ldd	r25, Y+4	; 0x04
+    1496:	a9 01       	movw	r20, r18
+    1498:	48 1b       	sub	r20, r24
+    149a:	59 0b       	sbc	r21, r25
+    149c:	29 85       	ldd	r18, Y+9	; 0x09
+    149e:	3a 85       	ldd	r19, Y+10	; 0x0a
+    14a0:	8d 81       	ldd	r24, Y+5	; 0x05
+    14a2:	9e 81       	ldd	r25, Y+6	; 0x06
+    14a4:	28 1b       	sub	r18, r24
+    14a6:	39 0b       	sbc	r19, r25
+    14a8:	ca 01       	movw	r24, r20
+    14aa:	b9 01       	movw	r22, r18
+    14ac:	0e 94 48 04 	call	0x890	; 0x890 <PointXY>
+     }
+  if(cond < 0){
+    14b0:	89 81       	ldd	r24, Y+1	; 0x01
+    14b2:	9a 81       	ldd	r25, Y+2	; 0x02
+    14b4:	99 23       	and	r25, r25
+    14b6:	9c f4       	brge	.+38     	; 0x14de <Draw_Circle+0x288>
+    cond += 3 + 2*a++;
+    14b8:	8d 81       	ldd	r24, Y+5	; 0x05
+    14ba:	9e 81       	ldd	r25, Y+6	; 0x06
+    14bc:	88 0f       	add	r24, r24
+    14be:	99 1f       	adc	r25, r25
+    14c0:	9c 01       	movw	r18, r24
+    14c2:	2d 5f       	subi	r18, 0xFD	; 253
+    14c4:	3f 4f       	sbci	r19, 0xFF	; 255
+    14c6:	89 81       	ldd	r24, Y+1	; 0x01
+    14c8:	9a 81       	ldd	r25, Y+2	; 0x02
+    14ca:	82 0f       	add	r24, r18
+    14cc:	93 1f       	adc	r25, r19
+    14ce:	9a 83       	std	Y+2, r25	; 0x02
+    14d0:	89 83       	std	Y+1, r24	; 0x01
+    14d2:	8d 81       	ldd	r24, Y+5	; 0x05
+    14d4:	9e 81       	ldd	r25, Y+6	; 0x06
+    14d6:	01 96       	adiw	r24, 0x01	; 1
+    14d8:	9e 83       	std	Y+6, r25	; 0x06
+    14da:	8d 83       	std	Y+5, r24	; 0x05
+    14dc:	1d c0       	rjmp	.+58     	; 0x1518 <Draw_Circle+0x2c2>
+    } else {cond+= 5 + 2*(a++ - r--);} 
+    14de:	2d 81       	ldd	r18, Y+5	; 0x05
+    14e0:	3e 81       	ldd	r19, Y+6	; 0x06
+    14e2:	8b 81       	ldd	r24, Y+3	; 0x03
+    14e4:	9c 81       	ldd	r25, Y+4	; 0x04
+    14e6:	a9 01       	movw	r20, r18
+    14e8:	48 1b       	sub	r20, r24
+    14ea:	59 0b       	sbc	r21, r25
+    14ec:	ca 01       	movw	r24, r20
+    14ee:	88 0f       	add	r24, r24
+    14f0:	99 1f       	adc	r25, r25
+    14f2:	9c 01       	movw	r18, r24
+    14f4:	2b 5f       	subi	r18, 0xFB	; 251
+    14f6:	3f 4f       	sbci	r19, 0xFF	; 255
+    14f8:	89 81       	ldd	r24, Y+1	; 0x01
+    14fa:	9a 81       	ldd	r25, Y+2	; 0x02
+    14fc:	82 0f       	add	r24, r18
+    14fe:	93 1f       	adc	r25, r19
+    1500:	9a 83       	std	Y+2, r25	; 0x02
+    1502:	89 83       	std	Y+1, r24	; 0x01
+    1504:	8d 81       	ldd	r24, Y+5	; 0x05
+    1506:	9e 81       	ldd	r25, Y+6	; 0x06
+    1508:	01 96       	adiw	r24, 0x01	; 1
+    150a:	9e 83       	std	Y+6, r25	; 0x06
+    150c:	8d 83       	std	Y+5, r24	; 0x05
+    150e:	8b 81       	ldd	r24, Y+3	; 0x03
+    1510:	9c 81       	ldd	r25, Y+4	; 0x04
+    1512:	01 97       	sbiw	r24, 0x01	; 1
+    1514:	9c 83       	std	Y+4, r25	; 0x04
+    1516:	8b 83       	std	Y+3, r24	; 0x03
+    }while(a <= r);
+    1518:	2d 81       	ldd	r18, Y+5	; 0x05
+    151a:	3e 81       	ldd	r19, Y+6	; 0x06
+    151c:	8b 81       	ldd	r24, Y+3	; 0x03
+    151e:	9c 81       	ldd	r25, Y+4	; 0x04
+    1520:	82 17       	cp	r24, r18
+    1522:	93 07       	cpc	r25, r19
+    1524:	0c f0       	brlt	.+2      	; 0x1528 <Draw_Circle+0x2d2>
+    1526:	b9 ce       	rjmp	.-654    	; 0x129a <Draw_Circle+0x44>
+  }
+    1528:	2e 96       	adiw	r28, 0x0e	; 14
+    152a:	0f b6       	in	r0, 0x3f	; 63
+    152c:	f8 94       	cli
+    152e:	de bf       	out	0x3e, r29	; 62
+    1530:	0f be       	out	0x3f, r0	; 63
+    1532:	cd bf       	out	0x3d, r28	; 61
+    1534:	cf 91       	pop	r28
+    1536:	df 91       	pop	r29
+    1538:	08 95       	ret
+
+0000153a <Circle_Del>:
+
+	void Circle_Del(int x1, int y1, int radius){
+    153a:	df 93       	push	r29
+    153c:	cf 93       	push	r28
+    153e:	cd b7       	in	r28, 0x3d	; 61
+    1540:	de b7       	in	r29, 0x3e	; 62
+    1542:	2c 97       	sbiw	r28, 0x0c	; 12
+    1544:	0f b6       	in	r0, 0x3f	; 63
+    1546:	f8 94       	cli
+    1548:	de bf       	out	0x3e, r29	; 62
+    154a:	0f be       	out	0x3f, r0	; 63
+    154c:	cd bf       	out	0x3d, r28	; 61
+    154e:	98 87       	std	Y+8, r25	; 0x08
+    1550:	8f 83       	std	Y+7, r24	; 0x07
+    1552:	7a 87       	std	Y+10, r23	; 0x0a
+    1554:	69 87       	std	Y+9, r22	; 0x09
+    1556:	5c 87       	std	Y+12, r21	; 0x0c
+    1558:	4b 87       	std	Y+11, r20	; 0x0b
+	int a, r, cond;
+	a = 0;
+    155a:	1e 82       	std	Y+6, r1	; 0x06
+    155c:	1d 82       	std	Y+5, r1	; 0x05
+	r = radius;
+    155e:	8b 85       	ldd	r24, Y+11	; 0x0b
+    1560:	9c 85       	ldd	r25, Y+12	; 0x0c
+    1562:	9c 83       	std	Y+4, r25	; 0x04
+    1564:	8b 83       	std	Y+3, r24	; 0x03
+	cond = 1 - r;
+    1566:	21 e0       	ldi	r18, 0x01	; 1
+    1568:	30 e0       	ldi	r19, 0x00	; 0
+    156a:	8b 81       	ldd	r24, Y+3	; 0x03
+    156c:	9c 81       	ldd	r25, Y+4	; 0x04
+    156e:	a9 01       	movw	r20, r18
+    1570:	48 1b       	sub	r20, r24
+    1572:	59 0b       	sbc	r21, r25
+    1574:	ca 01       	movw	r24, r20
+    1576:	9a 83       	std	Y+2, r25	; 0x02
+    1578:	89 83       	std	Y+1, r24	; 0x01
+	do{
+   	Line_Del(x1-a, y1+r, x1+a, y1+r);
+    157a:	2f 81       	ldd	r18, Y+7	; 0x07
+    157c:	38 85       	ldd	r19, Y+8	; 0x08
+    157e:	8d 81       	ldd	r24, Y+5	; 0x05
+    1580:	9e 81       	ldd	r25, Y+6	; 0x06
+    1582:	b9 01       	movw	r22, r18
+    1584:	68 1b       	sub	r22, r24
+    1586:	79 0b       	sbc	r23, r25
+    1588:	29 85       	ldd	r18, Y+9	; 0x09
+    158a:	3a 85       	ldd	r19, Y+10	; 0x0a
+    158c:	8b 81       	ldd	r24, Y+3	; 0x03
+    158e:	9c 81       	ldd	r25, Y+4	; 0x04
+    1590:	f9 01       	movw	r30, r18
+    1592:	e8 0f       	add	r30, r24
+    1594:	f9 1f       	adc	r31, r25
+    1596:	2f 81       	ldd	r18, Y+7	; 0x07
+    1598:	38 85       	ldd	r19, Y+8	; 0x08
+    159a:	8d 81       	ldd	r24, Y+5	; 0x05
+    159c:	9e 81       	ldd	r25, Y+6	; 0x06
+    159e:	a9 01       	movw	r20, r18
+    15a0:	48 0f       	add	r20, r24
+    15a2:	59 1f       	adc	r21, r25
+    15a4:	29 85       	ldd	r18, Y+9	; 0x09
+    15a6:	3a 85       	ldd	r19, Y+10	; 0x0a
+    15a8:	8b 81       	ldd	r24, Y+3	; 0x03
+    15aa:	9c 81       	ldd	r25, Y+4	; 0x04
+    15ac:	28 0f       	add	r18, r24
+    15ae:	39 1f       	adc	r19, r25
+    15b0:	cb 01       	movw	r24, r22
+    15b2:	bf 01       	movw	r22, r30
+    15b4:	0e 94 44 07 	call	0xe88	; 0xe88 <Line_Del>
+   	Line_Del(x1-a, y1-r, x1+a, y1-r);
+    15b8:	2f 81       	ldd	r18, Y+7	; 0x07
+    15ba:	38 85       	ldd	r19, Y+8	; 0x08
+    15bc:	8d 81       	ldd	r24, Y+5	; 0x05
+    15be:	9e 81       	ldd	r25, Y+6	; 0x06
+    15c0:	b9 01       	movw	r22, r18
+    15c2:	68 1b       	sub	r22, r24
+    15c4:	79 0b       	sbc	r23, r25
+    15c6:	29 85       	ldd	r18, Y+9	; 0x09
+    15c8:	3a 85       	ldd	r19, Y+10	; 0x0a
+    15ca:	8b 81       	ldd	r24, Y+3	; 0x03
+    15cc:	9c 81       	ldd	r25, Y+4	; 0x04
+    15ce:	f9 01       	movw	r30, r18
+    15d0:	e8 1b       	sub	r30, r24
+    15d2:	f9 0b       	sbc	r31, r25
+    15d4:	2f 81       	ldd	r18, Y+7	; 0x07
+    15d6:	38 85       	ldd	r19, Y+8	; 0x08
+    15d8:	8d 81       	ldd	r24, Y+5	; 0x05
+    15da:	9e 81       	ldd	r25, Y+6	; 0x06
+    15dc:	a9 01       	movw	r20, r18
+    15de:	48 0f       	add	r20, r24
+    15e0:	59 1f       	adc	r21, r25
+    15e2:	29 85       	ldd	r18, Y+9	; 0x09
+    15e4:	3a 85       	ldd	r19, Y+10	; 0x0a
+    15e6:	8b 81       	ldd	r24, Y+3	; 0x03
+    15e8:	9c 81       	ldd	r25, Y+4	; 0x04
+    15ea:	28 1b       	sub	r18, r24
+    15ec:	39 0b       	sbc	r19, r25
+    15ee:	cb 01       	movw	r24, r22
+    15f0:	bf 01       	movw	r22, r30
+    15f2:	0e 94 44 07 	call	0xe88	; 0xe88 <Line_Del>
+   	Line_Del(x1-r, y1+a, x1+r, y1+a);
+    15f6:	2f 81       	ldd	r18, Y+7	; 0x07
+    15f8:	38 85       	ldd	r19, Y+8	; 0x08
+    15fa:	8b 81       	ldd	r24, Y+3	; 0x03
+    15fc:	9c 81       	ldd	r25, Y+4	; 0x04
+    15fe:	b9 01       	movw	r22, r18
+    1600:	68 1b       	sub	r22, r24
+    1602:	79 0b       	sbc	r23, r25
+    1604:	29 85       	ldd	r18, Y+9	; 0x09
+    1606:	3a 85       	ldd	r19, Y+10	; 0x0a
+    1608:	8d 81       	ldd	r24, Y+5	; 0x05
+    160a:	9e 81       	ldd	r25, Y+6	; 0x06
+    160c:	f9 01       	movw	r30, r18
+    160e:	e8 0f       	add	r30, r24
+    1610:	f9 1f       	adc	r31, r25
+    1612:	2f 81       	ldd	r18, Y+7	; 0x07
+    1614:	38 85       	ldd	r19, Y+8	; 0x08
+    1616:	8b 81       	ldd	r24, Y+3	; 0x03
+    1618:	9c 81       	ldd	r25, Y+4	; 0x04
+    161a:	a9 01       	movw	r20, r18
+    161c:	48 0f       	add	r20, r24
+    161e:	59 1f       	adc	r21, r25
+    1620:	29 85       	ldd	r18, Y+9	; 0x09
+    1622:	3a 85       	ldd	r19, Y+10	; 0x0a
+    1624:	8d 81       	ldd	r24, Y+5	; 0x05
+    1626:	9e 81       	ldd	r25, Y+6	; 0x06
+    1628:	28 0f       	add	r18, r24
+    162a:	39 1f       	adc	r19, r25
+    162c:	cb 01       	movw	r24, r22
+    162e:	bf 01       	movw	r22, r30
+    1630:	0e 94 44 07 	call	0xe88	; 0xe88 <Line_Del>
+   	Line_Del(x1-r, y1-a, x1+r, y1-a);
+    1634:	2f 81       	ldd	r18, Y+7	; 0x07
+    1636:	38 85       	ldd	r19, Y+8	; 0x08
+    1638:	8b 81       	ldd	r24, Y+3	; 0x03
+    163a:	9c 81       	ldd	r25, Y+4	; 0x04
+    163c:	b9 01       	movw	r22, r18
+    163e:	68 1b       	sub	r22, r24
+    1640:	79 0b       	sbc	r23, r25
+    1642:	29 85       	ldd	r18, Y+9	; 0x09
+    1644:	3a 85       	ldd	r19, Y+10	; 0x0a
+    1646:	8d 81       	ldd	r24, Y+5	; 0x05
+    1648:	9e 81       	ldd	r25, Y+6	; 0x06
+    164a:	f9 01       	movw	r30, r18
+    164c:	e8 1b       	sub	r30, r24
+    164e:	f9 0b       	sbc	r31, r25
+    1650:	2f 81       	ldd	r18, Y+7	; 0x07
+    1652:	38 85       	ldd	r19, Y+8	; 0x08
+    1654:	8b 81       	ldd	r24, Y+3	; 0x03
+    1656:	9c 81       	ldd	r25, Y+4	; 0x04
+    1658:	a9 01       	movw	r20, r18
+    165a:	48 0f       	add	r20, r24
+    165c:	59 1f       	adc	r21, r25
+    165e:	29 85       	ldd	r18, Y+9	; 0x09
+    1660:	3a 85       	ldd	r19, Y+10	; 0x0a
+    1662:	8d 81       	ldd	r24, Y+5	; 0x05
+    1664:	9e 81       	ldd	r25, Y+6	; 0x06
+    1666:	28 1b       	sub	r18, r24
+    1668:	39 0b       	sbc	r19, r25
+    166a:	cb 01       	movw	r24, r22
+    166c:	bf 01       	movw	r22, r30
+    166e:	0e 94 44 07 	call	0xe88	; 0xe88 <Line_Del>
+  
+ 	if(cond < 0){
+    1672:	89 81       	ldd	r24, Y+1	; 0x01
+    1674:	9a 81       	ldd	r25, Y+2	; 0x02
+    1676:	99 23       	and	r25, r25
+    1678:	9c f4       	brge	.+38     	; 0x16a0 <Circle_Del+0x166>
+    cond += 3 + 2*a++;
+    167a:	8d 81       	ldd	r24, Y+5	; 0x05
+    167c:	9e 81       	ldd	r25, Y+6	; 0x06
+    167e:	88 0f       	add	r24, r24
+    1680:	99 1f       	adc	r25, r25
+    1682:	9c 01       	movw	r18, r24
+    1684:	2d 5f       	subi	r18, 0xFD	; 253
+    1686:	3f 4f       	sbci	r19, 0xFF	; 255
+    1688:	89 81       	ldd	r24, Y+1	; 0x01
+    168a:	9a 81       	ldd	r25, Y+2	; 0x02
+    168c:	82 0f       	add	r24, r18
+    168e:	93 1f       	adc	r25, r19
+    1690:	9a 83       	std	Y+2, r25	; 0x02
+    1692:	89 83       	std	Y+1, r24	; 0x01
+    1694:	8d 81       	ldd	r24, Y+5	; 0x05
+    1696:	9e 81       	ldd	r25, Y+6	; 0x06
+    1698:	01 96       	adiw	r24, 0x01	; 1
+    169a:	9e 83       	std	Y+6, r25	; 0x06
+    169c:	8d 83       	std	Y+5, r24	; 0x05
+    169e:	1d c0       	rjmp	.+58     	; 0x16da <Circle_Del+0x1a0>
+    } else {cond+= 5 + 2*(a++ - r--);} 
+    16a0:	2d 81       	ldd	r18, Y+5	; 0x05
+    16a2:	3e 81       	ldd	r19, Y+6	; 0x06
+    16a4:	8b 81       	ldd	r24, Y+3	; 0x03
+    16a6:	9c 81       	ldd	r25, Y+4	; 0x04
+    16a8:	a9 01       	movw	r20, r18
+    16aa:	48 1b       	sub	r20, r24
+    16ac:	59 0b       	sbc	r21, r25
+    16ae:	ca 01       	movw	r24, r20
+    16b0:	88 0f       	add	r24, r24
+    16b2:	99 1f       	adc	r25, r25
+    16b4:	9c 01       	movw	r18, r24
+    16b6:	2b 5f       	subi	r18, 0xFB	; 251
+    16b8:	3f 4f       	sbci	r19, 0xFF	; 255
+    16ba:	89 81       	ldd	r24, Y+1	; 0x01
+    16bc:	9a 81       	ldd	r25, Y+2	; 0x02
+    16be:	82 0f       	add	r24, r18
+    16c0:	93 1f       	adc	r25, r19
+    16c2:	9a 83       	std	Y+2, r25	; 0x02
+    16c4:	89 83       	std	Y+1, r24	; 0x01
+    16c6:	8d 81       	ldd	r24, Y+5	; 0x05
+    16c8:	9e 81       	ldd	r25, Y+6	; 0x06
+    16ca:	01 96       	adiw	r24, 0x01	; 1
+    16cc:	9e 83       	std	Y+6, r25	; 0x06
+    16ce:	8d 83       	std	Y+5, r24	; 0x05
+    16d0:	8b 81       	ldd	r24, Y+3	; 0x03
+    16d2:	9c 81       	ldd	r25, Y+4	; 0x04
+    16d4:	01 97       	sbiw	r24, 0x01	; 1
+    16d6:	9c 83       	std	Y+4, r25	; 0x04
+    16d8:	8b 83       	std	Y+3, r24	; 0x03
+    }while(a <= r);
+    16da:	2d 81       	ldd	r18, Y+5	; 0x05
+    16dc:	3e 81       	ldd	r19, Y+6	; 0x06
+    16de:	8b 81       	ldd	r24, Y+3	; 0x03
+    16e0:	9c 81       	ldd	r25, Y+4	; 0x04
+    16e2:	82 17       	cp	r24, r18
+    16e4:	93 07       	cpc	r25, r19
+    16e6:	0c f0       	brlt	.+2      	; 0x16ea <Circle_Del+0x1b0>
+    16e8:	48 cf       	rjmp	.-368    	; 0x157a <Circle_Del+0x40>
+  }  
+    16ea:	2c 96       	adiw	r28, 0x0c	; 12
+    16ec:	0f b6       	in	r0, 0x3f	; 63
+    16ee:	f8 94       	cli
+    16f0:	de bf       	out	0x3e, r29	; 62
+    16f2:	0f be       	out	0x3f, r0	; 63
+    16f4:	cd bf       	out	0x3d, r28	; 61
+    16f6:	cf 91       	pop	r28
+    16f8:	df 91       	pop	r29
+    16fa:	08 95       	ret
+
+000016fc <main>:
+
+
+
+void main(void)
+{
+    16fc:	0f 93       	push	r16
+    16fe:	1f 93       	push	r17
+    1700:	df 93       	push	r29
+    1702:	cf 93       	push	r28
+    1704:	cd b7       	in	r28, 0x3d	; 61
+    1706:	de b7       	in	r29, 0x3e	; 62
+    1708:	cc 5d       	subi	r28, 0xDC	; 220
+    170a:	d0 40       	sbci	r29, 0x00	; 0
+    170c:	0f b6       	in	r0, 0x3f	; 63
+    170e:	f8 94       	cli
+    1710:	de bf       	out	0x3e, r29	; 62
+    1712:	0f be       	out	0x3f, r0	; 63
+    1714:	cd bf       	out	0x3d, r28	; 61
+int i, j, k, on=1, off=0;
+    1716:	81 e0       	ldi	r24, 0x01	; 1
+    1718:	90 e0       	ldi	r25, 0x00	; 0
+    171a:	98 87       	std	Y+8, r25	; 0x08
+    171c:	8f 83       	std	Y+7, r24	; 0x07
+    171e:	1e 82       	std	Y+6, r1	; 0x06
+    1720:	1d 82       	std	Y+5, r1	; 0x05
+T8 Ti, Tj, Li=0;
+    1722:	1a 82       	std	Y+2, r1	; 0x02
+char temp;
+int arr[17][4]={{13,3,29,19},{55,24,71,40},{98,45,114,61},
+{55,3,71,19},{98,3,114,19},{13,24,29,40},{98,24,114,40},
+{13,45,29,61},{55,45,71,61},{55,24,71,40},{13,3,29,19},
+{55,24,71,40},{98,45,114,61},{55,3,71,19},{98,3,114,19},
+{13,24,29,40},{98,24,114,40}};
+    1724:	ce 01       	movw	r24, r28
+    1726:	0f 96       	adiw	r24, 0x0f	; 15
+    1728:	cd 52       	subi	r28, 0x2D	; 45
+    172a:	df 4f       	sbci	r29, 0xFF	; 255
+    172c:	99 83       	std	Y+1, r25	; 0x01
+    172e:	88 83       	st	Y, r24
+    1730:	c3 5d       	subi	r28, 0xD3	; 211
+    1732:	d0 40       	sbci	r29, 0x00	; 0
+    1734:	ee e3       	ldi	r30, 0x3E	; 62
+    1736:	f1 e0       	ldi	r31, 0x01	; 1
+    1738:	cb 52       	subi	r28, 0x2B	; 43
+    173a:	df 4f       	sbci	r29, 0xFF	; 255
+    173c:	f9 83       	std	Y+1, r31	; 0x01
+    173e:	e8 83       	st	Y, r30
+    1740:	c5 5d       	subi	r28, 0xD5	; 213
+    1742:	d0 40       	sbci	r29, 0x00	; 0
+    1744:	f8 e8       	ldi	r31, 0x88	; 136
+    1746:	c9 52       	subi	r28, 0x29	; 41
+    1748:	df 4f       	sbci	r29, 0xFF	; 255
+    174a:	f8 83       	st	Y, r31
+    174c:	c7 5d       	subi	r28, 0xD7	; 215
+    174e:	d0 40       	sbci	r29, 0x00	; 0
+    1750:	cb 52       	subi	r28, 0x2B	; 43
+    1752:	df 4f       	sbci	r29, 0xFF	; 255
+    1754:	e8 81       	ld	r30, Y
+    1756:	f9 81       	ldd	r31, Y+1	; 0x01
+    1758:	c5 5d       	subi	r28, 0xD5	; 213
+    175a:	d0 40       	sbci	r29, 0x00	; 0
+    175c:	00 80       	ld	r0, Z
+    175e:	cb 52       	subi	r28, 0x2B	; 43
+    1760:	df 4f       	sbci	r29, 0xFF	; 255
+    1762:	88 81       	ld	r24, Y
+    1764:	99 81       	ldd	r25, Y+1	; 0x01
+    1766:	c5 5d       	subi	r28, 0xD5	; 213
+    1768:	d0 40       	sbci	r29, 0x00	; 0
+    176a:	01 96       	adiw	r24, 0x01	; 1
+    176c:	cb 52       	subi	r28, 0x2B	; 43
+    176e:	df 4f       	sbci	r29, 0xFF	; 255
+    1770:	99 83       	std	Y+1, r25	; 0x01
+    1772:	88 83       	st	Y, r24
+    1774:	c5 5d       	subi	r28, 0xD5	; 213
+    1776:	d0 40       	sbci	r29, 0x00	; 0
+    1778:	cd 52       	subi	r28, 0x2D	; 45
+    177a:	df 4f       	sbci	r29, 0xFF	; 255
+    177c:	e8 81       	ld	r30, Y
+    177e:	f9 81       	ldd	r31, Y+1	; 0x01
+    1780:	c3 5d       	subi	r28, 0xD3	; 211
+    1782:	d0 40       	sbci	r29, 0x00	; 0
+    1784:	00 82       	st	Z, r0
+    1786:	cd 52       	subi	r28, 0x2D	; 45
+    1788:	df 4f       	sbci	r29, 0xFF	; 255
+    178a:	88 81       	ld	r24, Y
+    178c:	99 81       	ldd	r25, Y+1	; 0x01
+    178e:	c3 5d       	subi	r28, 0xD3	; 211
+    1790:	d0 40       	sbci	r29, 0x00	; 0
+    1792:	01 96       	adiw	r24, 0x01	; 1
+    1794:	cd 52       	subi	r28, 0x2D	; 45
+    1796:	df 4f       	sbci	r29, 0xFF	; 255
+    1798:	99 83       	std	Y+1, r25	; 0x01
+    179a:	88 83       	st	Y, r24
+    179c:	c3 5d       	subi	r28, 0xD3	; 211
+    179e:	d0 40       	sbci	r29, 0x00	; 0
+    17a0:	c9 52       	subi	r28, 0x29	; 41
+    17a2:	df 4f       	sbci	r29, 0xFF	; 255
+    17a4:	98 81       	ld	r25, Y
+    17a6:	c7 5d       	subi	r28, 0xD7	; 215
+    17a8:	d0 40       	sbci	r29, 0x00	; 0
+    17aa:	91 50       	subi	r25, 0x01	; 1
+    17ac:	c9 52       	subi	r28, 0x29	; 41
+    17ae:	df 4f       	sbci	r29, 0xFF	; 255
+    17b0:	98 83       	st	Y, r25
+    17b2:	c7 5d       	subi	r28, 0xD7	; 215
+    17b4:	d0 40       	sbci	r29, 0x00	; 0
+    17b6:	c9 52       	subi	r28, 0x29	; 41
+    17b8:	df 4f       	sbci	r29, 0xFF	; 255
+    17ba:	e8 81       	ld	r30, Y
+    17bc:	c7 5d       	subi	r28, 0xD7	; 215
+    17be:	d0 40       	sbci	r29, 0x00	; 0
+    17c0:	ee 23       	and	r30, r30
+    17c2:	31 f6       	brne	.-116    	; 0x1750 <main+0x54>
+int arr1[15][2]={{21,11},{21,32},{21,53},{63,11},{63,32},{63,53},
+{106,11},{106,32},{106,53},{21,11},{21,53},{63,11},{63,53},
+{106,11},{106,53}};
+    17c4:	ce 01       	movw	r24, r28
+    17c6:	89 56       	subi	r24, 0x69	; 105
+    17c8:	9f 4f       	sbci	r25, 0xFF	; 255
+    17ca:	c8 52       	subi	r28, 0x28	; 40
+    17cc:	df 4f       	sbci	r29, 0xFF	; 255
+    17ce:	99 83       	std	Y+1, r25	; 0x01
+    17d0:	88 83       	st	Y, r24
+    17d2:	c8 5d       	subi	r28, 0xD8	; 216
+    17d4:	d0 40       	sbci	r29, 0x00	; 0
+    17d6:	82 e0       	ldi	r24, 0x02	; 2
+    17d8:	91 e0       	ldi	r25, 0x01	; 1
+    17da:	c6 52       	subi	r28, 0x26	; 38
+    17dc:	df 4f       	sbci	r29, 0xFF	; 255
+    17de:	99 83       	std	Y+1, r25	; 0x01
+    17e0:	88 83       	st	Y, r24
+    17e2:	ca 5d       	subi	r28, 0xDA	; 218
+    17e4:	d0 40       	sbci	r29, 0x00	; 0
+    17e6:	9c e3       	ldi	r25, 0x3C	; 60
+    17e8:	c4 52       	subi	r28, 0x24	; 36
+    17ea:	df 4f       	sbci	r29, 0xFF	; 255
+    17ec:	98 83       	st	Y, r25
+    17ee:	cc 5d       	subi	r28, 0xDC	; 220
+    17f0:	d0 40       	sbci	r29, 0x00	; 0
+    17f2:	c6 52       	subi	r28, 0x26	; 38
+    17f4:	df 4f       	sbci	r29, 0xFF	; 255
+    17f6:	e8 81       	ld	r30, Y
+    17f8:	f9 81       	ldd	r31, Y+1	; 0x01
+    17fa:	ca 5d       	subi	r28, 0xDA	; 218
+    17fc:	d0 40       	sbci	r29, 0x00	; 0
+    17fe:	00 80       	ld	r0, Z
+    1800:	c6 52       	subi	r28, 0x26	; 38
+    1802:	df 4f       	sbci	r29, 0xFF	; 255
+    1804:	88 81       	ld	r24, Y
+    1806:	99 81       	ldd	r25, Y+1	; 0x01
+    1808:	ca 5d       	subi	r28, 0xDA	; 218
+    180a:	d0 40       	sbci	r29, 0x00	; 0
+    180c:	01 96       	adiw	r24, 0x01	; 1
+    180e:	c6 52       	subi	r28, 0x26	; 38
+    1810:	df 4f       	sbci	r29, 0xFF	; 255
+    1812:	99 83       	std	Y+1, r25	; 0x01
+    1814:	88 83       	st	Y, r24
+    1816:	ca 5d       	subi	r28, 0xDA	; 218
+    1818:	d0 40       	sbci	r29, 0x00	; 0
+    181a:	c8 52       	subi	r28, 0x28	; 40
+    181c:	df 4f       	sbci	r29, 0xFF	; 255
+    181e:	e8 81       	ld	r30, Y
+    1820:	f9 81       	ldd	r31, Y+1	; 0x01
+    1822:	c8 5d       	subi	r28, 0xD8	; 216
+    1824:	d0 40       	sbci	r29, 0x00	; 0
+    1826:	00 82       	st	Z, r0
+    1828:	c8 52       	subi	r28, 0x28	; 40
+    182a:	df 4f       	sbci	r29, 0xFF	; 255
+    182c:	88 81       	ld	r24, Y
+    182e:	99 81       	ldd	r25, Y+1	; 0x01
+    1830:	c8 5d       	subi	r28, 0xD8	; 216
+    1832:	d0 40       	sbci	r29, 0x00	; 0
+    1834:	01 96       	adiw	r24, 0x01	; 1
+    1836:	c8 52       	subi	r28, 0x28	; 40
+    1838:	df 4f       	sbci	r29, 0xFF	; 255
+    183a:	99 83       	std	Y+1, r25	; 0x01
+    183c:	88 83       	st	Y, r24
+    183e:	c8 5d       	subi	r28, 0xD8	; 216
+    1840:	d0 40       	sbci	r29, 0x00	; 0
+    1842:	c4 52       	subi	r28, 0x24	; 36
+    1844:	df 4f       	sbci	r29, 0xFF	; 255
+    1846:	98 81       	ld	r25, Y
+    1848:	cc 5d       	subi	r28, 0xDC	; 220
+    184a:	d0 40       	sbci	r29, 0x00	; 0
+    184c:	91 50       	subi	r25, 0x01	; 1
+    184e:	c4 52       	subi	r28, 0x24	; 36
+    1850:	df 4f       	sbci	r29, 0xFF	; 255
+    1852:	98 83       	st	Y, r25
+    1854:	cc 5d       	subi	r28, 0xDC	; 220
+    1856:	d0 40       	sbci	r29, 0x00	; 0
+    1858:	c4 52       	subi	r28, 0x24	; 36
+    185a:	df 4f       	sbci	r29, 0xFF	; 255
+    185c:	e8 81       	ld	r30, Y
+    185e:	cc 5d       	subi	r28, 0xDC	; 220
+    1860:	d0 40       	sbci	r29, 0x00	; 0
+    1862:	ee 23       	and	r30, r30
+    1864:	31 f6       	brne	.-116    	; 0x17f2 <main+0xf6>
+init_devices();
+    1866:	0e 94 e6 00 	call	0x1cc	; 0x1cc <init_devices>
+GLcd_init();
+    186a:	0e 94 51 03 	call	0x6a2	; 0x6a2 <GLcd_init>
+GLcd_Clear();
+    186e:	0e 94 cc 02 	call	0x598	; 0x598 <GLcd_Clear>
+Draw_Line(1,0,126,0);
+    1872:	81 e0       	ldi	r24, 0x01	; 1
+    1874:	90 e0       	ldi	r25, 0x00	; 0
+    1876:	60 e0       	ldi	r22, 0x00	; 0
+    1878:	70 e0       	ldi	r23, 0x00	; 0
+    187a:	4e e7       	ldi	r20, 0x7E	; 126
+    187c:	50 e0       	ldi	r21, 0x00	; 0
+    187e:	20 e0       	ldi	r18, 0x00	; 0
+    1880:	30 e0       	ldi	r19, 0x00	; 0
+    1882:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+Draw_Line(1,21,126,21);
+    1886:	81 e0       	ldi	r24, 0x01	; 1
+    1888:	90 e0       	ldi	r25, 0x00	; 0
+    188a:	65 e1       	ldi	r22, 0x15	; 21
+    188c:	70 e0       	ldi	r23, 0x00	; 0
+    188e:	4e e7       	ldi	r20, 0x7E	; 126
+    1890:	50 e0       	ldi	r21, 0x00	; 0
+    1892:	25 e1       	ldi	r18, 0x15	; 21
+    1894:	30 e0       	ldi	r19, 0x00	; 0
+    1896:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+Draw_Line(1,42,126,42);
+    189a:	81 e0       	ldi	r24, 0x01	; 1
+    189c:	90 e0       	ldi	r25, 0x00	; 0
+    189e:	6a e2       	ldi	r22, 0x2A	; 42
+    18a0:	70 e0       	ldi	r23, 0x00	; 0
+    18a2:	4e e7       	ldi	r20, 0x7E	; 126
+    18a4:	50 e0       	ldi	r21, 0x00	; 0
+    18a6:	2a e2       	ldi	r18, 0x2A	; 42
+    18a8:	30 e0       	ldi	r19, 0x00	; 0
+    18aa:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+Draw_Line(1,63,126,63);
+    18ae:	81 e0       	ldi	r24, 0x01	; 1
+    18b0:	90 e0       	ldi	r25, 0x00	; 0
+    18b2:	6f e3       	ldi	r22, 0x3F	; 63
+    18b4:	70 e0       	ldi	r23, 0x00	; 0
+    18b6:	4e e7       	ldi	r20, 0x7E	; 126
+    18b8:	50 e0       	ldi	r21, 0x00	; 0
+    18ba:	2f e3       	ldi	r18, 0x3F	; 63
+    18bc:	30 e0       	ldi	r19, 0x00	; 0
+    18be:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+Draw_Line(0,0,0,63);
+    18c2:	80 e0       	ldi	r24, 0x00	; 0
+    18c4:	90 e0       	ldi	r25, 0x00	; 0
+    18c6:	60 e0       	ldi	r22, 0x00	; 0
+    18c8:	70 e0       	ldi	r23, 0x00	; 0
+    18ca:	40 e0       	ldi	r20, 0x00	; 0
+    18cc:	50 e0       	ldi	r21, 0x00	; 0
+    18ce:	2f e3       	ldi	r18, 0x3F	; 63
+    18d0:	30 e0       	ldi	r19, 0x00	; 0
+    18d2:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+Draw_Line(42,0,42,63);
+    18d6:	8a e2       	ldi	r24, 0x2A	; 42
+    18d8:	90 e0       	ldi	r25, 0x00	; 0
+    18da:	60 e0       	ldi	r22, 0x00	; 0
+    18dc:	70 e0       	ldi	r23, 0x00	; 0
+    18de:	4a e2       	ldi	r20, 0x2A	; 42
+    18e0:	50 e0       	ldi	r21, 0x00	; 0
+    18e2:	2f e3       	ldi	r18, 0x3F	; 63
+    18e4:	30 e0       	ldi	r19, 0x00	; 0
+    18e6:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+Draw_Line(84,0,84,63);
+    18ea:	84 e5       	ldi	r24, 0x54	; 84
+    18ec:	90 e0       	ldi	r25, 0x00	; 0
+    18ee:	60 e0       	ldi	r22, 0x00	; 0
+    18f0:	70 e0       	ldi	r23, 0x00	; 0
+    18f2:	44 e5       	ldi	r20, 0x54	; 84
+    18f4:	50 e0       	ldi	r21, 0x00	; 0
+    18f6:	2f e3       	ldi	r18, 0x3F	; 63
+    18f8:	30 e0       	ldi	r19, 0x00	; 0
+    18fa:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+Draw_Line(127,0,127,63);
+    18fe:	8f e7       	ldi	r24, 0x7F	; 127
+    1900:	90 e0       	ldi	r25, 0x00	; 0
+    1902:	60 e0       	ldi	r22, 0x00	; 0
+    1904:	70 e0       	ldi	r23, 0x00	; 0
+    1906:	4f e7       	ldi	r20, 0x7F	; 127
+    1908:	50 e0       	ldi	r21, 0x00	; 0
+    190a:	2f e3       	ldi	r18, 0x3F	; 63
+    190c:	30 e0       	ldi	r19, 0x00	; 0
+    190e:	0e 94 41 06 	call	0xc82	; 0xc82 <Draw_Line>
+
+Draw_Circle(106,32,8,off);
+    1912:	2d 81       	ldd	r18, Y+5	; 0x05
+    1914:	3e 81       	ldd	r19, Y+6	; 0x06
+    1916:	8a e6       	ldi	r24, 0x6A	; 106
+    1918:	90 e0       	ldi	r25, 0x00	; 0
+    191a:	60 e2       	ldi	r22, 0x20	; 32
+    191c:	70 e0       	ldi	r23, 0x00	; 0
+    191e:	48 e0       	ldi	r20, 0x08	; 8
+    1920:	50 e0       	ldi	r21, 0x00	; 0
+    1922:	0e 94 2b 09 	call	0x1256	; 0x1256 <Draw_Circle>
+Draw_Circle(106,53,8,on);
+    1926:	2f 81       	ldd	r18, Y+7	; 0x07
+    1928:	38 85       	ldd	r19, Y+8	; 0x08
+    192a:	8a e6       	ldi	r24, 0x6A	; 106
+    192c:	90 e0       	ldi	r25, 0x00	; 0
+    192e:	65 e3       	ldi	r22, 0x35	; 53
+    1930:	70 e0       	ldi	r23, 0x00	; 0
+    1932:	48 e0       	ldi	r20, 0x08	; 8
+    1934:	50 e0       	ldi	r21, 0x00	; 0
+    1936:	0e 94 2b 09 	call	0x1256	; 0x1256 <Draw_Circle>
+Draw_Rect(55,4,71,18,on);
+    193a:	ef 81       	ldd	r30, Y+7	; 0x07
+    193c:	f8 85       	ldd	r31, Y+8	; 0x08
+    193e:	87 e3       	ldi	r24, 0x37	; 55
+    1940:	90 e0       	ldi	r25, 0x00	; 0
+    1942:	64 e0       	ldi	r22, 0x04	; 4
+    1944:	70 e0       	ldi	r23, 0x00	; 0
+    1946:	47 e4       	ldi	r20, 0x47	; 71
+    1948:	50 e0       	ldi	r21, 0x00	; 0
+    194a:	22 e1       	ldi	r18, 0x12	; 18
+    194c:	30 e0       	ldi	r19, 0x00	; 0
+    194e:	8f 01       	movw	r16, r30
+    1950:	0e 94 47 08 	call	0x108e	; 0x108e <Draw_Rect>
+Draw_Rect(55,46,71,60,off);
+    1954:	ed 81       	ldd	r30, Y+5	; 0x05
+    1956:	fe 81       	ldd	r31, Y+6	; 0x06
+    1958:	87 e3       	ldi	r24, 0x37	; 55
+    195a:	90 e0       	ldi	r25, 0x00	; 0
+    195c:	6e e2       	ldi	r22, 0x2E	; 46
+    195e:	70 e0       	ldi	r23, 0x00	; 0
+    1960:	47 e4       	ldi	r20, 0x47	; 71
+    1962:	50 e0       	ldi	r21, 0x00	; 0
+    1964:	2c e3       	ldi	r18, 0x3C	; 60
+    1966:	30 e0       	ldi	r19, 0x00	; 0
+    1968:	8f 01       	movw	r16, r30
+    196a:	0e 94 47 08 	call	0x108e	; 0x108e <Draw_Rect>
+Draw_Rect(98,4,114,18,off);
+    196e:	ed 81       	ldd	r30, Y+5	; 0x05
+    1970:	fe 81       	ldd	r31, Y+6	; 0x06
+    1972:	82 e6       	ldi	r24, 0x62	; 98
+    1974:	90 e0       	ldi	r25, 0x00	; 0
+    1976:	64 e0       	ldi	r22, 0x04	; 4
+    1978:	70 e0       	ldi	r23, 0x00	; 0
+    197a:	42 e7       	ldi	r20, 0x72	; 114
+    197c:	50 e0       	ldi	r21, 0x00	; 0
+    197e:	22 e1       	ldi	r18, 0x12	; 18
+    1980:	30 e0       	ldi	r19, 0x00	; 0
+    1982:	8f 01       	movw	r16, r30
+    1984:	0e 94 47 08 	call	0x108e	; 0x108e <Draw_Rect>
+Draw_Circle(63,32,8,off);
+    1988:	2d 81       	ldd	r18, Y+5	; 0x05
+    198a:	3e 81       	ldd	r19, Y+6	; 0x06
+    198c:	8f e3       	ldi	r24, 0x3F	; 63
+    198e:	90 e0       	ldi	r25, 0x00	; 0
+    1990:	60 e2       	ldi	r22, 0x20	; 32
+    1992:	70 e0       	ldi	r23, 0x00	; 0
+    1994:	48 e0       	ldi	r20, 0x08	; 8
+    1996:	50 e0       	ldi	r21, 0x00	; 0
+    1998:	0e 94 2b 09 	call	0x1256	; 0x1256 <Draw_Circle>
+Draw_Rect(55,24,71,40,off);
+    199c:	ed 81       	ldd	r30, Y+5	; 0x05
+    199e:	fe 81       	ldd	r31, Y+6	; 0x06
+    19a0:	87 e3       	ldi	r24, 0x37	; 55
+    19a2:	90 e0       	ldi	r25, 0x00	; 0
+    19a4:	68 e1       	ldi	r22, 0x18	; 24
+    19a6:	70 e0       	ldi	r23, 0x00	; 0
+    19a8:	47 e4       	ldi	r20, 0x47	; 71
+    19aa:	50 e0       	ldi	r21, 0x00	; 0
+    19ac:	28 e2       	ldi	r18, 0x28	; 40
+    19ae:	30 e0       	ldi	r19, 0x00	; 0
+    19b0:	8f 01       	movw	r16, r30
+    19b2:	0e 94 47 08 	call	0x108e	; 0x108e <Draw_Rect>
+Draw_Circle(21,11,8,off);
+    19b6:	2d 81       	ldd	r18, Y+5	; 0x05
+    19b8:	3e 81       	ldd	r19, Y+6	; 0x06
+    19ba:	85 e1       	ldi	r24, 0x15	; 21
+    19bc:	90 e0       	ldi	r25, 0x00	; 0
+    19be:	6b e0       	ldi	r22, 0x0B	; 11
+    19c0:	70 e0       	ldi	r23, 0x00	; 0
+    19c2:	48 e0       	ldi	r20, 0x08	; 8
+    19c4:	50 e0       	ldi	r21, 0x00	; 0
+    19c6:	0e 94 2b 09 	call	0x1256	; 0x1256 <Draw_Circle>
+Draw_Circle(21,32,8,on);
+    19ca:	2f 81       	ldd	r18, Y+7	; 0x07
+    19cc:	38 85       	ldd	r19, Y+8	; 0x08
+    19ce:	85 e1       	ldi	r24, 0x15	; 21
+    19d0:	90 e0       	ldi	r25, 0x00	; 0
+    19d2:	60 e2       	ldi	r22, 0x20	; 32
+    19d4:	70 e0       	ldi	r23, 0x00	; 0
+    19d6:	48 e0       	ldi	r20, 0x08	; 8
+    19d8:	50 e0       	ldi	r21, 0x00	; 0
+    19da:	0e 94 2b 09 	call	0x1256	; 0x1256 <Draw_Circle>
+Draw_Rect(13,46,29,60,on);
+    19de:	ef 81       	ldd	r30, Y+7	; 0x07
+    19e0:	f8 85       	ldd	r31, Y+8	; 0x08
+    19e2:	8d e0       	ldi	r24, 0x0D	; 13
+    19e4:	90 e0       	ldi	r25, 0x00	; 0
+    19e6:	6e e2       	ldi	r22, 0x2E	; 46
+    19e8:	70 e0       	ldi	r23, 0x00	; 0
+    19ea:	4d e1       	ldi	r20, 0x1D	; 29
+    19ec:	50 e0       	ldi	r21, 0x00	; 0
+    19ee:	2c e3       	ldi	r18, 0x3C	; 60
+    19f0:	30 e0       	ldi	r19, 0x00	; 0
+    19f2:	8f 01       	movw	r16, r30
+    19f4:	0e 94 47 08 	call	0x108e	; 0x108e <Draw_Rect>
+    19f8:	ff cf       	rjmp	.-2      	; 0x19f8 <main+0x2fc>
+
+000019fa <__divmodhi4>:
+    19fa:	97 fb       	bst	r25, 7
+    19fc:	09 2e       	mov	r0, r25
+    19fe:	07 26       	eor	r0, r23
+    1a00:	0a d0       	rcall	.+20     	; 0x1a16 <__divmodhi4_neg1>
+    1a02:	77 fd       	sbrc	r23, 7
+    1a04:	04 d0       	rcall	.+8      	; 0x1a0e <__divmodhi4_neg2>
+    1a06:	0c d0       	rcall	.+24     	; 0x1a20 <__udivmodhi4>
+    1a08:	06 d0       	rcall	.+12     	; 0x1a16 <__divmodhi4_neg1>
+    1a0a:	00 20       	and	r0, r0
+    1a0c:	1a f4       	brpl	.+6      	; 0x1a14 <__divmodhi4_exit>
+
+00001a0e <__divmodhi4_neg2>:
+    1a0e:	70 95       	com	r23
+    1a10:	61 95       	neg	r22
+    1a12:	7f 4f       	sbci	r23, 0xFF	; 255
+
+00001a14 <__divmodhi4_exit>:
+    1a14:	08 95       	ret
+
+00001a16 <__divmodhi4_neg1>:
+    1a16:	f6 f7       	brtc	.-4      	; 0x1a14 <__divmodhi4_exit>
+    1a18:	90 95       	com	r25
+    1a1a:	81 95       	neg	r24
+    1a1c:	9f 4f       	sbci	r25, 0xFF	; 255
+    1a1e:	08 95       	ret
+
+00001a20 <__udivmodhi4>:
+    1a20:	aa 1b       	sub	r26, r26
+    1a22:	bb 1b       	sub	r27, r27
+    1a24:	51 e1       	ldi	r21, 0x11	; 17
+    1a26:	07 c0       	rjmp	.+14     	; 0x1a36 <__udivmodhi4_ep>
+
+00001a28 <__udivmodhi4_loop>:
+    1a28:	aa 1f       	adc	r26, r26
+    1a2a:	bb 1f       	adc	r27, r27
+    1a2c:	a6 17       	cp	r26, r22
+    1a2e:	b7 07       	cpc	r27, r23
+    1a30:	10 f0       	brcs	.+4      	; 0x1a36 <__udivmodhi4_ep>
+    1a32:	a6 1b       	sub	r26, r22
+    1a34:	b7 0b       	sbc	r27, r23
+
+00001a36 <__udivmodhi4_ep>:
+    1a36:	88 1f       	adc	r24, r24
+    1a38:	99 1f       	adc	r25, r25
+    1a3a:	5a 95       	dec	r21
+    1a3c:	a9 f7       	brne	.-22     	; 0x1a28 <__udivmodhi4_loop>
+    1a3e:	80 95       	com	r24
+    1a40:	90 95       	com	r25
+    1a42:	bc 01       	movw	r22, r24
+    1a44:	cd 01       	movw	r24, r26
+    1a46:	08 95       	ret
+
+00001a48 <_exit>:
+    1a48:	f8 94       	cli
+
+00001a4a <__stop_program>:
+    1a4a:	ff cf       	rjmp	.-2      	; 0x1a4a <__stop_program>

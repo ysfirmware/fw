@@ -1,0 +1,502 @@
+
+TESTUART.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000298  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .bss          00000002  00800100  00000298  0000030c  2**0
+                  ALLOC
+  2 .debug_aranges 00000020  00000000  00000000  0000030c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  3 .debug_pubnames 000000a7  00000000  00000000  0000032c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_info   0000020e  00000000  00000000  000003d3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_abbrev 0000013f  00000000  00000000  000005e1  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   00000303  00000000  00000000  00000720  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_frame  000000b0  00000000  00000000  00000a24  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_str    000000f6  00000000  00000000  00000ad4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_loc    00000046  00000000  00000000  00000bca  2**0
+                  CONTENTS, READONLY, DEBUGGING
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 46 00 	jmp	0x8c	; 0x8c <__ctors_end>
+   4:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+   8:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+   c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  10:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  14:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  18:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  1c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  20:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  24:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  28:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  2c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  30:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  34:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  38:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  3c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  40:	0c 94 67 00 	jmp	0xce	; 0xce <__vector_16>
+  44:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  48:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  4c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  50:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  54:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  58:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  5c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  60:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  64:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  68:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  6c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  70:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  74:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  78:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  7c:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  80:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  84:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+  88:	0c 94 65 00 	jmp	0xca	; 0xca <__bad_interrupt>
+
+0000008c <__ctors_end>:
+  8c:	11 24       	eor	r1, r1
+  8e:	1f be       	out	0x3f, r1	; 63
+  90:	cf ef       	ldi	r28, 0xFF	; 255
+  92:	d0 e1       	ldi	r29, 0x10	; 16
+  94:	de bf       	out	0x3e, r29	; 62
+  96:	cd bf       	out	0x3d, r28	; 61
+
+00000098 <__do_copy_data>:
+  98:	11 e0       	ldi	r17, 0x01	; 1
+  9a:	a0 e0       	ldi	r26, 0x00	; 0
+  9c:	b1 e0       	ldi	r27, 0x01	; 1
+  9e:	e8 e9       	ldi	r30, 0x98	; 152
+  a0:	f2 e0       	ldi	r31, 0x02	; 2
+  a2:	00 e0       	ldi	r16, 0x00	; 0
+  a4:	0b bf       	out	0x3b, r16	; 59
+  a6:	02 c0       	rjmp	.+4      	; 0xac <__do_copy_data+0x14>
+  a8:	07 90       	elpm	r0, Z+
+  aa:	0d 92       	st	X+, r0
+  ac:	a0 30       	cpi	r26, 0x00	; 0
+  ae:	b1 07       	cpc	r27, r17
+  b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
+
+000000b2 <__do_clear_bss>:
+  b2:	11 e0       	ldi	r17, 0x01	; 1
+  b4:	a0 e0       	ldi	r26, 0x00	; 0
+  b6:	b1 e0       	ldi	r27, 0x01	; 1
+  b8:	01 c0       	rjmp	.+2      	; 0xbc <.do_clear_bss_start>
+
+000000ba <.do_clear_bss_loop>:
+  ba:	1d 92       	st	X+, r1
+
+000000bc <.do_clear_bss_start>:
+  bc:	a2 30       	cpi	r26, 0x02	; 2
+  be:	b1 07       	cpc	r27, r17
+  c0:	e1 f7       	brne	.-8      	; 0xba <.do_clear_bss_loop>
+  c2:	0e 94 1f 01 	call	0x23e	; 0x23e <main>
+  c6:	0c 94 4a 01 	jmp	0x294	; 0x294 <_exit>
+
+000000ca <__bad_interrupt>:
+  ca:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000000ce <__vector_16>:
+void delays(int n);
+static int Putchar(char c, FILE *stream);
+
+volatile unsigned int howmuch;
+
+SIGNAL(SIG_OVERFLOW0){	
+  ce:	1f 92       	push	r1
+  d0:	0f 92       	push	r0
+  d2:	0f b6       	in	r0, 0x3f	; 63
+  d4:	0f 92       	push	r0
+  d6:	11 24       	eor	r1, r1
+  d8:	2f 93       	push	r18
+  da:	8f 93       	push	r24
+  dc:	9f 93       	push	r25
+	TCNT0 = 0x38; 
+  de:	88 e3       	ldi	r24, 0x38	; 56
+  e0:	82 bf       	out	0x32, r24	; 50
+	howmuch++;
+  e2:	80 91 00 01 	lds	r24, 0x0100
+  e6:	90 91 01 01 	lds	r25, 0x0101
+  ea:	01 96       	adiw	r24, 0x01	; 1
+  ec:	90 93 01 01 	sts	0x0101, r25
+  f0:	80 93 00 01 	sts	0x0100, r24
+	if(howmuch >= 10000)
+  f4:	80 91 00 01 	lds	r24, 0x0100
+  f8:	90 91 01 01 	lds	r25, 0x0101
+  fc:	80 51       	subi	r24, 0x10	; 16
+  fe:	97 42       	sbci	r25, 0x27	; 39
+ 100:	50 f0       	brcs	.+20     	; 0x116 <__vector_16+0x48>
+	{
+		howmuch=0;
+ 102:	10 92 01 01 	sts	0x0101, r1
+ 106:	10 92 00 01 	sts	0x0100, r1
+		if((PORTA&0x01)==0x01){
+ 10a:	d8 9b       	sbis	0x1b, 0	; 27
+ 10c:	02 c0       	rjmp	.+4      	; 0x112 <__vector_16+0x44>
+			PORTA = 0x00;
+ 10e:	1b ba       	out	0x1b, r1	; 27
+ 110:	02 c0       	rjmp	.+4      	; 0x116 <__vector_16+0x48>
+		}else{
+			PORTA = 0x01;
+ 112:	81 e0       	ldi	r24, 0x01	; 1
+ 114:	8b bb       	out	0x1b, r24	; 27
+		}
+	}
+}
+ 116:	9f 91       	pop	r25
+ 118:	8f 91       	pop	r24
+ 11a:	2f 91       	pop	r18
+ 11c:	0f 90       	pop	r0
+ 11e:	0f be       	out	0x3f, r0	; 63
+ 120:	0f 90       	pop	r0
+ 122:	1f 90       	pop	r1
+ 124:	18 95       	reti
+
+00000126 <tx0Char>:
+}
+
+
+// UART0 을 이용한 출력
+void tx0Char(char message)
+{
+ 126:	5d 9b       	sbis	0x0b, 5	; 11
+ 128:	fe cf       	rjmp	.-4      	; 0x126 <tx0Char>
+	while (((UCSR0A>>UDRE0)&0x01) == 0) ;  // UDRE, data register empty        
+    UDR0 = message;
+ 12a:	8c b9       	out	0x0c, r24	; 12
+}
+ 12c:	08 95       	ret
+
+0000012e <tx1Char>:
+
+// UART1 을 이용한 출력
+void tx1Char(char message)
+{
+ 12e:	98 2f       	mov	r25, r24
+	while (((UCSR1A>>UDRE1)&0x01) == 0) ;  // UDRE, data register empty        
+ 130:	80 91 9b 00 	lds	r24, 0x009B
+ 134:	85 ff       	sbrs	r24, 5
+ 136:	fc cf       	rjmp	.-8      	; 0x130 <tx1Char+0x2>
+    UDR1 = message;
+ 138:	90 93 9c 00 	sts	0x009C, r25
+}
+ 13c:	08 95       	ret
+
+0000013e <port_init>:
+
+
+void port_init(void)
+{
+ 13e:	1b ba       	out	0x1b, r1	; 27
+ PORTA = 0x00;
+ DDRA  = 0x00;
+ 140:	1a ba       	out	0x1a, r1	; 26
+ PORTB = 0x00;
+ 142:	18 ba       	out	0x18, r1	; 24
+ DDRB  = 0x00;
+ 144:	17 ba       	out	0x17, r1	; 23
+ PORTC = 0x00; //m103 output only
+ 146:	15 ba       	out	0x15, r1	; 21
+ DDRC  = 0x00;
+ 148:	14 ba       	out	0x14, r1	; 20
+ PORTD = 0x00;
+ 14a:	12 ba       	out	0x12, r1	; 18
+ DDRD  = 0x00;
+ 14c:	11 ba       	out	0x11, r1	; 17
+ PORTE = 0x02;
+ 14e:	82 e0       	ldi	r24, 0x02	; 2
+ 150:	83 b9       	out	0x03, r24	; 3
+ DDRE  = 0x00;
+ 152:	12 b8       	out	0x02, r1	; 2
+ PORTF = 0x00;
+ 154:	10 92 62 00 	sts	0x0062, r1
+ DDRF  = 0xff;
+ 158:	8f ef       	ldi	r24, 0xFF	; 255
+ 15a:	80 93 61 00 	sts	0x0061, r24
+ PORTG = 0x00;
+ 15e:	10 92 65 00 	sts	0x0065, r1
+ DDRG  = 0x03;
+ 162:	83 e0       	ldi	r24, 0x03	; 3
+ 164:	80 93 64 00 	sts	0x0064, r24
+}
+ 168:	08 95       	ret
+
+0000016a <uart0_init>:
+// desired baud rate: 9600
+// actual: baud rate:9615 (0.2%)
+// char size: 8 bit
+// parity: Disabled
+void uart0_init(void)
+{
+ 16a:	1a b8       	out	0x0a, r1	; 10
+ UCSR0B = 0x00; //disable while setting baud rate
+ UCSR0A = 0x00;
+ 16c:	1b b8       	out	0x0b, r1	; 11
+ UCSR0C = 0x06;
+ 16e:	86 e0       	ldi	r24, 0x06	; 6
+ 170:	80 93 95 00 	sts	0x0095, r24
+ UBRR0L = 0x67; //set baud rate lo
+ 174:	87 e6       	ldi	r24, 0x67	; 103
+ 176:	89 b9       	out	0x09, r24	; 9
+ UBRR0H = 0x00; //set baud rate hi
+ 178:	10 92 90 00 	sts	0x0090, r1
+ UCSR0B = 0x18;
+ 17c:	88 e1       	ldi	r24, 0x18	; 24
+ 17e:	8a b9       	out	0x0a, r24	; 10
+}
+ 180:	08 95       	ret
+
+00000182 <uart1_init>:
+// desired baud rate:9600
+// actual baud rate:9615 (0.2%)
+// char size: 8 bit
+// parity: Disabled
+void uart1_init(void)
+{
+ 182:	ea e9       	ldi	r30, 0x9A	; 154
+ 184:	f0 e0       	ldi	r31, 0x00	; 0
+ 186:	10 82       	st	Z, r1
+ UCSR1B = 0x00; //disable while setting baud rate
+ UCSR1A = 0x00;
+ 188:	10 92 9b 00 	sts	0x009B, r1
+ UCSR1C = 0x06;
+ 18c:	86 e0       	ldi	r24, 0x06	; 6
+ 18e:	80 93 9d 00 	sts	0x009D, r24
+// UBRR1L = 0x2F; //set baud rate lo 7.3728 MHz
+// UBRR1L = 0x47; //set baud rate lo 11.0592 Mhz
+ UBRR1L = 0x67; //set baud rate lo 16Mhz
+ 192:	87 e6       	ldi	r24, 0x67	; 103
+ 194:	80 93 99 00 	sts	0x0099, r24
+ UBRR1H = 0x00; //set baud rate hi
+ 198:	10 92 98 00 	sts	0x0098, r1
+ UCSR1B = 0x18;
+ 19c:	88 e1       	ldi	r24, 0x18	; 24
+ 19e:	80 83       	st	Z, r24
+}
+ 1a0:	08 95       	ret
+
+000001a2 <timer0_init>:
+//TIMER0 initialize - prescale:8
+// WGM: Normal
+// desired value: 10000Hz
+// actual value: 10000.000Hz (0.0%)
+void timer0_init(void)
+{
+ 1a2:	13 be       	out	0x33, r1	; 51
+ TCCR0 = 0x00; //stop
+ ASSR  = 0x00; //set async mode
+ 1a4:	10 be       	out	0x30, r1	; 48
+ TCNT0 = 0x38; //set count
+ 1a6:	88 e3       	ldi	r24, 0x38	; 56
+ 1a8:	82 bf       	out	0x32, r24	; 50
+ OCR0  = 0xC8;
+ 1aa:	88 ec       	ldi	r24, 0xC8	; 200
+ 1ac:	81 bf       	out	0x31, r24	; 49
+ TCCR0 = 0x02; //start timer
+ 1ae:	82 e0       	ldi	r24, 0x02	; 2
+ 1b0:	83 bf       	out	0x33, r24	; 51
+}
+ 1b2:	08 95       	ret
+
+000001b4 <init_devices>:
+
+//call this routine to initialize all peripherals
+void init_devices(void)
+{
+ 1b4:	f8 94       	cli
+ //stop errant interrupts until set up
+ cli(); //disable all interrupts
+ XDIV  = 0x00; //xtal divider
+ 1b6:	1c be       	out	0x3c, r1	; 60
+ XMCRA = 0x00; //external memory
+ 1b8:	10 92 6d 00 	sts	0x006D, r1
+ port_init();
+ 1bc:	0e 94 9f 00 	call	0x13e	; 0x13e <port_init>
+// WGM: Normal
+// desired value: 10000Hz
+// actual value: 10000.000Hz (0.0%)
+void timer0_init(void)
+{
+ TCCR0 = 0x00; //stop
+ 1c0:	13 be       	out	0x33, r1	; 51
+ ASSR  = 0x00; //set async mode
+ 1c2:	10 be       	out	0x30, r1	; 48
+ TCNT0 = 0x38; //set count
+ 1c4:	88 e3       	ldi	r24, 0x38	; 56
+ 1c6:	82 bf       	out	0x32, r24	; 50
+ OCR0  = 0xC8;
+ 1c8:	88 ec       	ldi	r24, 0xC8	; 200
+ 1ca:	81 bf       	out	0x31, r24	; 49
+ TCCR0 = 0x02; //start timer
+ 1cc:	82 e0       	ldi	r24, 0x02	; 2
+ 1ce:	83 bf       	out	0x33, r24	; 51
+ timer0_init();
+ //uart0_init();              // UART 0 초기화
+ //uart1_init();              // UART 1 초기화
+ //fdevopen(Putchar,0);   
+
+ MCUCR = 0x00;
+ 1d0:	15 be       	out	0x35, r1	; 53
+ EICRA = 0x00; //extended ext ints
+ 1d2:	10 92 6a 00 	sts	0x006A, r1
+ EICRB = 0x00; //extended ext ints
+ 1d6:	1a be       	out	0x3a, r1	; 58
+ EIMSK = 0x00;
+ 1d8:	19 be       	out	0x39, r1	; 57
+ TIMSK = 0x01; //timer interrupt sources
+ 1da:	81 e0       	ldi	r24, 0x01	; 1
+ 1dc:	87 bf       	out	0x37, r24	; 55
+ ETIMSK = 0x00; //extended timer interrupt sources
+ 1de:	10 92 7d 00 	sts	0x007D, r1
+ sei(); //re-enable interrupts
+ 1e2:	78 94       	sei
+ //all peripherals are now initialized
+}
+ 1e4:	08 95       	ret
+
+000001e6 <delays>:
+
+
+// 시간 지연 함수
+void delays(int n)
+{
+ 1e6:	df 93       	push	r29
+ 1e8:	cf 93       	push	r28
+ 1ea:	00 d0       	rcall	.+0      	; 0x1ec <delays+0x6>
+ 1ec:	00 d0       	rcall	.+0      	; 0x1ee <delays+0x8>
+ 1ee:	cd b7       	in	r28, 0x3d	; 61
+ 1f0:	de b7       	in	r29, 0x3e	; 62
+ 1f2:	9c 01       	movw	r18, r24
+	volatile int i,j;
+	for(i=1;i<n;i++)
+ 1f4:	81 e0       	ldi	r24, 0x01	; 1
+ 1f6:	90 e0       	ldi	r25, 0x00	; 0
+ 1f8:	9a 83       	std	Y+2, r25	; 0x02
+ 1fa:	89 83       	std	Y+1, r24	; 0x01
+	{
+    	for(j=1;j<600;j++);
+ 1fc:	41 e0       	ldi	r20, 0x01	; 1
+ 1fe:	50 e0       	ldi	r21, 0x00	; 0
+ 200:	12 c0       	rjmp	.+36     	; 0x226 <delays+0x40>
+ 202:	5c 83       	std	Y+4, r21	; 0x04
+ 204:	4b 83       	std	Y+3, r20	; 0x03
+ 206:	05 c0       	rjmp	.+10     	; 0x212 <delays+0x2c>
+ 208:	8b 81       	ldd	r24, Y+3	; 0x03
+ 20a:	9c 81       	ldd	r25, Y+4	; 0x04
+ 20c:	01 96       	adiw	r24, 0x01	; 1
+ 20e:	9c 83       	std	Y+4, r25	; 0x04
+ 210:	8b 83       	std	Y+3, r24	; 0x03
+ 212:	8b 81       	ldd	r24, Y+3	; 0x03
+ 214:	9c 81       	ldd	r25, Y+4	; 0x04
+ 216:	88 55       	subi	r24, 0x58	; 88
+ 218:	92 40       	sbci	r25, 0x02	; 2
+ 21a:	b4 f3       	brlt	.-20     	; 0x208 <delays+0x22>
+
+// 시간 지연 함수
+void delays(int n)
+{
+	volatile int i,j;
+	for(i=1;i<n;i++)
+ 21c:	89 81       	ldd	r24, Y+1	; 0x01
+ 21e:	9a 81       	ldd	r25, Y+2	; 0x02
+ 220:	01 96       	adiw	r24, 0x01	; 1
+ 222:	9a 83       	std	Y+2, r25	; 0x02
+ 224:	89 83       	std	Y+1, r24	; 0x01
+ 226:	89 81       	ldd	r24, Y+1	; 0x01
+ 228:	9a 81       	ldd	r25, Y+2	; 0x02
+ 22a:	82 17       	cp	r24, r18
+ 22c:	93 07       	cpc	r25, r19
+ 22e:	4c f3       	brlt	.-46     	; 0x202 <delays+0x1c>
+	{
+    	for(j=1;j<600;j++);
+	}
+}
+ 230:	0f 90       	pop	r0
+ 232:	0f 90       	pop	r0
+ 234:	0f 90       	pop	r0
+ 236:	0f 90       	pop	r0
+ 238:	cf 91       	pop	r28
+ 23a:	df 91       	pop	r29
+ 23c:	08 95       	ret
+
+0000023e <main>:
+
+
+
+int main (void)
+{
+ 23e:	df 93       	push	r29
+ 240:	cf 93       	push	r28
+ 242:	00 d0       	rcall	.+0      	; 0x244 <main+0x6>
+ 244:	00 d0       	rcall	.+0      	; 0x246 <main+0x8>
+ 246:	cd b7       	in	r28, 0x3d	; 61
+ 248:	de b7       	in	r29, 0x3e	; 62
+	int i=0;
+	init_devices();
+ 24a:	0e 94 da 00 	call	0x1b4	; 0x1b4 <init_devices>
+	howmuch = 0;
+ 24e:	10 92 01 01 	sts	0x0101, r1
+ 252:	10 92 00 01 	sts	0x0100, r1
+	//insert your functional code here...
+	//printf("\n\r\ntesting...\n\r");
+	//printf("printf 테스트 프로그램...\n\r");
+	PORTA = 0x01;
+ 256:	81 e0       	ldi	r24, 0x01	; 1
+ 258:	8b bb       	out	0x1b, r24	; 27
+
+// 시간 지연 함수
+void delays(int n)
+{
+	volatile int i,j;
+	for(i=1;i<n;i++)
+ 25a:	21 e0       	ldi	r18, 0x01	; 1
+ 25c:	30 e0       	ldi	r19, 0x00	; 0
+ 25e:	3a 83       	std	Y+2, r19	; 0x02
+ 260:	29 83       	std	Y+1, r18	; 0x01
+ 262:	12 c0       	rjmp	.+36     	; 0x288 <main+0x4a>
+	{
+    	for(j=1;j<600;j++);
+ 264:	3c 83       	std	Y+4, r19	; 0x04
+ 266:	2b 83       	std	Y+3, r18	; 0x03
+ 268:	05 c0       	rjmp	.+10     	; 0x274 <main+0x36>
+ 26a:	8b 81       	ldd	r24, Y+3	; 0x03
+ 26c:	9c 81       	ldd	r25, Y+4	; 0x04
+ 26e:	01 96       	adiw	r24, 0x01	; 1
+ 270:	9c 83       	std	Y+4, r25	; 0x04
+ 272:	8b 83       	std	Y+3, r24	; 0x03
+ 274:	8b 81       	ldd	r24, Y+3	; 0x03
+ 276:	9c 81       	ldd	r25, Y+4	; 0x04
+ 278:	88 55       	subi	r24, 0x58	; 88
+ 27a:	92 40       	sbci	r25, 0x02	; 2
+ 27c:	b4 f3       	brlt	.-20     	; 0x26a <main+0x2c>
+
+// 시간 지연 함수
+void delays(int n)
+{
+	volatile int i,j;
+	for(i=1;i<n;i++)
+ 27e:	89 81       	ldd	r24, Y+1	; 0x01
+ 280:	9a 81       	ldd	r25, Y+2	; 0x02
+ 282:	01 96       	adiw	r24, 0x01	; 1
+ 284:	9a 83       	std	Y+2, r25	; 0x02
+ 286:	89 83       	std	Y+1, r24	; 0x01
+ 288:	89 81       	ldd	r24, Y+1	; 0x01
+ 28a:	9a 81       	ldd	r25, Y+2	; 0x02
+ 28c:	84 36       	cpi	r24, 0x64	; 100
+ 28e:	91 05       	cpc	r25, r1
+ 290:	34 f7       	brge	.-52     	; 0x25e <main+0x20>
+ 292:	e8 cf       	rjmp	.-48     	; 0x264 <main+0x26>
+
+00000294 <_exit>:
+ 294:	f8 94       	cli
+
+00000296 <__stop_program>:
+ 296:	ff cf       	rjmp	.-2      	; 0x296 <__stop_program>
