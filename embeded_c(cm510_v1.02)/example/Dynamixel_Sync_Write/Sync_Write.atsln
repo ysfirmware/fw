@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Sync_Write", "Sync_Write.cproj", "{A43CCF49-F5ED-4C4C-BA84-3A4BDAAE4C1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		default|AVR = default|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A43CCF49-F5ED-4C4C-BA84-3A4BDAAE4C1C}.default|AVR.ActiveCfg = default|AVR
+		{A43CCF49-F5ED-4C4C-BA84-3A4BDAAE4C1C}.default|AVR.Build.0 = default|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Read_Write", "Read_Write.cproj", "{DA6C203D-8AC0-4EDB-A80F-EBE8A2D5DC2A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		default|AVR = default|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA6C203D-8AC0-4EDB-A80F-EBE8A2D5DC2A}.default|AVR.ActiveCfg = default|AVR
+		{DA6C203D-8AC0-4EDB-A80F-EBE8A2D5DC2A}.default|AVR.Build.0 = default|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
