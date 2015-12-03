@@ -23,8 +23,8 @@ volatile float P_diff=0,P_pri=0,V_diff=0,V_pri=0;
 
 void TIM1_BRK_UP_TRG_COM_IRQHandler(void){	/* TIM1 interrupt function (2Hz) */
   
-  if(int_cnt==1){
-    TIM1->CCR4 = duty;
+  if(int_cnt==2){
+   // TIM1->CCR4 = duty;
     TIM1->SR = 0x0000;				// clear pending bit of TIM1 interrupt
     int_cnt=0;
   }
@@ -145,7 +145,7 @@ int main(void)
         if(duty<=0)      duty = 0;
       }
     }
-  
+    TIM1->CCR4 = duty;
     LCD_command(0x82);			// display multiplication
     LCD_unsigned_float( Vout_m_avg , 2, 2);
     
