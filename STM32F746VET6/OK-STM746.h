@@ -141,8 +141,8 @@ void Initialize_MCU(void)			/* initialize STM32F746VET6 MCU */
 
   GPIOE->MODER  = 0x6AAA5455;			// 포트E 설정, LED = 0, -RTC_CS = 1, LCD_E = 0
   GPIOE->AFR[1] = 0x01111111;			// PE14~PE8 = TIM1_CH4/CH3/CH3N/CH2/CH2N/CH1/CH1N
-  GPIOE->AFR[0] = 0x00000000;
-  GPIOE->ODR = 0x0000004D;			// -RTC_CS = -TFT_RESET = -TFT_CS = -TFT_WR = 1
+  GPIOE->AFR[0] = 0x00000004;
+  GPIOE->ODR = 0x00000044;			// -RTC_CS = -TFT_RESET = -TFT_CS = -TFT_WR = 1
   GPIOE->OSPEEDR = 0xAAAA28AA;			// 100MHz fast speed
 }
 
@@ -3653,14 +3653,182 @@ void Initialize_TFT_LCD(void)			/* initialize TFT-LCD with HX8347-A */
 
   GPIOE->MODER &= 0xFFFFFF00;			// 포트E 설정
   GPIOE->MODER |= 0x00000055;
-  GPIOE->ODR |= 0x0000000D;			// -TFT_RESET = -TFT_CS = -TFT_WR = 1
+  GPIOE->ODR |= 0x00000004;			// -TFT_RESET = -TFT_CS = -TFT_WR = 1
   GPIOE->OSPEEDR &= 0xFFFFFF00;			// 100MHz fast speed
   GPIOE->OSPEEDR |= 0x000000AA;
 
-  GPIOE->BSRR = 0x00080000;			// -TFT_RESET = 0
+#if 1  //[[ YSKim_151217
+  GPIOE->BSRR = 0x00080000;			// -TFT_RESET = 1
   Delay_ms(1);
+  GPIOE->BSRR = 0x00080000;			// -TFT_RESET = 0
+  Delay_ms(20);
+	GPIOE->BSRR = 0x00000008;			// -TFT_RESET = 1
+  Delay_ms(100);
+
+#endif //]] YSKim_151217
+	
+#if 1  //CPT 3.2” Initial Code  [[ YSKim_151217
+	
+	 /* Start Initial Sequence --------------------------------------------------*/
+				 TFT_write(0xE5, 0x8000);								 // Set the internal vcore voltage		 
+					 TFT_write (0x0000,0x0001);
+						TFT_write(0x0001,0x0100);
+						TFT_write(0x0002,0x0700);//LCD-Driving-Waveform Control 0600
+						TFT_write(0x0003,0x1030);
+						TFT_write(0x0004,0x0000);
+						TFT_write(0x0008,0x0202);
+						TFT_write(0x0009,0x0000);
+						TFT_write(0x000A,0x0000);
+						TFT_write(0x000C,0x0000);
+						TFT_write(0x000D,0x0000);
+						TFT_write(0x000F,0x0000);
+	 
+			/* Power On sequence -------------------------------------------------------*/
+						TFT_write(0x0010,0x0000);
+						TFT_write(0x0011,0x0007);
+						TFT_write(0x0012,0x0000);
+						TFT_write(0x0013,0x0000);
+					 Delay_ms(5); 
+						TFT_write(0x0010,0x17B0);
+						TFT_write(0x0011,0x0137);
+					 Delay_ms(2);
+						TFT_write(0x0012,0x013e);
+						Delay_ms(2);
+						TFT_write(0x0013,0x1400);
+						TFT_write(0x0029,0x000d);			 
+					 Delay_ms(2); 
+						TFT_write(0x0020,0x0000);
+						TFT_write(0x0021,0x0000);
+	 
+			/* Adjust the Gamma Curve --------------------------------------------------*/
+	 
+						TFT_write(0x0030,0x0000);
+						TFT_write (0x0031,0x0505); 
+						TFT_write (0x0032,0x0004); 		 
+						TFT_write (0x0035,0x0006); 			
+						TFT_write(0x0036,0x0707);				
+						TFT_write(0x0037,0x0105);			 
+						TFT_write(0x0038,0x0002);			
+						TFT_write(0x0039,0x0707);		 
+						TFT_write(0x003C,0x0704);			 
+						TFT_write(0x003D,0x0807);
+	 
+		/* Set GRAM area -----------------------------------------------------------*/			 
+						TFT_write(0x0050,0x0000);		 /* Horizontal GRAM Start Address 		 */  
+						TFT_write(0x0051,0x00EF);		 /* Horizontal GRAM End Address 		 */  
+						TFT_write(0x0052,0x0000);			/* Vertical 	GRAM Start Address			*/
+						TFT_write(0x0053,0x013F);			/* Vertical 	GRAM End	 Address			*/ 
+						TFT_write(0x0060,0x2700);				
+						TFT_write(0x0061,0x0001);			 
+						TFT_write(0x006A,0x0000);
+	 
+					 
+		/* Partial Display Control -------------------------------------------------*/
+			
+					TFT_write(0x0080,0x0000);			
+						TFT_write(0x0081,0x0000);			 
+						TFT_write(0x0082,0x0000);			 
+						TFT_write(0x0083,0x0000);				
+						TFT_write(0x0084,0x0000);			 
+						TFT_write(0x0085,0x0000);		 
+		
+		/* Panel Control -----------------------------------------------------------*/				
+				TFT_write(0x0090,0x0010);			
+						TFT_write(0x0092,0x0000);			
+						TFT_write(0x0093,0x0003);		
+						TFT_write(0x0095,0x0110);			 
+						TFT_write(0x0097,0x0000);			
+						TFT_write(0x0098,0x0000);		
+						TFT_write(0x0007,0x0173);	/* 262K color and display ON					*/
+#endif //]] YSKim_151217
+
+
+#if 0  //HSD 3.2” initial code [[ YSKim_151217
+	//************* Start Initial Sequence **********//
+
+	TFT_write(0x00E5, 0x8000); // Set the internal vcore voltage
+	TFT_write(0x0000, 0x0001); // Start internal OSC.
+	TFT_write(0x0001, 0x0100); // set SS and SM bit
+	TFT_write(0x0002, 0x0700); // set 1 line inversion
+	TFT_write(0x0003, 0x1030); // set GRAM write direction and BGR=1.
+	TFT_write(0x0004, 0x0000); // Resize register
+
+	TFT_write(0x0008, 0x0202); // set the back porch and front porch
+	TFT_write(0x0009, 0x0000); // set non-display area refresh cycle ISC[3:0]
+	TFT_write(0x000A, 0x0000); // FMARK function
+	TFT_write(0x000C, 0x0000); // RGB interface setting
+	TFT_write(0x000D, 0x0000); // Frame marker Position
+	TFT_write(0x000F, 0x0000); // RGB interface polarity
+
+	//*************Power On sequence ****************//
+	TFT_write(0x0010, 0x0000); // SAP, BT[3:0], AP, DSTB, SLP, STB
+	TFT_write(0x0011, 0x0000); // DC1[2:0], DC0[2:0], VC[2:0]
+	TFT_write(0x0012, 0x0000); // VREG1OUT voltage
+	TFT_write(0x0013, 0x0000); // VDV[4:0] for VCOM amplitude
+	Delay_ms(200); // Dis-charge capacitor power voltage
+
+	TFT_write(0x0010, 0x17B0); // SAP, BT[3:0], AP, DSTB, SLP, STB
+	TFT_write(0x0011, 0x0037); // DC1[2:0], DC0[2:0], VC[2:0]
+	Delay_ms(50); // Delay 50ms
+	TFT_write(0x0012, 0x013B); // VREG1OUT voltage
+	Delay_ms(50); // Delay 50ms
+	TFT_write(0x0013, 0x1800); // VDV[4:0] for VCOM amplitude
+	TFT_write(0x0029, 0x000F); // VCM[4:0] for VCOMH
+	Delay_ms(50);
+	TFT_write(0x0020, 0x0000); // GRAM horizontal Address
+	TFT_write(0x0021, 0x0000); // GRAM Vertical Address
+
+	// ----------- Adjust the Gamma Curve ----------//
+	TFT_write(0x0030, 0x0000);
+	TFT_write(0x0031, 0x0007);
+	TFT_write(0x0032, 0x0103);
+
+
+	TFT_write(0x0035, 0x0407);
+	TFT_write(0x0036, 0x090F);
+	TFT_write(0x0037, 0x0404);
+	TFT_write(0x0038, 0x0400);
+	TFT_write(0x0039, 0x0404);
+
+	TFT_write(0x003C, 0x0000);
+	TFT_write(0x003D, 0x0400);
+
+	//------------------ Set GRAM area ---------------//
+	TFT_write(0x0050, 0x0000); // Horizontal GRAM Start Address
+	TFT_write(0x0051, 0x00EF); // Horizontal GRAM End Address
+	TFT_write(0x0052, 0x0000); // Vertical GRAM Start Address
+	TFT_write(0x0053, 0x013F); // Vertical GRAM Start Address
+
+
+	TFT_write(0x0060, 0x2700); // Gate Scan Line
+	TFT_write(0x0061, 0x0001); // NDL,VLE, REV
+	TFT_write(0x006A, 0x0000); // set scrolling line
+
+	//-------------- Partial Display Control ---------//
+	TFT_write(0x0080, 0x0000);
+	TFT_write(0x0081, 0x0000);
+	TFT_write(0x0082, 0x0000);
+	TFT_write(0x0083, 0x0000);
+	TFT_write(0x0084, 0x0000);
+	TFT_write(0x0085, 0x0000);
+
+	//-------------- Panel Control -------------------//
+	TFT_write(0x0090, 0x0010);
+	TFT_write(0x0092, 0x0000);
+	TFT_write(0x0093, 0x0003);
+	TFT_write(0x0095, 0x0110);
+	TFT_write(0x0097, 0x0000);
+	TFT_write(0x0098, 0x0000);
+
+	TFT_write(0x0007, 0x0173); // 262K color and display ON 
+
+#endif //]] YSKim_151217
+
+
+#if 0  //[[ YSKim_151217
   GPIOE->BSRR = 0x00000008;			// -TFT_RESET = 1
   Delay_ms(120);
+
 
   TFT_write(0x02, 0x0000);			// window setting
   TFT_write(0x03, 0x0000);			// x = 0~319
@@ -3740,8 +3908,10 @@ void Initialize_TFT_LCD(void)			/* initialize TFT-LCD with HX8347-A */
   TFT_write(0x55, 0x0000);
   TFT_write(0xFE, 0x005A);
   TFT_write(0x57, 0x0000);  
-
-  TFT_clear_screen();				// clear screen
+	
+	TFT_clear_screen();				// clear screen
+#endif //]] YSKim_151217
+  
 }
 
 void TFT_command(U16 IR)			/* write IR to TFT-LCD */
