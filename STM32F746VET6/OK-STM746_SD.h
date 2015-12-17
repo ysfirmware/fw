@@ -8,9 +8,9 @@
 //  올바른 동작을 보장합니다.
 // -------------------------------------------------------------------------------
 //	(1) 시스템 클록 : 216MHz
-//	(2) C 컴파일러  : IAR EWARM V7.40.3
-//	(3) 최적화 옵션 : High/Speed
-//	(4) CSTACK 크기 : 0x2000
+//	(2) C 컴파일러  : IAR EWARM V7.50.1
+//	(3) 최적화 옵션 : High/Size
+//	(4) CSTACK 크기 : 0x1000
 //      (5) 인클루드    : 기본 헤더 파일 OK-STM746.h의 뒤에 인클루드할 것.
 // -------------------------------------------------------------------------------
 
@@ -44,12 +44,13 @@ unsigned char SD_type;				// SD card version(Ver1.X or Ver2.0)
 
 void SPI3_low_speed(void)			/* initialize SPI3(210.9375kHz) */
 {
-  GPIOC->MODER  = 0x46A91500;			// 포트C 설정
-  GPIOC->ODR = 0x00002160;			// -SD_CS = -MP3_RESET = -MP3_DCS = -MP3_CS = 1
-  GPIOC->AFR[0] = 0x00000000;
-  GPIOC->AFR[1] = 0x00066600;			// PC12 = SPI3_MOSI, PC11 = SPI3_MISO, PC10 = SPI3_SCK, PC9 = MCO2
-  GPIOC->OSPEEDR = 0x8A2A2800;			// 50MHz fast speed
   RCC->APB1ENR |= 0x00008000;			// enable SPI3 clock
+
+  GPIOC->MODER &= 0xC00C03FF;			// alternate and input/output mode
+  GPIOC->MODER |= 0x06A11400;
+  GPIOC->AFR[1] |= 0x00066600;			// PC12 = SPI3_MOSI, PC11 = SPI3_MISO, PC10 = SPI3_SCK
+  GPIOC->ODR |= 0x00002160;			// -SD_CS = -MP3_RESET = -MP3_DCS = -MP3_CS = 1
+  GPIOC->OSPEEDR |= 0x0AA02800;			// -SD_CS = SPI3 = -MP3_DCS/CS = 100MHz fast speed
 
   SPI3->CR1 = 0x037C;				// master mode, 54MHz/256 = 210.9375kHz (Max 400kHz)
   SPI3->CR2 = 0x1700;				// 8-bit data, disable SS output, CPOL = CPHA = 0
@@ -57,12 +58,13 @@ void SPI3_low_speed(void)			/* initialize SPI3(210.9375kHz) */
 
 void SPI3_medium_speed(void)			/* initialize SPI3(1.6875MHz) */
 {
-  GPIOC->MODER  = 0x46A91500;			// 포트C 설정
-  GPIOC->ODR = 0x00002160;			// -SD_CS = -MP3_RESET = -MP3_DCS = -MP3_CS = 1
-  GPIOC->AFR[0] = 0x00000000;
-  GPIOC->AFR[1] = 0x00066600;			// PC12 = SPI3_MOSI, PC11 = SPI3_MISO, PC10 = SPI3_SCK, PC9 = MCO2
-  GPIOC->OSPEEDR = 0x8A2A2800;			// 50MHz fast speed
   RCC->APB1ENR |= 0x00008000;			// enable SPI3 clock
+
+  GPIOC->MODER &= 0xC00C03FF;			// alternate and input/output mode
+  GPIOC->MODER |= 0x06A11400;
+  GPIOC->AFR[1] |= 0x00066600;			// PC12 = SPI3_MOSI, PC11 = SPI3_MISO, PC10 = SPI3_SCK
+  GPIOC->ODR |= 0x00002160;			// -SD_CS = -MP3_RESET = -MP3_DCS = -MP3_CS = 1
+  GPIOC->OSPEEDR |= 0x0AA02800;			// -SD_CS = SPI3 = -MP3_DCS/CS = 100MHz fast speed
 
   SPI3->CR1 = 0x0364;				// master mode, 54MHz/32 = 1.6875MHz
   SPI3->CR2 = 0x1700;				// 8-bit data, disable SS output, CPOL = CPHA = 0
@@ -70,12 +72,13 @@ void SPI3_medium_speed(void)			/* initialize SPI3(1.6875MHz) */
 
 void SPI3_high_speed(void)			/* initialize SPI3(6.75MHz) */
 {
-  GPIOC->MODER  = 0x46A91500;			// 포트C 설정
-  GPIOC->ODR = 0x00002160;			// -SD_CS = -MP3_RESET = -MP3_DCS = -MP3_CS = 1
-  GPIOC->AFR[0] = 0x00000000;
-  GPIOC->AFR[1] = 0x00066600;			// PC12 = SPI3_MOSI, PC11 = SPI3_MISO, PC10 = SPI3_SCK, PC9 = MCO2
-  GPIOC->OSPEEDR = 0x8A2A2800;			// 50MHz fast speed
   RCC->APB1ENR |= 0x00008000;			// enable SPI3 clock
+
+  GPIOC->MODER &= 0xC00C03FF;			// alternate and input/output mode
+  GPIOC->MODER |= 0x06A11400;
+  GPIOC->AFR[1] |= 0x00066600;			// PC12 = SPI3_MOSI, PC11 = SPI3_MISO, PC10 = SPI3_SCK
+  GPIOC->ODR |= 0x00002160;			// -SD_CS = -MP3_RESET = -MP3_DCS = -MP3_CS = 1
+  GPIOC->OSPEEDR |= 0x0AA02800;			// -SD_CS = SPI3 = -MP3_DCS/CS = 100MHz fast speed
 
   SPI3->CR1 = 0x0354;				// master mode, 54MHz/8 = 6.75MHz (Max 25MHz)
   SPI3->CR2 = 0x1700;				// 8-bit data, disable SS output, CPOL = CPHA = 0
@@ -83,12 +86,15 @@ void SPI3_high_speed(void)			/* initialize SPI3(6.75MHz) */
 
 unsigned char SPI3_write(U08 data)		/* send a byte to SPI3 and receive */
 {
+  unsigned char byte = 0;
   unsigned int address;
+
+  byte |= SPI3->DR;				// clear RXNE flag
 
   address = (uint32_t)SPI3 + 0x0C;
   *(__IO uint8_t *)address = data;
 
-  while(!(SPI3->SR & 0x0001));
+  while((SPI3->SR & 0x0003) != 0x0003);
 
   return SPI3->DR;
 }
@@ -115,16 +121,6 @@ void Initialize_SD(void)			/* initialize SD/SDHC card */
   Delay_ms(1);
 
   GPIOC->BSRR = 0x20000000;			// -SD_CS = 0
-
-  TFT_string(4,5,Magenta,Black,"CMD0 :  ");	// first CMD0
-  TFT_color(Cyan, Black);
-  SD_command(CMD0, 0);				// send CMD0(reset and go to SPI mode)
-  for(i = 0; i < 5; i++)			// display R1
-    { R1 = SPI3_write(0xFF);
-      TFT_hexadecimal(R1,2);
-      TFT_English(' ');
-    }
-  Delay_ms(1);
 
   TFT_string(4,5,Magenta,Black,"CMD0 :  ");	// second CMD0
   TFT_color(Cyan, Black);

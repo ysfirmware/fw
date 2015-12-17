@@ -8,9 +8,9 @@
 //  올바른 동작을 보장합니다.
 // -------------------------------------------------------------------------------
 //	(1) 시스템 클록 : 216MHz
-//	(2) C 컴파일러  : IAR EWARM V7.40.3
-//	(3) 최적화 옵션 : High/Speed
-//	(4) CSTACK 크기 : 0x2000
+//	(2) C 컴파일러  : IAR EWARM V7.50.1
+//	(3) 최적화 옵션 : High/Size
+//	(4) CSTACK 크기 : 0x1000
 //      (5) 인클루드    : 기본 헤더 파일 OK-STM746.h의 뒤에 인클루드할 것.
 // -------------------------------------------------------------------------------
 
@@ -34,8 +34,9 @@ void Initialize_VS1053b(void)			/* initialize VS1053b */
 {
   unsigned short word;
 
-  GPIOC->MODER = (GPIOC->MODER & 0xFFF000FF) | 0x00011400;  // GPIO mode
-  GPIOC->BSRR = 0x00000160;			// -MP3_RESET = -MP3_CS = -MP3_DCS = 1
+  GPIOC->MODER &= 0xFFF000FF;			// GPIO mode
+  GPIOC->MODER |= 0x00011400;
+  GPIOC->ODR |= 0x00000160;			// -MP3_RESET = -MP3_CS = -MP3_DCS = 1
 
   GPIOC->BSRR = 0x01000000;			// -MP3_RESET = 0
   Delay_us(10);

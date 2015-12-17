@@ -8,8 +8,8 @@
 //  올바른 동작을 보장합니다.
 // -------------------------------------------------------------------------------
 //	(1) 시스템 클록  : 216MHz
-//	(2) C 컴파일러   : IAR EWARM V7.40.3
-//	(3) 최적화 옵션  : High/Speed
+//	(2) C 컴파일러   : IAR EWARM V7.50.1
+//	(3) 최적화 옵션  : High/Size
 //	(4) CSTACK 크기  : 0x1000
 //	(5) TFT-LCD 모듈 : Ohm사 FL320QVC18-A0(HX8347A)
 //      (6) 인클루드     : 기본 헤더 파일 OK-STM746.h의 뒤에 인클루드할 것.
@@ -4804,20 +4804,20 @@ void TFT_English_large(U08 code)		/* write a English ASCII character(12x24 pixel
       for(y = 0; y < 24; y++)			// if no, write a character in higher speed
         { yPos = Ycharacter*8 + y;
 
-          if(ScreenMode == 'L')
-	    { TFT_write(0x02, xPos >> 8);	// xPos = 0~319
-              TFT_write(0x03, xPos & 0x00FF);
-              TFT_write(0x06, 0x0000);		// yPos = 0~239
-              TFT_write(0x07, yPos);
-	    }
-          else
+          if(ScreenMode == 'P')
             { TFT_write(0x02, 0x0000);		// xPos = 0~239
               TFT_write(0x03, xPos);
               TFT_write(0x06, yPos >> 8);	// yPos = 0~319
               TFT_write(0x07, yPos & 0x00FF);
             }
+          else
+	    { TFT_write(0x02, xPos >> 8);	// xPos = 0~319
+              TFT_write(0x03, xPos & 0x00FF);
+              TFT_write(0x06, 0x0000);		// yPos = 0~239
+              TFT_write(0x07, yPos);
+	    }
 
-	  TFT_command(0x22);
+          TFT_command(0x22);
           TFT_data(pixel[0][y]);
           TFT_data(pixel[1][y]);
           TFT_data(pixel[2][y]);
@@ -5003,20 +5003,20 @@ void TFT_Korean_large(U16 code)			/* write a Korean character(24x24 pixel) */
       for(y = 0; y < 24; y++)			// if no, write a character in higher speed
         { yPos = Ycharacter*8 + y;
 
-          if(ScreenMode == 'L')
-	    { TFT_write(0x02, xPos >> 8);	// xPos = 0~319
-              TFT_write(0x03, xPos & 0x00FF);
-              TFT_write(0x06, 0x0000);		// yPos = 0~239
-              TFT_write(0x07, yPos);
-	    }
-          else
+          if(ScreenMode == 'P')
             { TFT_write(0x02, 0x0000);		// xPos = 0~239
               TFT_write(0x03, xPos);
               TFT_write(0x06, yPos >> 8);	// yPos = 0~319
               TFT_write(0x07, yPos & 0x00FF);
             }
+          else
+	    { TFT_write(0x02, xPos >> 8);	// xPos = 0~319
+              TFT_write(0x03, xPos & 0x00FF);
+              TFT_write(0x06, 0x0000);		// yPos = 0~239
+              TFT_write(0x07, yPos);
+	    }
 
-	  TFT_command(0x22);
+          TFT_command(0x22);
           TFT_data(pixel[0][y]);
           TFT_data(pixel[1][y]);
           TFT_data(pixel[2][y]);

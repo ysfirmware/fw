@@ -8,8 +8,8 @@
 //  올바른 동작을 보장합니다.
 // -------------------------------------------------------------------------------
 //	(1) 시스템 클록  : 216MHz
-//	(2) C 컴파일러   : IAR EWARM V7.40.3
-//	(3) 최적화 옵션  : High/Speed
+//	(2) C 컴파일러   : IAR EWARM V7.50.1
+//	(3) 최적화 옵션  : High/Size
 //	(4) CSTACK 크기  : 0x1000
 //	(5) TFT-LCD 모듈 : Ohm사 FL320QVC18-A0(HX8347A)
 //      (6) 인클루드     : 기본 헤더 파일 OK-STM746.h의 뒤에 인클루드할 것.
@@ -255,18 +255,10 @@ void TFT_English_vlarge(U08 code)		/* write 32x48 font character */
   xPos = Xcharacter*8;
   yPos = Ycharacter*8;
   for(y = 0; y < 48; y++)			// repeat 48 pixel line
-    { if(ScreenMode == 'L')
-        { TFT_write(0x02, xPos >> 8);		// xPos = 0~319
-          TFT_write(0x03, xPos & 0x00FF);
-          TFT_write(0x06, 0x0000);		// yPos = 0~239
-          TFT_write(0x07, yPos + y);
-	}
-      else
-        { TFT_write(0x02, 0x0000);		// xPos = 0~239
-          TFT_write(0x03, xPos);
-          TFT_write(0x06, (yPos + y) >> 8);	// yPos = 0~319
-          TFT_write(0x07, (yPos + y) & 0x00FF);
-        }
+    { TFT_write(0x02, xPos >> 8);		// xPos = 0~319
+      TFT_write(0x03, xPos & 0x00FF);
+      TFT_write(0x06, 0x0000);			// yPos = 0~239
+      TFT_write(0x07, yPos + y);
 
       TFT_command(0x22);
 
@@ -705,18 +697,10 @@ void TFT_font40x56(U08 code)			/* write 40x56 font(0~9) character */
   xPos = Xcharacter*8;
   yPos = Ycharacter*8;
   for(y = 0; y < 56; y++)			// repeat 56 pixel line
-    { if(ScreenMode == 'L')
-        { TFT_write(0x02, xPos >> 8);		// xPos = 0~319
-          TFT_write(0x03, xPos & 0x00FF);
-          TFT_write(0x06, 0x0000);		// yPos = 0~239
-          TFT_write(0x07, yPos + y);
-	}
-      else
-        { TFT_write(0x02, 0x0000);		// xPos = 0~239
-          TFT_write(0x03, xPos);
-          TFT_write(0x06, (yPos + y) >> 8);	// yPos = 0~319
-          TFT_write(0x07, (yPos + y) & 0x00FF);
-        }
+    { TFT_write(0x02, xPos >> 8);		// xPos = 0~319
+      TFT_write(0x03, xPos & 0x00FF);
+      TFT_write(0x06, 0x0000);			// yPos = 0~239
+      TFT_write(0x07, yPos + y);
 
       TFT_command(0x22);
 
@@ -776,18 +760,10 @@ void TFT_font24x56(U08 code)			/* write 24x56 font(space,period,colon) character
   xPos = Xcharacter*8;
   yPos = Ycharacter*8;
   for(y = 0; y < 56; y++)			// repeat 56 pixel line
-    { if(ScreenMode == 'L')
-        { TFT_write(0x02, xPos >> 8);		// xPos = 0~319
-          TFT_write(0x03, xPos & 0x00FF);
-          TFT_write(0x06, 0x0000);		// yPos = 0~239
-          TFT_write(0x07, yPos + y);
-	}
-      else
-        { TFT_write(0x02, 0x0000);		// xPos = 0~239
-          TFT_write(0x03, xPos);
-          TFT_write(0x06, (yPos + y) >> 8);	// yPos = 0~319
-          TFT_write(0x07, (yPos + y) & 0x00FF);
-        }
+    { TFT_write(0x02, xPos >> 8);		// xPos = 0~319
+      TFT_write(0x03, xPos & 0x00FF);
+      TFT_write(0x06, 0x0000);			// yPos = 0~239
+      TFT_write(0x07, yPos + y);
 
       TFT_command(0x22);
 

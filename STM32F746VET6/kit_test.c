@@ -50,7 +50,6 @@ int main(void)
   Delay_ms(50);					// wait for system stabilization
   Initialize_LCD();				// initialize text LCD module
   Initialize_TFT_LCD();				// initialize TFT-LCD module
-  Initialize_touch_screen();			// initialize touch screen
   Beep();					// beep
 
   LCD_string(0x80," OK-STM746 V1.0 ");		// display title
@@ -381,6 +380,7 @@ void Test2(void)				/* Test 2 */
 {
   LCD_string(0xC0,"     Test 2     ");
 
+  Initialize_touch_screen();			// initialize touch screen
   TFT_clear_screen();				// clear screen
   TFT_landscape_mode();				// landscape mode
 
@@ -444,6 +444,7 @@ void Test3(void)				/* Test 3 */
   GPIOA->MODER |= 0x00020000;
   GPIOA->AFR[1] &= 0xFFFFFFF0;
   GPIOA->OSPEEDR |= 0x00030000;
+
   GPIOC->MODER &= 0xFFF3FFFF;			// PC9 = MCO2(180MHz speed)
   GPIOC->MODER |= 0x00080000;
   GPIOC->AFR[1] &= 0xFFFFFF0F;
@@ -758,6 +759,7 @@ void Test7(void)				/* Test 7 */
 
   LCD_string(0xC0,"     Test 7     ");
 
+  DS3234_initialize();				// initialize DS3234 RTC
   TFT_clear_screen();				// clear screen
   TFT_landscape_mode();				// landscape mode
 
@@ -765,10 +767,8 @@ void Test7(void)				/* Test 7 */
   Rectangle(1,1, 318,238, Green);
 
   TFT_string( 5, 4,White,Magenta," DS3234를 이용한  디지털 시계 ");
-  TFT_string(10,12,White,  Black,"2015년 11월 01일(일)");
-  TFT_string(13,16,White,  Black,"오전 12:00:00");
-
-  DS3234_initialize();				// initialize DS3234 RTC
+  TFT_string(10,12,White,  Black,"2015년 11월 01일 (일)");
+  TFT_string_large(7,15,White,Black,"오전 12:00:00");
 
   TFT_cursor(Red);				// display cursor
   Xcursor = 38;
@@ -802,6 +802,9 @@ unsigned char time_flag = 0;
 
 void DS3234_initialize(void)			/* initialize DS3234 RTC */
 {
+  RCC->AHB1ENR |= 0x00000012;			// enable clock of port B, E
+  RCC->APB1ENR |= 0x00004000;			// enable SPI2 clock
+
   GPIOB->MODER &= 0x03FFFFFF;			// alternate function
   GPIOB->MODER |= 0xA8000000;
   GPIOB->AFR[1] &= 0x000FFFFF;			// PB15 = SPI2_MOSI, PB14 = SPI2_MISO, PB13 = SPI2_SCK
@@ -809,10 +812,7 @@ void DS3234_initialize(void)			/* initialize DS3234 RTC */
 
   GPIOE->MODER &= 0xFFFFCFFF;			// PE6 = -RTC_CS = 1
   GPIOE->MODER |= 0x00001000;
-  GPIOE->BSRR = 0x00000040;
-
-  RCC->AHB1ENR |= 0x00000012;			// enable clock of port B, E
-  RCC->APB1ENR |= 0x00004000;			// enable SPI2 clock
+  GPIOE->ODR |= 0x00000040;
 
   SPI2->CR1 = 0x0B67;				// master mode, 54MHz/32 = 1.6875MHz (Max 4MHz)
   SPI2->CR2 = 0x0F00;				// 16-bit data, disable SS output, CPOL = CPHA = 1
@@ -842,6 +842,7 @@ unsigned char DS3234_read(U16 address)		/* read DS3234 */
 {
   unsigned short word;
 
+  word = SPI2->DR;				// clear RXNE flag
   GPIOE->BSRR = 0x00400000;			// -RTS_CS = 0
   SPI2->DR = address << 8;
   while((SPI2->SR & 0x0003) != 0x0003);
@@ -855,6 +856,7 @@ void DS3234_write(U16 address, U08 value)	/* write DS3234 */
 {
   unsigned short word = 0;
 
+  word = SPI2->DR;				// clear RXNE flag
   GPIOE->BSRR = 0x00400000;			// -RTS_CS = 0
   SPI2->DR = ((0x80 + address) << 8) + value;
   while((SPI2->SR & 0x0003) != 0x0003);
@@ -875,24 +877,24 @@ void Digital_display_time(void)			/* display DS3234 time */
   date = DS3234_read(0x04);
   TFT_hexadecimal(date,2);
   weekday = DS3234_read(0x03);			// display weekday
-  if(weekday == 0x01)      TFT_string(27,12,Cyan,Black,"일");
-  else if(weekday == 0x02) TFT_string(27,12,Cyan,Black,"월");
-  else if(weekday == 0x03) TFT_string(27,12,Cyan,Black,"화");
-  else if(weekday == 0x04) TFT_string(27,12,Cyan,Black,"수");
-  else if(weekday == 0x05) TFT_string(27,12,Cyan,Black,"목");
-  else if(weekday == 0x06) TFT_string(27,12,Cyan,Black,"금");
-  else if(weekday == 0x07) TFT_string(27,12,Cyan,Black,"토");
-  TFT_xy(18,16); TFT_color(Green,Black);	// display hour
+  if(weekday == 0x01)      TFT_string(28,12,Cyan,Black,"일");
+  else if(weekday == 0x02) TFT_string(28,12,Cyan,Black,"월");
+  else if(weekday == 0x03) TFT_string(28,12,Cyan,Black,"화");
+  else if(weekday == 0x04) TFT_string(28,12,Cyan,Black,"수");
+  else if(weekday == 0x05) TFT_string(28,12,Cyan,Black,"목");
+  else if(weekday == 0x06) TFT_string(28,12,Cyan,Black,"금");
+  else if(weekday == 0x07) TFT_string(28,12,Cyan,Black,"토");
+  TFT_xy(12,15); TFT_color(Green,Black);	// display hour
   hour = DS3234_read(0x02);
-  TFT_hexadecimal(hour & 0x1F,2);
-  if((hour & 0x20) == 0x00) TFT_string(13,16,White,Black,"오전");
-  else                      TFT_string(13,16,White,Black,"오후");
-  TFT_xy(21,16); TFT_color(Green,Black);	// display minute
+  TFT_hexadecimal_large(hour & 0x1F,2);
+  if((hour & 0x20) == 0x00) TFT_string_large(7,15,White,Black,"오전");
+  else                      TFT_string_large(7,15,White,Black,"오후");
+  TFT_xy(15,15); TFT_color(Green,Black);	// display minute
   minute = DS3234_read(0x01);
-  TFT_hexadecimal(minute,2);
-  TFT_xy(24,16); TFT_color(Green,Black);	// display second
+  TFT_hexadecimal_large(minute,2);
+  TFT_xy(18,15); TFT_color(Green,Black);	// display second
   second = DS3234_read(0x00);
-  TFT_hexadecimal(second & 0x7F,2);
+  TFT_hexadecimal_large(second & 0x7F,2);
   TFT_xy(38,16); TFT_color(Green,Black);	// display home
   TFT_English(' ');
 
@@ -933,12 +935,12 @@ unsigned char BCD_decrement(U08 number)		/* BCD decrement */
 
 void Digital_cursor_left(void)		        /* go cursor left */
 {
-  if     ((Xcursor == 38) && (Ycursor == 16)) { Xcursor = 25; Ycursor = 16; }
-  else if((Xcursor == 25) && (Ycursor == 16)) { Xcursor = 22; Ycursor = 16; }
-  else if((Xcursor == 22) && (Ycursor == 16)) { Xcursor = 19; Ycursor = 16; }
-  else if((Xcursor == 19) && (Ycursor == 16)) { Xcursor = 15; Ycursor = 16; }
-  else if((Xcursor == 15) && (Ycursor == 16)) { Xcursor = 27; Ycursor = 12; }
-  else if((Xcursor == 27) && (Ycursor == 12)) { Xcursor = 23; Ycursor = 12; }
+  if     ((Xcursor == 38) && (Ycursor == 16)) { Xcursor = 19; Ycursor = 15; }
+  else if((Xcursor == 19) && (Ycursor == 15)) { Xcursor = 16; Ycursor = 15; }
+  else if((Xcursor == 16) && (Ycursor == 15)) { Xcursor = 13; Ycursor = 15; }
+  else if((Xcursor == 13) && (Ycursor == 15)) { Xcursor =  9; Ycursor = 15; }
+  else if((Xcursor ==  9) && (Ycursor == 15)) { Xcursor = 28; Ycursor = 12; }
+  else if((Xcursor == 28) && (Ycursor == 12)) { Xcursor = 23; Ycursor = 12; }
   else if((Xcursor == 23) && (Ycursor == 12)) { Xcursor = 18; Ycursor = 12; }
   else if((Xcursor == 18) && (Ycursor == 12)) { Xcursor = 13; Ycursor = 12; }
   else if((Xcursor == 13) && (Ycursor == 12)) { Xcursor = 38; Ycursor = 16; }
@@ -949,12 +951,12 @@ void Digital_cursor_right(void)			/* go cursor right */
   if     ((Xcursor == 38) && (Ycursor == 16)) { Xcursor = 13; Ycursor = 12; }
   else if((Xcursor == 13) && (Ycursor == 12)) { Xcursor = 18; Ycursor = 12; }
   else if((Xcursor == 18) && (Ycursor == 12)) { Xcursor = 23; Ycursor = 12; }
-  else if((Xcursor == 23) && (Ycursor == 12)) { Xcursor = 27; Ycursor = 12; }
-  else if((Xcursor == 27) && (Ycursor == 12)) { Xcursor = 15; Ycursor = 16; }
-  else if((Xcursor == 15) && (Ycursor == 16)) { Xcursor = 19; Ycursor = 16; }
-  else if((Xcursor == 19) && (Ycursor == 16)) { Xcursor = 22; Ycursor = 16; }
-  else if((Xcursor == 22) && (Ycursor == 16)) { Xcursor = 25; Ycursor = 16; }
-  else if((Xcursor == 25) && (Ycursor == 16)) { Xcursor = 38; Ycursor = 16; }
+  else if((Xcursor == 23) && (Ycursor == 12)) { Xcursor = 28; Ycursor = 12; }
+  else if((Xcursor == 28) && (Ycursor == 12)) { Xcursor =  9; Ycursor = 15; }
+  else if((Xcursor ==  9) && (Ycursor == 15)) { Xcursor = 13; Ycursor = 15; }
+  else if((Xcursor == 13) && (Ycursor == 15)) { Xcursor = 16; Ycursor = 15; }
+  else if((Xcursor == 16) && (Ycursor == 15)) { Xcursor = 19; Ycursor = 15; }
+  else if((Xcursor == 19) && (Ycursor == 15)) { Xcursor = 38; Ycursor = 16; }
 }
 
 void Digital_increment(void)			/* increment time */
@@ -977,31 +979,31 @@ void Digital_increment(void)			/* increment time */
       else                  date = BCD_increment(date);
       DS3234_write(0x04,date);
     }
-  else if((Xcursor == 27) && (Ycursor == 12))	// in case of weekday
+  else if((Xcursor == 28) && (Ycursor == 12))	// in case of weekday
     { weekday = DS3234_read(0x03);
       if(weekday == 0x07)   weekday = 0x01;
       else                  weekday++;
       DS3234_write(0x03,weekday);
     }
-  else if((Xcursor == 15) && (Ycursor == 16))	// in case of AM/PM
+  else if((Xcursor == 9) && (Ycursor == 15))	// in case of AM/PM
     { hour = DS3234_read(0x02);
       if((hour & 0x20) == 0x00) hour |= 0x20;
       else                      hour &= 0xDF;
       DS3234_write(0x02,hour);
     }
-  else if((Xcursor == 19) && (Ycursor == 16))	// in case of hour
+  else if((Xcursor == 13) && (Ycursor == 15))	// in case of hour
     { hour = DS3234_read(0x02);
       if((hour & 0x1F) == 0x12) hour = (hour & 0xE0) + 0x01;
       else                      hour = BCD_increment(hour);
       DS3234_write(0x02,hour + 0x40);
     }
-  else if((Xcursor == 22) && (Ycursor == 16))	// in case of minute
+  else if((Xcursor == 16) && (Ycursor == 15))	// in case of minute
     { minute = DS3234_read(0x01);
       if(minute == 0x59)    minute = 0x00;
       else                  minute = BCD_increment(minute);
       DS3234_write(0x01,minute);
     }
-  else if((Xcursor == 25) && (Ycursor == 16))	// in case of second
+  else if((Xcursor == 19) && (Ycursor == 15))	// in case of second
     { second = DS3234_read(0x00);
       if(second == 0x59)    second = 0x00;
       else                  second = BCD_increment(second);
@@ -1029,31 +1031,31 @@ void Digital_decrement(void)			/* decrement time */
       else                  date = BCD_decrement(date);
       DS3234_write(0x04,date);
     }
-  else if((Xcursor == 27) && (Ycursor == 12))	// in case of weekday
+  else if((Xcursor == 28) && (Ycursor == 12))	// in case of weekday
     { weekday = DS3234_read(0x03);
       if(weekday == 0x01)   weekday = 0x07;
       else                  weekday--;
       DS3234_write(0x03,weekday);
     }
-  else if((Xcursor == 15) && (Ycursor == 16))	// in case of AM/PM
+  else if((Xcursor == 9) && (Ycursor == 15))	// in case of AM/PM
     { hour = DS3234_read(0x02);
       if((hour & 0x20) == 0x00) hour |= 0x20;
       else                      hour &= 0xDF;
       DS3234_write(0x02,hour);
     }
-  else if((Xcursor == 19) && (Ycursor == 16))	// in case of hour
+  else if((Xcursor == 13) && (Ycursor == 15))	// in case of hour
     { hour = DS3234_read(0x02);
       if((hour & 0x1F) == 0x01) hour = (hour & 0xE0) + 0x12;
       else                      hour = BCD_decrement(hour);
       DS3234_write(0x02,hour + 0x40);
     }
-  else if((Xcursor == 22) && (Ycursor == 16))	// in case of minute
+  else if((Xcursor == 16) && (Ycursor == 15))	// in case of minute
     { minute = DS3234_read(0x01);
       if(minute == 0x00)    minute = 0x59;
       else                  minute = BCD_decrement(minute);
       DS3234_write(0x01,minute);
     }
-  else if((Xcursor == 25) && (Ycursor == 16))	// in case of second
+  else if((Xcursor == 19) && (Ycursor == 15))	// in case of second
     { second = DS3234_read(0x00);
       if(second == 0x00)    second = 0x59;
       else                  second = BCD_decrement(second);
@@ -1071,10 +1073,9 @@ void Test8(void)				/* Test 8 */
 
   LCD_string(0xC0,"     Test 8     ");
 
+  DS3234_initialize();				// initialize DS3234 RTC
   TFT_clear_screen();				// clear screen
   TFT_portrait_mode();				// portrait mode
-
-  DS3234_initialize();				// initialize DS3234 RTC
 
   TFT_cursor(Magenta);				// display cursor by Magenta color
   Xcursor = 28;
