@@ -40,6 +40,43 @@ void Analog_display_time(void);			// display analog and digital time
 void Draw_pin(void);				// draw hour, minute, second pin
 void Line_soft(S16 x1,S16 y1, S16 x2,S16 y2, U16 color); // draw a soft line
 
+
+static void LCD_SetPos(unsigned int x0,unsigned int x1,unsigned int y0,unsigned int y1);
+void ClearScreen(unsigned int bColor);
+
+
+//===============================================================
+//CLEAR SCREEN
+void ClearScreen(unsigned int bColor)
+{
+ unsigned int i,j;
+ LCD_SetPos(0,239,0,319);//320x240
+ for (i=0;i<320;i++)
+	{
+	
+	   for (j=0;j<240;j++)
+	       TFT_write(0,bColor);
+	}
+}
+
+
+//===============================================================
+//Define the coordinate
+
+
+static void LCD_SetPos(unsigned int x0,unsigned int x1,unsigned int y0,unsigned int y1)
+{
+  TFT_write(0x0050,x0);
+  TFT_write(0x0051,x1);
+  TFT_write(0x0052,y0);
+  TFT_write(0x0053,y1);
+  TFT_write(0x0020,x0);
+  TFT_write(0x0021,y0);
+  TFT_write(0x0022,0);//LCD_WriteCMD(GRAMWR);
+}
+
+
+
 /* ----- 메인 프로그램 -------------------------------------------------------- */
 
 int main(void)
@@ -65,8 +102,28 @@ int main(void)
   Display_test(test);				// display test number
   Beep();					// beep
 
-  while(1)
-    { while(key == no_key)			// wait key input
+  while(1){
+		
+		ClearScreen(0x0000);	//CLEAR DISPLAY
+		
+		ClearScreen(0xf800);	//RED
+		Delay_ms(100);
+		ClearScreen(0x07e0);	//GREEN
+		Delay_ms(100);
+		ClearScreen(0x001f);	//BLUE
+		Delay_ms(100);
+		ClearScreen(0xffff);	//WHITE
+		Delay_ms(100);
+		
+		ClearScreen(0x0eff);	//CYAN
+		Delay_ms(100);
+		ClearScreen(0xffe0);	//YELLOW
+		Delay_ms(100);
+		ClearScreen(0xf81f);	//PINK	
+		Delay_ms(100);
+		
+#if 0  //[[ YSKim_151217
+     while(key == no_key)			// wait key input
         key = Key_input();
 
       if(key == KEY3)				// if KEY3, decrenment test number
@@ -97,6 +154,7 @@ int main(void)
          Display_screen();			// display test screen
          Display_test(test);			// display test number
        }
+#endif //]] YSKim_151217
     }
 }
 
