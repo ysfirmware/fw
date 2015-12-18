@@ -8,6 +8,7 @@
 #include "OK-STM746_large.h"
 #include "OK-STM746_xlarge.h"
 
+#define ILI9320
 /* ----- 사용자 함수 ---------------------------------------------------------- */
 
 void Display_screen(void);			// display test screen
@@ -41,6 +42,7 @@ void Draw_pin(void);				// draw hour, minute, second pin
 void Line_soft(S16 x1,S16 y1, S16 x2,S16 y2, U16 color); // draw a soft line
 
 
+#ifdef ILI9320//[[ YSKim_151218
 static void LCD_SetPos(unsigned int x0,unsigned int x1,unsigned int y0,unsigned int y1);
 void ClearScreen(unsigned int bColor);
 
@@ -72,8 +74,9 @@ static void LCD_SetPos(unsigned int x0,unsigned int x1,unsigned int y0,unsigned 
   TFT_write(0x0053,y1);
   TFT_write(0x0020,x0);
   TFT_write(0x0021,y0);
-  TFT_write(0x0022,0);//LCD_WriteCMD(GRAMWR);
+  TFT_command(0x0022);//LCD_WriteCMD(GRAMWR);
 }
+#endif //]] YSKim_151218
 
 
 
@@ -104,6 +107,7 @@ int main(void)
 
   while(1){
 		
+#ifdef ILI9320  //[[ YSKim_151218
 		ClearScreen(0x0000);	//CLEAR DISPLAY
 		
 		ClearScreen(0xf800);	//RED
@@ -121,6 +125,7 @@ int main(void)
 		Delay_ms(100);
 		ClearScreen(0xf81f);	//PINK	
 		Delay_ms(100);
+#endif //]] YSKim_151218
 		
 #if 0  //[[ YSKim_151217
      while(key == no_key)			// wait key input
