@@ -8,7 +8,7 @@
 #include "OK-STM746_large.h"
 #include "OK-STM746_xlarge.h"
 
-#define ILI9320
+//#define ILI9320
 /* ----- 사용자 함수 ---------------------------------------------------------- */
 
 void Display_screen(void);			// display test screen
@@ -57,7 +57,7 @@ void ClearScreen(unsigned int bColor)
 	{
 	
 	   for (j=0;j<240;j++)
-	       TFT_write(0,bColor);
+	       TFT_data(bColor);
 	}
 }
 
@@ -90,7 +90,7 @@ int main(void)
   Delay_ms(50);					// wait for system stabilization
   Initialize_LCD();				// initialize text LCD module
   Initialize_TFT_LCD();				// initialize TFT-LCD module
-  Beep();					// beep
+  //Beep();					// beep
 
   LCD_string(0x80," OK-STM746 V1.0 ");		// display title
   LCD_string(0xC0,"   kit_test.c   ");
@@ -103,7 +103,7 @@ int main(void)
 
   Display_screen();				// display test screen
   Display_test(test);				// display test number
-  Beep();					// beep
+  //Beep();					// beep
 
   while(1){
 		
@@ -127,7 +127,7 @@ int main(void)
 		Delay_ms(100);
 #endif //]] YSKim_151218
 		
-#if 0  //[[ YSKim_151217
+#ifndef ILI9320  //[[ YSKim_151217
      while(key == no_key)			// wait key input
         key = Key_input();
 

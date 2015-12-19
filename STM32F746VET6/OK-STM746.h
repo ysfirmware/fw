@@ -142,7 +142,7 @@ void Initialize_MCU(void)			/* initialize STM32F746VET6 MCU */
   GPIOE->MODER  = 0x6AAA5455;			// 포트E 설정, LED = 0, -RTC_CS = 1, LCD_E = 0
   GPIOE->AFR[1] = 0x01111111;			// PE14~PE8 = TIM1_CH4/CH3/CH3N/CH2/CH2N/CH1/CH1N
   GPIOE->AFR[0] = 0x00000004;
-  GPIOE->ODR = 0x80000040;			// -RTC_CS = -TFT_RESET = -TFT_CS = -TFT_WR = 1
+  GPIOE->ODR = 0x8000004D;			// -RTC_CS = -TFT_RESET = -TFT_CS = -TFT_WR = 1
   GPIOE->OSPEEDR = 0xAAAA28AA;			// 100MHz fast speed
 }
 
@@ -3653,7 +3653,7 @@ void Initialize_TFT_LCD(void)			/* initialize TFT-LCD with HX8347-A */
 
   GPIOE->MODER &= 0xFFFFFF00;			// 포트E 설정
   GPIOE->MODER |= 0x00000055;
-  GPIOE->ODR |= 0x00000000;			// -TFT_RESET = -TFT_CS = -TFT_WR = 1
+  GPIOE->ODR |= 0x0000000D;			// -TFT_RESET = -TFT_CS = -TFT_WR = 1
   GPIOE->OSPEEDR &= 0xFFFFFF00;			// 100MHz fast speed
   GPIOE->OSPEEDR |= 0x000000AA;
 
