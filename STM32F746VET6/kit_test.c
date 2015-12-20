@@ -42,13 +42,13 @@ void Line_soft(S16 x1,S16 y1, S16 x2,S16 y2, U16 color); // draw a soft line
 
 
 #ifdef ILI9320//[[ YSKim_151218
-static void LCD_SetPos(unsigned int x0,unsigned int x1,unsigned int y0,unsigned int y1);
-void ClearScreen(unsigned int bColor);
+static void LCD_SetPos(U32 x0,U32 x1,U32 y0,U32 y1);
+void ClearScreen(U32 bColor);
 
 
 //===============================================================
 //CLEAR SCREEN
-void ClearScreen(unsigned int bColor)
+void ClearScreen(U32 bColor)
 {
  unsigned int i,j;
  LCD_SetPos(0,239,0,319);//320x240
@@ -65,7 +65,7 @@ void ClearScreen(unsigned int bColor)
 //Define the coordinate
 
 
-static void LCD_SetPos(unsigned int x0,unsigned int x1,unsigned int y0,unsigned int y1)
+static void LCD_SetPos(U32 x0,U32 x1,U32 y0,U32 y1)
 {
   TFT_write(0x0050,x0);
   TFT_write(0x0051,x1);

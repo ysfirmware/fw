@@ -144,7 +144,7 @@ void Initialize_MCU(void)			/* initialize STM32F746VET6 MCU */
   GPIOE->MODER  = 0x6AAA5455;			// 포트E 설정, LED = 0, -RTC_CS = 1, LCD_E = 0
   GPIOE->AFR[1] = 0x01111111;			// PE14~PE8 = TIM1_CH4/CH3/CH3N/CH2/CH2N/CH1/CH1N
   GPIOE->AFR[0] = 0x00000004;
-  GPIOE->ODR = 0x80000040;			// -RTC_CS = -TFT_RESET = -TFT_CS = -TFT_WR = 1
+  GPIOE->ODR = 0x80000044;			// -RTC_CS = -TFT_RESET = -TFT_CS = -TFT_WR = 1
   GPIOE->OSPEEDR = 0xAAAA28AA;			// 100MHz fast speed
 }
 
@@ -3645,8 +3645,10 @@ unsigned short outline;				// outline color
 unsigned short foreground, background;		// foreground and background color
 unsigned char  Kfont_type = 'M';		// M = 명조체, G = 고딕체, P = 필기체
 
+
 void Initialize_TFT_LCD(void)			/* initialize TFT-LCD with HX8347-A */
 {
+  unsigned short i;
   RCC->AHB1ENR |= 0x00000018;			// enable clock of port D,E
 
   GPIOD->MODER = 0x55555555;			// 포트D 설정
@@ -3655,7 +3657,7 @@ void Initialize_TFT_LCD(void)			/* initialize TFT-LCD with HX8347-A */
 
   GPIOE->MODER &= 0xFFFFFF00;			// 포트E 설정
   GPIOE->MODER |= 0x00000055;
-  GPIOE->ODR |= 0x00000000;			// -TFT_RESET = -TFT_CS = -TFT_WR = 1
+  GPIOE->ODR |= 0x00000004;			// -TFT_RESET = -TFT_CS = -TFT_WR = 1
   GPIOE->OSPEEDR &= 0xFFFFFF00;			// 100MHz fast speed
   GPIOE->OSPEEDR |= 0x000000AA;
 
@@ -3670,7 +3672,58 @@ void Initialize_TFT_LCD(void)			/* initialize TFT-LCD with HX8347-A */
 #endif //]] YSKim_151217
 	
 #ifdef ILI9320  //CPT 3.2” Initial Code  [[ YSKim_151217
-	
+
+	TFT_write(0x00,0x0000);
+	TFT_write(0x01,0x0100);//Driver Output Contral.
+	TFT_write(0x02,0x0700);//LCD Driver Waveform Contral.
+	TFT_write(0x03,0x1030);//Entry Mode Set.
+	 
+	TFT_write(0x04,0x0000);//Scalling Contral.
+	TFT_write(0x08,0x0202);//Display Contral 2.(0x0207)
+	TFT_write(0x09,0x0000);//Display Contral 3.(0x0000)
+	TFT_write(0x0a,0x0000);//Frame Cycle Contal.(0x0000)
+	TFT_write(0x0c,(1<<0));//Extern Display Interface Contral 1.(0x0000)
+	TFT_write(0x0d,0x0000);//Frame Maker Position.
+	TFT_write(0x0f,0x0000);//Extern Display Interface Contral 2.
+	 
+	for(i=50000;i>0;i--);
+	TFT_write(0x07,0x0101);//Display Contral.
+	for(i=50000;i>0;i--);
+	 
+	TFT_write(0x10,(1<<12)|(0<<8)|(1<<7)|(1<<6)|(0<<4));//Power Control 1.(0x16b0)
+	TFT_write(0x11,0x0007);//Power Control 2.(0x0001)
+	TFT_write(0x12,(1<<8)|(1<<4)|(0<<0));//Power Control 3.(0x0138)
+	TFT_write(0x13,0x0b00);//Power Control 4.
+	TFT_write(0x29,0x0000);//Power Control 7.
+	 
+	TFT_write(0x2b,(1<<14)|(1<<4));
+	 
+	TFT_write(0x50,0);//Set X Start.
+	TFT_write(0x51,239);//Set X End.
+	TFT_write(0x52,0);//Set Y Start.
+	TFT_write(0x53,319);//Set Y End.
+	 
+	TFT_write(0x60,0x2700);//Driver Output Control.
+	TFT_write(0x61,0x0001);//Driver Output Control.
+	TFT_write(0x6a,0x0000);//Vertical Srcoll Control.
+	 
+	TFT_write(0x80,0x0000);//Display Position? Partial Display 1.
+	TFT_write(0x81,0x0000);//RAM Address Start? Partial Display 1.
+	TFT_write(0x82,0x0000);//RAM Address End-Partial Display 1.
+	TFT_write(0x83,0x0000);//Displsy Position? Partial Display 2.
+	TFT_write(0x84,0x0000);//RAM Address Start? Partial Display 2.
+	TFT_write(0x85,0x0000);//RAM Address End? Partial Display 2.
+	 
+	TFT_write(0x90,(0<<7)|(16<<0));//Frame Cycle Contral.(0x0013)
+	TFT_write(0x92,0x0000);//Panel Interface Contral 2.(0x0000)
+	TFT_write(0x93,0x0001);//Panel Interface Contral 3.
+	TFT_write(0x95,0x0110);//Frame Cycle Contral.(0x0110)
+	TFT_write(0x97,(0<<8));//
+	TFT_write(0x98,0x0000);//Frame Cycle Contral.
+	 
+	 
+	TFT_write(0x07,0x0173);//(0x0173)	
+#if 0  //[[ YSKim_151221
 	 /* Start Initial Sequence --------------------------------------------------*/
 				 TFT_write(0xE5, 0x8000);								 // Set the internal vcore voltage		 
 					 TFT_write (0x0000,0x0001);
@@ -3742,6 +3795,7 @@ void Initialize_TFT_LCD(void)			/* initialize TFT-LCD with HX8347-A */
 						TFT_write(0x0097,0x0000);			
 						TFT_write(0x0098,0x0000);		
 						TFT_write(0x0007,0x0173);	/* 262K color and display ON					*/
+#endif //]] YSKim_151221
 #endif //]] YSKim_151217
 
 
