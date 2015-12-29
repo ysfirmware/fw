@@ -1,0 +1,429 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_vector.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	Reset_Handler
+  24              		.thumb
+  25              		.thumb_func
+  27              	Reset_Handler:
+  28              	.LFB0:
+  29              		.file 1 "lib//src/stm32f10x_vector.c"
+   1:lib//src/stm32f10x_vector.c **** /******************** (C) COPYRIGHT 2007 STMicroelectronics ********************
+   2:lib//src/stm32f10x_vector.c **** * File Name          : stm32f10x_vector.c
+   3:lib//src/stm32f10x_vector.c **** * Author             : MCD Application Team
+   4:lib//src/stm32f10x_vector.c **** * Version            : V1.0
+   5:lib//src/stm32f10x_vector.c **** * Date               : 10/08/2007
+   6:lib//src/stm32f10x_vector.c **** * Description        : This file contains the vector table for STM32F10x.
+   7:lib//src/stm32f10x_vector.c **** *                      After Reset the Cortex-M3 processor is in Thread mode,
+   8:lib//src/stm32f10x_vector.c **** *                      priority is Privileged, and the Stack is set to Main.
+   9:lib//src/stm32f10x_vector.c **** ********************************************************************************
+  10:lib//src/stm32f10x_vector.c **** * THE PRESENT SOFTWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  11:lib//src/stm32f10x_vector.c **** * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  12:lib//src/stm32f10x_vector.c **** * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+  13:lib//src/stm32f10x_vector.c **** * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+  14:lib//src/stm32f10x_vector.c **** * CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+  15:lib//src/stm32f10x_vector.c **** * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  16:lib//src/stm32f10x_vector.c **** *******************************************************************************/
+  17:lib//src/stm32f10x_vector.c **** 
+  18:lib//src/stm32f10x_vector.c **** /* Includes ------------------------------------------------------------------*/
+  19:lib//src/stm32f10x_vector.c **** 
+  20:lib//src/stm32f10x_vector.c **** void NMIException(void);
+  21:lib//src/stm32f10x_vector.c **** void HardFaultException(void);
+  22:lib//src/stm32f10x_vector.c **** void MemManageException(void);
+  23:lib//src/stm32f10x_vector.c **** void BusFaultException(void);
+  24:lib//src/stm32f10x_vector.c **** void UsageFaultException(void);
+  25:lib//src/stm32f10x_vector.c **** void DebugMonitor(void);
+  26:lib//src/stm32f10x_vector.c **** void SVCHandler(void);
+  27:lib//src/stm32f10x_vector.c **** void PendSVC(void);
+  28:lib//src/stm32f10x_vector.c **** void SysTickHandler(void);
+  29:lib//src/stm32f10x_vector.c **** void WWDG_IRQHandler(void);
+  30:lib//src/stm32f10x_vector.c **** void PVD_IRQHandler(void);
+  31:lib//src/stm32f10x_vector.c **** void TAMPER_IRQHandler(void);
+  32:lib//src/stm32f10x_vector.c **** void RTC_IRQHandler(void);
+  33:lib//src/stm32f10x_vector.c **** void FLASH_IRQHandler(void);
+  34:lib//src/stm32f10x_vector.c **** void RCC_IRQHandler(void);
+  35:lib//src/stm32f10x_vector.c **** void EXTI0_IRQHandler(void);
+  36:lib//src/stm32f10x_vector.c **** void EXTI1_IRQHandler(void);
+  37:lib//src/stm32f10x_vector.c **** void EXTI2_IRQHandler(void);
+  38:lib//src/stm32f10x_vector.c **** void EXTI3_IRQHandler(void);
+  39:lib//src/stm32f10x_vector.c **** void EXTI4_IRQHandler(void);
+  40:lib//src/stm32f10x_vector.c **** void DMAChannel1_IRQHandler(void);
+  41:lib//src/stm32f10x_vector.c **** void DMAChannel2_IRQHandler(void);
+  42:lib//src/stm32f10x_vector.c **** void DMAChannel3_IRQHandler(void);
+  43:lib//src/stm32f10x_vector.c **** void DMAChannel4_IRQHandler(void);
+  44:lib//src/stm32f10x_vector.c **** void DMAChannel5_IRQHandler(void);
+  45:lib//src/stm32f10x_vector.c **** void DMAChannel6_IRQHandler(void);
+  46:lib//src/stm32f10x_vector.c **** void DMAChannel7_IRQHandler(void);
+  47:lib//src/stm32f10x_vector.c **** void ADC_IRQHandler(void);
+  48:lib//src/stm32f10x_vector.c **** void USB_HP_CAN_TX_IRQHandler(void);
+  49:lib//src/stm32f10x_vector.c **** void USB_LP_CAN_RX0_IRQHandler(void);
+  50:lib//src/stm32f10x_vector.c **** void CAN_RX1_IRQHandler(void);
+  51:lib//src/stm32f10x_vector.c **** void CAN_SCE_IRQHandler(void);
+  52:lib//src/stm32f10x_vector.c **** void EXTI9_5_IRQHandler(void);
+  53:lib//src/stm32f10x_vector.c **** void TIM1_BRK_IRQHandler(void);
+  54:lib//src/stm32f10x_vector.c **** void TIM1_UP_IRQHandler(void);
+  55:lib//src/stm32f10x_vector.c **** void TIM1_TRG_COM_IRQHandler(void);
+  56:lib//src/stm32f10x_vector.c **** void TIM1_CC_IRQHandler(void);
+  57:lib//src/stm32f10x_vector.c **** void TIM2_IRQHandler(void);
+  58:lib//src/stm32f10x_vector.c **** void TIM3_IRQHandler(void);
+  59:lib//src/stm32f10x_vector.c **** void TIM4_IRQHandler(void);
+  60:lib//src/stm32f10x_vector.c **** void I2C1_EV_IRQHandler(void);
+  61:lib//src/stm32f10x_vector.c **** void I2C1_ER_IRQHandler(void);
+  62:lib//src/stm32f10x_vector.c **** void I2C2_EV_IRQHandler(void);
+  63:lib//src/stm32f10x_vector.c **** void I2C2_ER_IRQHandler(void);
+  64:lib//src/stm32f10x_vector.c **** void SPI1_IRQHandler(void);
+  65:lib//src/stm32f10x_vector.c **** void SPI2_IRQHandler(void);
+  66:lib//src/stm32f10x_vector.c **** void USART1_IRQHandler(void);
+  67:lib//src/stm32f10x_vector.c **** void USART2_IRQHandler(void);
+  68:lib//src/stm32f10x_vector.c **** void USART3_IRQHandler(void);
+  69:lib//src/stm32f10x_vector.c **** void EXTI15_10_IRQHandler(void);
+  70:lib//src/stm32f10x_vector.c **** void RTCAlarm_IRQHandler(void);
+  71:lib//src/stm32f10x_vector.c **** void USBWakeUp_IRQHandler(void);
+  72:lib//src/stm32f10x_vector.c **** 
+  73:lib//src/stm32f10x_vector.c **** 
+  74:lib//src/stm32f10x_vector.c **** /* Exported types ------------------------------------------------------------*/
+  75:lib//src/stm32f10x_vector.c **** /* Exported constants --------------------------------------------------------*/
+  76:lib//src/stm32f10x_vector.c **** extern unsigned long _etext;
+  77:lib//src/stm32f10x_vector.c **** extern unsigned long _sidata;		/* start address for the initialization values
+  78:lib//src/stm32f10x_vector.c ****                                    of the .data section. defined in linker script */
+  79:lib//src/stm32f10x_vector.c **** extern unsigned long _sdata;		/* start address for the .data section. defined
+  80:lib//src/stm32f10x_vector.c ****                                    in linker script */
+  81:lib//src/stm32f10x_vector.c **** extern unsigned long _edata;		/* end address for the .data section. defined in
+  82:lib//src/stm32f10x_vector.c ****                                    linker script */
+  83:lib//src/stm32f10x_vector.c **** 
+  84:lib//src/stm32f10x_vector.c **** extern unsigned long _sbss;			/* start address for the .bss section. defined
+  85:lib//src/stm32f10x_vector.c ****                                    in linker script */
+  86:lib//src/stm32f10x_vector.c **** extern unsigned long _ebss;			/* end address for the .bss section. defined in
+  87:lib//src/stm32f10x_vector.c ****                                    linker script */
+  88:lib//src/stm32f10x_vector.c **** 
+  89:lib//src/stm32f10x_vector.c **** extern void _estack;		/* init value for the stack pointer. defined in linker script */
+  90:lib//src/stm32f10x_vector.c **** 
+  91:lib//src/stm32f10x_vector.c **** 
+  92:lib//src/stm32f10x_vector.c **** 
+  93:lib//src/stm32f10x_vector.c **** /* Private typedef -----------------------------------------------------------*/
+  94:lib//src/stm32f10x_vector.c **** /* function prototypes -------------------------------------------------------*/
+  95:lib//src/stm32f10x_vector.c **** void Reset_Handler(void) __attribute__((__interrupt__));
+  96:lib//src/stm32f10x_vector.c **** extern int main(void);
+  97:lib//src/stm32f10x_vector.c **** 
+  98:lib//src/stm32f10x_vector.c **** 
+  99:lib//src/stm32f10x_vector.c **** /*******************************************************************************
+ 100:lib//src/stm32f10x_vector.c **** *
+ 101:lib//src/stm32f10x_vector.c **** * The minimal vector table for a Cortex M3.  Note that the proper constructs
+ 102:lib//src/stm32f10x_vector.c **** * must be placed on this to ensure that it ends up at physical address
+ 103:lib//src/stm32f10x_vector.c **** * 0x0000.0000.
+ 104:lib//src/stm32f10x_vector.c **** *
+ 105:lib//src/stm32f10x_vector.c **** *******************************************************************************/
+ 106:lib//src/stm32f10x_vector.c **** 
+ 107:lib//src/stm32f10x_vector.c **** 
+ 108:lib//src/stm32f10x_vector.c **** __attribute__ ((section(".isr_vector")))
+ 109:lib//src/stm32f10x_vector.c **** void (* const g_pfnVectors[])(void) =
+ 110:lib//src/stm32f10x_vector.c **** {
+ 111:lib//src/stm32f10x_vector.c ****   &_estack,            // The initial stack pointer
+ 112:lib//src/stm32f10x_vector.c ****   Reset_Handler,             // The reset handler
+ 113:lib//src/stm32f10x_vector.c ****   NMIException,
+ 114:lib//src/stm32f10x_vector.c ****   HardFaultException,
+ 115:lib//src/stm32f10x_vector.c ****   MemManageException,
+ 116:lib//src/stm32f10x_vector.c ****   BusFaultException,
+ 117:lib//src/stm32f10x_vector.c ****   UsageFaultException,
+ 118:lib//src/stm32f10x_vector.c ****   0, 0, 0, 0,            /* Reserved */ 
+ 119:lib//src/stm32f10x_vector.c ****   SVCHandler,
+ 120:lib//src/stm32f10x_vector.c ****   DebugMonitor,
+ 121:lib//src/stm32f10x_vector.c ****   0,                      /* Reserved */
+ 122:lib//src/stm32f10x_vector.c ****   PendSVC,
+ 123:lib//src/stm32f10x_vector.c ****   SysTickHandler,
+ 124:lib//src/stm32f10x_vector.c ****   WWDG_IRQHandler,
+ 125:lib//src/stm32f10x_vector.c ****   PVD_IRQHandler,
+ 126:lib//src/stm32f10x_vector.c ****   TAMPER_IRQHandler,
+ 127:lib//src/stm32f10x_vector.c ****   RTC_IRQHandler,
+ 128:lib//src/stm32f10x_vector.c ****   FLASH_IRQHandler,
+ 129:lib//src/stm32f10x_vector.c ****   RCC_IRQHandler,
+ 130:lib//src/stm32f10x_vector.c ****   EXTI0_IRQHandler,
+ 131:lib//src/stm32f10x_vector.c ****   EXTI1_IRQHandler,
+ 132:lib//src/stm32f10x_vector.c ****   EXTI2_IRQHandler,
+ 133:lib//src/stm32f10x_vector.c ****   EXTI3_IRQHandler,
+ 134:lib//src/stm32f10x_vector.c ****   EXTI4_IRQHandler,
+ 135:lib//src/stm32f10x_vector.c ****   DMAChannel1_IRQHandler,
+ 136:lib//src/stm32f10x_vector.c ****   DMAChannel2_IRQHandler,
+ 137:lib//src/stm32f10x_vector.c ****   DMAChannel3_IRQHandler,
+ 138:lib//src/stm32f10x_vector.c ****   DMAChannel4_IRQHandler,
+ 139:lib//src/stm32f10x_vector.c ****   DMAChannel5_IRQHandler,
+ 140:lib//src/stm32f10x_vector.c ****   DMAChannel6_IRQHandler,
+ 141:lib//src/stm32f10x_vector.c ****   DMAChannel7_IRQHandler,
+ 142:lib//src/stm32f10x_vector.c ****   ADC_IRQHandler,
+ 143:lib//src/stm32f10x_vector.c ****   USB_HP_CAN_TX_IRQHandler,
+ 144:lib//src/stm32f10x_vector.c ****   USB_LP_CAN_RX0_IRQHandler,
+ 145:lib//src/stm32f10x_vector.c ****   CAN_RX1_IRQHandler,
+ 146:lib//src/stm32f10x_vector.c ****   CAN_SCE_IRQHandler,
+ 147:lib//src/stm32f10x_vector.c ****   EXTI9_5_IRQHandler,
+ 148:lib//src/stm32f10x_vector.c ****   TIM1_BRK_IRQHandler,
+ 149:lib//src/stm32f10x_vector.c ****   TIM1_UP_IRQHandler,
+ 150:lib//src/stm32f10x_vector.c ****   TIM1_TRG_COM_IRQHandler,
+ 151:lib//src/stm32f10x_vector.c ****   TIM1_CC_IRQHandler,
+ 152:lib//src/stm32f10x_vector.c ****   TIM2_IRQHandler,
+ 153:lib//src/stm32f10x_vector.c ****   TIM3_IRQHandler,
+ 154:lib//src/stm32f10x_vector.c ****   TIM4_IRQHandler,
+ 155:lib//src/stm32f10x_vector.c ****   I2C1_EV_IRQHandler,
+ 156:lib//src/stm32f10x_vector.c ****   I2C1_ER_IRQHandler,
+ 157:lib//src/stm32f10x_vector.c ****   I2C2_EV_IRQHandler,
+ 158:lib//src/stm32f10x_vector.c ****   I2C2_ER_IRQHandler,
+ 159:lib//src/stm32f10x_vector.c ****   SPI1_IRQHandler,
+ 160:lib//src/stm32f10x_vector.c ****   SPI2_IRQHandler,
+ 161:lib//src/stm32f10x_vector.c ****   USART1_IRQHandler,
+ 162:lib//src/stm32f10x_vector.c ****   USART2_IRQHandler,
+ 163:lib//src/stm32f10x_vector.c ****   USART3_IRQHandler,
+ 164:lib//src/stm32f10x_vector.c ****   EXTI15_10_IRQHandler,
+ 165:lib//src/stm32f10x_vector.c ****   RTCAlarm_IRQHandler,
+ 166:lib//src/stm32f10x_vector.c ****   USBWakeUp_IRQHandler,
+ 167:lib//src/stm32f10x_vector.c ****   0,
+ 168:lib//src/stm32f10x_vector.c ****   0,
+ 169:lib//src/stm32f10x_vector.c ****   0,
+ 170:lib//src/stm32f10x_vector.c ****   0,
+ 171:lib//src/stm32f10x_vector.c ****   0,
+ 172:lib//src/stm32f10x_vector.c ****   0,
+ 173:lib//src/stm32f10x_vector.c ****   0,
+ 174:lib//src/stm32f10x_vector.c ****   (unsigned short)0xF108F85F //this is a workaround for boot in RAM mode.
+ 175:lib//src/stm32f10x_vector.c **** };
+ 176:lib//src/stm32f10x_vector.c **** 
+ 177:lib//src/stm32f10x_vector.c **** /*******************************************************************************
+ 178:lib//src/stm32f10x_vector.c **** * Function Name  : Reset_Handler
+ 179:lib//src/stm32f10x_vector.c **** * Description    : This is the code that gets called when the processor first
+ 180:lib//src/stm32f10x_vector.c **** *                  starts execution following a reset event. Only the absolutely
+ 181:lib//src/stm32f10x_vector.c **** *                  necessary set is performed, after which the application
+ 182:lib//src/stm32f10x_vector.c **** *                  supplied main() routine is called. 
+ 183:lib//src/stm32f10x_vector.c **** * Input          :
+ 184:lib//src/stm32f10x_vector.c **** * Output         :
+ 185:lib//src/stm32f10x_vector.c **** * Return         :
+ 186:lib//src/stm32f10x_vector.c **** *******************************************************************************/
+ 187:lib//src/stm32f10x_vector.c **** void Reset_Handler(void)
+ 188:lib//src/stm32f10x_vector.c **** {
+  30              		.loc 1 188 0
+  31              		@ Stack Align: May be called with mis-aligned SP.
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34 0000 6846     		mov	r0, sp
+  35              	.LCFI0:
+  36 0002 20F00701 		bic	r1, r0, #7
+  37 0006 8D46     		mov	sp, r1
+  38 0008 01B5     		push	{r0, lr}
+  39              	.LCFI1:
+  40              		.loc 1 188 0
+  41 000a 0023     		movs	r3, #0
+ 189:lib//src/stm32f10x_vector.c ****     unsigned long *pulSrc, *pulDest;
+ 190:lib//src/stm32f10x_vector.c **** 
+ 191:lib//src/stm32f10x_vector.c ****     //
+ 192:lib//src/stm32f10x_vector.c ****     // Copy the data segment initializers from flash to SRAM.
+ 193:lib//src/stm32f10x_vector.c ****     //
+ 194:lib//src/stm32f10x_vector.c ****     pulSrc = &_sidata;
+ 195:lib//src/stm32f10x_vector.c ****     for(pulDest = &_sdata; pulDest < &_edata; )
+  42              		.loc 1 195 0
+  43 000c 03E0     		b	.L2
+  44              	.L3:
+ 196:lib//src/stm32f10x_vector.c ****     {
+ 197:lib//src/stm32f10x_vector.c ****         *(pulDest++) = *(pulSrc++);
+  45              		.loc 1 197 0
+  46 000e 0B49     		ldr	r1, .L8
+  47 0010 5958     		ldr	r1, [r3, r1]
+  48 0012 9950     		str	r1, [r3, r2]
+  49 0014 0433     		adds	r3, r3, #4
+  50              	.L2:
+  51              		.loc 1 195 0
+  52 0016 0A4A     		ldr	r2, .L8+4
+  53 0018 0A49     		ldr	r1, .L8+8
+  54 001a 9818     		adds	r0, r3, r2
+  55 001c 8842     		cmp	r0, r1
+  56 001e F6D3     		bcc	.L3
+  57 0020 094B     		ldr	r3, .L8+12
+  58              	.LVL0:
+  59 0022 02E0     		b	.L4
+  60              	.L5:
+ 198:lib//src/stm32f10x_vector.c ****     }
+ 199:lib//src/stm32f10x_vector.c **** 
+ 200:lib//src/stm32f10x_vector.c ****     //
+ 201:lib//src/stm32f10x_vector.c ****     // Zero fill the bss segment.
+ 202:lib//src/stm32f10x_vector.c ****     //
+ 203:lib//src/stm32f10x_vector.c ****     for(pulDest = &_sbss; pulDest < &_ebss; )
+ 204:lib//src/stm32f10x_vector.c ****     {
+ 205:lib//src/stm32f10x_vector.c ****         *(pulDest++) = 0;
+  61              		.loc 1 205 0
+  62 0024 0022     		movs	r2, #0
+  63 0026 43F8042B 		str	r2, [r3], #4
+  64              	.L4:
+  65              		.loc 1 203 0
+  66 002a 084A     		ldr	r2, .L8+16
+  67 002c 9342     		cmp	r3, r2
+  68 002e F9D3     		bcc	.L5
+ 206:lib//src/stm32f10x_vector.c ****     }
+ 207:lib//src/stm32f10x_vector.c **** 
+ 208:lib//src/stm32f10x_vector.c ****     //
+ 209:lib//src/stm32f10x_vector.c ****     // Call the application's entry point.
+ 210:lib//src/stm32f10x_vector.c ****     //
+ 211:lib//src/stm32f10x_vector.c ****     main();
+  69              		.loc 1 211 0
+  70 0030 FFF7FEFF 		bl	main
+  71              	.LVL1:
+ 212:lib//src/stm32f10x_vector.c **** }
+  72              		.loc 1 212 0
+  73 0034 BDE80140 		pop	{r0, lr}
+  74 0038 8546     		mov	sp, r0
+  75 003a 7047     		bx	lr
+  76              	.L9:
+  77              		.align	2
+  78              	.L8:
+  79 003c 00000000 		.word	_sidata
+  80 0040 00000000 		.word	_sdata
+  81 0044 00000000 		.word	_edata
+  82 0048 00000000 		.word	_sbss
+  83 004c 00000000 		.word	_ebss
+  84              	.LFE0:
+  86              		.global	g_pfnVectors
+  87              		.section	.isr_vector,"a",%progbits
+  88              		.align	2
+  91              	g_pfnVectors:
+  92 0000 00000000 		.word	_estack
+  93 0004 00000000 		.word	Reset_Handler
+  94 0008 00000000 		.word	NMIException
+  95 000c 00000000 		.word	HardFaultException
+  96 0010 00000000 		.word	MemManageException
+  97 0014 00000000 		.word	BusFaultException
+  98 0018 00000000 		.word	UsageFaultException
+  99 001c 00000000 		.word	0
+ 100 0020 00000000 		.word	0
+ 101 0024 00000000 		.word	0
+ 102 0028 00000000 		.word	0
+ 103 002c 00000000 		.word	SVCHandler
+ 104 0030 00000000 		.word	DebugMonitor
+ 105 0034 00000000 		.word	0
+ 106 0038 00000000 		.word	PendSVC
+ 107 003c 00000000 		.word	SysTickHandler
+ 108 0040 00000000 		.word	WWDG_IRQHandler
+ 109 0044 00000000 		.word	PVD_IRQHandler
+ 110 0048 00000000 		.word	TAMPER_IRQHandler
+ 111 004c 00000000 		.word	RTC_IRQHandler
+ 112 0050 00000000 		.word	FLASH_IRQHandler
+ 113 0054 00000000 		.word	RCC_IRQHandler
+ 114 0058 00000000 		.word	EXTI0_IRQHandler
+ 115 005c 00000000 		.word	EXTI1_IRQHandler
+ 116 0060 00000000 		.word	EXTI2_IRQHandler
+ 117 0064 00000000 		.word	EXTI3_IRQHandler
+ 118 0068 00000000 		.word	EXTI4_IRQHandler
+ 119 006c 00000000 		.word	DMAChannel1_IRQHandler
+ 120 0070 00000000 		.word	DMAChannel2_IRQHandler
+ 121 0074 00000000 		.word	DMAChannel3_IRQHandler
+ 122 0078 00000000 		.word	DMAChannel4_IRQHandler
+ 123 007c 00000000 		.word	DMAChannel5_IRQHandler
+ 124 0080 00000000 		.word	DMAChannel6_IRQHandler
+ 125 0084 00000000 		.word	DMAChannel7_IRQHandler
+ 126 0088 00000000 		.word	ADC_IRQHandler
+ 127 008c 00000000 		.word	USB_HP_CAN_TX_IRQHandler
+ 128 0090 00000000 		.word	USB_LP_CAN_RX0_IRQHandler
+ 129 0094 00000000 		.word	CAN_RX1_IRQHandler
+ 130 0098 00000000 		.word	CAN_SCE_IRQHandler
+ 131 009c 00000000 		.word	EXTI9_5_IRQHandler
+ 132 00a0 00000000 		.word	TIM1_BRK_IRQHandler
+ 133 00a4 00000000 		.word	TIM1_UP_IRQHandler
+ 134 00a8 00000000 		.word	TIM1_TRG_COM_IRQHandler
+ 135 00ac 00000000 		.word	TIM1_CC_IRQHandler
+ 136 00b0 00000000 		.word	TIM2_IRQHandler
+ 137 00b4 00000000 		.word	TIM3_IRQHandler
+ 138 00b8 00000000 		.word	TIM4_IRQHandler
+ 139 00bc 00000000 		.word	I2C1_EV_IRQHandler
+ 140 00c0 00000000 		.word	I2C1_ER_IRQHandler
+ 141 00c4 00000000 		.word	I2C2_EV_IRQHandler
+ 142 00c8 00000000 		.word	I2C2_ER_IRQHandler
+ 143 00cc 00000000 		.word	SPI1_IRQHandler
+ 144 00d0 00000000 		.word	SPI2_IRQHandler
+ 145 00d4 00000000 		.word	USART1_IRQHandler
+ 146 00d8 00000000 		.word	USART2_IRQHandler
+ 147 00dc 00000000 		.word	USART3_IRQHandler
+ 148 00e0 00000000 		.word	EXTI15_10_IRQHandler
+ 149 00e4 00000000 		.word	RTCAlarm_IRQHandler
+ 150 00e8 00000000 		.word	USBWakeUp_IRQHandler
+ 151 00ec 00000000 		.word	0
+ 152 00f0 00000000 		.word	0
+ 153 00f4 00000000 		.word	0
+ 154 00f8 00000000 		.word	0
+ 155 00fc 00000000 		.word	0
+ 156 0100 00000000 		.word	0
+ 157 0104 00000000 		.word	0
+ 158 0108 5FF80000 		.word	63583
+ 198              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_vector.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccQdv1HE.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccQdv1HE.s:27     .text:00000000 Reset_Handler
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccQdv1HE.s:79     .text:0000003c $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccQdv1HE.s:91     .isr_vector:00000000 g_pfnVectors
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccQdv1HE.s:88     .isr_vector:00000000 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccQdv1HE.s:172    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+main
+_sidata
+_sdata
+_edata
+_sbss
+_ebss
+_estack
+NMIException
+HardFaultException
+MemManageException
+BusFaultException
+UsageFaultException
+SVCHandler
+DebugMonitor
+PendSVC
+SysTickHandler
+WWDG_IRQHandler
+PVD_IRQHandler
+TAMPER_IRQHandler
+RTC_IRQHandler
+FLASH_IRQHandler
+RCC_IRQHandler
+EXTI0_IRQHandler
+EXTI1_IRQHandler
+EXTI2_IRQHandler
+EXTI3_IRQHandler
+EXTI4_IRQHandler
+DMAChannel1_IRQHandler
+DMAChannel2_IRQHandler
+DMAChannel3_IRQHandler
+DMAChannel4_IRQHandler
+DMAChannel5_IRQHandler
+DMAChannel6_IRQHandler
+DMAChannel7_IRQHandler
+ADC_IRQHandler
+USB_HP_CAN_TX_IRQHandler
+USB_LP_CAN_RX0_IRQHandler
+CAN_RX1_IRQHandler
+CAN_SCE_IRQHandler
+EXTI9_5_IRQHandler
+TIM1_BRK_IRQHandler
+TIM1_UP_IRQHandler
+TIM1_TRG_COM_IRQHandler
+TIM1_CC_IRQHandler
+TIM2_IRQHandler
+TIM3_IRQHandler
+TIM4_IRQHandler
+I2C1_EV_IRQHandler
+I2C1_ER_IRQHandler
+I2C2_EV_IRQHandler
+I2C2_ER_IRQHandler
+SPI1_IRQHandler
+SPI2_IRQHandler
+USART1_IRQHandler
+USART2_IRQHandler
+USART3_IRQHandler
+EXTI15_10_IRQHandler
+RTCAlarm_IRQHandler
+USBWakeUp_IRQHandler

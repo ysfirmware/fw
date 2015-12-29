@@ -1,0 +1,294 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"Eval50xx-SPI.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	ReadWriteSPI
+  24              		.thumb
+  25              		.thumb_func
+  27              	ReadWriteSPI:
+  28              	.LFB1:
+  29              		.file 1 "Eval50xx-SPI.c"
+   1:Eval50xx-SPI.c **** /****************************************************
+   2:Eval50xx-SPI.c ****   Projekt: TMC562-EVAL
+   3:Eval50xx-SPI.c **** 
+   4:Eval50xx-SPI.c ****   Modul:   Eval562-SPI.c
+   5:Eval50xx-SPI.c ****            SPI-Funktionen
+   6:Eval50xx-SPI.c **** 
+   7:Eval50xx-SPI.c ****   Datum:   17.10.2011 OK
+   8:Eval50xx-SPI.c **** *****************************************************/
+   9:Eval50xx-SPI.c **** 
+  10:Eval50xx-SPI.c **** #include "stm32f10x_lib.h"
+  11:Eval50xx-SPI.c **** #include "bits.h"
+  12:Eval50xx-SPI.c **** #include "Eval50xx.h"
+  13:Eval50xx-SPI.c **** 
+  14:Eval50xx-SPI.c **** 
+  15:Eval50xx-SPI.c **** /*******************************************************************
+  16:Eval50xx-SPI.c ****    Funktion: InitSPI()
+  17:Eval50xx-SPI.c ****    Parameter: ---
+  18:Eval50xx-SPI.c **** 
+  19:Eval50xx-SPI.c ****    Rückgabewert: ---
+  20:Eval50xx-SPI.c **** 
+  21:Eval50xx-SPI.c ****    Zweck: Intialisierung des SPI.
+  22:Eval50xx-SPI.c **** ********************************************************************/
+  23:Eval50xx-SPI.c **** void InitSPI(void)
+  24:Eval50xx-SPI.c **** {
+  25:Eval50xx-SPI.c ****   SPI_InitTypeDef SPIInit;
+  26:Eval50xx-SPI.c ****   GPIO_InitTypeDef GPIO_InitStructure;
+  27:Eval50xx-SPI.c **** 
+  28:Eval50xx-SPI.c ****   //Clock für SPI1 einschalten
+  29:Eval50xx-SPI.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+  30:Eval50xx-SPI.c **** 
+  31:Eval50xx-SPI.c ****   //PA5..PA7 mit SPI1 verbinden
+  32:Eval50xx-SPI.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5|GPIO_Pin_7;
+  33:Eval50xx-SPI.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  34:Eval50xx-SPI.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  35:Eval50xx-SPI.c ****   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  36:Eval50xx-SPI.c **** 
+  37:Eval50xx-SPI.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+  38:Eval50xx-SPI.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  39:Eval50xx-SPI.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  40:Eval50xx-SPI.c ****   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  41:Eval50xx-SPI.c **** 
+  42:Eval50xx-SPI.c ****   //SPI initialisieren
+  43:Eval50xx-SPI.c ****   SPIInit.SPI_Direction=SPI_Direction_2Lines_FullDuplex;
+  44:Eval50xx-SPI.c ****   SPIInit.SPI_Mode=SPI_Mode_Master;
+  45:Eval50xx-SPI.c ****   SPIInit.SPI_DataSize=SPI_DataSize_8b;
+  46:Eval50xx-SPI.c ****   SPIInit.SPI_CPOL=SPI_CPOL_High;
+  47:Eval50xx-SPI.c ****   SPIInit.SPI_CPHA=SPI_CPHA_2Edge;
+  48:Eval50xx-SPI.c ****   SPIInit.SPI_NSS=SPI_NSS_Soft;
+  49:Eval50xx-SPI.c ****   SPIInit.SPI_BaudRatePrescaler=SPI_BaudRatePrescaler_16;
+  50:Eval50xx-SPI.c ****   SPIInit.SPI_FirstBit=SPI_FirstBit_MSB;
+  51:Eval50xx-SPI.c ****   SPIInit.SPI_CRCPolynomial=0;
+  52:Eval50xx-SPI.c ****   SPI_Init(SPI1, &SPIInit);
+  53:Eval50xx-SPI.c ****   SPI_Cmd(SPI1, ENABLE);
+  54:Eval50xx-SPI.c **** }
+  55:Eval50xx-SPI.c **** 
+  56:Eval50xx-SPI.c **** 
+  57:Eval50xx-SPI.c **** /*******************************************************************
+  58:Eval50xx-SPI.c ****    Funktion: ReadWriteSPI
+  59:Eval50xx-SPI.c ****    Parameter: DeviceNumber: Gerätenummer (noch nicht verwendet)
+  60:Eval50xx-SPI.c ****               Data: zu sendendes Datenbyte
+  61:Eval50xx-SPI.c ****               LastTransfer: TRUE: nach diesem Byte wird CS wieder
+  62:Eval50xx-SPI.c ****                                   auf High gesetzt
+  63:Eval50xx-SPI.c ****                             FALSE: CS bleibt low (weiteres Byte folgt).
+  64:Eval50xx-SPI.c **** 
+  65:Eval50xx-SPI.c ****    Rückgabewert: empfangenes Datenbyte
+  66:Eval50xx-SPI.c **** 
+  67:Eval50xx-SPI.c ****    Zweck: SPI-Datenübertragung durchführen.
+  68:Eval50xx-SPI.c **** ********************************************************************/
+  69:Eval50xx-SPI.c **** UCHAR ReadWriteSPI(UCHAR DeviceNumber, UCHAR Data, UCHAR LastTransfer)
+  70:Eval50xx-SPI.c **** {
+  30              		.loc 1 70 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              	.LVL0:
+  71:Eval50xx-SPI.c ****   switch(DeviceNumber)
+  34              		.loc 1 71 0
+  35 0000 0128     		cmp	r0, #1
+  36              		.loc 1 70 0
+  37 0002 38B5     		push	{r3, r4, r5, lr}
+  38              	.LCFI0:
+  39              		.loc 1 70 0
+  40 0004 0C46     		mov	r4, r1
+  41 0006 1546     		mov	r5, r2
+  42              		.loc 1 71 0
+  43 0008 01D0     		beq	.L3
+  44              	.LVL1:
+  45 000a 0020     		movs	r0, #0
+  46              	.LVL2:
+  47 000c 1AE0     		b	.L4
+  48              	.LVL3:
+  49              	.L3:
+  72:Eval50xx-SPI.c ****   {
+  73:Eval50xx-SPI.c ****     case SPI_DEV_TMC50xx:
+  74:Eval50xx-SPI.c ****       SELECT_TMC50xx();
+  50              		.loc 1 74 0
+  51 000e 0E4B     		ldr	r3, .L10
+  52 0010 1022     		movs	r2, #16
+  53 0012 5A61     		str	r2, [r3, #20]
+  54              	.L5:
+  75:Eval50xx-SPI.c **** 
+  76:Eval50xx-SPI.c ****       while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE)==RESET);
+  55              		.loc 1 76 0
+  56 0014 0D48     		ldr	r0, .L10+4
+  57              	.LVL4:
+  58 0016 0221     		movs	r1, #2
+  59 0018 FFF7FEFF 		bl	SPI_I2S_GetFlagStatus
+  60 001c 0028     		cmp	r0, #0
+  61 001e F9D0     		beq	.L5
+  77:Eval50xx-SPI.c ****       SPI_I2S_SendData(SPI1, Data);
+  62              		.loc 1 77 0
+  63 0020 2146     		mov	r1, r4
+  64 0022 0A48     		ldr	r0, .L10+4
+  65 0024 FFF7FEFF 		bl	SPI_I2S_SendData
+  66              	.L6:
+  78:Eval50xx-SPI.c ****       while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE)==RESET);
+  67              		.loc 1 78 0
+  68 0028 0848     		ldr	r0, .L10+4
+  69 002a 0121     		movs	r1, #1
+  70 002c FFF7FEFF 		bl	SPI_I2S_GetFlagStatus
+  71 0030 0028     		cmp	r0, #0
+  72 0032 F9D0     		beq	.L6
+  79:Eval50xx-SPI.c **** 
+  80:Eval50xx-SPI.c ****       if(LastTransfer) DESELECT_TMC50xx();
+  73              		.loc 1 80 0
+  74 0034 15B1     		cbz	r5, .L7
+  75 0036 044B     		ldr	r3, .L10
+  76 0038 1022     		movs	r2, #16
+  77 003a 1A61     		str	r2, [r3, #16]
+  78              	.L7:
+  81:Eval50xx-SPI.c **** 
+  82:Eval50xx-SPI.c ****       return SPI_I2S_ReceiveData(SPI1);
+  79              		.loc 1 82 0
+  80 003c 0348     		ldr	r0, .L10+4
+  81 003e FFF7FEFF 		bl	SPI_I2S_ReceiveData
+  82 0042 C0B2     		uxtb	r0, r0
+  83              	.LVL5:
+  84              	.L4:
+  83:Eval50xx-SPI.c ****       break;
+  84:Eval50xx-SPI.c **** 
+  85:Eval50xx-SPI.c ****     default:
+  86:Eval50xx-SPI.c ****       return 0;
+  87:Eval50xx-SPI.c ****       break;
+  88:Eval50xx-SPI.c ****   }
+  89:Eval50xx-SPI.c **** }
+  85              		.loc 1 89 0
+  86 0044 38BD     		pop	{r3, r4, r5, pc}
+  87              	.L11:
+  88 0046 00BF     		.align	2
+  89              	.L10:
+  90 0048 00080140 		.word	1073809408
+  91 004c 00300140 		.word	1073819648
+  92              	.LFE1:
+  94              		.align	2
+  95              		.global	InitSPI
+  96              		.thumb
+  97              		.thumb_func
+  99              	InitSPI:
+ 100              	.LFB0:
+ 101              		.loc 1 24 0
+ 102              		@ args = 0, pretend = 0, frame = 24
+ 103              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104 0050 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 105              	.LCFI1:
+ 106              		.loc 1 35 0
+ 107 0054 DFF89480 		ldr	r8, .L14+4
+ 108              		.loc 1 24 0
+ 109 0058 86B0     		sub	sp, sp, #24
+ 110              	.LCFI2:
+ 111              		.loc 1 29 0
+ 112 005a 0121     		movs	r1, #1
+ 113              		.loc 1 35 0
+ 114 005c 05AF     		add	r7, sp, #20
+ 115              		.loc 1 29 0
+ 116 005e 4FF48050 		mov	r0, #4096
+ 117 0062 FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 118              		.loc 1 33 0
+ 119 0066 0324     		movs	r4, #3
+ 120              		.loc 1 32 0
+ 121 0068 4FF0A002 		mov	r2, #160	@ movhi
+ 122              		.loc 1 34 0
+ 123 006c 1826     		movs	r6, #24
+ 124              		.loc 1 35 0
+ 125 006e 4046     		mov	r0, r8
+ 126 0070 3946     		mov	r1, r7
+ 127              		.loc 1 32 0
+ 128 0072 ADF81420 		strh	r2, [sp, #20]	@ movhi
+ 129              		.loc 1 33 0
+ 130 0076 8DF81640 		strb	r4, [sp, #22]
+ 131              		.loc 1 34 0
+ 132 007a 8DF81760 		strb	r6, [sp, #23]
+ 133              		.loc 1 35 0
+ 134 007e FFF7FEFF 		bl	GPIO_Init
+ 135              		.loc 1 39 0
+ 136 0082 0423     		movs	r3, #4
+ 137              		.loc 1 40 0
+ 138 0084 4046     		mov	r0, r8
+ 139 0086 3946     		mov	r1, r7
+ 140              		.loc 1 39 0
+ 141 0088 8DF81730 		strb	r3, [sp, #23]
+ 142              		.loc 1 37 0
+ 143 008c 4FF04003 		mov	r3, #64	@ movhi
+ 144              		.loc 1 52 0
+ 145 0090 154D     		ldr	r5, .L14
+ 146              		.loc 1 38 0
+ 147 0092 8DF81640 		strb	r4, [sp, #22]
+ 148              		.loc 1 37 0
+ 149 0096 ADF81430 		strh	r3, [sp, #20]	@ movhi
+ 150              		.loc 1 40 0
+ 151 009a FFF7FEFF 		bl	GPIO_Init
+ 152              		.loc 1 44 0
+ 153 009e 4FF48272 		mov	r2, #260	@ movhi
+ 154 00a2 ADF80220 		strh	r2, [sp, #2]	@ movhi
+ 155              		.loc 1 46 0
+ 156 00a6 4FF00202 		mov	r2, #2	@ movhi
+ 157              		.loc 1 43 0
+ 158 00aa 0023     		movs	r3, #0
+ 159              		.loc 1 47 0
+ 160 00ac 0124     		movs	r4, #1
+ 161              		.loc 1 52 0
+ 162 00ae 2846     		mov	r0, r5
+ 163 00b0 6946     		mov	r1, sp
+ 164              		.loc 1 46 0
+ 165 00b2 ADF80620 		strh	r2, [sp, #6]	@ movhi
+ 166              		.loc 1 48 0
+ 167 00b6 4FF40072 		mov	r2, #512	@ movhi
+ 168              		.loc 1 49 0
+ 169 00ba ADF80C60 		strh	r6, [sp, #12]	@ movhi
+ 170              		.loc 1 51 0
+ 171 00be ADF81030 		strh	r3, [sp, #16]	@ movhi
+ 172              		.loc 1 43 0
+ 173 00c2 ADF80030 		strh	r3, [sp, #0]	@ movhi
+ 174              		.loc 1 45 0
+ 175 00c6 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 176              		.loc 1 47 0
+ 177 00ca ADF80840 		strh	r4, [sp, #8]	@ movhi
+ 178              		.loc 1 48 0
+ 179 00ce ADF80A20 		strh	r2, [sp, #10]	@ movhi
+ 180              		.loc 1 50 0
+ 181 00d2 ADF80E30 		strh	r3, [sp, #14]	@ movhi
+ 182              		.loc 1 52 0
+ 183 00d6 FFF7FEFF 		bl	SPI_Init
+ 184              		.loc 1 53 0
+ 185 00da 2846     		mov	r0, r5
+ 186 00dc 2146     		mov	r1, r4
+ 187 00de FFF7FEFF 		bl	SPI_Cmd
+ 188              		.loc 1 54 0
+ 189 00e2 06B0     		add	sp, sp, #24
+ 190 00e4 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 191              	.L15:
+ 192              		.align	2
+ 193              	.L14:
+ 194 00e8 00300140 		.word	1073819648
+ 195 00ec 00080140 		.word	1073809408
+ 196              	.LFE0:
+ 272              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Eval50xx-SPI.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccEAGQ3h.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccEAGQ3h.s:27     .text:00000000 ReadWriteSPI
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccEAGQ3h.s:90     .text:00000048 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccEAGQ3h.s:94     .text:00000050 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccEAGQ3h.s:99     .text:00000050 InitSPI
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccEAGQ3h.s:194    .text:000000e8 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccEAGQ3h.s:211    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+SPI_I2S_GetFlagStatus
+SPI_I2S_SendData
+SPI_I2S_ReceiveData
+RCC_APB2PeriphClockCmd
+GPIO_Init
+SPI_Init
+SPI_Cmd

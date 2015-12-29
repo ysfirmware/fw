@@ -1,0 +1,2411 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_i2c.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	I2C_StructInit
+  24              		.thumb
+  25              		.thumb_func
+  27              	I2C_StructInit:
+  28              	.LFB2:
+  29              		.file 1 "lib//src/stm32f10x_i2c.c"
+   1:lib//src/stm32f10x_i2c.c **** /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+   2:lib//src/stm32f10x_i2c.c **** * File Name          : stm32f10x_i2c.c
+   3:lib//src/stm32f10x_i2c.c **** * Author             : MCD Application Team
+   4:lib//src/stm32f10x_i2c.c **** * Version            : V2.0
+   5:lib//src/stm32f10x_i2c.c **** * Date               : 05/23/2008
+   6:lib//src/stm32f10x_i2c.c **** * Description        : This file provides all the I2C firmware functions.
+   7:lib//src/stm32f10x_i2c.c **** ********************************************************************************
+   8:lib//src/stm32f10x_i2c.c **** * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+   9:lib//src/stm32f10x_i2c.c **** * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  10:lib//src/stm32f10x_i2c.c **** * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+  11:lib//src/stm32f10x_i2c.c **** * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+  12:lib//src/stm32f10x_i2c.c **** * CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+  13:lib//src/stm32f10x_i2c.c **** * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  14:lib//src/stm32f10x_i2c.c **** * FOR MORE INFORMATION PLEASE CAREFULLY READ THE LICENSE AGREEMENT FILE LOCATED 
+  15:lib//src/stm32f10x_i2c.c **** * IN THE ROOT DIRECTORY OF THIS FIRMWARE PACKAGE.
+  16:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+  17:lib//src/stm32f10x_i2c.c **** 
+  18:lib//src/stm32f10x_i2c.c **** /* Includes ------------------------------------------------------------------*/
+  19:lib//src/stm32f10x_i2c.c **** #include "stm32f10x_i2c.h"
+  20:lib//src/stm32f10x_i2c.c **** #include "stm32f10x_rcc.h"
+  21:lib//src/stm32f10x_i2c.c **** 	 
+  22:lib//src/stm32f10x_i2c.c **** /* Private typedef -----------------------------------------------------------*/
+  23:lib//src/stm32f10x_i2c.c **** /* Private define ------------------------------------------------------------*/
+  24:lib//src/stm32f10x_i2c.c **** /* I2C SPE mask */
+  25:lib//src/stm32f10x_i2c.c **** #define CR1_PE_Set              ((u16)0x0001)
+  26:lib//src/stm32f10x_i2c.c **** #define CR1_PE_Reset            ((u16)0xFFFE)
+  27:lib//src/stm32f10x_i2c.c **** 
+  28:lib//src/stm32f10x_i2c.c **** /* I2C START mask */
+  29:lib//src/stm32f10x_i2c.c **** #define CR1_START_Set           ((u16)0x0100)
+  30:lib//src/stm32f10x_i2c.c **** #define CR1_START_Reset         ((u16)0xFEFF)
+  31:lib//src/stm32f10x_i2c.c **** 
+  32:lib//src/stm32f10x_i2c.c **** /* I2C STOP mask */
+  33:lib//src/stm32f10x_i2c.c **** #define CR1_STOP_Set            ((u16)0x0200)
+  34:lib//src/stm32f10x_i2c.c **** #define CR1_STOP_Reset          ((u16)0xFDFF)
+  35:lib//src/stm32f10x_i2c.c **** 
+  36:lib//src/stm32f10x_i2c.c **** /* I2C ACK mask */
+  37:lib//src/stm32f10x_i2c.c **** #define CR1_ACK_Set             ((u16)0x0400)
+  38:lib//src/stm32f10x_i2c.c **** #define CR1_ACK_Reset           ((u16)0xFBFF)
+  39:lib//src/stm32f10x_i2c.c **** 
+  40:lib//src/stm32f10x_i2c.c **** /* I2C ENGC mask */
+  41:lib//src/stm32f10x_i2c.c **** #define CR1_ENGC_Set            ((u16)0x0040)
+  42:lib//src/stm32f10x_i2c.c **** #define CR1_ENGC_Reset          ((u16)0xFFBF)
+  43:lib//src/stm32f10x_i2c.c **** 
+  44:lib//src/stm32f10x_i2c.c **** /* I2C SWRST mask */
+  45:lib//src/stm32f10x_i2c.c **** #define CR1_SWRST_Set           ((u16)0x8000)
+  46:lib//src/stm32f10x_i2c.c **** #define CR1_SWRST_Reset         ((u16)0x7FFF)
+  47:lib//src/stm32f10x_i2c.c **** 
+  48:lib//src/stm32f10x_i2c.c **** /* I2C PEC mask */
+  49:lib//src/stm32f10x_i2c.c **** #define CR1_PEC_Set             ((u16)0x1000)
+  50:lib//src/stm32f10x_i2c.c **** #define CR1_PEC_Reset           ((u16)0xEFFF)
+  51:lib//src/stm32f10x_i2c.c **** 
+  52:lib//src/stm32f10x_i2c.c **** /* I2C ENPEC mask */
+  53:lib//src/stm32f10x_i2c.c **** #define CR1_ENPEC_Set           ((u16)0x0020)
+  54:lib//src/stm32f10x_i2c.c **** #define CR1_ENPEC_Reset         ((u16)0xFFDF)
+  55:lib//src/stm32f10x_i2c.c **** 
+  56:lib//src/stm32f10x_i2c.c **** /* I2C ENARP mask */
+  57:lib//src/stm32f10x_i2c.c **** #define CR1_ENARP_Set           ((u16)0x0010)
+  58:lib//src/stm32f10x_i2c.c **** #define CR1_ENARP_Reset         ((u16)0xFFEF)
+  59:lib//src/stm32f10x_i2c.c **** 
+  60:lib//src/stm32f10x_i2c.c **** /* I2C NOSTRETCH mask */
+  61:lib//src/stm32f10x_i2c.c **** #define CR1_NOSTRETCH_Set       ((u16)0x0080)
+  62:lib//src/stm32f10x_i2c.c **** #define CR1_NOSTRETCH_Reset     ((u16)0xFF7F)
+  63:lib//src/stm32f10x_i2c.c **** 
+  64:lib//src/stm32f10x_i2c.c **** /* I2C registers Masks */
+  65:lib//src/stm32f10x_i2c.c **** #define CR1_CLEAR_Mask          ((u16)0xFBF5)
+  66:lib//src/stm32f10x_i2c.c **** 
+  67:lib//src/stm32f10x_i2c.c **** /* I2C DMAEN mask */
+  68:lib//src/stm32f10x_i2c.c **** #define CR2_DMAEN_Set           ((u16)0x0800)
+  69:lib//src/stm32f10x_i2c.c **** #define CR2_DMAEN_Reset         ((u16)0xF7FF)
+  70:lib//src/stm32f10x_i2c.c **** 
+  71:lib//src/stm32f10x_i2c.c **** /* I2C LAST mask */
+  72:lib//src/stm32f10x_i2c.c **** #define CR2_LAST_Set            ((u16)0x1000)
+  73:lib//src/stm32f10x_i2c.c **** #define CR2_LAST_Reset          ((u16)0xEFFF)
+  74:lib//src/stm32f10x_i2c.c **** 
+  75:lib//src/stm32f10x_i2c.c **** /* I2C FREQ mask */
+  76:lib//src/stm32f10x_i2c.c **** #define CR2_FREQ_Reset          ((u16)0xFFC0)
+  77:lib//src/stm32f10x_i2c.c **** 
+  78:lib//src/stm32f10x_i2c.c **** /* I2C ADD0 mask */
+  79:lib//src/stm32f10x_i2c.c **** #define OAR1_ADD0_Set           ((u16)0x0001)
+  80:lib//src/stm32f10x_i2c.c **** #define OAR1_ADD0_Reset         ((u16)0xFFFE)
+  81:lib//src/stm32f10x_i2c.c **** 
+  82:lib//src/stm32f10x_i2c.c **** /* I2C ENDUAL mask */
+  83:lib//src/stm32f10x_i2c.c **** #define OAR2_ENDUAL_Set         ((u16)0x0001)
+  84:lib//src/stm32f10x_i2c.c **** #define OAR2_ENDUAL_Reset       ((u16)0xFFFE)
+  85:lib//src/stm32f10x_i2c.c **** 
+  86:lib//src/stm32f10x_i2c.c **** /* I2C ADD2 mask */
+  87:lib//src/stm32f10x_i2c.c **** #define OAR2_ADD2_Reset         ((u16)0xFF01)
+  88:lib//src/stm32f10x_i2c.c **** 
+  89:lib//src/stm32f10x_i2c.c **** /* I2C F/S mask */
+  90:lib//src/stm32f10x_i2c.c **** #define CCR_FS_Set              ((u16)0x8000)
+  91:lib//src/stm32f10x_i2c.c **** 
+  92:lib//src/stm32f10x_i2c.c **** /* I2C CCR mask */
+  93:lib//src/stm32f10x_i2c.c **** #define CCR_CCR_Set             ((u16)0x0FFF)
+  94:lib//src/stm32f10x_i2c.c **** 
+  95:lib//src/stm32f10x_i2c.c **** /* I2C FLAG mask */
+  96:lib//src/stm32f10x_i2c.c **** #define FLAG_Mask               ((u32)0x00FFFFFF)
+  97:lib//src/stm32f10x_i2c.c **** 
+  98:lib//src/stm32f10x_i2c.c **** /* Private macro -------------------------------------------------------------*/
+  99:lib//src/stm32f10x_i2c.c **** /* Private variables ---------------------------------------------------------*/
+ 100:lib//src/stm32f10x_i2c.c **** /* Private function prototypes -----------------------------------------------*/
+ 101:lib//src/stm32f10x_i2c.c **** /* Private functions ---------------------------------------------------------*/
+ 102:lib//src/stm32f10x_i2c.c **** 
+ 103:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 104:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_DeInit
+ 105:lib//src/stm32f10x_i2c.c **** * Description    : Deinitializes the I2Cx peripheral registers to their default
+ 106:lib//src/stm32f10x_i2c.c **** *                  reset values.
+ 107:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 108:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 109:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 110:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 111:lib//src/stm32f10x_i2c.c **** void I2C_DeInit(I2C_TypeDef* I2Cx)
+ 112:lib//src/stm32f10x_i2c.c **** {
+ 113:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 114:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 115:lib//src/stm32f10x_i2c.c **** 
+ 116:lib//src/stm32f10x_i2c.c ****   switch (*(u32*)&I2Cx)
+ 117:lib//src/stm32f10x_i2c.c ****   {
+ 118:lib//src/stm32f10x_i2c.c ****     case I2C1_BASE:
+ 119:lib//src/stm32f10x_i2c.c ****       /* Enable I2C1 reset state */
+ 120:lib//src/stm32f10x_i2c.c ****       RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, ENABLE);
+ 121:lib//src/stm32f10x_i2c.c ****       /* Release I2C1 from reset state */
+ 122:lib//src/stm32f10x_i2c.c ****       RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, DISABLE);
+ 123:lib//src/stm32f10x_i2c.c ****       break;
+ 124:lib//src/stm32f10x_i2c.c **** 
+ 125:lib//src/stm32f10x_i2c.c ****     case I2C2_BASE:
+ 126:lib//src/stm32f10x_i2c.c ****       /* Enable I2C2 reset state */
+ 127:lib//src/stm32f10x_i2c.c ****       RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C2, ENABLE);
+ 128:lib//src/stm32f10x_i2c.c ****       /* Release I2C2 from reset state */
+ 129:lib//src/stm32f10x_i2c.c ****       RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C2, DISABLE);
+ 130:lib//src/stm32f10x_i2c.c ****       break;
+ 131:lib//src/stm32f10x_i2c.c **** 
+ 132:lib//src/stm32f10x_i2c.c ****     default:
+ 133:lib//src/stm32f10x_i2c.c ****       break;
+ 134:lib//src/stm32f10x_i2c.c ****   }
+ 135:lib//src/stm32f10x_i2c.c **** }
+ 136:lib//src/stm32f10x_i2c.c **** 
+ 137:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 138:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_Init
+ 139:lib//src/stm32f10x_i2c.c **** * Description    : Initializes the I2Cx peripheral according to the specified 
+ 140:lib//src/stm32f10x_i2c.c **** *                  parameters in the I2C_InitStruct.
+ 141:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 142:lib//src/stm32f10x_i2c.c **** *                  - I2C_InitStruct: pointer to a I2C_InitTypeDef structure that
+ 143:lib//src/stm32f10x_i2c.c **** *                    contains the configuration information for the specified
+ 144:lib//src/stm32f10x_i2c.c **** *                    I2C peripheral.
+ 145:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 146:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 147:lib//src/stm32f10x_i2c.c **** ******************************************************************************/
+ 148:lib//src/stm32f10x_i2c.c **** void I2C_Init(I2C_TypeDef* I2Cx, I2C_InitTypeDef* I2C_InitStruct)
+ 149:lib//src/stm32f10x_i2c.c **** {
+ 150:lib//src/stm32f10x_i2c.c ****   u16 tmpreg = 0, freqrange = 0;
+ 151:lib//src/stm32f10x_i2c.c ****   u16 result = 0x04;
+ 152:lib//src/stm32f10x_i2c.c ****   u32 pclk1 = 8000000;
+ 153:lib//src/stm32f10x_i2c.c ****   RCC_ClocksTypeDef  rcc_clocks;
+ 154:lib//src/stm32f10x_i2c.c **** 
+ 155:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 156:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 157:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_MODE(I2C_InitStruct->I2C_Mode));
+ 158:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_DUTY_CYCLE(I2C_InitStruct->I2C_DutyCycle));
+ 159:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_OWN_ADDRESS1(I2C_InitStruct->I2C_OwnAddress1));
+ 160:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ACK_STATE(I2C_InitStruct->I2C_Ack));
+ 161:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ACKNOWLEDGE_ADDRESS(I2C_InitStruct->I2C_AcknowledgedAddress));
+ 162:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_CLOCK_SPEED(I2C_InitStruct->I2C_ClockSpeed));
+ 163:lib//src/stm32f10x_i2c.c **** 
+ 164:lib//src/stm32f10x_i2c.c **** /*---------------------------- I2Cx CR2 Configuration ------------------------*/
+ 165:lib//src/stm32f10x_i2c.c ****   /* Get the I2Cx CR2 value */
+ 166:lib//src/stm32f10x_i2c.c ****   tmpreg = I2Cx->CR2;
+ 167:lib//src/stm32f10x_i2c.c ****   /* Clear frequency FREQ[5:0] bits */
+ 168:lib//src/stm32f10x_i2c.c ****   tmpreg &= CR2_FREQ_Reset;
+ 169:lib//src/stm32f10x_i2c.c ****   /* Get pclk1 frequency value */
+ 170:lib//src/stm32f10x_i2c.c ****   RCC_GetClocksFreq(&rcc_clocks);
+ 171:lib//src/stm32f10x_i2c.c ****   pclk1 = rcc_clocks.PCLK1_Frequency;
+ 172:lib//src/stm32f10x_i2c.c ****   /* Set frequency bits depending on pclk1 value */
+ 173:lib//src/stm32f10x_i2c.c ****   freqrange = (u16)(pclk1 / 1000000);
+ 174:lib//src/stm32f10x_i2c.c ****   tmpreg |= freqrange;
+ 175:lib//src/stm32f10x_i2c.c ****   /* Write to I2Cx CR2 */
+ 176:lib//src/stm32f10x_i2c.c ****   I2Cx->CR2 = tmpreg;
+ 177:lib//src/stm32f10x_i2c.c **** 
+ 178:lib//src/stm32f10x_i2c.c **** /*---------------------------- I2Cx CCR Configuration ------------------------*/
+ 179:lib//src/stm32f10x_i2c.c ****   /* Disable the selected I2C peripheral to configure TRISE */
+ 180:lib//src/stm32f10x_i2c.c ****   I2Cx->CR1 &= CR1_PE_Reset;
+ 181:lib//src/stm32f10x_i2c.c **** 
+ 182:lib//src/stm32f10x_i2c.c ****   /* Reset tmpreg value */
+ 183:lib//src/stm32f10x_i2c.c ****   /* Clear F/S, DUTY and CCR[11:0] bits */
+ 184:lib//src/stm32f10x_i2c.c ****   tmpreg = 0;
+ 185:lib//src/stm32f10x_i2c.c **** 
+ 186:lib//src/stm32f10x_i2c.c ****   /* Configure speed in standard mode */
+ 187:lib//src/stm32f10x_i2c.c ****   if (I2C_InitStruct->I2C_ClockSpeed <= 100000)
+ 188:lib//src/stm32f10x_i2c.c ****   {
+ 189:lib//src/stm32f10x_i2c.c ****     /* Standard mode speed calculate */
+ 190:lib//src/stm32f10x_i2c.c ****     result = (u16)(pclk1 / (I2C_InitStruct->I2C_ClockSpeed << 1));
+ 191:lib//src/stm32f10x_i2c.c ****     /* Test if CCR value is under 0x4*/
+ 192:lib//src/stm32f10x_i2c.c ****     if (result < 0x04)
+ 193:lib//src/stm32f10x_i2c.c ****     {
+ 194:lib//src/stm32f10x_i2c.c ****       /* Set minimum allowed value */
+ 195:lib//src/stm32f10x_i2c.c ****       result = 0x04;  
+ 196:lib//src/stm32f10x_i2c.c ****     }
+ 197:lib//src/stm32f10x_i2c.c ****     /* Set speed value for standard mode */
+ 198:lib//src/stm32f10x_i2c.c ****     tmpreg |= result;	  
+ 199:lib//src/stm32f10x_i2c.c ****     /* Set Maximum Rise Time for standard mode */
+ 200:lib//src/stm32f10x_i2c.c ****     I2Cx->TRISE = freqrange + 1; 
+ 201:lib//src/stm32f10x_i2c.c ****   }
+ 202:lib//src/stm32f10x_i2c.c ****   /* Configure speed in fast mode */
+ 203:lib//src/stm32f10x_i2c.c ****   else /*(I2C_InitStruct->I2C_ClockSpeed <= 400000)*/
+ 204:lib//src/stm32f10x_i2c.c ****   {
+ 205:lib//src/stm32f10x_i2c.c ****     if (I2C_InitStruct->I2C_DutyCycle == I2C_DutyCycle_2)
+ 206:lib//src/stm32f10x_i2c.c ****     {
+ 207:lib//src/stm32f10x_i2c.c ****       /* Fast mode speed calculate: Tlow/Thigh = 2 */
+ 208:lib//src/stm32f10x_i2c.c ****       result = (u16)(pclk1 / (I2C_InitStruct->I2C_ClockSpeed * 3));
+ 209:lib//src/stm32f10x_i2c.c ****     }
+ 210:lib//src/stm32f10x_i2c.c ****     else /*I2C_InitStruct->I2C_DutyCycle == I2C_DutyCycle_16_9*/
+ 211:lib//src/stm32f10x_i2c.c ****     {
+ 212:lib//src/stm32f10x_i2c.c ****       /* Fast mode speed calculate: Tlow/Thigh = 16/9 */
+ 213:lib//src/stm32f10x_i2c.c ****       result = (u16)(pclk1 / (I2C_InitStruct->I2C_ClockSpeed * 25));
+ 214:lib//src/stm32f10x_i2c.c ****       /* Set DUTY bit */
+ 215:lib//src/stm32f10x_i2c.c ****       result |= I2C_DutyCycle_16_9;
+ 216:lib//src/stm32f10x_i2c.c ****     }
+ 217:lib//src/stm32f10x_i2c.c ****     /* Test if CCR value is under 0x1*/
+ 218:lib//src/stm32f10x_i2c.c ****     if ((result & CCR_CCR_Set) == 0)
+ 219:lib//src/stm32f10x_i2c.c ****     {
+ 220:lib//src/stm32f10x_i2c.c ****       /* Set minimum allowed value */
+ 221:lib//src/stm32f10x_i2c.c ****       result |= (u16)0x0001;  
+ 222:lib//src/stm32f10x_i2c.c ****     }
+ 223:lib//src/stm32f10x_i2c.c ****     /* Set speed value and set F/S bit for fast mode */
+ 224:lib//src/stm32f10x_i2c.c ****     tmpreg |= result | CCR_FS_Set;
+ 225:lib//src/stm32f10x_i2c.c ****     /* Set Maximum Rise Time for fast mode */
+ 226:lib//src/stm32f10x_i2c.c ****     I2Cx->TRISE = (u16)(((freqrange * 300) / 1000) + 1);  
+ 227:lib//src/stm32f10x_i2c.c ****   }
+ 228:lib//src/stm32f10x_i2c.c ****   /* Write to I2Cx CCR */
+ 229:lib//src/stm32f10x_i2c.c ****   I2Cx->CCR = tmpreg;
+ 230:lib//src/stm32f10x_i2c.c **** 
+ 231:lib//src/stm32f10x_i2c.c ****   /* Enable the selected I2C peripheral */
+ 232:lib//src/stm32f10x_i2c.c ****   I2Cx->CR1 |= CR1_PE_Set;
+ 233:lib//src/stm32f10x_i2c.c **** 
+ 234:lib//src/stm32f10x_i2c.c **** /*---------------------------- I2Cx CR1 Configuration ------------------------*/
+ 235:lib//src/stm32f10x_i2c.c ****   /* Get the I2Cx CR1 value */
+ 236:lib//src/stm32f10x_i2c.c ****   tmpreg = I2Cx->CR1;
+ 237:lib//src/stm32f10x_i2c.c ****   /* Clear ACK, SMBTYPE and  SMBUS bits */
+ 238:lib//src/stm32f10x_i2c.c ****   tmpreg &= CR1_CLEAR_Mask;
+ 239:lib//src/stm32f10x_i2c.c ****   /* Configure I2Cx: mode and acknowledgement */
+ 240:lib//src/stm32f10x_i2c.c ****   /* Set SMBTYPE and SMBUS bits according to I2C_Mode value */
+ 241:lib//src/stm32f10x_i2c.c ****   /* Set ACK bit according to I2C_Ack value */
+ 242:lib//src/stm32f10x_i2c.c ****   tmpreg |= (u16)((u32)I2C_InitStruct->I2C_Mode | I2C_InitStruct->I2C_Ack);
+ 243:lib//src/stm32f10x_i2c.c ****   /* Write to I2Cx CR1 */
+ 244:lib//src/stm32f10x_i2c.c ****   I2Cx->CR1 = tmpreg;
+ 245:lib//src/stm32f10x_i2c.c **** 
+ 246:lib//src/stm32f10x_i2c.c **** /*---------------------------- I2Cx OAR1 Configuration -----------------------*/
+ 247:lib//src/stm32f10x_i2c.c ****   /* Set I2Cx Own Address1 and acknowledged address */
+ 248:lib//src/stm32f10x_i2c.c ****   I2Cx->OAR1 = (I2C_InitStruct->I2C_AcknowledgedAddress | I2C_InitStruct->I2C_OwnAddress1);
+ 249:lib//src/stm32f10x_i2c.c **** }
+ 250:lib//src/stm32f10x_i2c.c **** 
+ 251:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 252:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_StructInit
+ 253:lib//src/stm32f10x_i2c.c **** * Description    : Fills each I2C_InitStruct member with its default value.
+ 254:lib//src/stm32f10x_i2c.c **** * Input          : - I2C_InitStruct: pointer to an I2C_InitTypeDef structure
+ 255:lib//src/stm32f10x_i2c.c **** *                    which will be initialized.
+ 256:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 257:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 258:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 259:lib//src/stm32f10x_i2c.c **** void I2C_StructInit(I2C_InitTypeDef* I2C_InitStruct)
+ 260:lib//src/stm32f10x_i2c.c **** {
+  30              		.loc 1 260 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+ 261:lib//src/stm32f10x_i2c.c **** /*---------------- Reset I2C init structure parameters values ----------------*/
+ 262:lib//src/stm32f10x_i2c.c ****   /* Initialize the I2C_Mode member */
+ 263:lib//src/stm32f10x_i2c.c ****   I2C_InitStruct->I2C_Mode = I2C_Mode_I2C;
+  35              		.loc 1 263 0
+  36 0000 0023     		movs	r3, #0
+ 264:lib//src/stm32f10x_i2c.c **** 
+ 265:lib//src/stm32f10x_i2c.c ****   /* Initialize the I2C_DutyCycle member */
+ 266:lib//src/stm32f10x_i2c.c ****   I2C_InitStruct->I2C_DutyCycle = I2C_DutyCycle_2;
+ 267:lib//src/stm32f10x_i2c.c **** 
+ 268:lib//src/stm32f10x_i2c.c ****   /* Initialize the I2C_OwnAddress1 member */
+ 269:lib//src/stm32f10x_i2c.c ****   I2C_InitStruct->I2C_OwnAddress1 = 0;
+ 270:lib//src/stm32f10x_i2c.c **** 
+ 271:lib//src/stm32f10x_i2c.c ****   /* Initialize the I2C_Ack member */
+ 272:lib//src/stm32f10x_i2c.c ****   I2C_InitStruct->I2C_Ack = I2C_Ack_Disable;
+ 273:lib//src/stm32f10x_i2c.c **** 
+ 274:lib//src/stm32f10x_i2c.c ****   /* Initialize the I2C_AcknowledgedAddress member */
+ 275:lib//src/stm32f10x_i2c.c ****   I2C_InitStruct->I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+ 276:lib//src/stm32f10x_i2c.c **** 
+ 277:lib//src/stm32f10x_i2c.c ****   /* initialize the I2C_ClockSpeed member */
+ 278:lib//src/stm32f10x_i2c.c ****   I2C_InitStruct->I2C_ClockSpeed = 5000;
+  37              		.loc 1 278 0
+  38 0002 41F28832 		movw	r2, #5000
+  39 0006 C260     		str	r2, [r0, #12]
+  40              		.loc 1 272 0
+  41 0008 C380     		strh	r3, [r0, #6]	@ movhi
+  42              		.loc 1 263 0
+  43 000a 0380     		strh	r3, [r0, #0]	@ movhi
+  44              		.loc 1 266 0
+  45 000c 4BF6FF72 		movw	r2, 49151	@ movhi
+  46              		.loc 1 269 0
+  47 0010 8380     		strh	r3, [r0, #4]	@ movhi
+  48              		.loc 1 275 0
+  49 0012 4FF48043 		mov	r3, #16384	@ movhi
+  50              		.loc 1 266 0
+  51 0016 4280     		strh	r2, [r0, #2]	@ movhi
+  52              		.loc 1 275 0
+  53 0018 0381     		strh	r3, [r0, #8]	@ movhi
+ 279:lib//src/stm32f10x_i2c.c **** }
+  54              		.loc 1 279 0
+  55 001a 7047     		bx	lr
+  56              	.LFE2:
+  58              		.align	2
+  59              		.global	I2C_Cmd
+  60              		.thumb
+  61              		.thumb_func
+  63              	I2C_Cmd:
+  64              	.LFB3:
+ 280:lib//src/stm32f10x_i2c.c **** 
+ 281:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 282:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_Cmd
+ 283:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C peripheral.
+ 284:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 285:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2Cx peripheral. This parameter
+ 286:lib//src/stm32f10x_i2c.c **** *                    can be: ENABLE or DISABLE.
+ 287:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 288:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 289:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 290:lib//src/stm32f10x_i2c.c **** void I2C_Cmd(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 291:lib//src/stm32f10x_i2c.c **** {
+  65              		.loc 1 291 0
+  66              		@ args = 0, pretend = 0, frame = 0
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68              		@ link register save eliminated.
+  69              	.LVL1:
+ 292:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 293:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 294:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 295:lib//src/stm32f10x_i2c.c **** 
+ 296:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+  70              		.loc 1 296 0
+  71 001c 21B1     		cbz	r1, .L4
+ 297:lib//src/stm32f10x_i2c.c ****   {
+ 298:lib//src/stm32f10x_i2c.c ****     /* Enable the selected I2C peripheral */
+ 299:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_PE_Set;
+  72              		.loc 1 299 0
+  73 001e 0388     		ldrh	r3, [r0, #0]
+  74 0020 9BB2     		uxth	r3, r3
+  75 0022 43F00103 		orr	r3, r3, #1
+  76 0026 04E0     		b	.L7
+  77              	.L4:
+ 300:lib//src/stm32f10x_i2c.c ****   }
+ 301:lib//src/stm32f10x_i2c.c ****   else
+ 302:lib//src/stm32f10x_i2c.c ****   {
+ 303:lib//src/stm32f10x_i2c.c ****     /* Disable the selected I2C peripheral */
+ 304:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_PE_Reset;
+  78              		.loc 1 304 0
+  79 0028 0388     		ldrh	r3, [r0, #0]
+  80 002a 23F00103 		bic	r3, r3, #1
+  81 002e 1B04     		lsls	r3, r3, #16
+  82 0030 1B0C     		lsrs	r3, r3, #16
+  83              	.L7:
+  84 0032 0380     		strh	r3, [r0, #0]	@ movhi
+ 305:lib//src/stm32f10x_i2c.c ****   }
+ 306:lib//src/stm32f10x_i2c.c **** }
+  85              		.loc 1 306 0
+  86 0034 7047     		bx	lr
+  87              	.LFE3:
+  89 0036 00BF     		.align	2
+  90              		.global	I2C_DMACmd
+  91              		.thumb
+  92              		.thumb_func
+  94              	I2C_DMACmd:
+  95              	.LFB4:
+ 307:lib//src/stm32f10x_i2c.c **** 
+ 308:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 309:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_DMACmd
+ 310:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C DMA requests.
+ 311:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 312:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C DMA transfer.
+ 313:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 314:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 315:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 316:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 317:lib//src/stm32f10x_i2c.c **** void I2C_DMACmd(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 318:lib//src/stm32f10x_i2c.c **** {
+  96              		.loc 1 318 0
+  97              		@ args = 0, pretend = 0, frame = 0
+  98              		@ frame_needed = 0, uses_anonymous_args = 0
+  99              		@ link register save eliminated.
+ 100              	.LVL2:
+ 319:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 320:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 321:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 322:lib//src/stm32f10x_i2c.c **** 
+ 323:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 101              		.loc 1 323 0
+ 102 0038 21B1     		cbz	r1, .L10
+ 324:lib//src/stm32f10x_i2c.c ****   {
+ 325:lib//src/stm32f10x_i2c.c ****     /* Enable the selected I2C DMA requests */
+ 326:lib//src/stm32f10x_i2c.c ****     I2Cx->CR2 |= CR2_DMAEN_Set;
+ 103              		.loc 1 326 0
+ 104 003a 8388     		ldrh	r3, [r0, #4]
+ 105 003c 9BB2     		uxth	r3, r3
+ 106 003e 43F40063 		orr	r3, r3, #2048
+ 107 0042 04E0     		b	.L13
+ 108              	.L10:
+ 327:lib//src/stm32f10x_i2c.c ****   }
+ 328:lib//src/stm32f10x_i2c.c ****   else
+ 329:lib//src/stm32f10x_i2c.c ****   {
+ 330:lib//src/stm32f10x_i2c.c ****     /* Disable the selected I2C DMA requests */
+ 331:lib//src/stm32f10x_i2c.c ****     I2Cx->CR2 &= CR2_DMAEN_Reset;
+ 109              		.loc 1 331 0
+ 110 0044 8388     		ldrh	r3, [r0, #4]
+ 111 0046 23F40063 		bic	r3, r3, #2048
+ 112 004a 1B04     		lsls	r3, r3, #16
+ 113 004c 1B0C     		lsrs	r3, r3, #16
+ 114              	.L13:
+ 115 004e 8380     		strh	r3, [r0, #4]	@ movhi
+ 332:lib//src/stm32f10x_i2c.c ****   }
+ 333:lib//src/stm32f10x_i2c.c **** }
+ 116              		.loc 1 333 0
+ 117 0050 7047     		bx	lr
+ 118              	.LFE4:
+ 120 0052 00BF     		.align	2
+ 121              		.global	I2C_DMALastTransferCmd
+ 122              		.thumb
+ 123              		.thumb_func
+ 125              	I2C_DMALastTransferCmd:
+ 126              	.LFB5:
+ 334:lib//src/stm32f10x_i2c.c **** 
+ 335:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 336:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_DMALastTransferCmd
+ 337:lib//src/stm32f10x_i2c.c **** * Description    : Specifies that the next DMA transfer is the last one.
+ 338:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 339:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C DMA last transfer.
+ 340:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 341:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 342:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 343:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 344:lib//src/stm32f10x_i2c.c **** void I2C_DMALastTransferCmd(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 345:lib//src/stm32f10x_i2c.c **** {
+ 127              		.loc 1 345 0
+ 128              		@ args = 0, pretend = 0, frame = 0
+ 129              		@ frame_needed = 0, uses_anonymous_args = 0
+ 130              		@ link register save eliminated.
+ 131              	.LVL3:
+ 346:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 347:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 348:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 349:lib//src/stm32f10x_i2c.c **** 
+ 350:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 132              		.loc 1 350 0
+ 133 0054 21B1     		cbz	r1, .L15
+ 351:lib//src/stm32f10x_i2c.c ****   {
+ 352:lib//src/stm32f10x_i2c.c ****     /* Next DMA transfer is the last transfer */
+ 353:lib//src/stm32f10x_i2c.c ****     I2Cx->CR2 |= CR2_LAST_Set;
+ 134              		.loc 1 353 0
+ 135 0056 8388     		ldrh	r3, [r0, #4]
+ 136 0058 9BB2     		uxth	r3, r3
+ 137 005a 43F48053 		orr	r3, r3, #4096
+ 138 005e 04E0     		b	.L18
+ 139              	.L15:
+ 354:lib//src/stm32f10x_i2c.c ****   }
+ 355:lib//src/stm32f10x_i2c.c ****   else
+ 356:lib//src/stm32f10x_i2c.c ****   {
+ 357:lib//src/stm32f10x_i2c.c ****     /* Next DMA transfer is not the last transfer */
+ 358:lib//src/stm32f10x_i2c.c ****     I2Cx->CR2 &= CR2_LAST_Reset;
+ 140              		.loc 1 358 0
+ 141 0060 8388     		ldrh	r3, [r0, #4]
+ 142 0062 23F48053 		bic	r3, r3, #4096
+ 143 0066 1B04     		lsls	r3, r3, #16
+ 144 0068 1B0C     		lsrs	r3, r3, #16
+ 145              	.L18:
+ 146 006a 8380     		strh	r3, [r0, #4]	@ movhi
+ 359:lib//src/stm32f10x_i2c.c ****   }
+ 360:lib//src/stm32f10x_i2c.c **** }
+ 147              		.loc 1 360 0
+ 148 006c 7047     		bx	lr
+ 149              	.LFE5:
+ 151 006e 00BF     		.align	2
+ 152              		.global	I2C_GenerateSTART
+ 153              		.thumb
+ 154              		.thumb_func
+ 156              	I2C_GenerateSTART:
+ 157              	.LFB6:
+ 361:lib//src/stm32f10x_i2c.c **** 
+ 362:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 363:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_GenerateSTART
+ 364:lib//src/stm32f10x_i2c.c **** * Description    : Generates I2Cx communication START condition.
+ 365:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 366:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C START condition generation.
+ 367:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 368:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 369:lib//src/stm32f10x_i2c.c **** * Return         : None.
+ 370:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 371:lib//src/stm32f10x_i2c.c **** void I2C_GenerateSTART(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 372:lib//src/stm32f10x_i2c.c **** {
+ 158              		.loc 1 372 0
+ 159              		@ args = 0, pretend = 0, frame = 0
+ 160              		@ frame_needed = 0, uses_anonymous_args = 0
+ 161              		@ link register save eliminated.
+ 162              	.LVL4:
+ 373:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 374:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 375:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 376:lib//src/stm32f10x_i2c.c **** 
+ 377:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 163              		.loc 1 377 0
+ 164 0070 21B1     		cbz	r1, .L20
+ 378:lib//src/stm32f10x_i2c.c ****   {
+ 379:lib//src/stm32f10x_i2c.c ****     /* Generate a START condition */
+ 380:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_START_Set;
+ 165              		.loc 1 380 0
+ 166 0072 0388     		ldrh	r3, [r0, #0]
+ 167 0074 9BB2     		uxth	r3, r3
+ 168 0076 43F48073 		orr	r3, r3, #256
+ 169 007a 04E0     		b	.L23
+ 170              	.L20:
+ 381:lib//src/stm32f10x_i2c.c ****   }
+ 382:lib//src/stm32f10x_i2c.c ****   else
+ 383:lib//src/stm32f10x_i2c.c ****   {
+ 384:lib//src/stm32f10x_i2c.c ****     /* Disable the START condition generation */
+ 385:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_START_Reset;
+ 171              		.loc 1 385 0
+ 172 007c 0388     		ldrh	r3, [r0, #0]
+ 173 007e 23F48073 		bic	r3, r3, #256
+ 174 0082 1B04     		lsls	r3, r3, #16
+ 175 0084 1B0C     		lsrs	r3, r3, #16
+ 176              	.L23:
+ 177 0086 0380     		strh	r3, [r0, #0]	@ movhi
+ 386:lib//src/stm32f10x_i2c.c ****   }
+ 387:lib//src/stm32f10x_i2c.c **** }
+ 178              		.loc 1 387 0
+ 179 0088 7047     		bx	lr
+ 180              	.LFE6:
+ 182 008a 00BF     		.align	2
+ 183              		.global	I2C_GenerateSTOP
+ 184              		.thumb
+ 185              		.thumb_func
+ 187              	I2C_GenerateSTOP:
+ 188              	.LFB7:
+ 388:lib//src/stm32f10x_i2c.c **** 
+ 389:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 390:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_GenerateSTOP
+ 391:lib//src/stm32f10x_i2c.c **** * Description    : Generates I2Cx communication STOP condition.
+ 392:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 393:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C STOP condition generation.
+ 394:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 395:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 396:lib//src/stm32f10x_i2c.c **** * Return         : None.
+ 397:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 398:lib//src/stm32f10x_i2c.c **** void I2C_GenerateSTOP(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 399:lib//src/stm32f10x_i2c.c **** {
+ 189              		.loc 1 399 0
+ 190              		@ args = 0, pretend = 0, frame = 0
+ 191              		@ frame_needed = 0, uses_anonymous_args = 0
+ 192              		@ link register save eliminated.
+ 193              	.LVL5:
+ 400:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 401:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 402:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 403:lib//src/stm32f10x_i2c.c **** 
+ 404:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 194              		.loc 1 404 0
+ 195 008c 21B1     		cbz	r1, .L25
+ 405:lib//src/stm32f10x_i2c.c ****   {
+ 406:lib//src/stm32f10x_i2c.c ****     /* Generate a STOP condition */
+ 407:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_STOP_Set;
+ 196              		.loc 1 407 0
+ 197 008e 0388     		ldrh	r3, [r0, #0]
+ 198 0090 9BB2     		uxth	r3, r3
+ 199 0092 43F40073 		orr	r3, r3, #512
+ 200 0096 04E0     		b	.L28
+ 201              	.L25:
+ 408:lib//src/stm32f10x_i2c.c ****   }
+ 409:lib//src/stm32f10x_i2c.c ****   else
+ 410:lib//src/stm32f10x_i2c.c ****   {
+ 411:lib//src/stm32f10x_i2c.c ****     /* Disable the STOP condition generation */
+ 412:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_STOP_Reset;
+ 202              		.loc 1 412 0
+ 203 0098 0388     		ldrh	r3, [r0, #0]
+ 204 009a 23F40073 		bic	r3, r3, #512
+ 205 009e 1B04     		lsls	r3, r3, #16
+ 206 00a0 1B0C     		lsrs	r3, r3, #16
+ 207              	.L28:
+ 208 00a2 0380     		strh	r3, [r0, #0]	@ movhi
+ 413:lib//src/stm32f10x_i2c.c ****   }
+ 414:lib//src/stm32f10x_i2c.c **** }
+ 209              		.loc 1 414 0
+ 210 00a4 7047     		bx	lr
+ 211              	.LFE7:
+ 213 00a6 00BF     		.align	2
+ 214              		.global	I2C_AcknowledgeConfig
+ 215              		.thumb
+ 216              		.thumb_func
+ 218              	I2C_AcknowledgeConfig:
+ 219              	.LFB8:
+ 415:lib//src/stm32f10x_i2c.c **** 
+ 416:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 417:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_AcknowledgeConfig
+ 418:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C acknowledge feature.
+ 419:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 420:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C Acknowledgement.
+ 421:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 422:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 423:lib//src/stm32f10x_i2c.c **** * Return         : None.
+ 424:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 425:lib//src/stm32f10x_i2c.c **** void I2C_AcknowledgeConfig(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 426:lib//src/stm32f10x_i2c.c **** {
+ 220              		.loc 1 426 0
+ 221              		@ args = 0, pretend = 0, frame = 0
+ 222              		@ frame_needed = 0, uses_anonymous_args = 0
+ 223              		@ link register save eliminated.
+ 224              	.LVL6:
+ 427:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 428:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 429:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 430:lib//src/stm32f10x_i2c.c **** 
+ 431:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 225              		.loc 1 431 0
+ 226 00a8 21B1     		cbz	r1, .L30
+ 432:lib//src/stm32f10x_i2c.c ****   {
+ 433:lib//src/stm32f10x_i2c.c ****     /* Enable the acknowledgement */
+ 434:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_ACK_Set;
+ 227              		.loc 1 434 0
+ 228 00aa 0388     		ldrh	r3, [r0, #0]
+ 229 00ac 9BB2     		uxth	r3, r3
+ 230 00ae 43F48063 		orr	r3, r3, #1024
+ 231 00b2 04E0     		b	.L33
+ 232              	.L30:
+ 435:lib//src/stm32f10x_i2c.c ****   }
+ 436:lib//src/stm32f10x_i2c.c ****   else
+ 437:lib//src/stm32f10x_i2c.c ****   {
+ 438:lib//src/stm32f10x_i2c.c ****     /* Disable the acknowledgement */
+ 439:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_ACK_Reset;
+ 233              		.loc 1 439 0
+ 234 00b4 0388     		ldrh	r3, [r0, #0]
+ 235 00b6 23F48063 		bic	r3, r3, #1024
+ 236 00ba 1B04     		lsls	r3, r3, #16
+ 237 00bc 1B0C     		lsrs	r3, r3, #16
+ 238              	.L33:
+ 239 00be 0380     		strh	r3, [r0, #0]	@ movhi
+ 440:lib//src/stm32f10x_i2c.c ****   }
+ 441:lib//src/stm32f10x_i2c.c **** }
+ 240              		.loc 1 441 0
+ 241 00c0 7047     		bx	lr
+ 242              	.LFE8:
+ 244 00c2 00BF     		.align	2
+ 245              		.global	I2C_OwnAddress2Config
+ 246              		.thumb
+ 247              		.thumb_func
+ 249              	I2C_OwnAddress2Config:
+ 250              	.LFB9:
+ 442:lib//src/stm32f10x_i2c.c **** 
+ 443:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 444:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_OwnAddress2Config
+ 445:lib//src/stm32f10x_i2c.c **** * Description    : Configures the specified I2C own address2.
+ 446:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 447:lib//src/stm32f10x_i2c.c **** *                  - Address: specifies the 7bit I2C own address2.
+ 448:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 449:lib//src/stm32f10x_i2c.c **** * Return         : None.
+ 450:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 451:lib//src/stm32f10x_i2c.c **** void I2C_OwnAddress2Config(I2C_TypeDef* I2Cx, u8 Address)
+ 452:lib//src/stm32f10x_i2c.c **** {
+ 251              		.loc 1 452 0
+ 252              		@ args = 0, pretend = 0, frame = 0
+ 253              		@ frame_needed = 0, uses_anonymous_args = 0
+ 254              		@ link register save eliminated.
+ 255              	.LVL7:
+ 453:lib//src/stm32f10x_i2c.c ****   u16 tmpreg = 0;
+ 454:lib//src/stm32f10x_i2c.c **** 
+ 455:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 456:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 457:lib//src/stm32f10x_i2c.c **** 
+ 458:lib//src/stm32f10x_i2c.c ****   /* Get the old register value */
+ 459:lib//src/stm32f10x_i2c.c ****   tmpreg = I2Cx->OAR2;
+ 256              		.loc 1 459 0
+ 257 00c4 8389     		ldrh	r3, [r0, #12]
+ 460:lib//src/stm32f10x_i2c.c ****   /* Reset I2Cx Own address2 bit [7:1] */
+ 461:lib//src/stm32f10x_i2c.c ****   tmpreg &= OAR2_ADD2_Reset;
+ 462:lib//src/stm32f10x_i2c.c ****   /* Set I2Cx Own address2 */
+ 463:lib//src/stm32f10x_i2c.c ****   tmpreg |= (u16)(Address & (u16)0x00FE);
+ 258              		.loc 1 463 0
+ 259 00c6 01F0FE01 		and	r1, r1, #254
+ 260              	.LVL8:
+ 261              		.loc 1 459 0
+ 262 00ca 9BB2     		uxth	r3, r3
+ 263              	.LVL9:
+ 264              		.loc 1 463 0
+ 265 00cc 23F0FE03 		bic	r3, r3, #254
+ 266              	.LVL10:
+ 267 00d0 41EA0303 		orr	r3, r1, r3
+ 268              	.LVL11:
+ 464:lib//src/stm32f10x_i2c.c ****   /* Store the new register value */
+ 465:lib//src/stm32f10x_i2c.c ****   I2Cx->OAR2 = tmpreg;
+ 269              		.loc 1 465 0
+ 270 00d4 8381     		strh	r3, [r0, #12]	@ movhi
+ 466:lib//src/stm32f10x_i2c.c **** }
+ 271              		.loc 1 466 0
+ 272 00d6 7047     		bx	lr
+ 273              	.LFE9:
+ 275              		.align	2
+ 276              		.global	I2C_DualAddressCmd
+ 277              		.thumb
+ 278              		.thumb_func
+ 280              	I2C_DualAddressCmd:
+ 281              	.LFB10:
+ 467:lib//src/stm32f10x_i2c.c **** 
+ 468:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 469:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_DualAddressCmd
+ 470:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C dual addressing mode.
+ 471:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 472:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C dual addressing mode.
+ 473:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 474:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 475:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 476:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 477:lib//src/stm32f10x_i2c.c **** void I2C_DualAddressCmd(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 478:lib//src/stm32f10x_i2c.c **** {
+ 282              		.loc 1 478 0
+ 283              		@ args = 0, pretend = 0, frame = 0
+ 284              		@ frame_needed = 0, uses_anonymous_args = 0
+ 285              		@ link register save eliminated.
+ 286              	.LVL12:
+ 479:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 480:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 481:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 482:lib//src/stm32f10x_i2c.c **** 
+ 483:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 287              		.loc 1 483 0
+ 288 00d8 21B1     		cbz	r1, .L37
+ 484:lib//src/stm32f10x_i2c.c ****   {
+ 485:lib//src/stm32f10x_i2c.c ****     /* Enable dual addressing mode */
+ 486:lib//src/stm32f10x_i2c.c ****     I2Cx->OAR2 |= OAR2_ENDUAL_Set;
+ 289              		.loc 1 486 0
+ 290 00da 8389     		ldrh	r3, [r0, #12]
+ 291 00dc 9BB2     		uxth	r3, r3
+ 292 00de 43F00103 		orr	r3, r3, #1
+ 293 00e2 04E0     		b	.L40
+ 294              	.L37:
+ 487:lib//src/stm32f10x_i2c.c ****   }
+ 488:lib//src/stm32f10x_i2c.c ****   else
+ 489:lib//src/stm32f10x_i2c.c ****   {
+ 490:lib//src/stm32f10x_i2c.c ****     /* Disable dual addressing mode */
+ 491:lib//src/stm32f10x_i2c.c ****     I2Cx->OAR2 &= OAR2_ENDUAL_Reset;
+ 295              		.loc 1 491 0
+ 296 00e4 8389     		ldrh	r3, [r0, #12]
+ 297 00e6 23F00103 		bic	r3, r3, #1
+ 298 00ea 1B04     		lsls	r3, r3, #16
+ 299 00ec 1B0C     		lsrs	r3, r3, #16
+ 300              	.L40:
+ 301 00ee 8381     		strh	r3, [r0, #12]	@ movhi
+ 492:lib//src/stm32f10x_i2c.c ****   }
+ 493:lib//src/stm32f10x_i2c.c **** }
+ 302              		.loc 1 493 0
+ 303 00f0 7047     		bx	lr
+ 304              	.LFE10:
+ 306 00f2 00BF     		.align	2
+ 307              		.global	I2C_GeneralCallCmd
+ 308              		.thumb
+ 309              		.thumb_func
+ 311              	I2C_GeneralCallCmd:
+ 312              	.LFB11:
+ 494:lib//src/stm32f10x_i2c.c **** 
+ 495:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 496:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_GeneralCallCmd
+ 497:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C general call feature.
+ 498:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 499:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C General call.
+ 500:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 501:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 502:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 503:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 504:lib//src/stm32f10x_i2c.c **** void I2C_GeneralCallCmd(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 505:lib//src/stm32f10x_i2c.c **** {
+ 313              		.loc 1 505 0
+ 314              		@ args = 0, pretend = 0, frame = 0
+ 315              		@ frame_needed = 0, uses_anonymous_args = 0
+ 316              		@ link register save eliminated.
+ 317              	.LVL13:
+ 506:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 507:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 508:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 509:lib//src/stm32f10x_i2c.c **** 
+ 510:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 318              		.loc 1 510 0
+ 319 00f4 21B1     		cbz	r1, .L42
+ 511:lib//src/stm32f10x_i2c.c ****   {
+ 512:lib//src/stm32f10x_i2c.c ****     /* Enable generall call */
+ 513:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_ENGC_Set;
+ 320              		.loc 1 513 0
+ 321 00f6 0388     		ldrh	r3, [r0, #0]
+ 322 00f8 9BB2     		uxth	r3, r3
+ 323 00fa 43F04003 		orr	r3, r3, #64
+ 324 00fe 04E0     		b	.L45
+ 325              	.L42:
+ 514:lib//src/stm32f10x_i2c.c ****   }
+ 515:lib//src/stm32f10x_i2c.c ****   else
+ 516:lib//src/stm32f10x_i2c.c ****   {
+ 517:lib//src/stm32f10x_i2c.c ****     /* Disable generall call */
+ 518:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_ENGC_Reset;
+ 326              		.loc 1 518 0
+ 327 0100 0388     		ldrh	r3, [r0, #0]
+ 328 0102 23F04003 		bic	r3, r3, #64
+ 329 0106 1B04     		lsls	r3, r3, #16
+ 330 0108 1B0C     		lsrs	r3, r3, #16
+ 331              	.L45:
+ 332 010a 0380     		strh	r3, [r0, #0]	@ movhi
+ 519:lib//src/stm32f10x_i2c.c ****   }
+ 520:lib//src/stm32f10x_i2c.c **** }
+ 333              		.loc 1 520 0
+ 334 010c 7047     		bx	lr
+ 335              	.LFE11:
+ 337 010e 00BF     		.align	2
+ 338              		.global	I2C_ITConfig
+ 339              		.thumb
+ 340              		.thumb_func
+ 342              	I2C_ITConfig:
+ 343              	.LFB12:
+ 521:lib//src/stm32f10x_i2c.c **** 
+ 522:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 523:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_ITConfig
+ 524:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C interrupts.
+ 525:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 526:lib//src/stm32f10x_i2c.c **** *                  - I2C_IT: specifies the I2C interrupts sources to be enabled
+ 527:lib//src/stm32f10x_i2c.c **** *                    or disabled. 
+ 528:lib//src/stm32f10x_i2c.c **** *                    This parameter can be any combination of the following values:
+ 529:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_BUF: Buffer interrupt mask
+ 530:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_EVT: Event interrupt mask
+ 531:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_ERR: Error interrupt mask
+ 532:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the specified I2C interrupts.
+ 533:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 534:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 535:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 536:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 537:lib//src/stm32f10x_i2c.c **** void I2C_ITConfig(I2C_TypeDef* I2Cx, u16 I2C_IT, FunctionalState NewState)
+ 538:lib//src/stm32f10x_i2c.c **** {
+ 344              		.loc 1 538 0
+ 345              		@ args = 0, pretend = 0, frame = 0
+ 346              		@ frame_needed = 0, uses_anonymous_args = 0
+ 347              		@ link register save eliminated.
+ 348              	.LVL14:
+ 539:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 540:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 541:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 542:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_CONFIG_IT(I2C_IT));
+ 543:lib//src/stm32f10x_i2c.c ****   
+ 544:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 349              		.loc 1 544 0
+ 350 0110 1AB1     		cbz	r2, .L47
+ 545:lib//src/stm32f10x_i2c.c ****   {
+ 546:lib//src/stm32f10x_i2c.c ****     /* Enable the selected I2C interrupts */
+ 547:lib//src/stm32f10x_i2c.c ****     I2Cx->CR2 |= I2C_IT;
+ 351              		.loc 1 547 0
+ 352 0112 8388     		ldrh	r3, [r0, #4]
+ 353 0114 9BB2     		uxth	r3, r3
+ 354 0116 1943     		orrs	r1, r1, r3
+ 355              	.LVL15:
+ 356 0118 03E0     		b	.L50
+ 357              	.LVL16:
+ 358              	.L47:
+ 548:lib//src/stm32f10x_i2c.c ****   }
+ 549:lib//src/stm32f10x_i2c.c ****   else
+ 550:lib//src/stm32f10x_i2c.c ****   {
+ 551:lib//src/stm32f10x_i2c.c ****     /* Disable the selected I2C interrupts */
+ 552:lib//src/stm32f10x_i2c.c ****     I2Cx->CR2 &= (u16)~I2C_IT;
+ 359              		.loc 1 552 0
+ 360 011a 8388     		ldrh	r3, [r0, #4]
+ 361 011c 9BB2     		uxth	r3, r3
+ 362 011e 23EA0101 		bic	r1, r3, r1
+ 363              	.LVL17:
+ 364              	.L50:
+ 365 0122 8180     		strh	r1, [r0, #4]	@ movhi
+ 553:lib//src/stm32f10x_i2c.c ****   }
+ 554:lib//src/stm32f10x_i2c.c **** }
+ 366              		.loc 1 554 0
+ 367 0124 7047     		bx	lr
+ 368              	.LFE12:
+ 370 0126 00BF     		.align	2
+ 371              		.global	I2C_SendData
+ 372              		.thumb
+ 373              		.thumb_func
+ 375              	I2C_SendData:
+ 376              	.LFB13:
+ 555:lib//src/stm32f10x_i2c.c **** 
+ 556:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 557:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_SendData
+ 558:lib//src/stm32f10x_i2c.c **** * Description    : Sends a data byte through the I2Cx peripheral.
+ 559:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 560:lib//src/stm32f10x_i2c.c **** *                  - Data: Byte to be transmitted..
+ 561:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 562:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 563:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 564:lib//src/stm32f10x_i2c.c **** void I2C_SendData(I2C_TypeDef* I2Cx, u8 Data)
+ 565:lib//src/stm32f10x_i2c.c **** {
+ 377              		.loc 1 565 0
+ 378              		@ args = 0, pretend = 0, frame = 0
+ 379              		@ frame_needed = 0, uses_anonymous_args = 0
+ 380              		@ link register save eliminated.
+ 381              	.LVL18:
+ 566:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 567:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 568:lib//src/stm32f10x_i2c.c **** 
+ 569:lib//src/stm32f10x_i2c.c ****   /* Write in the DR register the data to be sent */
+ 570:lib//src/stm32f10x_i2c.c ****   I2Cx->DR = Data;
+ 382              		.loc 1 570 0
+ 383 0128 0182     		strh	r1, [r0, #16]	@ movhi
+ 571:lib//src/stm32f10x_i2c.c **** }
+ 384              		.loc 1 571 0
+ 385 012a 7047     		bx	lr
+ 386              	.LFE13:
+ 388              		.align	2
+ 389              		.global	I2C_ReceiveData
+ 390              		.thumb
+ 391              		.thumb_func
+ 393              	I2C_ReceiveData:
+ 394              	.LFB14:
+ 572:lib//src/stm32f10x_i2c.c **** 
+ 573:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 574:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_ReceiveData
+ 575:lib//src/stm32f10x_i2c.c **** * Description    : Returns the most recent received data by the I2Cx peripheral.
+ 576:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 577:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 578:lib//src/stm32f10x_i2c.c **** * Return         : The value of the received data.
+ 579:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 580:lib//src/stm32f10x_i2c.c **** u8 I2C_ReceiveData(I2C_TypeDef* I2Cx)
+ 581:lib//src/stm32f10x_i2c.c **** {
+ 395              		.loc 1 581 0
+ 396              		@ args = 0, pretend = 0, frame = 0
+ 397              		@ frame_needed = 0, uses_anonymous_args = 0
+ 398              		@ link register save eliminated.
+ 399              	.LVL19:
+ 582:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 583:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 584:lib//src/stm32f10x_i2c.c **** 
+ 585:lib//src/stm32f10x_i2c.c ****   /* Return the data in the DR register */
+ 586:lib//src/stm32f10x_i2c.c ****   return (u8)I2Cx->DR;
+ 400              		.loc 1 586 0
+ 401 012c 008A     		ldrh	r0, [r0, #16]
+ 402              	.LVL20:
+ 587:lib//src/stm32f10x_i2c.c **** }
+ 403              		.loc 1 587 0
+ 404 012e C0B2     		uxtb	r0, r0
+ 405 0130 7047     		bx	lr
+ 406              	.LFE14:
+ 408 0132 00BF     		.align	2
+ 409              		.global	I2C_Send7bitAddress
+ 410              		.thumb
+ 411              		.thumb_func
+ 413              	I2C_Send7bitAddress:
+ 414              	.LFB15:
+ 588:lib//src/stm32f10x_i2c.c **** 
+ 589:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 590:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_Send7bitAddress
+ 591:lib//src/stm32f10x_i2c.c **** * Description    : Transmits the address byte to select the slave device.
+ 592:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 593:lib//src/stm32f10x_i2c.c **** *                  - Address: specifies the slave address which will be transmitted
+ 594:lib//src/stm32f10x_i2c.c **** *                  - I2C_Direction: specifies whether the I2C device will be a
+ 595:lib//src/stm32f10x_i2c.c **** *                    Transmitter or a Receiver. 
+ 596:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values
+ 597:lib//src/stm32f10x_i2c.c **** *                       - I2C_Direction_Transmitter: Transmitter mode
+ 598:lib//src/stm32f10x_i2c.c **** *                       - I2C_Direction_Receiver: Receiver mode
+ 599:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 600:lib//src/stm32f10x_i2c.c **** * Return         : None.
+ 601:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 602:lib//src/stm32f10x_i2c.c **** void I2C_Send7bitAddress(I2C_TypeDef* I2Cx, u8 Address, u8 I2C_Direction)
+ 603:lib//src/stm32f10x_i2c.c **** {
+ 415              		.loc 1 603 0
+ 416              		@ args = 0, pretend = 0, frame = 0
+ 417              		@ frame_needed = 0, uses_anonymous_args = 0
+ 418              		@ link register save eliminated.
+ 419              	.LVL21:
+ 604:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 605:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 606:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_DIRECTION(I2C_Direction));
+ 607:lib//src/stm32f10x_i2c.c **** 
+ 608:lib//src/stm32f10x_i2c.c ****   /* Test on the direction to set/reset the read/write bit */
+ 609:lib//src/stm32f10x_i2c.c ****   if (I2C_Direction != I2C_Direction_Transmitter)
+ 420              		.loc 1 609 0
+ 421 0134 12B1     		cbz	r2, .L56
+ 610:lib//src/stm32f10x_i2c.c ****   {
+ 611:lib//src/stm32f10x_i2c.c ****     /* Set the address bit0 for read */
+ 612:lib//src/stm32f10x_i2c.c ****     Address |= OAR1_ADD0_Set;
+ 422              		.loc 1 612 0
+ 423 0136 41F00101 		orr	r1, r1, #1
+ 424              	.LVL22:
+ 425 013a 01E0     		b	.L57
+ 426              	.L56:
+ 613:lib//src/stm32f10x_i2c.c ****   }
+ 614:lib//src/stm32f10x_i2c.c ****   else
+ 615:lib//src/stm32f10x_i2c.c ****   {
+ 616:lib//src/stm32f10x_i2c.c ****     /* Reset the address bit0 for write */
+ 617:lib//src/stm32f10x_i2c.c ****     Address &= OAR1_ADD0_Reset;
+ 427              		.loc 1 617 0
+ 428 013c 01F0FE01 		and	r1, r1, #254
+ 429              	.LVL23:
+ 430              	.L57:
+ 618:lib//src/stm32f10x_i2c.c ****   }
+ 619:lib//src/stm32f10x_i2c.c ****   /* Send the address */
+ 620:lib//src/stm32f10x_i2c.c ****   I2Cx->DR = Address;
+ 431              		.loc 1 620 0
+ 432 0140 0182     		strh	r1, [r0, #16]	@ movhi
+ 621:lib//src/stm32f10x_i2c.c **** }
+ 433              		.loc 1 621 0
+ 434 0142 7047     		bx	lr
+ 435              	.LFE15:
+ 437              		.align	2
+ 438              		.global	I2C_ReadRegister
+ 439              		.thumb
+ 440              		.thumb_func
+ 442              	I2C_ReadRegister:
+ 443              	.LFB16:
+ 622:lib//src/stm32f10x_i2c.c **** 
+ 623:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 624:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_ReadRegister
+ 625:lib//src/stm32f10x_i2c.c **** * Description    : Reads the specified I2C register and returns its value.
+ 626:lib//src/stm32f10x_i2c.c **** * Input1         : - I2C_Register: specifies the register to read.
+ 627:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+ 628:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_CR1:  CR1 register.
+ 629:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_CR2:   CR2 register.
+ 630:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_OAR1:  OAR1 register.
+ 631:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_OAR2:  OAR2 register.
+ 632:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_DR:    DR register.
+ 633:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_SR1:   SR1 register.
+ 634:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_SR2:   SR2 register.
+ 635:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_CCR:   CCR register.
+ 636:lib//src/stm32f10x_i2c.c **** *                       - I2C_Register_TRISE: TRISE register.
+ 637:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 638:lib//src/stm32f10x_i2c.c **** * Return         : The value of the read register.
+ 639:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 640:lib//src/stm32f10x_i2c.c **** u16 I2C_ReadRegister(I2C_TypeDef* I2Cx, u8 I2C_Register)
+ 641:lib//src/stm32f10x_i2c.c **** {
+ 444              		.loc 1 641 0
+ 445              		@ args = 0, pretend = 0, frame = 8
+ 446              		@ frame_needed = 0, uses_anonymous_args = 0
+ 447              		@ link register save eliminated.
+ 448              	.LVL24:
+ 449 0144 82B0     		sub	sp, sp, #8
+ 450              	.LCFI0:
+ 642:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 643:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 644:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_REGISTER(I2C_Register));
+ 645:lib//src/stm32f10x_i2c.c **** 
+ 646:lib//src/stm32f10x_i2c.c ****   /* Return the selected register value */
+ 647:lib//src/stm32f10x_i2c.c ****   return (*(vu16 *)(*((vu32 *)&I2Cx) + I2C_Register));
+ 451              		.loc 1 647 0
+ 452 0146 019B     		ldr	r3, [sp, #4]
+ 453              		.loc 1 641 0
+ 454 0148 0190     		str	r0, [sp, #4]
+ 455              		.loc 1 647 0
+ 456 014a CB5A     		ldrh	r3, [r1, r3]
+ 648:lib//src/stm32f10x_i2c.c **** }
+ 457              		.loc 1 648 0
+ 458 014c 98B2     		uxth	r0, r3
+ 459              	.LVL25:
+ 460 014e 02B0     		add	sp, sp, #8
+ 461 0150 7047     		bx	lr
+ 462              	.LFE16:
+ 464 0152 00BF     		.align	2
+ 465              		.global	I2C_SoftwareResetCmd
+ 466              		.thumb
+ 467              		.thumb_func
+ 469              	I2C_SoftwareResetCmd:
+ 470              	.LFB17:
+ 649:lib//src/stm32f10x_i2c.c **** 
+ 650:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 651:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_SoftwareResetCmd
+ 652:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C software reset.
+ 653:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 654:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C software reset.
+ 655:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 656:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 657:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 658:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 659:lib//src/stm32f10x_i2c.c **** void I2C_SoftwareResetCmd(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 660:lib//src/stm32f10x_i2c.c **** {
+ 471              		.loc 1 660 0
+ 472              		@ args = 0, pretend = 0, frame = 0
+ 473              		@ frame_needed = 0, uses_anonymous_args = 0
+ 474              		@ link register save eliminated.
+ 475              	.LVL26:
+ 661:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 662:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 663:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 664:lib//src/stm32f10x_i2c.c **** 
+ 665:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 476              		.loc 1 665 0
+ 477 0154 31B1     		cbz	r1, .L62
+ 666:lib//src/stm32f10x_i2c.c ****   {
+ 667:lib//src/stm32f10x_i2c.c ****     /* Peripheral under reset */
+ 668:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_SWRST_Set;
+ 478              		.loc 1 668 0
+ 479 0156 0388     		ldrh	r3, [r0, #0]
+ 480 0158 6FEA4343 		mvn	r3, r3, lsl #17
+ 481 015c 6FEA5343 		mvn	r3, r3, lsr #17
+ 482 0160 9BB2     		uxth	r3, r3
+ 483 0162 02E0     		b	.L65
+ 484              	.L62:
+ 669:lib//src/stm32f10x_i2c.c ****   }
+ 670:lib//src/stm32f10x_i2c.c ****   else
+ 671:lib//src/stm32f10x_i2c.c ****   {
+ 672:lib//src/stm32f10x_i2c.c ****     /* Peripheral not under reset */
+ 673:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_SWRST_Reset;
+ 485              		.loc 1 673 0
+ 486 0164 0388     		ldrh	r3, [r0, #0]
+ 487 0166 5B04     		lsls	r3, r3, #17
+ 488 0168 5B0C     		lsrs	r3, r3, #17
+ 489              	.L65:
+ 490 016a 0380     		strh	r3, [r0, #0]	@ movhi
+ 674:lib//src/stm32f10x_i2c.c ****   }
+ 675:lib//src/stm32f10x_i2c.c **** }
+ 491              		.loc 1 675 0
+ 492 016c 7047     		bx	lr
+ 493              	.LFE17:
+ 495 016e 00BF     		.align	2
+ 496              		.global	I2C_SMBusAlertConfig
+ 497              		.thumb
+ 498              		.thumb_func
+ 500              	I2C_SMBusAlertConfig:
+ 501              	.LFB18:
+ 676:lib//src/stm32f10x_i2c.c **** 
+ 677:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 678:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_SMBusAlertConfig
+ 679:lib//src/stm32f10x_i2c.c **** * Description    : Drives the SMBusAlert pin high or low for the specified I2C.
+ 680:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 681:lib//src/stm32f10x_i2c.c **** *                  - I2C_SMBusAlert: specifies SMBAlert pin level. 
+ 682:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+ 683:lib//src/stm32f10x_i2c.c **** *                       - I2C_SMBusAlert_Low: SMBAlert pin driven low
+ 684:lib//src/stm32f10x_i2c.c **** *                       - I2C_SMBusAlert_High: SMBAlert pin driven high
+ 685:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 686:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 687:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 688:lib//src/stm32f10x_i2c.c **** void I2C_SMBusAlertConfig(I2C_TypeDef* I2Cx, u16 I2C_SMBusAlert)
+ 689:lib//src/stm32f10x_i2c.c **** {
+ 502              		.loc 1 689 0
+ 503              		@ args = 0, pretend = 0, frame = 0
+ 504              		@ frame_needed = 0, uses_anonymous_args = 0
+ 505              		@ link register save eliminated.
+ 506              	.LVL27:
+ 690:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 691:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 692:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_SMBUS_ALERT(I2C_SMBusAlert));
+ 693:lib//src/stm32f10x_i2c.c **** 
+ 694:lib//src/stm32f10x_i2c.c ****   if (I2C_SMBusAlert == I2C_SMBusAlert_Low)
+ 507              		.loc 1 694 0
+ 508 0170 B1F5005F 		cmp	r1, #8192
+ 509 0174 04D1     		bne	.L67
+ 695:lib//src/stm32f10x_i2c.c ****   {
+ 696:lib//src/stm32f10x_i2c.c ****     /* Drive the SMBusAlert pin Low */
+ 697:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= I2C_SMBusAlert_Low;
+ 510              		.loc 1 697 0
+ 511 0176 0388     		ldrh	r3, [r0, #0]
+ 512 0178 9BB2     		uxth	r3, r3
+ 513 017a 43F40053 		orr	r3, r3, #8192
+ 514 017e 04E0     		b	.L70
+ 515              	.L67:
+ 698:lib//src/stm32f10x_i2c.c ****   }
+ 699:lib//src/stm32f10x_i2c.c ****   else
+ 700:lib//src/stm32f10x_i2c.c ****   {
+ 701:lib//src/stm32f10x_i2c.c ****     /* Drive the SMBusAlert pin High  */
+ 702:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= I2C_SMBusAlert_High;
+ 516              		.loc 1 702 0
+ 517 0180 0388     		ldrh	r3, [r0, #0]
+ 518 0182 23F40053 		bic	r3, r3, #8192
+ 519 0186 1B04     		lsls	r3, r3, #16
+ 520 0188 1B0C     		lsrs	r3, r3, #16
+ 521              	.L70:
+ 522 018a 0380     		strh	r3, [r0, #0]	@ movhi
+ 703:lib//src/stm32f10x_i2c.c ****   }
+ 704:lib//src/stm32f10x_i2c.c **** }
+ 523              		.loc 1 704 0
+ 524 018c 7047     		bx	lr
+ 525              	.LFE18:
+ 527 018e 00BF     		.align	2
+ 528              		.global	I2C_TransmitPEC
+ 529              		.thumb
+ 530              		.thumb_func
+ 532              	I2C_TransmitPEC:
+ 533              	.LFB19:
+ 705:lib//src/stm32f10x_i2c.c **** 
+ 706:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 707:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_TransmitPEC
+ 708:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C PEC transfer.
+ 709:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 710:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2C PEC transmission.
+ 711:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 712:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 713:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 714:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 715:lib//src/stm32f10x_i2c.c **** void I2C_TransmitPEC(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 716:lib//src/stm32f10x_i2c.c **** {
+ 534              		.loc 1 716 0
+ 535              		@ args = 0, pretend = 0, frame = 0
+ 536              		@ frame_needed = 0, uses_anonymous_args = 0
+ 537              		@ link register save eliminated.
+ 538              	.LVL28:
+ 717:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 718:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 719:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 720:lib//src/stm32f10x_i2c.c **** 
+ 721:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 539              		.loc 1 721 0
+ 540 0190 21B1     		cbz	r1, .L72
+ 722:lib//src/stm32f10x_i2c.c ****   {
+ 723:lib//src/stm32f10x_i2c.c ****     /* Enable the selected I2C PEC transmission */
+ 724:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_PEC_Set;
+ 541              		.loc 1 724 0
+ 542 0192 0388     		ldrh	r3, [r0, #0]
+ 543 0194 9BB2     		uxth	r3, r3
+ 544 0196 43F48053 		orr	r3, r3, #4096
+ 545 019a 04E0     		b	.L75
+ 546              	.L72:
+ 725:lib//src/stm32f10x_i2c.c ****   }
+ 726:lib//src/stm32f10x_i2c.c ****   else
+ 727:lib//src/stm32f10x_i2c.c ****   {
+ 728:lib//src/stm32f10x_i2c.c ****     /* Disable the selected I2C PEC transmission */
+ 729:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_PEC_Reset;
+ 547              		.loc 1 729 0
+ 548 019c 0388     		ldrh	r3, [r0, #0]
+ 549 019e 23F48053 		bic	r3, r3, #4096
+ 550 01a2 1B04     		lsls	r3, r3, #16
+ 551 01a4 1B0C     		lsrs	r3, r3, #16
+ 552              	.L75:
+ 553 01a6 0380     		strh	r3, [r0, #0]	@ movhi
+ 730:lib//src/stm32f10x_i2c.c ****   }
+ 731:lib//src/stm32f10x_i2c.c **** }
+ 554              		.loc 1 731 0
+ 555 01a8 7047     		bx	lr
+ 556              	.LFE19:
+ 558 01aa 00BF     		.align	2
+ 559              		.global	I2C_PECPositionConfig
+ 560              		.thumb
+ 561              		.thumb_func
+ 563              	I2C_PECPositionConfig:
+ 564              	.LFB20:
+ 732:lib//src/stm32f10x_i2c.c **** 
+ 733:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 734:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_PECPositionConfig
+ 735:lib//src/stm32f10x_i2c.c **** * Description    : Selects the specified I2C PEC position.
+ 736:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 737:lib//src/stm32f10x_i2c.c **** *                  - I2C_PECPosition: specifies the PEC position. 
+ 738:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+ 739:lib//src/stm32f10x_i2c.c **** *                       - I2C_PECPosition_Next: indicates that the next
+ 740:lib//src/stm32f10x_i2c.c **** *                         byte is PEC
+ 741:lib//src/stm32f10x_i2c.c **** *                       - I2C_PECPosition_Current: indicates that current
+ 742:lib//src/stm32f10x_i2c.c **** *                         byte is PEC
+ 743:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 744:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 745:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 746:lib//src/stm32f10x_i2c.c **** void I2C_PECPositionConfig(I2C_TypeDef* I2Cx, u16 I2C_PECPosition)
+ 747:lib//src/stm32f10x_i2c.c **** {
+ 565              		.loc 1 747 0
+ 566              		@ args = 0, pretend = 0, frame = 0
+ 567              		@ frame_needed = 0, uses_anonymous_args = 0
+ 568              		@ link register save eliminated.
+ 569              	.LVL29:
+ 748:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 749:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 750:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_PEC_POSITION(I2C_PECPosition));
+ 751:lib//src/stm32f10x_i2c.c **** 
+ 752:lib//src/stm32f10x_i2c.c ****   if (I2C_PECPosition == I2C_PECPosition_Next)
+ 570              		.loc 1 752 0
+ 571 01ac B1F5006F 		cmp	r1, #2048
+ 572 01b0 04D1     		bne	.L77
+ 753:lib//src/stm32f10x_i2c.c ****   {
+ 754:lib//src/stm32f10x_i2c.c ****     /* Next byte in shift register is PEC */
+ 755:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= I2C_PECPosition_Next;
+ 573              		.loc 1 755 0
+ 574 01b2 0388     		ldrh	r3, [r0, #0]
+ 575 01b4 9BB2     		uxth	r3, r3
+ 576 01b6 43F40063 		orr	r3, r3, #2048
+ 577 01ba 04E0     		b	.L80
+ 578              	.L77:
+ 756:lib//src/stm32f10x_i2c.c ****   }
+ 757:lib//src/stm32f10x_i2c.c ****   else
+ 758:lib//src/stm32f10x_i2c.c ****   {
+ 759:lib//src/stm32f10x_i2c.c ****     /* Current byte in shift register is PEC */
+ 760:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= I2C_PECPosition_Current;
+ 579              		.loc 1 760 0
+ 580 01bc 0388     		ldrh	r3, [r0, #0]
+ 581 01be 23F40063 		bic	r3, r3, #2048
+ 582 01c2 1B04     		lsls	r3, r3, #16
+ 583 01c4 1B0C     		lsrs	r3, r3, #16
+ 584              	.L80:
+ 585 01c6 0380     		strh	r3, [r0, #0]	@ movhi
+ 761:lib//src/stm32f10x_i2c.c ****   }
+ 762:lib//src/stm32f10x_i2c.c **** }
+ 586              		.loc 1 762 0
+ 587 01c8 7047     		bx	lr
+ 588              	.LFE20:
+ 590 01ca 00BF     		.align	2
+ 591              		.global	I2C_CalculatePEC
+ 592              		.thumb
+ 593              		.thumb_func
+ 595              	I2C_CalculatePEC:
+ 596              	.LFB21:
+ 763:lib//src/stm32f10x_i2c.c **** 
+ 764:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 765:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_CalculatePEC
+ 766:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the PEC value calculation of the
+ 767:lib//src/stm32f10x_i2c.c **** *                  transfered bytes.
+ 768:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 769:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2Cx PEC value calculation.
+ 770:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 771:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 772:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 773:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 774:lib//src/stm32f10x_i2c.c **** void I2C_CalculatePEC(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 775:lib//src/stm32f10x_i2c.c **** {
+ 597              		.loc 1 775 0
+ 598              		@ args = 0, pretend = 0, frame = 0
+ 599              		@ frame_needed = 0, uses_anonymous_args = 0
+ 600              		@ link register save eliminated.
+ 601              	.LVL30:
+ 776:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 777:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 778:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 779:lib//src/stm32f10x_i2c.c **** 
+ 780:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 602              		.loc 1 780 0
+ 603 01cc 21B1     		cbz	r1, .L82
+ 781:lib//src/stm32f10x_i2c.c ****   {
+ 782:lib//src/stm32f10x_i2c.c ****     /* Enable the selected I2C PEC calculation */
+ 783:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_ENPEC_Set;
+ 604              		.loc 1 783 0
+ 605 01ce 0388     		ldrh	r3, [r0, #0]
+ 606 01d0 9BB2     		uxth	r3, r3
+ 607 01d2 43F02003 		orr	r3, r3, #32
+ 608 01d6 04E0     		b	.L85
+ 609              	.L82:
+ 784:lib//src/stm32f10x_i2c.c ****   }
+ 785:lib//src/stm32f10x_i2c.c ****   else
+ 786:lib//src/stm32f10x_i2c.c ****   {
+ 787:lib//src/stm32f10x_i2c.c ****     /* Disable the selected I2C PEC calculation */
+ 788:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_ENPEC_Reset;
+ 610              		.loc 1 788 0
+ 611 01d8 0388     		ldrh	r3, [r0, #0]
+ 612 01da 23F02003 		bic	r3, r3, #32
+ 613 01de 1B04     		lsls	r3, r3, #16
+ 614 01e0 1B0C     		lsrs	r3, r3, #16
+ 615              	.L85:
+ 616 01e2 0380     		strh	r3, [r0, #0]	@ movhi
+ 789:lib//src/stm32f10x_i2c.c ****   }
+ 790:lib//src/stm32f10x_i2c.c **** }
+ 617              		.loc 1 790 0
+ 618 01e4 7047     		bx	lr
+ 619              	.LFE21:
+ 621 01e6 00BF     		.align	2
+ 622              		.global	I2C_GetPEC
+ 623              		.thumb
+ 624              		.thumb_func
+ 626              	I2C_GetPEC:
+ 627              	.LFB22:
+ 791:lib//src/stm32f10x_i2c.c **** 
+ 792:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 793:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_GetPEC
+ 794:lib//src/stm32f10x_i2c.c **** * Description    : Returns the PEC value for the specified I2C.
+ 795:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 796:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 797:lib//src/stm32f10x_i2c.c **** * Return         : The PEC value.
+ 798:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 799:lib//src/stm32f10x_i2c.c **** u8 I2C_GetPEC(I2C_TypeDef* I2Cx)
+ 800:lib//src/stm32f10x_i2c.c **** {
+ 628              		.loc 1 800 0
+ 629              		@ args = 0, pretend = 0, frame = 0
+ 630              		@ frame_needed = 0, uses_anonymous_args = 0
+ 631              		@ link register save eliminated.
+ 632              	.LVL31:
+ 801:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 802:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 803:lib//src/stm32f10x_i2c.c **** 
+ 804:lib//src/stm32f10x_i2c.c ****   /* Return the selected I2C PEC value */
+ 805:lib//src/stm32f10x_i2c.c ****   return ((I2Cx->SR2) >> 8);
+ 633              		.loc 1 805 0
+ 634 01e8 008B     		ldrh	r0, [r0, #24]
+ 635              	.LVL32:
+ 806:lib//src/stm32f10x_i2c.c **** }
+ 636              		.loc 1 806 0
+ 637 01ea C0F30720 		ubfx	r0, r0, #8, #8
+ 638 01ee 7047     		bx	lr
+ 639              	.LFE22:
+ 641              		.align	2
+ 642              		.global	I2C_ARPCmd
+ 643              		.thumb
+ 644              		.thumb_func
+ 646              	I2C_ARPCmd:
+ 647              	.LFB23:
+ 807:lib//src/stm32f10x_i2c.c **** 
+ 808:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 809:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_ARPCmd
+ 810:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C ARP.
+ 811:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 812:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2Cx ARP. 
+ 813:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 814:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 815:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 816:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 817:lib//src/stm32f10x_i2c.c **** void I2C_ARPCmd(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 818:lib//src/stm32f10x_i2c.c **** {
+ 648              		.loc 1 818 0
+ 649              		@ args = 0, pretend = 0, frame = 0
+ 650              		@ frame_needed = 0, uses_anonymous_args = 0
+ 651              		@ link register save eliminated.
+ 652              	.LVL33:
+ 819:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 820:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 821:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 822:lib//src/stm32f10x_i2c.c **** 
+ 823:lib//src/stm32f10x_i2c.c ****   if (NewState != DISABLE)
+ 653              		.loc 1 823 0
+ 654 01f0 21B1     		cbz	r1, .L89
+ 824:lib//src/stm32f10x_i2c.c ****   {
+ 825:lib//src/stm32f10x_i2c.c ****     /* Enable the selected I2C ARP */
+ 826:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_ENARP_Set;
+ 655              		.loc 1 826 0
+ 656 01f2 0388     		ldrh	r3, [r0, #0]
+ 657 01f4 9BB2     		uxth	r3, r3
+ 658 01f6 43F01003 		orr	r3, r3, #16
+ 659 01fa 04E0     		b	.L92
+ 660              	.L89:
+ 827:lib//src/stm32f10x_i2c.c ****   }
+ 828:lib//src/stm32f10x_i2c.c ****   else
+ 829:lib//src/stm32f10x_i2c.c ****   {
+ 830:lib//src/stm32f10x_i2c.c ****     /* Disable the selected I2C ARP */
+ 831:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_ENARP_Reset;
+ 661              		.loc 1 831 0
+ 662 01fc 0388     		ldrh	r3, [r0, #0]
+ 663 01fe 23F01003 		bic	r3, r3, #16
+ 664 0202 1B04     		lsls	r3, r3, #16
+ 665 0204 1B0C     		lsrs	r3, r3, #16
+ 666              	.L92:
+ 667 0206 0380     		strh	r3, [r0, #0]	@ movhi
+ 832:lib//src/stm32f10x_i2c.c ****   }
+ 833:lib//src/stm32f10x_i2c.c **** }
+ 668              		.loc 1 833 0
+ 669 0208 7047     		bx	lr
+ 670              	.LFE23:
+ 672 020a 00BF     		.align	2
+ 673              		.global	I2C_StretchClockCmd
+ 674              		.thumb
+ 675              		.thumb_func
+ 677              	I2C_StretchClockCmd:
+ 678              	.LFB24:
+ 834:lib//src/stm32f10x_i2c.c **** 
+ 835:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 836:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_StretchClockCmd
+ 837:lib//src/stm32f10x_i2c.c **** * Description    : Enables or disables the specified I2C Clock stretching.
+ 838:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 839:lib//src/stm32f10x_i2c.c **** *                  - NewState: new state of the I2Cx Clock stretching.
+ 840:lib//src/stm32f10x_i2c.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 841:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 842:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 843:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 844:lib//src/stm32f10x_i2c.c **** void I2C_StretchClockCmd(I2C_TypeDef* I2Cx, FunctionalState NewState)
+ 845:lib//src/stm32f10x_i2c.c **** {
+ 679              		.loc 1 845 0
+ 680              		@ args = 0, pretend = 0, frame = 0
+ 681              		@ frame_needed = 0, uses_anonymous_args = 0
+ 682              		@ link register save eliminated.
+ 683              	.LVL34:
+ 846:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 847:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 848:lib//src/stm32f10x_i2c.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 849:lib//src/stm32f10x_i2c.c **** 
+ 850:lib//src/stm32f10x_i2c.c ****   if (NewState == DISABLE)
+ 684              		.loc 1 850 0
+ 685 020c 21B9     		cbnz	r1, .L94
+ 851:lib//src/stm32f10x_i2c.c ****   {
+ 852:lib//src/stm32f10x_i2c.c ****     /* Enable the selected I2C Clock stretching */
+ 853:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_NOSTRETCH_Set;
+ 686              		.loc 1 853 0
+ 687 020e 0388     		ldrh	r3, [r0, #0]
+ 688 0210 9BB2     		uxth	r3, r3
+ 689 0212 43F08003 		orr	r3, r3, #128
+ 690 0216 04E0     		b	.L97
+ 691              	.L94:
+ 854:lib//src/stm32f10x_i2c.c ****   }
+ 855:lib//src/stm32f10x_i2c.c ****   else
+ 856:lib//src/stm32f10x_i2c.c ****   {
+ 857:lib//src/stm32f10x_i2c.c ****     /* Disable the selected I2C Clock stretching */
+ 858:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 &= CR1_NOSTRETCH_Reset;
+ 692              		.loc 1 858 0
+ 693 0218 0388     		ldrh	r3, [r0, #0]
+ 694 021a 23F08003 		bic	r3, r3, #128
+ 695 021e 1B04     		lsls	r3, r3, #16
+ 696 0220 1B0C     		lsrs	r3, r3, #16
+ 697              	.L97:
+ 698 0222 0380     		strh	r3, [r0, #0]	@ movhi
+ 859:lib//src/stm32f10x_i2c.c ****   }
+ 860:lib//src/stm32f10x_i2c.c **** }
+ 699              		.loc 1 860 0
+ 700 0224 7047     		bx	lr
+ 701              	.LFE24:
+ 703 0226 00BF     		.align	2
+ 704              		.global	I2C_FastModeDutyCycleConfig
+ 705              		.thumb
+ 706              		.thumb_func
+ 708              	I2C_FastModeDutyCycleConfig:
+ 709              	.LFB25:
+ 861:lib//src/stm32f10x_i2c.c **** 
+ 862:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 863:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_FastModeDutyCycleConfig
+ 864:lib//src/stm32f10x_i2c.c **** * Description    : Selects the specified I2C fast mode duty cycle.
+ 865:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 866:lib//src/stm32f10x_i2c.c **** *                  - I2C_DutyCycle: specifies the fast mode duty cycle.
+ 867:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+ 868:lib//src/stm32f10x_i2c.c **** *                       - I2C_DutyCycle_2: I2C fast mode Tlow/Thigh = 2
+ 869:lib//src/stm32f10x_i2c.c **** *                       - I2C_DutyCycle_16_9: I2C fast mode Tlow/Thigh = 16/9
+ 870:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 871:lib//src/stm32f10x_i2c.c **** * Return         : None
+ 872:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 873:lib//src/stm32f10x_i2c.c **** void I2C_FastModeDutyCycleConfig(I2C_TypeDef* I2Cx, u16 I2C_DutyCycle)
+ 874:lib//src/stm32f10x_i2c.c **** {
+ 710              		.loc 1 874 0
+ 711              		@ args = 0, pretend = 0, frame = 0
+ 712              		@ frame_needed = 0, uses_anonymous_args = 0
+ 713              		@ link register save eliminated.
+ 714              	.LVL35:
+ 875:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 876:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 877:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_DUTY_CYCLE(I2C_DutyCycle));
+ 878:lib//src/stm32f10x_i2c.c **** 
+ 879:lib//src/stm32f10x_i2c.c ****   if (I2C_DutyCycle != I2C_DutyCycle_16_9)
+ 715              		.loc 1 879 0
+ 716 0228 B1F5804F 		cmp	r1, #16384
+ 717 022c 05D0     		beq	.L99
+ 880:lib//src/stm32f10x_i2c.c ****   {
+ 881:lib//src/stm32f10x_i2c.c ****     /* I2C fast mode Tlow/Thigh=2 */
+ 882:lib//src/stm32f10x_i2c.c ****     I2Cx->CCR &= I2C_DutyCycle_2;
+ 718              		.loc 1 882 0
+ 719 022e 838B     		ldrh	r3, [r0, #28]
+ 720 0230 23F48043 		bic	r3, r3, #16384
+ 721 0234 1B04     		lsls	r3, r3, #16
+ 722 0236 1B0C     		lsrs	r3, r3, #16
+ 723 0238 03E0     		b	.L102
+ 724              	.L99:
+ 883:lib//src/stm32f10x_i2c.c ****   }
+ 884:lib//src/stm32f10x_i2c.c ****   else
+ 885:lib//src/stm32f10x_i2c.c ****   {
+ 886:lib//src/stm32f10x_i2c.c ****     /* I2C fast mode Tlow/Thigh=16/9 */
+ 887:lib//src/stm32f10x_i2c.c ****     I2Cx->CCR |= I2C_DutyCycle_16_9;
+ 725              		.loc 1 887 0
+ 726 023a 838B     		ldrh	r3, [r0, #28]
+ 727 023c 9BB2     		uxth	r3, r3
+ 728 023e 43F48043 		orr	r3, r3, #16384
+ 729              	.L102:
+ 730 0242 8383     		strh	r3, [r0, #28]	@ movhi
+ 888:lib//src/stm32f10x_i2c.c ****   }
+ 889:lib//src/stm32f10x_i2c.c **** }
+ 731              		.loc 1 889 0
+ 732 0244 7047     		bx	lr
+ 733              	.LFE25:
+ 735 0246 00BF     		.align	2
+ 736              		.global	I2C_GetLastEvent
+ 737              		.thumb
+ 738              		.thumb_func
+ 740              	I2C_GetLastEvent:
+ 741              	.LFB26:
+ 890:lib//src/stm32f10x_i2c.c **** 
+ 891:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 892:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_GetLastEvent
+ 893:lib//src/stm32f10x_i2c.c **** * Description    : Returns the last I2Cx Event.
+ 894:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 895:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 896:lib//src/stm32f10x_i2c.c **** * Return         : The last event
+ 897:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 898:lib//src/stm32f10x_i2c.c **** u32 I2C_GetLastEvent(I2C_TypeDef* I2Cx)
+ 899:lib//src/stm32f10x_i2c.c **** {
+ 742              		.loc 1 899 0
+ 743              		@ args = 0, pretend = 0, frame = 0
+ 744              		@ frame_needed = 0, uses_anonymous_args = 0
+ 745              		@ link register save eliminated.
+ 746              	.LVL36:
+ 900:lib//src/stm32f10x_i2c.c ****   u32 lastevent = 0;
+ 901:lib//src/stm32f10x_i2c.c ****   u32 flag1 = 0, flag2 = 0;
+ 902:lib//src/stm32f10x_i2c.c **** 
+ 903:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 904:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 905:lib//src/stm32f10x_i2c.c **** 
+ 906:lib//src/stm32f10x_i2c.c ****   /* Read the I2Cx status register */
+ 907:lib//src/stm32f10x_i2c.c ****   flag1 = I2Cx->SR1;
+ 747              		.loc 1 907 0
+ 748 0248 828A     		ldrh	r2, [r0, #20]
+ 908:lib//src/stm32f10x_i2c.c ****   flag2 = I2Cx->SR2;
+ 749              		.loc 1 908 0
+ 750 024a 038B     		ldrh	r3, [r0, #24]
+ 751              		.loc 1 907 0
+ 752 024c 90B2     		uxth	r0, r2
+ 753              	.LVL37:
+ 754              		.loc 1 908 0
+ 755 024e 40EA0340 		orr	r0, r0, r3, lsl #16
+ 909:lib//src/stm32f10x_i2c.c ****   flag2 = flag2 << 16;
+ 910:lib//src/stm32f10x_i2c.c **** 
+ 911:lib//src/stm32f10x_i2c.c ****   /* Get the last event value from I2C status register */
+ 912:lib//src/stm32f10x_i2c.c ****   lastevent = (flag1 | flag2) & FLAG_Mask;
+ 913:lib//src/stm32f10x_i2c.c **** 
+ 914:lib//src/stm32f10x_i2c.c ****   /* Return status */
+ 915:lib//src/stm32f10x_i2c.c ****   return lastevent;
+ 916:lib//src/stm32f10x_i2c.c **** }
+ 756              		.loc 1 916 0
+ 757 0252 20F07F40 		bic	r0, r0, #-16777216
+ 758 0256 7047     		bx	lr
+ 759              	.LFE26:
+ 761              		.align	2
+ 762              		.global	I2C_CheckEvent
+ 763              		.thumb
+ 764              		.thumb_func
+ 766              	I2C_CheckEvent:
+ 767              	.LFB27:
+ 917:lib//src/stm32f10x_i2c.c **** 
+ 918:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 919:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_CheckEvent
+ 920:lib//src/stm32f10x_i2c.c **** * Description    : Checks whether the last I2Cx Event is equal to the one passed
+ 921:lib//src/stm32f10x_i2c.c **** *                  as parameter.
+ 922:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 923:lib//src/stm32f10x_i2c.c **** *                  - I2C_EVENT: specifies the event to be checked. 
+ 924:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+ 925:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_SLAVE_ADDRESS_MATCHED   : EV1
+ 926:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_SLAVE_BYTE_RECEIVED     : EV2
+ 927:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_SLAVE_BYTE_TRANSMITTED  : EV3
+ 928:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_SLAVE_ACK_FAILURE       : EV3-2
+ 929:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_MASTER_MODE_SELECT      : EV5
+ 930:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_MASTER_MODE_SELECTED    : EV6
+ 931:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_MASTER_BYTE_RECEIVED    : EV7
+ 932:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_MASTER_BYTE_TRANSMITTED : EV8
+ 933:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_MASTER_MODE_ADDRESS10   : EV9
+ 934:lib//src/stm32f10x_i2c.c **** *                       - I2C_EVENT_SLAVE_STOP_DETECTED     : EV4
+ 935:lib//src/stm32f10x_i2c.c **** * Output         : None
+ 936:lib//src/stm32f10x_i2c.c **** * Return         : An ErrorStatus enumuration value:
+ 937:lib//src/stm32f10x_i2c.c **** *                       - SUCCESS: Last event is equal to the I2C_EVENT
+ 938:lib//src/stm32f10x_i2c.c **** *                       - ERROR: Last event is different from the I2C_EVENT
+ 939:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+ 940:lib//src/stm32f10x_i2c.c **** ErrorStatus I2C_CheckEvent(I2C_TypeDef* I2Cx, u32 I2C_EVENT)
+ 941:lib//src/stm32f10x_i2c.c **** {
+ 768              		.loc 1 941 0
+ 769              		@ args = 0, pretend = 0, frame = 0
+ 770              		@ frame_needed = 0, uses_anonymous_args = 0
+ 771              		@ link register save eliminated.
+ 772              	.LVL38:
+ 942:lib//src/stm32f10x_i2c.c ****   u32 lastevent = 0;
+ 943:lib//src/stm32f10x_i2c.c ****   u32 flag1 = 0, flag2 = 0;
+ 944:lib//src/stm32f10x_i2c.c ****   ErrorStatus status = ERROR;
+ 945:lib//src/stm32f10x_i2c.c **** 
+ 946:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+ 947:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+ 948:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_EVENT(I2C_EVENT));
+ 949:lib//src/stm32f10x_i2c.c **** 
+ 950:lib//src/stm32f10x_i2c.c ****   /* Read the I2Cx status register */
+ 951:lib//src/stm32f10x_i2c.c ****   flag1 = I2Cx->SR1;
+ 773              		.loc 1 951 0
+ 774 0258 828A     		ldrh	r2, [r0, #20]
+ 952:lib//src/stm32f10x_i2c.c ****   flag2 = I2Cx->SR2;
+ 775              		.loc 1 952 0
+ 776 025a 038B     		ldrh	r3, [r0, #24]
+ 777              		.loc 1 951 0
+ 778 025c 90B2     		uxth	r0, r2
+ 779              	.LVL39:
+ 780              		.loc 1 952 0
+ 781 025e 40EA0340 		orr	r0, r0, r3, lsl #16
+ 782 0262 20F07F40 		bic	r0, r0, #-16777216
+ 953:lib//src/stm32f10x_i2c.c ****   flag2 = flag2 << 16;
+ 954:lib//src/stm32f10x_i2c.c **** 
+ 955:lib//src/stm32f10x_i2c.c ****   /* Get the last event value from I2C status register */
+ 956:lib//src/stm32f10x_i2c.c ****   lastevent = (flag1 | flag2) & FLAG_Mask;
+ 957:lib//src/stm32f10x_i2c.c **** 
+ 958:lib//src/stm32f10x_i2c.c ****   /* Check whether the last event is equal to I2C_EVENT */
+ 959:lib//src/stm32f10x_i2c.c ****   if (lastevent == I2C_EVENT )
+ 960:lib//src/stm32f10x_i2c.c ****   {
+ 961:lib//src/stm32f10x_i2c.c ****     /* SUCCESS: last event is equal to I2C_EVENT */
+ 962:lib//src/stm32f10x_i2c.c ****     status = SUCCESS;
+ 963:lib//src/stm32f10x_i2c.c ****   }
+ 964:lib//src/stm32f10x_i2c.c ****   else
+ 965:lib//src/stm32f10x_i2c.c ****   {
+ 966:lib//src/stm32f10x_i2c.c ****     /* ERROR: last event is different from I2C_EVENT */
+ 967:lib//src/stm32f10x_i2c.c ****     status = ERROR;
+ 968:lib//src/stm32f10x_i2c.c ****   }
+ 969:lib//src/stm32f10x_i2c.c **** 
+ 970:lib//src/stm32f10x_i2c.c ****   /* Return status */
+ 971:lib//src/stm32f10x_i2c.c ****   return status;
+ 972:lib//src/stm32f10x_i2c.c **** }
+ 783              		.loc 1 972 0
+ 784 0266 8842     		cmp	r0, r1
+ 785 0268 14BF     		ite	ne
+ 786 026a 0020     		movne	r0, #0
+ 787 026c 0120     		moveq	r0, #1
+ 788 026e 7047     		bx	lr
+ 789              	.LFE27:
+ 791              		.align	2
+ 792              		.global	I2C_GetFlagStatus
+ 793              		.thumb
+ 794              		.thumb_func
+ 796              	I2C_GetFlagStatus:
+ 797              	.LFB28:
+ 973:lib//src/stm32f10x_i2c.c **** 
+ 974:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+ 975:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_GetFlagStatus
+ 976:lib//src/stm32f10x_i2c.c **** * Description    : Checks whether the specified I2C flag is set or not.
+ 977:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+ 978:lib//src/stm32f10x_i2c.c **** *                  - I2C_FLAG: specifies the flag to check. 
+ 979:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+ 980:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_DUALF: Dual flag (Slave mode)
+ 981:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_SMBHOST: SMBus host header (Slave mode)
+ 982:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_SMBDEFAULT: SMBus default header (Slave mode)
+ 983:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_GENCALL: General call header flag (Slave mode)
+ 984:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_TRA: Transmitter/Receiver flag
+ 985:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_BUSY: Bus busy flag
+ 986:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_MSL: Master/Slave flag
+ 987:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_SMBALERT: SMBus Alert flag
+ 988:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_TIMEOUT: Timeout or Tlow error flag
+ 989:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_PECERR: PEC error in reception flag
+ 990:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_OVR: Overrun/Underrun flag (Slave mode)
+ 991:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_AF: Acknowledge failure flag
+ 992:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_ARLO: Arbitration lost flag (Master mode)
+ 993:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_BERR: Bus error flag
+ 994:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_TXE: Data register empty flag (Transmitter)
+ 995:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_RXNE: Data register not empty (Receiver) flag
+ 996:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_STOPF: Stop detection flag (Slave mode)
+ 997:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_ADD10: 10-bit header sent flag (Master mode)
+ 998:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_BTF: Byte transfer finished flag
+ 999:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_ADDR: Address sent flag (Master mode) “ADSL”
+1000:lib//src/stm32f10x_i2c.c **** *                                        Address matched flag (Slave mode)”ENDAD”
+1001:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_SB: Start bit flag (Master mode)
+1002:lib//src/stm32f10x_i2c.c **** * Output         : None
+1003:lib//src/stm32f10x_i2c.c **** * Return         : The new state of I2C_FLAG (SET or RESET).
+1004:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+1005:lib//src/stm32f10x_i2c.c **** FlagStatus I2C_GetFlagStatus(I2C_TypeDef* I2Cx, u32 I2C_FLAG)
+1006:lib//src/stm32f10x_i2c.c **** {
+ 798              		.loc 1 1006 0
+ 799              		@ args = 0, pretend = 0, frame = 0
+ 800              		@ frame_needed = 0, uses_anonymous_args = 0
+ 801              		@ link register save eliminated.
+ 802              	.LVL40:
+1007:lib//src/stm32f10x_i2c.c ****   FlagStatus bitstatus = RESET;
+1008:lib//src/stm32f10x_i2c.c ****   u32 i2cstatus = 0;
+1009:lib//src/stm32f10x_i2c.c ****   u32 flag1 = 0, flag2 = 0;
+1010:lib//src/stm32f10x_i2c.c **** 
+1011:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+1012:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+1013:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_GET_FLAG(I2C_FLAG));
+1014:lib//src/stm32f10x_i2c.c **** 
+1015:lib//src/stm32f10x_i2c.c ****   /* Read the I2Cx status register */
+1016:lib//src/stm32f10x_i2c.c ****   flag1 = I2Cx->SR1;
+ 803              		.loc 1 1016 0
+ 804 0270 838A     		ldrh	r3, [r0, #20]
+1017:lib//src/stm32f10x_i2c.c ****   flag2 = I2Cx->SR2;
+ 805              		.loc 1 1017 0
+ 806 0272 028B     		ldrh	r2, [r0, #24]
+ 807              		.loc 1 1016 0
+ 808 0274 9BB2     		uxth	r3, r3
+ 809              		.loc 1 1017 0
+ 810 0276 43EA0243 		orr	r3, r3, r2, lsl #16
+ 811 027a 0B40     		ands	r3, r3, r1
+ 812 027c 23F07F40 		bic	r0, r3, #-16777216
+ 813              	.LVL41:
+1018:lib//src/stm32f10x_i2c.c ****   flag2 = (flag2 & FLAG_Mask) << 16;
+1019:lib//src/stm32f10x_i2c.c **** 
+1020:lib//src/stm32f10x_i2c.c ****   /* Get the I2C status value */
+1021:lib//src/stm32f10x_i2c.c ****   i2cstatus = flag1 | flag2;
+1022:lib//src/stm32f10x_i2c.c **** 
+1023:lib//src/stm32f10x_i2c.c ****   /* Get bit[23:0] of the flag */
+1024:lib//src/stm32f10x_i2c.c ****   I2C_FLAG &= FLAG_Mask;
+1025:lib//src/stm32f10x_i2c.c **** 
+1026:lib//src/stm32f10x_i2c.c ****   /* Check the status of the specified I2C flag */
+1027:lib//src/stm32f10x_i2c.c ****   if ((i2cstatus & I2C_FLAG) != (u32)RESET)
+1028:lib//src/stm32f10x_i2c.c ****   {
+1029:lib//src/stm32f10x_i2c.c ****     /* I2C_FLAG is set */
+1030:lib//src/stm32f10x_i2c.c ****     bitstatus = SET;
+1031:lib//src/stm32f10x_i2c.c ****   }
+1032:lib//src/stm32f10x_i2c.c ****   else
+1033:lib//src/stm32f10x_i2c.c ****   {
+1034:lib//src/stm32f10x_i2c.c ****     /* I2C_FLAG is reset */
+1035:lib//src/stm32f10x_i2c.c ****     bitstatus = RESET;
+1036:lib//src/stm32f10x_i2c.c ****   }
+1037:lib//src/stm32f10x_i2c.c ****   /* Return the I2C_FLAG status */
+1038:lib//src/stm32f10x_i2c.c ****   return  bitstatus;
+1039:lib//src/stm32f10x_i2c.c **** }
+ 814              		.loc 1 1039 0
+ 815 0280 0038     		subs	r0, r0, #0
+ 816 0282 18BF     		it	ne
+ 817 0284 0120     		movne	r0, #1
+ 818 0286 7047     		bx	lr
+ 819              	.LFE28:
+ 821              		.align	2
+ 822              		.global	I2C_ClearFlag
+ 823              		.thumb
+ 824              		.thumb_func
+ 826              	I2C_ClearFlag:
+ 827              	.LFB29:
+1040:lib//src/stm32f10x_i2c.c **** 
+1041:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+1042:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_ClearFlag
+1043:lib//src/stm32f10x_i2c.c **** * Description    : Clears the I2Cx's pending flags.
+1044:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+1045:lib//src/stm32f10x_i2c.c **** *                  - I2C_FLAG: specifies the flag to clear. 
+1046:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+1047:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_SMBALERT: SMBus Alert flag
+1048:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_TIMEOUT: Timeout or Tlow error flag
+1049:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_PECERR: PEC error in reception flag
+1050:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_OVR: Overrun/Underrun flag (Slave mode)
+1051:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_AF: Acknowledge failure flag
+1052:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_ARLO: Arbitration lost flag (Master mode)
+1053:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_BERR: Bus error flag
+1054:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_STOPF: Stop detection flag (Slave mode)
+1055:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_ADD10: 10-bit header sent flag (Master mode)
+1056:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_BTF: Byte transfer finished flag
+1057:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_ADDR: Address sent flag (Master mode) “ADSL”
+1058:lib//src/stm32f10x_i2c.c **** *                                        Address matched flag (Slave mode)”ENDAD”
+1059:lib//src/stm32f10x_i2c.c **** *                       - I2C_FLAG_SB: Start bit flag (Master mode)
+1060:lib//src/stm32f10x_i2c.c **** * Output         : None
+1061:lib//src/stm32f10x_i2c.c **** * Return         : None
+1062:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+1063:lib//src/stm32f10x_i2c.c **** void I2C_ClearFlag(I2C_TypeDef* I2Cx, u32 I2C_FLAG)
+1064:lib//src/stm32f10x_i2c.c **** {
+ 828              		.loc 1 1064 0
+ 829              		@ args = 0, pretend = 0, frame = 0
+ 830              		@ frame_needed = 0, uses_anonymous_args = 0
+ 831              		@ link register save eliminated.
+ 832              	.LVL42:
+1065:lib//src/stm32f10x_i2c.c ****   u32 flagpos = 0;
+1066:lib//src/stm32f10x_i2c.c ****   u32 flagindex = 0;
+1067:lib//src/stm32f10x_i2c.c **** 
+1068:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+1069:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+1070:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_CLEAR_FLAG(I2C_FLAG));
+1071:lib//src/stm32f10x_i2c.c **** 
+1072:lib//src/stm32f10x_i2c.c ****   /* Get the I2C flag position */
+1073:lib//src/stm32f10x_i2c.c ****   flagpos = I2C_FLAG & FLAG_Mask;
+1074:lib//src/stm32f10x_i2c.c **** 
+1075:lib//src/stm32f10x_i2c.c ****   /* Get the I2C flag index */
+1076:lib//src/stm32f10x_i2c.c ****   flagindex = I2C_FLAG >> 28;
+ 833              		.loc 1 1076 0
+ 834 0288 0B0F     		lsrs	r3, r1, #28
+ 835              	.LVL43:
+1077:lib//src/stm32f10x_i2c.c **** 
+1078:lib//src/stm32f10x_i2c.c ****   /* Clear the flag by writing 0 */
+1079:lib//src/stm32f10x_i2c.c ****   if (flagindex == 1)
+ 836              		.loc 1 1079 0
+ 837 028a 012B     		cmp	r3, #1
+ 838 028c 03D1     		bne	.L110
+1080:lib//src/stm32f10x_i2c.c ****   {
+1081:lib//src/stm32f10x_i2c.c ****     /* Clear the selected I2C flag */
+1082:lib//src/stm32f10x_i2c.c ****     I2Cx->SR1 = (u16)~flagpos;
+ 839              		.loc 1 1082 0
+ 840 028e C943     		mvns	r1, r1
+ 841              	.LVL44:
+ 842 0290 89B2     		uxth	r1, r1
+ 843 0292 8182     		strh	r1, [r0, #20]	@ movhi
+ 844 0294 0EE0     		b	.L114
+ 845              	.LVL45:
+ 846              	.L110:
+1083:lib//src/stm32f10x_i2c.c ****   }
+1084:lib//src/stm32f10x_i2c.c ****   /* Flags that need a read of the SR1 register to be cleared */
+1085:lib//src/stm32f10x_i2c.c ****   else if (flagindex == 2)
+ 847              		.loc 1 1085 0
+ 848 0296 022B     		cmp	r3, #2
+ 849 0298 01D1     		bne	.L112
+1086:lib//src/stm32f10x_i2c.c ****   {
+1087:lib//src/stm32f10x_i2c.c ****     /* Read the SR1 register */
+1088:lib//src/stm32f10x_i2c.c ****     (void)I2Cx->SR1;
+ 850              		.loc 1 1088 0
+ 851 029a 838A     		ldrh	r3, [r0, #20]
+ 852              	.LVL46:
+ 853 029c 0AE0     		b	.L114
+ 854              	.LVL47:
+ 855              	.L112:
+1089:lib//src/stm32f10x_i2c.c ****   }
+1090:lib//src/stm32f10x_i2c.c ****   /* Flags that need a read of SR1 and a write on CR1 registers to be cleared */
+1091:lib//src/stm32f10x_i2c.c ****   else if (flagindex == 6)
+ 856              		.loc 1 1091 0
+ 857 029e 062B     		cmp	r3, #6
+ 858 02a0 06D1     		bne	.L113
+1092:lib//src/stm32f10x_i2c.c ****   {
+1093:lib//src/stm32f10x_i2c.c ****     /* Read the SR1 register */
+1094:lib//src/stm32f10x_i2c.c ****     (void)I2Cx->SR1;
+ 859              		.loc 1 1094 0
+ 860 02a2 838A     		ldrh	r3, [r0, #20]
+ 861              	.LVL48:
+1095:lib//src/stm32f10x_i2c.c **** 
+1096:lib//src/stm32f10x_i2c.c ****     /* Write on the CR1 register */
+1097:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_PE_Set;
+ 862              		.loc 1 1097 0
+ 863 02a4 0388     		ldrh	r3, [r0, #0]
+ 864 02a6 9BB2     		uxth	r3, r3
+ 865 02a8 43F00103 		orr	r3, r3, #1
+ 866 02ac 0380     		strh	r3, [r0, #0]	@ movhi
+ 867 02ae 01E0     		b	.L114
+ 868              	.LVL49:
+ 869              	.L113:
+1098:lib//src/stm32f10x_i2c.c ****   }
+1099:lib//src/stm32f10x_i2c.c ****   /* Flags that need a read of SR1 and SR2 registers to be cleared */
+1100:lib//src/stm32f10x_i2c.c ****   else /*flagindex == 0xA*/
+1101:lib//src/stm32f10x_i2c.c ****   {
+1102:lib//src/stm32f10x_i2c.c ****     /* Read the SR1 register */
+1103:lib//src/stm32f10x_i2c.c ****     (void)I2Cx->SR1;
+ 870              		.loc 1 1103 0
+ 871 02b0 838A     		ldrh	r3, [r0, #20]
+ 872              	.LVL50:
+1104:lib//src/stm32f10x_i2c.c **** 
+1105:lib//src/stm32f10x_i2c.c ****     /* Read the SR2 register */
+1106:lib//src/stm32f10x_i2c.c ****     (void)I2Cx->SR2;
+ 873              		.loc 1 1106 0
+ 874 02b2 038B     		ldrh	r3, [r0, #24]
+ 875              	.LVL51:
+ 876              	.L114:
+1107:lib//src/stm32f10x_i2c.c ****   }
+1108:lib//src/stm32f10x_i2c.c **** }
+ 877              		.loc 1 1108 0
+ 878 02b4 7047     		bx	lr
+ 879              	.LFE29:
+ 881 02b6 00BF     		.align	2
+ 882              		.global	I2C_GetITStatus
+ 883              		.thumb
+ 884              		.thumb_func
+ 886              	I2C_GetITStatus:
+ 887              	.LFB30:
+1109:lib//src/stm32f10x_i2c.c **** 
+1110:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+1111:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_GetITStatus
+1112:lib//src/stm32f10x_i2c.c **** * Description    : Checks whether the specified I2C interrupt has occurred or not.
+1113:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+1114:lib//src/stm32f10x_i2c.c **** *                  - I2C_IT: specifies the interrupt source to check. 
+1115:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+1116:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_SMBALERT: SMBus Alert flag
+1117:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_TIMEOUT: Timeout or Tlow error flag
+1118:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_PECERR: PEC error in reception flag
+1119:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_OVR: Overrun/Underrun flag (Slave mode)
+1120:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_AF: Acknowledge failure flag
+1121:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_ARLO: Arbitration lost flag (Master mode)
+1122:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_BERR: Bus error flag
+1123:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_TXE: Data register empty flag (Transmitter)
+1124:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_RXNE: Data register not empty (Receiver) flag
+1125:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_STOPF: Stop detection flag (Slave mode)
+1126:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_ADD10: 10-bit header sent flag (Master mode)
+1127:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_BTF: Byte transfer finished flag
+1128:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_ADDR: Address sent flag (Master mode) “ADSL”
+1129:lib//src/stm32f10x_i2c.c **** *                                        Address matched flag (Slave mode)”ENDAD”
+1130:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_SB: Start bit flag (Master mode)
+1131:lib//src/stm32f10x_i2c.c **** * Output         : None
+1132:lib//src/stm32f10x_i2c.c **** * Return         : The new state of I2C_IT (SET or RESET).
+1133:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+1134:lib//src/stm32f10x_i2c.c **** ITStatus I2C_GetITStatus(I2C_TypeDef* I2Cx, u32 I2C_IT)
+1135:lib//src/stm32f10x_i2c.c **** {
+ 888              		.loc 1 1135 0
+ 889              		@ args = 0, pretend = 0, frame = 0
+ 890              		@ frame_needed = 0, uses_anonymous_args = 0
+ 891              		@ link register save eliminated.
+ 892              	.LVL52:
+1136:lib//src/stm32f10x_i2c.c ****   ITStatus bitstatus = RESET;
+1137:lib//src/stm32f10x_i2c.c ****   u32 i2cstatus = 0;
+1138:lib//src/stm32f10x_i2c.c ****   u32 flag1 = 0, flag2 = 0;
+1139:lib//src/stm32f10x_i2c.c **** 
+1140:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+1141:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+1142:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_GET_IT(I2C_IT));
+1143:lib//src/stm32f10x_i2c.c **** 
+1144:lib//src/stm32f10x_i2c.c ****   /* Read the I2Cx status register */
+1145:lib//src/stm32f10x_i2c.c ****   flag1 = I2Cx->SR1;
+ 893              		.loc 1 1145 0
+ 894 02b8 838A     		ldrh	r3, [r0, #20]
+1146:lib//src/stm32f10x_i2c.c ****   flag2 = I2Cx->SR2;
+ 895              		.loc 1 1146 0
+ 896 02ba 028B     		ldrh	r2, [r0, #24]
+ 897              		.loc 1 1145 0
+ 898 02bc 9BB2     		uxth	r3, r3
+ 899              		.loc 1 1146 0
+ 900 02be 43EA0243 		orr	r3, r3, r2, lsl #16
+ 901 02c2 0B40     		ands	r3, r3, r1
+ 902 02c4 23F07F40 		bic	r0, r3, #-16777216
+ 903              	.LVL53:
+1147:lib//src/stm32f10x_i2c.c ****   flag2 = (flag2 & FLAG_Mask) << 16;
+1148:lib//src/stm32f10x_i2c.c **** 
+1149:lib//src/stm32f10x_i2c.c ****   /* Get the I2C status value */
+1150:lib//src/stm32f10x_i2c.c ****   i2cstatus = flag1 | flag2;
+1151:lib//src/stm32f10x_i2c.c **** 
+1152:lib//src/stm32f10x_i2c.c ****   /* Get bit[23:0] of the flag */
+1153:lib//src/stm32f10x_i2c.c ****   I2C_IT &= FLAG_Mask;
+1154:lib//src/stm32f10x_i2c.c **** 
+1155:lib//src/stm32f10x_i2c.c ****   /* Check the status of the specified I2C flag */
+1156:lib//src/stm32f10x_i2c.c ****   if ((i2cstatus & I2C_IT) != (u32)RESET)
+1157:lib//src/stm32f10x_i2c.c ****   {
+1158:lib//src/stm32f10x_i2c.c ****     /* I2C_IT is set */
+1159:lib//src/stm32f10x_i2c.c ****     bitstatus = SET;
+1160:lib//src/stm32f10x_i2c.c ****   }
+1161:lib//src/stm32f10x_i2c.c ****   else
+1162:lib//src/stm32f10x_i2c.c ****   {
+1163:lib//src/stm32f10x_i2c.c ****     /* I2C_IT is reset */
+1164:lib//src/stm32f10x_i2c.c ****     bitstatus = RESET;
+1165:lib//src/stm32f10x_i2c.c ****   }
+1166:lib//src/stm32f10x_i2c.c ****   /* Return the I2C_IT status */
+1167:lib//src/stm32f10x_i2c.c ****   return  bitstatus;
+1168:lib//src/stm32f10x_i2c.c **** }
+ 904              		.loc 1 1168 0
+ 905 02c8 0038     		subs	r0, r0, #0
+ 906 02ca 18BF     		it	ne
+ 907 02cc 0120     		movne	r0, #1
+ 908 02ce 7047     		bx	lr
+ 909              	.LFE30:
+ 911              		.align	2
+ 912              		.global	I2C_ClearITPendingBit
+ 913              		.thumb
+ 914              		.thumb_func
+ 916              	I2C_ClearITPendingBit:
+ 917              	.LFB31:
+1169:lib//src/stm32f10x_i2c.c **** 
+1170:lib//src/stm32f10x_i2c.c **** /*******************************************************************************
+1171:lib//src/stm32f10x_i2c.c **** * Function Name  : I2C_ClearITPendingBit
+1172:lib//src/stm32f10x_i2c.c **** * Description    : Clears the I2Cx’s interrupt pending bits.
+1173:lib//src/stm32f10x_i2c.c **** * Input          : - I2Cx: where x can be 1 or 2 to select the I2C peripheral.
+1174:lib//src/stm32f10x_i2c.c **** *                  - I2C_IT: specifies the interrupt pending bit to clear. 
+1175:lib//src/stm32f10x_i2c.c **** *                    This parameter can be one of the following values:
+1176:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_SMBALERT: SMBus Alert flag
+1177:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_TIMEOUT: Timeout or Tlow error flag
+1178:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_PECERR: PEC error in reception flag
+1179:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_OVR: Overrun/Underrun flag (Slave mode)
+1180:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_AF: Acknowledge failure flag
+1181:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_ARLO: Arbitration lost flag (Master mode)
+1182:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_BERR: Bus error flag
+1183:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_STOPF: Stop detection flag (Slave mode)
+1184:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_ADD10: 10-bit header sent flag (Master mode)
+1185:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_BTF: Byte transfer finished flag
+1186:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_ADDR: Address sent flag (Master mode) “ADSL”
+1187:lib//src/stm32f10x_i2c.c **** *                                        Address matched flag (Slave mode)”ENDAD”
+1188:lib//src/stm32f10x_i2c.c **** *                       - I2C_IT_SB: Start bit flag (Master mode)
+1189:lib//src/stm32f10x_i2c.c **** * Output         : None
+1190:lib//src/stm32f10x_i2c.c **** * Return         : None
+1191:lib//src/stm32f10x_i2c.c **** *******************************************************************************/
+1192:lib//src/stm32f10x_i2c.c **** void I2C_ClearITPendingBit(I2C_TypeDef* I2Cx, u32 I2C_IT)
+1193:lib//src/stm32f10x_i2c.c **** {
+ 918              		.loc 1 1193 0
+ 919              		@ args = 0, pretend = 0, frame = 0
+ 920              		@ frame_needed = 0, uses_anonymous_args = 0
+ 921              		@ link register save eliminated.
+ 922              	.LVL54:
+1194:lib//src/stm32f10x_i2c.c ****   u32 flagpos = 0;
+1195:lib//src/stm32f10x_i2c.c ****   u32 flagindex = 0;
+1196:lib//src/stm32f10x_i2c.c **** 
+1197:lib//src/stm32f10x_i2c.c ****   /* Check the parameters */
+1198:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_ALL_PERIPH(I2Cx));
+1199:lib//src/stm32f10x_i2c.c ****   assert_param(IS_I2C_CLEAR_IT(I2C_IT));
+1200:lib//src/stm32f10x_i2c.c **** 
+1201:lib//src/stm32f10x_i2c.c ****   /* Get the I2C flag position */
+1202:lib//src/stm32f10x_i2c.c ****   flagpos = I2C_IT & FLAG_Mask;
+1203:lib//src/stm32f10x_i2c.c **** 
+1204:lib//src/stm32f10x_i2c.c ****   /* Get the I2C flag index */
+1205:lib//src/stm32f10x_i2c.c ****   flagindex = I2C_IT >> 28;
+ 923              		.loc 1 1205 0
+ 924 02d0 0B0F     		lsrs	r3, r1, #28
+ 925              	.LVL55:
+1206:lib//src/stm32f10x_i2c.c **** 
+1207:lib//src/stm32f10x_i2c.c ****   /* Clear the flag by writing 0 */
+1208:lib//src/stm32f10x_i2c.c ****   if (flagindex == 1)
+ 926              		.loc 1 1208 0
+ 927 02d2 012B     		cmp	r3, #1
+ 928 02d4 03D1     		bne	.L118
+1209:lib//src/stm32f10x_i2c.c ****   {
+1210:lib//src/stm32f10x_i2c.c ****     /* Clear the selected I2C flag */
+1211:lib//src/stm32f10x_i2c.c ****     I2Cx->SR1 = (u16)~flagpos;
+ 929              		.loc 1 1211 0
+ 930 02d6 C943     		mvns	r1, r1
+ 931              	.LVL56:
+ 932 02d8 89B2     		uxth	r1, r1
+ 933 02da 8182     		strh	r1, [r0, #20]	@ movhi
+ 934 02dc 0EE0     		b	.L122
+ 935              	.LVL57:
+ 936              	.L118:
+1212:lib//src/stm32f10x_i2c.c ****   }
+1213:lib//src/stm32f10x_i2c.c ****   /* Flags that need a read of the SR1 register to be cleared */
+1214:lib//src/stm32f10x_i2c.c ****   else if (flagindex == 2)
+ 937              		.loc 1 1214 0
+ 938 02de 022B     		cmp	r3, #2
+ 939 02e0 01D1     		bne	.L120
+1215:lib//src/stm32f10x_i2c.c ****   {
+1216:lib//src/stm32f10x_i2c.c ****     /* Read the SR1 register */
+1217:lib//src/stm32f10x_i2c.c ****     (void)I2Cx->SR1;
+ 940              		.loc 1 1217 0
+ 941 02e2 838A     		ldrh	r3, [r0, #20]
+ 942              	.LVL58:
+ 943 02e4 0AE0     		b	.L122
+ 944              	.LVL59:
+ 945              	.L120:
+1218:lib//src/stm32f10x_i2c.c ****   }
+1219:lib//src/stm32f10x_i2c.c ****   /* Flags that need a read of SR1 and a write on CR1 registers to be cleared */
+1220:lib//src/stm32f10x_i2c.c ****   else if (flagindex == 6)
+ 946              		.loc 1 1220 0
+ 947 02e6 062B     		cmp	r3, #6
+ 948 02e8 06D1     		bne	.L121
+1221:lib//src/stm32f10x_i2c.c ****   {
+1222:lib//src/stm32f10x_i2c.c ****     /* Read the SR1 register */
+1223:lib//src/stm32f10x_i2c.c ****     (void)I2Cx->SR1;
+ 949              		.loc 1 1223 0
+ 950 02ea 838A     		ldrh	r3, [r0, #20]
+ 951              	.LVL60:
+1224:lib//src/stm32f10x_i2c.c **** 
+1225:lib//src/stm32f10x_i2c.c ****     /* Write on the CR1 register */
+1226:lib//src/stm32f10x_i2c.c ****     I2Cx->CR1 |= CR1_PE_Set;
+ 952              		.loc 1 1226 0
+ 953 02ec 0388     		ldrh	r3, [r0, #0]
+ 954 02ee 9BB2     		uxth	r3, r3
+ 955 02f0 43F00103 		orr	r3, r3, #1
+ 956 02f4 0380     		strh	r3, [r0, #0]	@ movhi
+ 957 02f6 01E0     		b	.L122
+ 958              	.LVL61:
+ 959              	.L121:
+1227:lib//src/stm32f10x_i2c.c ****   }
+1228:lib//src/stm32f10x_i2c.c ****   /* Flags that need a read of SR1 and SR2 registers to be cleared */
+1229:lib//src/stm32f10x_i2c.c ****   else /*flagindex == 0xA*/
+1230:lib//src/stm32f10x_i2c.c ****   {
+1231:lib//src/stm32f10x_i2c.c ****     /* Read the SR1 register */
+1232:lib//src/stm32f10x_i2c.c ****     (void)I2Cx->SR1;
+ 960              		.loc 1 1232 0
+ 961 02f8 838A     		ldrh	r3, [r0, #20]
+ 962              	.LVL62:
+1233:lib//src/stm32f10x_i2c.c **** 
+1234:lib//src/stm32f10x_i2c.c ****     /* Read the SR2 register */
+1235:lib//src/stm32f10x_i2c.c ****     (void)I2Cx->SR2;
+ 963              		.loc 1 1235 0
+ 964 02fa 038B     		ldrh	r3, [r0, #24]
+ 965              	.LVL63:
+ 966              	.L122:
+1236:lib//src/stm32f10x_i2c.c ****   }
+1237:lib//src/stm32f10x_i2c.c **** }
+ 967              		.loc 1 1237 0
+ 968 02fc 7047     		bx	lr
+ 969              	.LFE31:
+ 971 02fe 00BF     		.align	2
+ 972              		.global	I2C_Init
+ 973              		.thumb
+ 974              		.thumb_func
+ 976              	I2C_Init:
+ 977              	.LFB1:
+ 978              		.loc 1 149 0
+ 979              		@ args = 0, pretend = 0, frame = 24
+ 980              		@ frame_needed = 0, uses_anonymous_args = 0
+ 981              	.LVL64:
+ 982 0300 70B5     		push	{r4, r5, r6, lr}
+ 983              	.LCFI1:
+ 984 0302 86B0     		sub	sp, sp, #24
+ 985              	.LCFI2:
+ 986              		.loc 1 149 0
+ 987 0304 0446     		mov	r4, r0
+ 988              		.loc 1 166 0
+ 989 0306 8688     		ldrh	r6, [r0, #4]
+ 990              		.loc 1 170 0
+ 991 0308 01A8     		add	r0, sp, #4
+ 992              	.LVL65:
+ 993              		.loc 1 149 0
+ 994 030a 0D46     		mov	r5, r1
+ 995              		.loc 1 170 0
+ 996 030c FFF7FEFF 		bl	RCC_GetClocksFreq
+ 997              	.LVL66:
+ 998              		.loc 1 171 0
+ 999 0310 0399     		ldr	r1, [sp, #12]
+ 1000              	.LVL67:
+ 1001              		.loc 1 173 0
+ 1002 0312 3048     		ldr	r0, .L131
+ 1003              		.loc 1 168 0
+ 1004 0314 26F03F06 		bic	r6, r6, #63
+ 1005              	.LVL68:
+ 1006 0318 3604     		lsls	r6, r6, #16
+ 1007              	.LVL69:
+ 1008              		.loc 1 173 0
+ 1009 031a B1FBF0F0 		udiv	r0, r1, r0
+ 1010              		.loc 1 168 0
+ 1011 031e 360C     		lsrs	r6, r6, #16
+ 1012              	.LVL70:
+ 1013              		.loc 1 173 0
+ 1014 0320 80B2     		uxth	r0, r0
+ 1015              	.LVL71:
+ 1016              		.loc 1 174 0
+ 1017 0322 40EA0606 		orr	r6, r0, r6
+ 1018              	.LVL72:
+ 1019              		.loc 1 176 0
+ 1020 0326 A680     		strh	r6, [r4, #4]	@ movhi
+ 1021              		.loc 1 180 0
+ 1022 0328 2288     		ldrh	r2, [r4, #0]
+ 1023              		.loc 1 187 0
+ 1024 032a EB68     		ldr	r3, [r5, #12]
+ 1025              		.loc 1 180 0
+ 1026 032c 22F00102 		bic	r2, r2, #1
+ 1027 0330 1204     		lsls	r2, r2, #16
+ 1028 0332 120C     		lsrs	r2, r2, #16
+ 1029 0334 2280     		strh	r2, [r4, #0]	@ movhi
+ 1030              		.loc 1 187 0
+ 1031 0336 284A     		ldr	r2, .L131+4
+ 1032 0338 9342     		cmp	r3, r2
+ 1033 033a 0AD8     		bhi	.L124
+ 1034              		.loc 1 190 0
+ 1035 033c 5B00     		lsls	r3, r3, #1
+ 1036 033e B1FBF3F3 		udiv	r3, r1, r3
+ 1037              		.loc 1 200 0
+ 1038 0342 0130     		adds	r0, r0, #1
+ 1039              	.LVL73:
+ 1040              		.loc 1 190 0
+ 1041 0344 9BB2     		uxth	r3, r3
+ 1042              	.LVL74:
+ 1043              		.loc 1 200 0
+ 1044 0346 80B2     		uxth	r0, r0
+ 1045 0348 2084     		strh	r0, [r4, #32]	@ movhi
+ 1046 034a 032B     		cmp	r3, #3
+ 1047 034c 98BF     		it	ls
+ 1048 034e 0423     		movls	r3, #4
+ 1049              	.LVL75:
+ 1050 0350 23E0     		b	.L126
+ 1051              	.LVL76:
+ 1052              	.L124:
+ 1053              		.loc 1 205 0
+ 1054 0352 B5F802C0 		ldrh	ip, [r5, #2]
+ 1055 0356 4BF6FF72 		movw	r2, #49151
+ 1056 035a 9445     		cmp	ip, r2
+ 1057 035c 05D1     		bne	.L127
+ 1058              		.loc 1 208 0
+ 1059 035e 0322     		movs	r2, #3
+ 1060 0360 5343     		muls	r3, r2, r3
+ 1061 0362 B1FBF3F3 		udiv	r3, r1, r3
+ 1062 0366 9BB2     		uxth	r3, r3
+ 1063              	.LVL77:
+ 1064 0368 06E0     		b	.L128
+ 1065              	.LVL78:
+ 1066              	.L127:
+ 1067              		.loc 1 213 0
+ 1068 036a 1922     		movs	r2, #25
+ 1069 036c 5343     		muls	r3, r2, r3
+ 1070 036e B1FBF3F3 		udiv	r3, r1, r3
+ 1071 0372 9BB2     		uxth	r3, r3
+ 1072              	.LVL79:
+ 1073              		.loc 1 215 0
+ 1074 0374 43F48043 		orr	r3, r3, #16384
+ 1075              	.LVL80:
+ 1076              	.L128:
+ 1077              		.loc 1 218 0
+ 1078 0378 1A05     		lsls	r2, r3, #20
+ 1079 037a 120D     		lsrs	r2, r2, #20
+ 1080 037c 0AB9     		cbnz	r2, .L129
+ 1081              		.loc 1 221 0
+ 1082 037e 43F00103 		orr	r3, r3, #1
+ 1083              	.LVL81:
+ 1084              	.L129:
+ 1085              		.loc 1 226 0
+ 1086 0382 4FF49672 		mov	r2, #300
+ 1087 0386 5043     		muls	r0, r2, r0
+ 1088              	.LVL82:
+ 1089 0388 02F52F72 		add	r2, r2, #700
+ 1090 038c 90FBF2F0 		sdiv	r0, r0, r2
+ 1091 0390 0130     		adds	r0, r0, #1
+ 1092 0392 80B2     		uxth	r0, r0
+ 1093 0394 2084     		strh	r0, [r4, #32]	@ movhi
+ 1094              		.loc 1 224 0
+ 1095 0396 43F40043 		orr	r3, r3, #32768
+ 1096              	.LVL83:
+ 1097              	.L126:
+ 1098              		.loc 1 229 0
+ 1099 039a A383     		strh	r3, [r4, #28]	@ movhi
+ 1100              		.loc 1 232 0
+ 1101 039c 2388     		ldrh	r3, [r4, #0]
+ 1102              	.LVL84:
+ 1103 039e 9BB2     		uxth	r3, r3
+ 1104 03a0 43F00103 		orr	r3, r3, #1
+ 1105 03a4 2380     		strh	r3, [r4, #0]	@ movhi
+ 1106              		.loc 1 236 0
+ 1107 03a6 2388     		ldrh	r3, [r4, #0]
+ 1108              		.loc 1 242 0
+ 1109 03a8 E988     		ldrh	r1, [r5, #6]
+ 1110              	.LVL85:
+ 1111              		.loc 1 238 0
+ 1112 03aa 23F48063 		bic	r3, r3, #1024
+ 1113              	.LVL86:
+ 1114              		.loc 1 242 0
+ 1115 03ae 2A88     		ldrh	r2, [r5, #0]
+ 1116              		.loc 1 238 0
+ 1117 03b0 23F00A03 		bic	r3, r3, #10
+ 1118              	.LVL87:
+ 1119 03b4 1B04     		lsls	r3, r3, #16
+ 1120              	.LVL88:
+ 1121              		.loc 1 242 0
+ 1122 03b6 41EA0202 		orr	r2, r1, r2
+ 1123              		.loc 1 238 0
+ 1124 03ba 1B0C     		lsrs	r3, r3, #16
+ 1125              	.LVL89:
+ 1126              		.loc 1 242 0
+ 1127 03bc 1343     		orrs	r3, r3, r2
+ 1128              	.LVL90:
+ 1129 03be 9BB2     		uxth	r3, r3
+ 1130              	.LVL91:
+ 1131              		.loc 1 244 0
+ 1132 03c0 2380     		strh	r3, [r4, #0]	@ movhi
+ 1133              		.loc 1 248 0
+ 1134 03c2 2B89     		ldrh	r3, [r5, #8]
+ 1135              	.LVL92:
+ 1136 03c4 AA88     		ldrh	r2, [r5, #4]
+ 1137 03c6 42EA0303 		orr	r3, r2, r3
+ 1138 03ca 9BB2     		uxth	r3, r3
+ 1139 03cc 2381     		strh	r3, [r4, #8]	@ movhi
+ 1140              		.loc 1 249 0
+ 1141 03ce 06B0     		add	sp, sp, #24
+ 1142 03d0 70BD     		pop	{r4, r5, r6, pc}
+ 1143              	.L132:
+ 1144 03d2 00BF     		.align	2
+ 1145              	.L131:
+ 1146 03d4 40420F00 		.word	1000000
+ 1147 03d8 A0860100 		.word	100000
+ 1148              	.LFE1:
+ 1150              		.align	2
+ 1151              		.global	I2C_DeInit
+ 1152              		.thumb
+ 1153              		.thumb_func
+ 1155              	I2C_DeInit:
+ 1156              	.LFB0:
+ 1157              		.loc 1 112 0
+ 1158              		@ args = 0, pretend = 0, frame = 0
+ 1159              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1160              	.LVL93:
+ 1161 03dc 08B5     		push	{r3, lr}
+ 1162              	.LCFI3:
+ 1163              		.loc 1 116 0
+ 1164 03de 0D4B     		ldr	r3, .L141
+ 1165 03e0 9842     		cmp	r0, r3
+ 1166 03e2 04D0     		beq	.L135
+ 1167 03e4 03F58063 		add	r3, r3, #1024
+ 1168 03e8 9842     		cmp	r0, r3
+ 1169 03ea 12D1     		bne	.L137
+ 1170 03ec 07E0     		b	.L140
+ 1171              	.L135:
+ 1172              		.loc 1 120 0
+ 1173 03ee 4FF40010 		mov	r0, #2097152
+ 1174              	.LVL94:
+ 1175 03f2 0121     		movs	r1, #1
+ 1176 03f4 FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 1177              		.loc 1 122 0
+ 1178 03f8 4FF40010 		mov	r0, #2097152
+ 1179 03fc 06E0     		b	.L138
+ 1180              	.LVL95:
+ 1181              	.L140:
+ 1182              		.loc 1 127 0
+ 1183 03fe 4FF48000 		mov	r0, #4194304
+ 1184              	.LVL96:
+ 1185 0402 0121     		movs	r1, #1
+ 1186 0404 FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 1187              		.loc 1 129 0
+ 1188 0408 4FF48000 		mov	r0, #4194304
+ 1189              	.L138:
+ 1190 040c 0021     		movs	r1, #0
+ 1191 040e FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 1192              	.LVL97:
+ 1193              	.L137:
+ 1194              		.loc 1 135 0
+ 1195 0412 08BD     		pop	{r3, pc}
+ 1196              	.L142:
+ 1197              		.align	2
+ 1198              	.L141:
+ 1199 0414 00540040 		.word	1073763328
+ 1200              	.LFE0:
+ 1508              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_i2c.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:27     .text:00000000 I2C_StructInit
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:63     .text:0000001c I2C_Cmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:94     .text:00000038 I2C_DMACmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:125    .text:00000054 I2C_DMALastTransferCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:156    .text:00000070 I2C_GenerateSTART
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:187    .text:0000008c I2C_GenerateSTOP
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:218    .text:000000a8 I2C_AcknowledgeConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:249    .text:000000c4 I2C_OwnAddress2Config
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:280    .text:000000d8 I2C_DualAddressCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:311    .text:000000f4 I2C_GeneralCallCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:342    .text:00000110 I2C_ITConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:375    .text:00000128 I2C_SendData
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:393    .text:0000012c I2C_ReceiveData
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:413    .text:00000134 I2C_Send7bitAddress
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:442    .text:00000144 I2C_ReadRegister
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:469    .text:00000154 I2C_SoftwareResetCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:500    .text:00000170 I2C_SMBusAlertConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:532    .text:00000190 I2C_TransmitPEC
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:563    .text:000001ac I2C_PECPositionConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:595    .text:000001cc I2C_CalculatePEC
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:626    .text:000001e8 I2C_GetPEC
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:646    .text:000001f0 I2C_ARPCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:677    .text:0000020c I2C_StretchClockCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:708    .text:00000228 I2C_FastModeDutyCycleConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:740    .text:00000248 I2C_GetLastEvent
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:766    .text:00000258 I2C_CheckEvent
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:796    .text:00000270 I2C_GetFlagStatus
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:826    .text:00000288 I2C_ClearFlag
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:886    .text:000002b8 I2C_GetITStatus
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:916    .text:000002d0 I2C_ClearITPendingBit
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:976    .text:00000300 I2C_Init
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:1146   .text:000003d4 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:1150   .text:000003dc $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:1155   .text:000003dc I2C_DeInit
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:1199   .text:00000414 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccx9feZc.s:1215   .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_GetClocksFreq
+RCC_APB1PeriphResetCmd

@@ -1,0 +1,2607 @@
+Archive member included because of file (symbol)
+
+c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+                              ROM_RUN/Eval50xx-IO.o (__aeabi_f2d)
+c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+                              ROM_RUN/Eval50xx-IO.o (__aeabi_dmul)
+c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
+                              ROM_RUN/Eval50xx-IO.o (__aeabi_d2iz)
+c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+                              ROM_RUN/Eval50xx-IO.o (__aeabi_i2f)
+c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+                              ROM_RUN/Eval50xx-IO.o (__aeabi_fdiv)
+
+Allocating common symbols
+Common symbol       size              file
+
+SaveRState          0x2               ROM_RUN/usb_int.o
+UART1TransmitDelayTimer
+                    0x4               ROM_RUN/Eval50xx-UART.o
+SaveState           0x2               ROM_RUN/Eval50xx-USB.o
+ActualCommand       0x8               ROM_RUN/Eval50xx-Commands.o
+wIstr               0x2               ROM_RUN/Eval50xx-USB.o
+pProperty           0x4               ROM_RUN/Eval50xx-USB.o
+TMCLReplyFormat     0x1               ROM_RUN/Eval50xx-Commands.o
+EPindex             0x1               ROM_RUN/Eval50xx-USB.o
+SpecialReply        0x9               ROM_RUN/Eval50xx-Commands.o
+SaveTState          0x2               ROM_RUN/usb_int.o
+Device_Info         0x1c              ROM_RUN/Eval50xx-USB.o
+pUser_Standard_Requests
+                    0x4               ROM_RUN/Eval50xx-USB.o
+buffer_in           0x40              ROM_RUN/Eval50xx-USB.o
+StatusInfo          0x2               ROM_RUN/usb_core.o
+pInformation        0x4               ROM_RUN/Eval50xx-USB.o
+ResumeS             0x2               ROM_RUN/Eval50xx-USB.o
+UART1TimeoutTimer   0x4               ROM_RUN/Eval50xx-UART.o
+UART1TimeoutFlag    0x1               ROM_RUN/Eval50xx-UART.o
+ExtClockFlag        0x1               ROM_RUN/Eval50xx-Main.o
+ActualReply         0x8               ROM_RUN/Eval50xx-Commands.o
+buffer_out          0x40              ROM_RUN/Eval50xx-USB.o
+wInterrupt_Mask     0x2               ROM_RUN/Eval50xx-USB.o
+
+Discarded input sections
+
+ .text          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .data          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .bss           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .init          0x00000000        0x4 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .fini          0x00000000        0x4 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .text          0x00000000       0x68 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .data          0x00000000        0x4 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .bss           0x00000000       0x1c c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .init_array    0x00000000        0x4 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .fini_array    0x00000000        0x4 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .eh_frame      0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .jcr           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .data          0x00000000        0x0 ROM_RUN/cortexm3_macro.o
+ .bss           0x00000000        0x0 ROM_RUN/cortexm3_macro.o
+ .bss           0x00000000        0x0 ROM_RUN/Eval50xx-Main.o
+ .data          0x00000000        0x0 ROM_RUN/Eval50xx-IO.o
+ .data          0x00000000        0x0 ROM_RUN/Eval50xx-SPI.o
+ .bss           0x00000000        0x0 ROM_RUN/Eval50xx-SPI.o
+ .data          0x00000000        0x0 ROM_RUN/Eval50xx-UART.o
+ .data          0x00000000        0x0 ROM_RUN/Eval50xx-SysTick.o
+ .data          0x00000000        0x0 ROM_RUN/Eval50xx-Commands.o
+ .data          0x00000000        0x0 ROM_RUN/Eval50xx-Registers.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_it.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_it.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_adc.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_adc.o
+ .text          0x00000000       0xbc ROM_RUN/stm32f10x_bkp.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_bkp.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_bkp.o
+ .text          0x00000000      0x630 ROM_RUN/stm32f10x_can.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_can.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_can.o
+ .rodata        0x00000000        0x8 ROM_RUN/stm32f10x_can.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_dma.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_dma.o
+ .text          0x00000000       0xf4 ROM_RUN/stm32f10x_exti.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_exti.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_exti.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_flash.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_flash.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_gpio.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_gpio.o
+ .text          0x00000000      0x418 ROM_RUN/stm32f10x_i2c.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_i2c.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_i2c.o
+ .text          0x00000000       0x58 ROM_RUN/stm32f10x_iwdg.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_iwdg.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_iwdg.o
+ .text          0x00000000        0x0 ROM_RUN/stm32f10x_lib.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_lib.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_lib.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_nvic.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_nvic.o
+ .text          0x00000000       0xd4 ROM_RUN/stm32f10x_pwr.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_pwr.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_pwr.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_rcc.o
+ .text          0x00000000      0x15c ROM_RUN/stm32f10x_rtc.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_rtc.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_rtc.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_spi.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_spi.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_systick.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_systick.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_tim.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_tim.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_usart.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_usart.o
+ .text          0x00000000       0x88 ROM_RUN/stm32f10x_wwdg.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_wwdg.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_wwdg.o
+ .data          0x00000000        0x0 ROM_RUN/stm32f10x_vector.o
+ .bss           0x00000000        0x0 ROM_RUN/stm32f10x_vector.o
+ .data          0x00000000        0x0 ROM_RUN/usb_core.o
+ .data          0x00000000        0x0 ROM_RUN/usb_init.o
+ .bss           0x00000000        0x0 ROM_RUN/usb_init.o
+ .data          0x00000000        0x0 ROM_RUN/usb_int.o
+ .bss           0x00000000        0x0 ROM_RUN/usb_int.o
+ .data          0x00000000        0x0 ROM_RUN/usb_mem.o
+ .bss           0x00000000        0x0 ROM_RUN/usb_mem.o
+ .data          0x00000000        0x0 ROM_RUN/usb_regs.o
+ .bss           0x00000000        0x0 ROM_RUN/usb_regs.o
+ .data          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+ .bss           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+ .data          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+ .bss           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+ .data          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
+ .bss           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
+ .data          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+ .bss           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+ .data          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+ .bss           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+ .text          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .data          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .bss           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .eh_frame      0x00000000        0x4 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .jcr           0x00000000        0x4 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .text          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .data          0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .bss           0x00000000        0x0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .init          0x00000000        0x8 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .fini          0x00000000        0x8 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x20000000         0x00005000         xrw
+FLASH            0x08004000         0x0000f000         xr
+FLASHB1          0x00000000         0x00000000         xr
+EXTMEMB0         0x00000000         0x00000000         xr
+EXTMEMB1         0x00000000         0x00000000         xr
+EXTMEMB2         0x00000000         0x00000000         xr
+EXTMEMB3         0x00000000         0x00000000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+LOAD ROM_RUN/cortexm3_macro.o
+LOAD ROM_RUN/Eval50xx-Main.o
+LOAD ROM_RUN/Eval50xx-IO.o
+LOAD ROM_RUN/Eval50xx-SPI.o
+LOAD ROM_RUN/Eval50xx-UART.o
+LOAD ROM_RUN/Eval50xx-USB.o
+LOAD ROM_RUN/Eval50xx-SysTick.o
+LOAD ROM_RUN/Eval50xx-Commands.o
+LOAD ROM_RUN/Eval50xx-Registers.o
+LOAD ROM_RUN/stm32f10x_it.o
+LOAD ROM_RUN/stm32f10x_adc.o
+LOAD ROM_RUN/stm32f10x_bkp.o
+LOAD ROM_RUN/stm32f10x_can.o
+LOAD ROM_RUN/stm32f10x_dma.o
+LOAD ROM_RUN/stm32f10x_exti.o
+LOAD ROM_RUN/stm32f10x_flash.o
+LOAD ROM_RUN/stm32f10x_gpio.o
+LOAD ROM_RUN/stm32f10x_i2c.o
+LOAD ROM_RUN/stm32f10x_iwdg.o
+LOAD ROM_RUN/stm32f10x_lib.o
+LOAD ROM_RUN/stm32f10x_nvic.o
+LOAD ROM_RUN/stm32f10x_pwr.o
+LOAD ROM_RUN/stm32f10x_rcc.o
+LOAD ROM_RUN/stm32f10x_rtc.o
+LOAD ROM_RUN/stm32f10x_spi.o
+LOAD ROM_RUN/stm32f10x_systick.o
+LOAD ROM_RUN/stm32f10x_tim.o
+LOAD ROM_RUN/stm32f10x_usart.o
+LOAD ROM_RUN/stm32f10x_wwdg.o
+LOAD ROM_RUN/stm32f10x_vector.o
+LOAD ROM_RUN/usb_core.o
+LOAD ROM_RUN/usb_init.o
+LOAD ROM_RUN/usb_int.o
+LOAD ROM_RUN/usb_mem.o
+LOAD ROM_RUN/usb_regs.o
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libm.a
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a
+START GROUP
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+END GROUP
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+LOAD c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+                0x00000400                __Stack_Size = 0x400
+                0x00000400                PROVIDE (_Stack_Size, __Stack_Size)
+                0x20004c00                __Stack_Init = (_estack - __Stack_Size)
+                0x20004c00                PROVIDE (_Stack_Init, __Stack_Init)
+                0x00000100                _Minimum_Stack_Size = 0x100
+                0x00000000                PROVIDE (Undefined_Handler, 0x0)
+                0x00000000                PROVIDE (SWI_Handler, 0x0)
+                0x00000000                PROVIDE (IRQ_Handler, 0x0)
+                0x00000000                PROVIDE (Prefetch_Handler, 0x0)
+                0x00000000                PROVIDE (Abort_Handler, 0x0)
+                0x00000000                PROVIDE (FIQ_Handler, 0x0)
+                0x00000000                PROVIDE (NMIException, 0x0)
+                0x00000000                PROVIDE (HardFaultException, 0x0)
+                0x00000000                PROVIDE (MemManageException, 0x0)
+                0x00000000                PROVIDE (BusFaultException, 0x0)
+                0x00000000                PROVIDE (UsageFaultException, 0x0)
+                0x00000000                PROVIDE (SVCHandler, 0x0)
+                0x00000000                PROVIDE (DebugMonitor, 0x0)
+                0x00000000                PROVIDE (PendSVC, 0x0)
+                0x00000000                PROVIDE (SysTickHandler, 0x0)
+                0x00000000                PROVIDE (WWDG_IRQHandler, 0x0)
+                0x00000000                PROVIDE (PVD_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TAMPER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RTC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (FLASH_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RCC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI0_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel6_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel7_IRQHandler, 0x0)
+                0x00000000                PROVIDE (ADC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_HP_CAN_TX_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_LP_CAN_RX0_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN_RX1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN_SCE_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI9_5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_BRK_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_UP_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_TRG_COM_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_CC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C1_EV_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C1_ER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C2_EV_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C2_ER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SPI1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SPI2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI15_10_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RTCAlarm_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USBWakeUp_IRQHandler, 0x0)
+                0x42000000                PERIPH_BB_BASE = 0x42000000
+                0x22000000                SRAM_BB_BASE = 0x22000000
+                0x20000000                SRAM_BASE = 0x20000000
+                0x40000000                PERIPH_BASE = 0x40000000
+                0x40022000                PROVIDE (FLASH_BASE, 0x40022000)
+                0x1ffff800                PROVIDE (OB_BASE, 0x1ffff800)
+                0x40000000                APB1PERIPH_BASE = PERIPH_BASE
+                0x40010000                APB2PERIPH_BASE = (PERIPH_BASE + 0x10000)
+                0x40020000                AHBPERIPH_BASE = (PERIPH_BASE + 0x20000)
+                0x40000000                PROVIDE (TIM2, (APB1PERIPH_BASE + 0x0))
+                0x40000400                PROVIDE (TIM3, (APB1PERIPH_BASE + 0x400))
+                0x40000800                PROVIDE (TIM4, (APB1PERIPH_BASE + 0x800))
+                0x40002800                PROVIDE (RTC, (APB1PERIPH_BASE + 0x2800))
+                0x40002c00                PROVIDE (WWDG, (APB1PERIPH_BASE + 0x2c00))
+                0x40003000                PROVIDE (IWDG, (APB1PERIPH_BASE + 0x3000))
+                0x40003800                PROVIDE (SPI2, (APB1PERIPH_BASE + 0x3800))
+                0x40004400                PROVIDE (USART2, (APB1PERIPH_BASE + 0x4400))
+                0x40004800                PROVIDE (USART3, (APB1PERIPH_BASE + 0x4800))
+                0x40005400                PROVIDE (I2C1, (APB1PERIPH_BASE + 0x5400))
+                0x40005800                PROVIDE (I2C2, (APB1PERIPH_BASE + 0x5800))
+                0x40006400                PROVIDE (CAN, (APB1PERIPH_BASE + 0x6400))
+                0x40006c00                PROVIDE (BKP, (APB1PERIPH_BASE + 0x6c00))
+                0x40007000                PROVIDE (PWR, (APB1PERIPH_BASE + 0x7000))
+                0x40010000                PROVIDE (AFIO, (APB2PERIPH_BASE + 0x0))
+                0x40010400                PROVIDE (EXTI, (APB2PERIPH_BASE + 0x400))
+                0x40010800                PROVIDE (GPIOA, (APB2PERIPH_BASE + 0x800))
+                0x40010c00                PROVIDE (GPIOB, (APB2PERIPH_BASE + 0xc00))
+                0x40011000                PROVIDE (GPIOC, (APB2PERIPH_BASE + 0x1000))
+                0x40011400                PROVIDE (GPIOD, (APB2PERIPH_BASE + 0x1400))
+                0x40011800                PROVIDE (GPIOE, (APB2PERIPH_BASE + 0x1800))
+                0x40012400                PROVIDE (ADC1, (APB2PERIPH_BASE + 0x2400))
+                0x40012800                PROVIDE (ADC2, (APB2PERIPH_BASE + 0x2800))
+                0x40012c00                PROVIDE (TIM1, (APB2PERIPH_BASE + 0x2c00))
+                0x40013000                PROVIDE (SPI1, (APB2PERIPH_BASE + 0x3000))
+                0x40013800                PROVIDE (USART1, (APB2PERIPH_BASE + 0x3800))
+                0x40020000                PROVIDE (DMA, (AHBPERIPH_BASE + 0x0))
+                0x40020008                PROVIDE (DMA_Channel1, (AHBPERIPH_BASE + 0x8))
+                0x4002001c                PROVIDE (DMA_Channel2, (AHBPERIPH_BASE + 0x1c))
+                0x40020030                PROVIDE (DMA_Channel3, (AHBPERIPH_BASE + 0x30))
+                0x40020044                PROVIDE (DMA_Channel4, (AHBPERIPH_BASE + 0x44))
+                0x40020058                PROVIDE (DMA_Channel5, (AHBPERIPH_BASE + 0x58))
+                0x4002006c                PROVIDE (DMA_Channel6, (AHBPERIPH_BASE + 0x6c))
+                0x40020080                PROVIDE (DMA_Channel7, (AHBPERIPH_BASE + 0x80))
+                0x40021000                PROVIDE (RCC, (AHBPERIPH_BASE + 0x1000))
+                0xe000e000                SCS_BASE = 0xe000e000
+                0xe000e010                PROVIDE (SysTick, (SCS_BASE + 0x10))
+                0xe000e100                PROVIDE (NVIC, (SCS_BASE + 0x100))
+                0xe000ed00                PROVIDE (SCB, (SCS_BASE + 0xd00))
+                0x20005000                _estack = 0x20005000
+
+.isr_vector     0x08004000      0x10c
+                0x08004000                . = ALIGN (0x4)
+ *(.isr_vector)
+ .isr_vector    0x08004000      0x10c ROM_RUN/stm32f10x_vector.o
+                0x08004000                g_pfnVectors
+                0x0800410c                . = ALIGN (0x4)
+
+.flashtext      0x0800410c        0x0
+                0x0800410c                . = ALIGN (0x4)
+ *(.flashtext)
+                0x0800410c                . = ALIGN (0x4)
+
+.text           0x08004110     0x6180
+                0x08004110                . = ALIGN (0x4)
+ *(.text)
+ .text          0x08004110       0x6e ROM_RUN/cortexm3_macro.o
+                0x08004110                __WFI
+                0x08004114                __WFE
+                0x08004118                __SEV
+                0x0800411c                __ISB
+                0x08004122                __DSB
+                0x08004128                __DMB
+                0x0800412e                __SVC
+                0x08004132                __MRS_CONTROL
+                0x08004138                __MSR_CONTROL
+                0x08004142                __MRS_PSP
+                0x08004148                __MSR_PSP
+                0x0800414e                __MRS_MSP
+                0x08004154                __MSR_MSP
+                0x0800415a                __SETPRIMASK
+                0x0800415e                __RESETPRIMASK
+                0x08004162                __SETFAULTMASK
+                0x08004166                __RESETFAULTMASK
+                0x0800416a                __BASEPRICONFIG
+                0x08004170                __GetBASEPRI
+                0x08004176                __REV_HalfWord
+                0x0800417a                __REV_Word
+ *fill*         0x0800417e        0x2 00
+ .text          0x08004180      0x148 ROM_RUN/Eval50xx-Main.o
+                0x08004180                InitMotorDrivers
+                0x080041d0                main
+ .text          0x080042c8      0x2b8 ROM_RUN/Eval50xx-IO.o
+                0x080042c8                GetMeasuredSpeed
+                0x080042dc                EnableInterrupts
+                0x080042e0                DisableInterrupts
+                0x080042e4                ResetCPU
+                0x080042f4                SystemControl
+                0x080043ac                DisablePins
+                0x080043f0                InitIO
+ .text          0x08004580       0xf0 ROM_RUN/Eval50xx-SPI.o
+                0x08004580                ReadWriteSPI
+                0x080045d0                InitSPI
+ .text          0x08004670      0x24c ROM_RUN/Eval50xx-UART.o
+                0x08004670                ReadUART
+                0x0800469c                SetUARTTransmitDelay
+                0x080046a8                CheckUARTTimeout
+                0x080046bc                ClearUARTRxBuffer
+                0x080046d4                WriteUART
+                0x0800470c                USART2_IRQHandler
+                0x080047ac                InitUART
+ .text          0x080048bc      0x574 ROM_RUN/Eval50xx-USB.o
+                0x080048bc                Enter_LowPowerMode
+                0x080048c8                Leave_LowPowerMode
+                0x080048e4                Get_SerialNum
+                0x080048e8                EP1_IN_Callback
+                0x080048f4                Suspend
+                0x08004918                Resume_Init
+                0x08004938                Resume
+                0x080049c4                Virtual_Com_Port_SetConfiguration
+                0x080049dc                Virtual_Com_Port_SetDeviceAddress
+                0x080049e8                Virtual_Com_Port_Status_In
+                0x080049fc                Virtual_Com_Port_Status_Out
+                0x08004a00                Virtual_Com_Port_Data_Setup
+                0x08004a60                Virtual_Com_Port_NoData_Setup
+                0x08004a84                Virtual_Com_Port_Get_Interface_Setting
+                0x08004a94                Virtual_Com_Port_GetLineCoding
+                0x08004ab0                Virtual_Com_Port_SetLineCoding
+                0x08004acc                USBGetData
+                0x08004b04                GetUSBCmd
+                0x08004b30                USBSendData
+                0x08004b54                Virtual_Com_Port_GetStringDescriptor
+                0x08004b78                Virtual_Com_Port_GetConfigDescriptor
+                0x08004b88                Virtual_Com_Port_GetDeviceDescriptor
+                0x08004b98                Virtual_Com_Port_Reset
+                0x08004c74                USB_Istr
+                0x08004ce8                EP3_OUT_Callback
+                0x08004d14                USB_Cable_Config
+                0x08004d34                PowerOff
+                0x08004d58                DetachUSB
+                0x08004d60                PowerOn
+                0x08004d90                Virtual_Com_Port_init
+                0x08004dc4                USB_Interrupts_Config
+                0x08004de4                Set_USBClock
+                0x08004df8                InitUSB
+ .text          0x08004e30       0x88 ROM_RUN/Eval50xx-SysTick.o
+                0x08004e30                SysTickHandler
+                0x08004e80                GetSysTimer
+                0x08004e8c                InitSysTick
+ .text          0x08004eb8      0xa48 ROM_RUN/Eval50xx-Commands.o
+                0x08004eb8                ExecuteActualCommand
+                0x08005640                ProcessCommands
+ .text          0x08005900      0x158 ROM_RUN/Eval50xx-Registers.o
+                0x08005900                ReadTMC562Int
+                0x080059a4                WriteTMC562Int
+                0x080059f4                WriteTMC562Datagram
+ .text          0x08005a58      0x124 ROM_RUN/stm32f10x_it.o
+                0x08005a58                NMIException
+                0x08005a5c                HardFaultException
+                0x08005a60                MemManageException
+                0x08005a64                BusFaultException
+                0x08005a68                UsageFaultException
+                0x08005a6c                DebugMonitor
+                0x08005a70                SVCHandler
+                0x08005a74                PendSVC
+                0x08005a78                WWDG_IRQHandler
+                0x08005a7c                PVD_IRQHandler
+                0x08005a80                TAMPER_IRQHandler
+                0x08005a84                RTC_IRQHandler
+                0x08005a88                FLASH_IRQHandler
+                0x08005a8c                RCC_IRQHandler
+                0x08005a90                EXTI0_IRQHandler
+                0x08005a94                EXTI1_IRQHandler
+                0x08005a98                EXTI2_IRQHandler
+                0x08005a9c                EXTI3_IRQHandler
+                0x08005aa0                EXTI4_IRQHandler
+                0x08005aa4                DMA1_Channel1_IRQHandler
+                0x08005aa8                DMA1_Channel2_IRQHandler
+                0x08005aac                DMA1_Channel3_IRQHandler
+                0x08005ab0                DMA1_Channel4_IRQHandler
+                0x08005ab4                DMA1_Channel5_IRQHandler
+                0x08005ab8                DMA1_Channel6_IRQHandler
+                0x08005abc                DMA1_Channel7_IRQHandler
+                0x08005ac0                ADC_IRQHandler
+                0x08005ac4                USB_HP_CAN_TX_IRQHandler
+                0x08005ac8                CAN_RX1_IRQHandler
+                0x08005adc                CAN_SCE_IRQHandler
+                0x08005ae0                EXTI9_5_IRQHandler
+                0x08005ae4                TIM1_BRK_IRQHandler
+                0x08005ae8                TIM1_UP_IRQHandler
+                0x08005aec                TIM1_TRG_COM_IRQHandler
+                0x08005af0                TIM1_CC_IRQHandler
+                0x08005af4                TIM2_IRQHandler
+                0x08005af8                TIM3_IRQHandler
+                0x08005afc                TIM4_IRQHandler
+                0x08005b00                I2C1_EV_IRQHandler
+                0x08005b04                I2C1_ER_IRQHandler
+                0x08005b08                I2C2_EV_IRQHandler
+                0x08005b0c                I2C2_ER_IRQHandler
+                0x08005b10                SPI1_IRQHandler
+                0x08005b14                SPI2_IRQHandler
+                0x08005b18                USART1_IRQHandler
+                0x08005b20                USART3_IRQHandler
+                0x08005b24                EXTI15_10_IRQHandler
+                0x08005b28                RTCAlarm_IRQHandler
+                0x08005b2c                USBWakeUp_IRQHandler
+                0x08005b30                TIM8_BRK_IRQHandler
+                0x08005b34                TIM8_UP_IRQHandler
+                0x08005b38                TIM8_TRG_COM_IRQHandler
+                0x08005b3c                TIM8_CC_IRQHandler
+                0x08005b40                ADC3_IRQHandler
+                0x08005b44                FSMC_IRQHandler
+                0x08005b48                SDIO_IRQHandler
+                0x08005b4c                TIM5_IRQHandler
+                0x08005b50                SPI3_IRQHandler
+                0x08005b54                UART4_IRQHandler
+                0x08005b58                UART5_IRQHandler
+                0x08005b5c                TIM6_IRQHandler
+                0x08005b60                TIM7_IRQHandler
+                0x08005b64                DMA2_Channel1_IRQHandler
+                0x08005b68                DMA2_Channel2_IRQHandler
+                0x08005b6c                DMA2_Channel3_IRQHandler
+                0x08005b70                DMA2_Channel4_5_IRQHandler
+                0x08005b74                USB_LP_CAN_RX0_IRQHandler
+ .text          0x08005b7c      0x398 ROM_RUN/stm32f10x_adc.o
+                0x08005b7c                ADC_Init
+                0x08005bc8                ADC_StructInit
+                0x08005bdc                ADC_Cmd
+                0x08005bf0                ADC_DMACmd
+                0x08005c04                ADC_ITConfig
+                0x08005c18                ADC_ResetCalibration
+                0x08005c24                ADC_GetResetCalibrationStatus
+                0x08005c2c                ADC_StartCalibration
+                0x08005c38                ADC_GetCalibrationStatus
+                0x08005c40                ADC_SoftwareStartConvCmd
+                0x08005c54                ADC_GetSoftwareStartConvStatus
+                0x08005c5c                ADC_DiscModeChannelCountConfig
+                0x08005c6c                ADC_DiscModeCmd
+                0x08005c80                ADC_RegularChannelConfig
+                0x08005d24                ADC_ExternalTrigConvCmd
+                0x08005d38                ADC_GetConversionValue
+                0x08005d40                ADC_GetDualModeConversionValue
+                0x08005d4c                ADC_AutoInjectedConvCmd
+                0x08005d60                ADC_InjectedDiscModeCmd
+                0x08005d74                ADC_ExternalTrigInjectedConvConfig
+                0x08005d84                ADC_ExternalTrigInjectedConvCmd
+                0x08005d98                ADC_SoftwareStartInjectedConvCmd
+                0x08005dac                ADC_GetSoftwareStartInjectedConvCmdStatus
+                0x08005db4                ADC_InjectedChannelConfig
+                0x08005e28                ADC_InjectedSequencerLengthConfig
+                0x08005e38                ADC_SetInjectedOffset
+                0x08005e3c                ADC_GetInjectedConversionValue
+                0x08005e44                ADC_AnalogWatchdogCmd
+                0x08005e58                ADC_AnalogWatchdogThresholdsConfig
+                0x08005e60                ADC_AnalogWatchdogSingleChannelConfig
+                0x08005e70                ADC_TempSensorVrefintCmd
+                0x08005e8c                ADC_GetFlagStatus
+                0x08005e98                ADC_ClearFlag
+                0x08005ea0                ADC_GetITStatus
+                0x08005eb8                ADC_ClearITPendingBit
+                0x08005ec0                ADC_DeInit
+ .text          0x08005f14      0x1e0 ROM_RUN/stm32f10x_dma.o
+                0x08005f14                DMA_DeInit
+                0x08005ff4                DMA_Init
+                0x08006038                DMA_StructInit
+                0x08006054                DMA_Cmd
+                0x08006068                DMA_ITConfig
+                0x0800607c                DMA_GetCurrDataCounter
+                0x08006084                DMA_GetFlagStatus
+                0x080060a4                DMA_ClearFlag
+                0x080060bc                DMA_GetITStatus
+                0x080060dc                DMA_ClearITPendingBit
+ .text          0x080060f4      0x498 ROM_RUN/stm32f10x_flash.o
+                0x080060f4                FLASH_SetLatency
+                0x0800610c                FLASH_HalfCycleAccessCmd
+                0x08006124                FLASH_PrefetchBufferCmd
+                0x0800613c                FLASH_Unlock
+                0x08006154                FLASH_Lock
+                0x08006164                FLASH_GetUserOptionByte
+                0x08006170                FLASH_GetWriteProtectionOptionByte
+                0x0800617c                FLASH_GetReadOutProtectionStatus
+                0x0800618c                FLASH_GetPrefetchBufferStatus
+                0x0800619c                FLASH_ITConfig
+                0x080061b8                FLASH_GetFlagStatus
+                0x080061d8                FLASH_ClearFlag
+                0x080061e4                FLASH_GetStatus
+                0x08006210                FLASH_WaitForLastOperation
+                0x08006240                FLASH_UserOptionByteConfig
+                0x08006298                FLASH_ReadOutProtection
+                0x08006330                FLASH_EnableWriteProtection
+                0x080063c8                FLASH_ProgramOptionByteData
+                0x08006410                FLASH_ProgramHalfWord
+                0x08006448                FLASH_ProgramWord
+                0x08006490                FLASH_EraseOptionBytes
+                0x08006508                FLASH_EraseAllPages
+                0x08006548                FLASH_ErasePage
+ .text          0x0800658c      0x268 ROM_RUN/stm32f10x_gpio.o
+                0x0800658c                GPIO_Init
+                0x08006620                GPIO_StructInit
+                0x08006630                GPIO_ReadInputDataBit
+                0x0800663c                GPIO_ReadInputData
+                0x08006644                GPIO_ReadOutputDataBit
+                0x08006650                GPIO_ReadOutputData
+                0x08006658                GPIO_SetBits
+                0x0800665c                GPIO_ResetBits
+                0x08006660                GPIO_WriteBit
+                0x0800666c                GPIO_Write
+                0x08006670                GPIO_PinLockConfig
+                0x08006680                GPIO_EventOutputConfig
+                0x080066a0                GPIO_EventOutputCmd
+                0x080066ac                GPIO_PinRemapConfig
+                0x08006708                GPIO_EXTILineConfig
+                0x0800673c                GPIO_AFIODeInit
+                0x08006750                GPIO_DeInit
+ .text          0x080067f4      0x35c ROM_RUN/stm32f10x_nvic.o
+                0x080067f4                NVIC_DeInit
+                0x08006828                NVIC_SCBDeInit
+                0x08006858                NVIC_PriorityGroupConfig
+                0x0800686c                NVIC_Init
+                0x080068f0                NVIC_StructInit
+                0x080068fc                NVIC_GetCurrentPendingIRQChannel
+                0x0800690c                NVIC_GetIRQChannelPendingBitStatus
+                0x08006930                NVIC_SetIRQChannelPendingBit
+                0x0800693c                NVIC_ClearIRQChannelPendingBit
+                0x08006954                NVIC_GetCurrentActiveHandler
+                0x08006964                NVIC_GetIRQChannelActiveBitStatus
+                0x08006988                NVIC_GetCPUID
+                0x08006994                NVIC_SetVectorTable
+                0x080069a8                NVIC_GenerateSystemReset
+                0x080069b8                NVIC_GenerateCoreReset
+                0x080069c8                NVIC_SystemLPConfig
+                0x080069e4                NVIC_SystemHandlerConfig
+                0x08006a08                NVIC_SystemHandlerPriorityConfig
+                0x08006a60                NVIC_GetSystemHandlerPendingBitStatus
+                0x08006a80                NVIC_SetSystemHandlerPendingBit
+                0x08006a98                NVIC_ClearSystemHandlerPendingBit
+                0x08006ab4                NVIC_GetSystemHandlerActiveBitStatus
+                0x08006ad4                NVIC_GetFaultHandlerSources
+                0x08006b08                NVIC_GetFaultAddress
+                0x08006b1c                NVIC_GetBASEPRI
+                0x08006b24                NVIC_BASEPRICONFIG
+                0x08006b30                NVIC_RESETFAULTMASK
+                0x08006b38                NVIC_SETFAULTMASK
+                0x08006b40                NVIC_RESETPRIMASK
+                0x08006b48                NVIC_SETPRIMASK
+ .text          0x08006b50      0x370 ROM_RUN/stm32f10x_rcc.o
+                0x08006b50                RCC_DeInit
+                0x08006b90                RCC_HSEConfig
+                0x08006bc8                RCC_AdjustHSICalibrationValue
+                0x08006bdc                RCC_HSICmd
+                0x08006be8                RCC_PLLConfig
+                0x08006c00                RCC_PLLCmd
+                0x08006c0c                RCC_SYSCLKConfig
+                0x08006c20                RCC_GetSYSCLKSource
+                0x08006c30                RCC_HCLKConfig
+                0x08006c44                RCC_PCLK1Config
+                0x08006c58                RCC_PCLK2Config
+                0x08006c6c                RCC_ITConfig
+                0x08006c88                RCC_USBCLKConfig
+                0x08006c94                RCC_ADCCLKConfig
+                0x08006ca8                RCC_LSEConfig
+                0x08006cc8                RCC_LSICmd
+                0x08006cd4                RCC_RTCCLKConfig
+                0x08006ce4                RCC_RTCCLKCmd
+                0x08006cf0                RCC_GetClocksFreq
+                0x08006d80                RCC_AHBPeriphClockCmd
+                0x08006d9c                RCC_APB2PeriphClockCmd
+                0x08006db8                RCC_APB1PeriphClockCmd
+                0x08006dd4                RCC_APB2PeriphResetCmd
+                0x08006df0                RCC_APB1PeriphResetCmd
+                0x08006e0c                RCC_BackupResetCmd
+                0x08006e18                RCC_ClockSecuritySystemCmd
+                0x08006e24                RCC_MCOConfig
+                0x08006e30                RCC_GetFlagStatus
+                0x08006e5c                RCC_WaitForHSEStartUp
+                0x08006e90                RCC_ClearFlag
+                0x08006ea0                RCC_GetITStatus
+                0x08006eb4                RCC_ClearITPendingBit
+ .text          0x08006ec0      0x33c ROM_RUN/stm32f10x_spi.o
+                0x08006ec0                SPI_Init
+                0x08006f08                SPI_StructInit
+                0x08006f24                I2S_StructInit
+                0x08006f38                SPI_Cmd
+                0x08006f54                I2S_Cmd
+                0x08006f70                SPI_I2S_ITConfig
+                0x08006f90                SPI_I2S_DMACmd
+                0x08006fa8                SPI_I2S_SendData
+                0x08006fac                SPI_I2S_ReceiveData
+                0x08006fb4                SPI_NSSInternalSoftwareConfig
+                0x08006fd0                SPI_SSOutputCmd
+                0x08006fec                SPI_DataSizeConfig
+                0x08007004                SPI_TransmitCRC
+                0x08007010                SPI_CalculateCRC
+                0x0800702c                SPI_GetCRC
+                0x08007038                SPI_GetCRCPolynomial
+                0x08007040                SPI_BiDirectionalLineConfig
+                0x08007060                SPI_I2S_GetFlagStatus
+                0x0800706c                SPI_I2S_ClearFlag
+                0x08007094                SPI_I2S_GetITStatus
+                0x080070c0                SPI_I2S_ClearITPendingBit
+                0x080070f0                I2S_Init
+                0x080071a0                SPI_I2S_DeInit
+ .text          0x080071fc       0x9c ROM_RUN/stm32f10x_systick.o
+                0x080071fc                SysTick_CLKSourceConfig
+                0x0800721c                SysTick_SetReload
+                0x08007228                SysTick_CounterCmd
+                0x08007254                SysTick_ITConfig
+                0x08007270                SysTick_GetCounter
+                0x0800727c                SysTick_GetFlagStatus
+ .text          0x08007298      0xb88 ROM_RUN/stm32f10x_tim.o
+                0x08007298                TIM_TimeBaseInit
+                0x080072dc                TIM_OC1Init
+                0x0800736c                TIM_OC2Init
+                0x0800740c                TIM_OC3Init
+                0x080074a8                TIM_OC4Init
+                0x08007518                TIM_BDTRConfig
+                0x08007548                TIM_TimeBaseStructInit
+                0x0800755c                TIM_OCStructInit
+                0x08007570                TIM_ICStructInit
+                0x08007584                TIM_BDTRStructInit
+                0x08007598                TIM_Cmd
+                0x080075b4                TIM_CtrlPWMOutputs
+                0x080075d4                TIM_ITConfig
+                0x080075ec                TIM_GenerateEvent
+                0x080075f0                TIM_DMAConfig
+                0x080075f8                TIM_DMACmd
+                0x08007610                TIM_InternalClockConfig
+                0x08007620                TIM_ETRConfig
+                0x08007640                TIM_ETRClockMode2Config
+                0x08007654                TIM_ETRClockMode1Config
+                0x08007670                TIM_PrescalerConfig
+                0x08007678                TIM_CounterModeConfig
+                0x0800768c                TIM_SelectInputTrigger
+                0x080076a0                TIM_ITRxExternalClockConfig
+                0x080076b4                TIM_EncoderInterfaceConfig
+                0x080076fc                TIM_ForcedOC1Config
+                0x08007710                TIM_ForcedOC2Config
+                0x08007724                TIM_ForcedOC3Config
+                0x08007738                TIM_ForcedOC4Config
+                0x0800774c                TIM_ARRPreloadConfig
+                0x08007768                TIM_SelectCOM
+                0x08007784                TIM_SelectCCDMA
+                0x080077a0                TIM_CCPreloadControl
+                0x080077bc                TIM_OC1PreloadConfig
+                0x080077d0                TIM_OC2PreloadConfig
+                0x080077e4                TIM_OC3PreloadConfig
+                0x080077f8                TIM_OC4PreloadConfig
+                0x0800780c                TIM_OC1FastConfig
+                0x08007820                TIM_OC2FastConfig
+                0x08007834                TIM_OC3FastConfig
+                0x08007848                TIM_OC4FastConfig
+                0x0800785c                TIM_ClearOC1Ref
+                0x08007870                TIM_ClearOC2Ref
+                0x08007880                TIM_ClearOC3Ref
+                0x08007894                TIM_ClearOC4Ref
+                0x080078a4                TIM_OC1PolarityConfig
+                0x080078b8                TIM_OC1NPolarityConfig
+                0x080078cc                TIM_OC2PolarityConfig
+                0x080078e0                TIM_OC2NPolarityConfig
+                0x080078f4                TIM_OC3PolarityConfig
+                0x08007908                TIM_OC3NPolarityConfig
+                0x0800791c                TIM_OC4PolarityConfig
+                0x08007930                TIM_CCxCmd
+                0x0800794c                TIM_CCxNCmd
+                0x08007968                TIM_SelectOCxM
+                0x080079b8                TIM_UpdateDisableConfig
+                0x080079d4                TIM_UpdateRequestConfig
+                0x080079f0                TIM_SelectHallSensor
+                0x08007a0c                TIM_SelectOnePulseMode
+                0x08007a24                TIM_SelectOutputTrigger
+                0x08007a3c                TIM_SelectSlaveMode
+                0x08007a54                TIM_SelectMasterSlaveMode
+                0x08007a6c                TIM_SetCounter
+                0x08007a70                TIM_SetAutoreload
+                0x08007a74                TIM_SetCompare1
+                0x08007a78                TIM_SetCompare2
+                0x08007a7c                TIM_SetCompare3
+                0x08007a80                TIM_SetCompare4
+                0x08007a88                TIM_SetIC1Prescaler
+                0x08007aa0                TIM_SetIC2Prescaler
+                0x08007abc                TIM_SetIC3Prescaler
+                0x08007ad4                TIM_SetIC4Prescaler
+                0x08007af0                TIM_SetClockDivision
+                0x08007b04                TIM_GetCapture1
+                0x08007b0c                TIM_GetCapture2
+                0x08007b14                TIM_GetCapture3
+                0x08007b1c                TIM_GetCapture4
+                0x08007b24                TIM_GetCounter
+                0x08007b2c                TIM_GetPrescaler
+                0x08007b34                TIM_GetFlagStatus
+                0x08007b40                TIM_ClearFlag
+                0x08007b48                TIM_GetITStatus
+                0x08007b60                TIM_ClearITPendingBit
+                0x08007bf8                TIM_TIxExternalClockConfig
+                0x08007c28                TIM_PWMIConfig
+                0x08007c94                TIM_ICInit
+                0x08007d5c                TIM_DeInit
+ .text          0x08007e20      0x38c ROM_RUN/stm32f10x_usart.o
+                0x08007e20                USART_StructInit
+                0x08007e38                USART_ClockInit
+                0x08007e64                USART_ClockStructInit
+                0x08007e70                USART_Cmd
+                0x08007e8c                USART_ITConfig
+                0x08007ec4                USART_DMACmd
+                0x08007edc                USART_SetAddress
+                0x08007ef4                USART_WakeUpConfig
+                0x08007f0c                USART_ReceiverWakeUpCmd
+                0x08007f28                USART_LINBreakDetectLengthConfig
+                0x08007f40                USART_LINCmd
+                0x08007f5c                USART_SendData
+                0x08007f64                USART_ReceiveData
+                0x08007f6c                USART_SendBreak
+                0x08007f78                USART_SetGuardTime
+                0x08007f8c                USART_SetPrescaler
+                0x08007fa0                USART_SmartCardCmd
+                0x08007fbc                USART_SmartCardNACKCmd
+                0x08007fd8                USART_HalfDuplexCmd
+                0x08007ff4                USART_IrDAConfig
+                0x0800800c                USART_IrDACmd
+                0x08008028                USART_GetFlagStatus
+                0x08008034                USART_ClearFlag
+                0x0800803c                USART_GetITStatus
+                0x0800807c                USART_ClearITPendingBit
+                0x0800808c                USART_Init
+                0x0800811c                USART_DeInit
+ .text          0x080081ac       0x50 ROM_RUN/stm32f10x_vector.o
+                0x080081ac                Reset_Handler
+ .text          0x080081fc      0x894 ROM_RUN/usb_core.o
+                0x080081fc                Standard_GetConfiguration
+                0x08008224                Standard_SetConfiguration
+                0x0800825c                Standard_GetInterface
+                0x08008284                Standard_SetInterface
+                0x080082cc                Standard_GetStatus
+                0x08008374                Standard_SetEndPointFeature
+                0x08008400                Standard_SetDeviceFeature
+                0x08008424                Standard_GetDescriptorData
+                0x08008440                SetDeviceAddress
+                0x08008484                NOP_Process
+                0x08008488                Post0_Process
+                0x080084cc                Out0_Process
+                0x08008648                In0_Process
+                0x080086a8                Standard_ClearFeature
+                0x08008788                Setup0_Process
+ .text          0x08008a90       0x38 ROM_RUN/usb_init.o
+                0x08008a90                USB_Init
+ .text          0x08008ac8      0x20c ROM_RUN/usb_int.o
+                0x08008ac8                CTR_HP
+                0x08008b4c                CTR_LP
+ .text          0x08008cd4       0x54 ROM_RUN/usb_mem.o
+                0x08008cd4                UserToPMABufferCopy
+                0x08008d04                PMAToUserBufferCopy
+ .text          0x08008d28      0x770 ROM_RUN/usb_regs.o
+                0x08008d28                SetCNTR
+                0x08008d34                GetCNTR
+                0x08008d40                SetISTR
+                0x08008d4c                GetISTR
+                0x08008d58                GetFNR
+                0x08008d64                SetDADDR
+                0x08008d70                GetDADDR
+                0x08008d7c                SetBTABLE
+                0x08008d90                GetBTABLE
+                0x08008d9c                SetENDPOINT
+                0x08008da8                GetENDPOINT
+                0x08008db8                SetEPType
+                0x08008dd4                GetEPType
+                0x08008de4                SetEPTxStatus
+                0x08008e14                SetEPRxStatus
+                0x08008e44                SetDouBleBuffEPStall
+                0x08008e6c                GetEPTxStatus
+                0x08008e7c                GetEPRxStatus
+                0x08008e8c                SetEPTxValid
+                0x08008ea8                SetEPRxValid
+                0x08008ec4                SetEP_KIND
+                0x08008ee0                ClearEP_KIND
+                0x08008ef8                Clear_Status_Out
+                0x08008f10                Set_Status_Out
+                0x08008f2c                SetEPDoubleBuff
+                0x08008f48                ClearEPDoubleBuff
+                0x08008f60                GetTxStallStatus
+                0x08008f78                GetRxStallStatus
+                0x08008f94                ClearEP_CTR_RX
+                0x08008fac                ClearEP_CTR_TX
+                0x08008fc4                ToggleDTOG_RX
+                0x08008fe0                ToggleDTOG_TX
+                0x08008ffc                ClearDTOG_RX
+                0x08009024                ClearDTOG_TX
+                0x0800904c                SetEPAddress
+                0x08009068                GetEPAddress
+                0x08009078                SetEPTxAddr
+                0x08009098                SetEPRxAddr
+                0x080090b8                GetEPTxAddr
+                0x080090d4                GetEPRxAddr
+                0x080090f0                SetEPTxCount
+                0x0800910c                SetEPCountRxReg
+                0x08009134                SetEPRxCount
+                0x08009174                GetEPTxCount
+                0x08009194                GetEPRxCount
+                0x080091b4                SetEPDblBuffAddr
+                0x080091f0                SetEPDblBuf0Addr
+                0x08009210                SetEPDblBuf1Addr
+                0x08009230                GetEPDblBuf0Addr
+                0x0800924c                GetEPDblBuf1Addr
+                0x08009268                SetEPDblBuffCount
+                0x08009310                SetEPDblBuf0Count
+                0x0800936c                SetEPDblBuf1Count
+                0x080093c8                GetEPDblBuf0Count
+                0x080093e8                GetEPDblBuf1Count
+                0x08009408                GetEPDblBufDir
+                0x0800944c                FreeUserBuffer
+                0x08009484                ToWord
+                0x0800948c                ByteSwap
+ .text          0x08009498      0x370 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+                0x08009498                __aeabi_drsub
+                0x080094a0                __aeabi_dsub
+                0x080094a0                __subdf3
+                0x080094a4                __aeabi_dadd
+                0x080094a4                __adddf3
+                0x0800971c                __floatunsidf
+                0x0800971c                __aeabi_ui2d
+                0x0800973c                __floatsidf
+                0x0800973c                __aeabi_i2d
+                0x08009760                __aeabi_f2d
+                0x08009760                __extendsfdf2
+                0x0800979c                __floatundidf
+                0x0800979c                __aeabi_ul2d
+                0x080097ac                __floatdidf
+                0x080097ac                __aeabi_l2d
+ .text          0x08009808      0x424 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+                0x08009808                __aeabi_dmul
+                0x08009808                __muldf3
+                0x08009a5c                __divdf3
+                0x08009a5c                __aeabi_ddiv
+ .text          0x08009c2c       0x50 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
+                0x08009c2c                __aeabi_d2iz
+                0x08009c2c                __fixdfsi
+ .text          0x08009c7c      0x21c c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+                0x08009c7c                __aeabi_frsub
+                0x08009c84                __subsf3
+                0x08009c84                __aeabi_fsub
+                0x08009c88                __aeabi_fadd
+                0x08009c88                __addsf3
+                0x08009de8                __aeabi_ui2f
+                0x08009de8                __floatunsisf
+                0x08009df0                __aeabi_i2f
+                0x08009df0                __floatsisf
+                0x08009e0c                __aeabi_ul2f
+                0x08009e0c                __floatundisf
+                0x08009e1c                __aeabi_l2f
+                0x08009e1c                __floatdisf
+ .text          0x08009e98      0x2a0 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+                0x08009e98                __mulsf3
+                0x08009e98                __aeabi_fmul
+                0x0800a000                __aeabi_fdiv
+                0x0800a000                __divsf3
+ *(.text.*)
+ *(.rodata)
+ .rodata        0x0800a138       0xb8 ROM_RUN/Eval50xx-USB.o
+                0x0800a138                Virtual_Com_Port_DeviceDescriptor
+                0x0800a14c                Virtual_Com_Port_ConfigDescriptor
+                0x0800a190                Virtual_Com_Port_StringLangID
+                0x0800a194                Virtual_Com_Port_StringVendor
+                0x0800a1bc                Virtual_Com_Port_StringProduct
+ .rodata        0x0800a1f0       0x80 ROM_RUN/Eval50xx-Registers.o
+ .rodata        0x0800a270       0x14 ROM_RUN/stm32f10x_rcc.o
+ *(.rodata*)
+ .rodata.str1.1
+                0x0800a284        0x9 ROM_RUN/Eval50xx-Main.o
+ *(.glue_7)
+ .glue_7        0x00000000        0x0 linker stubs
+ *(.glue_7t)
+ .glue_7t       0x00000000        0x0 linker stubs
+                0x0800a290                . = ALIGN (0x4)
+ *fill*         0x0800a28d        0x3 00
+                0x0800a290                _etext = .
+                0x0800a290                _sidata = _etext
+
+.vfp11_veneer   0x20000000        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x20000000        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.data           0x20000000       0xec load address 0x0800a290
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _sdata = .
+ *(.data)
+ .data          0x20000000        0x4 ROM_RUN/Eval50xx-Main.o
+                0x20000000                VersionString
+ .data          0x20000004       0xe8 ROM_RUN/Eval50xx-USB.o
+                0x20000004                linecoding
+                0x2000000c                String_Descriptor
+                0x2000002c                Config_Descriptor
+                0x20000034                Device_Descriptor
+                0x2000003c                Device_Property
+                0x2000006c                Virtual_Com_Port_StringSerial
+                0x20000088                pEpInt_IN
+                0x200000a4                pEpInt_OUT
+                0x200000c0                Device_Table
+                0x200000c4                User_Standard_Requests
+                0x200000e8                fSuspendEnabled
+ *(.data.*)
+                0x200000ec                . = ALIGN (0x4)
+ *(.ramfunc)
+ *(.ramfunc.*)
+                0x200000ec                . = ALIGN (0x4)
+                0x200000ec                _edata = .
+
+.bss            0x200000ec      0x39c load address 0x0800a37c
+                0x200000ec                . = ALIGN (0x4)
+                0x200000ec                _sbss = .
+ *(.bss)
+ .bss           0x200000ec       0x18 ROM_RUN/Eval50xx-IO.o
+ .bss           0x20000104       0x54 ROM_RUN/Eval50xx-UART.o
+ .bss           0x20000158       0x14 ROM_RUN/Eval50xx-USB.o
+                0x20000158                bDeviceState
+                0x2000015c                count_in
+                0x20000160                Request
+                0x20000164                count_out
+                0x20000168                bIntPackSOF
+ .bss           0x2000016c        0x8 ROM_RUN/Eval50xx-SysTick.o
+ .bss           0x20000174       0x1c ROM_RUN/Eval50xx-Commands.o
+ .bss           0x20000190      0x200 ROM_RUN/Eval50xx-Registers.o
+ .bss           0x20000390        0x8 ROM_RUN/stm32f10x_rcc.o
+ .bss           0x20000398        0x1 ROM_RUN/usb_core.o
+                0x20000398                Data_Mul_MaxPacketSize
+ *(COMMON)
+ COMMON         0x20000399        0x1 ROM_RUN/Eval50xx-Main.o
+                0x20000399                ExtClockFlag
+ *fill*         0x2000039a        0x2 00
+ COMMON         0x2000039c        0x9 ROM_RUN/Eval50xx-UART.o
+                0x2000039c                UART1TransmitDelayTimer
+                0x200003a0                UART1TimeoutTimer
+                0x200003a4                UART1TimeoutFlag
+ *fill*         0x200003a5        0x3 00
+ COMMON         0x200003a8       0xb6 ROM_RUN/Eval50xx-USB.o
+                0x200003a8                SaveState
+                0x200003aa                wIstr
+                0x200003ac                pProperty
+                0x200003b0                EPindex
+                0x200003b4                Device_Info
+                0x200003d0                pUser_Standard_Requests
+                0x200003d4                buffer_in
+                0x20000414                pInformation
+                0x20000418                ResumeS
+                0x2000041c                buffer_out
+                0x2000045c                wInterrupt_Mask
+ *fill*         0x2000045e        0x2 00
+ COMMON         0x20000460       0x20 ROM_RUN/Eval50xx-Commands.o
+                0x20000460                ActualCommand
+                0x20000468                TMCLReplyFormat
+                0x2000046c                SpecialReply
+                0x20000478                ActualReply
+ COMMON         0x20000480        0x2 ROM_RUN/usb_core.o
+                0x20000480                StatusInfo
+ COMMON         0x20000482        0x4 ROM_RUN/usb_int.o
+                0x20000482                SaveRState
+                0x20000484                SaveTState
+                0x20000488                . = ALIGN (0x4)
+ *fill*         0x20000486        0x2 00
+                0x20000488                _ebss = .
+                0x20000488                PROVIDE (end, _ebss)
+                0x20000488                PROVIDE (_end, _ebss)
+
+._usrstack      0x20000488      0x100 load address 0x0800a718
+                0x20000488                . = ALIGN (0x4)
+                0x20000488                _susrstack = .
+                0x20000588                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20000488      0x100 00
+                0x20000588                . = ALIGN (0x4)
+                0x20000588                _eusrstack = .
+
+.b1text
+ *(.b1text)
+ *(.b1rodata)
+ *(.b1rodata*)
+
+.eb0text
+ *(.eb0text)
+ *(.eb0rodata)
+ *(.eb0rodata*)
+
+.eb1text
+ *(.eb1text)
+ *(.eb1rodata)
+ *(.eb1rodata*)
+
+.eb2text
+ *(.eb2text)
+ *(.eb2rodata)
+ *(.eb2rodata*)
+
+.eb3text
+ *(.eb3text)
+ *(.eb3rodata)
+ *(.eb3rodata*)
+                0x20000588                __exidx_start = .
+                0x20000588                __exidx_end = .
+
+/DISCARD/
+ libc.a(*)
+ libm.a(*)
+ libgcc.a(*)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.ARM.attributes
+                0x00000000       0x25
+ .ARM.attributes
+                0x00000000       0x17 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .ARM.attributes
+                0x00000017       0x27 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .ARM.attributes
+                0x0000003e       0x21 ROM_RUN/cortexm3_macro.o
+ .ARM.attributes
+                0x0000005f       0x31 ROM_RUN/Eval50xx-Main.o
+ .ARM.attributes
+                0x00000090       0x31 ROM_RUN/Eval50xx-IO.o
+ .ARM.attributes
+                0x000000c1       0x31 ROM_RUN/Eval50xx-SPI.o
+ .ARM.attributes
+                0x000000f2       0x31 ROM_RUN/Eval50xx-UART.o
+ .ARM.attributes
+                0x00000123       0x31 ROM_RUN/Eval50xx-USB.o
+ .ARM.attributes
+                0x00000154       0x31 ROM_RUN/Eval50xx-SysTick.o
+ .ARM.attributes
+                0x00000185       0x31 ROM_RUN/Eval50xx-Commands.o
+ .ARM.attributes
+                0x000001b6       0x31 ROM_RUN/Eval50xx-Registers.o
+ .ARM.attributes
+                0x000001e7       0x31 ROM_RUN/stm32f10x_it.o
+ .ARM.attributes
+                0x00000218       0x31 ROM_RUN/stm32f10x_adc.o
+ .ARM.attributes
+                0x00000249       0x31 ROM_RUN/stm32f10x_bkp.o
+ .ARM.attributes
+                0x0000027a       0x31 ROM_RUN/stm32f10x_can.o
+ .ARM.attributes
+                0x000002ab       0x31 ROM_RUN/stm32f10x_dma.o
+ .ARM.attributes
+                0x000002dc       0x31 ROM_RUN/stm32f10x_exti.o
+ .ARM.attributes
+                0x0000030d       0x31 ROM_RUN/stm32f10x_flash.o
+ .ARM.attributes
+                0x0000033e       0x31 ROM_RUN/stm32f10x_gpio.o
+ .ARM.attributes
+                0x0000036f       0x31 ROM_RUN/stm32f10x_i2c.o
+ .ARM.attributes
+                0x000003a0       0x31 ROM_RUN/stm32f10x_iwdg.o
+ .ARM.attributes
+                0x000003d1       0x31 ROM_RUN/stm32f10x_lib.o
+ .ARM.attributes
+                0x00000402       0x31 ROM_RUN/stm32f10x_nvic.o
+ .ARM.attributes
+                0x00000433       0x31 ROM_RUN/stm32f10x_pwr.o
+ .ARM.attributes
+                0x00000464       0x31 ROM_RUN/stm32f10x_rcc.o
+ .ARM.attributes
+                0x00000495       0x31 ROM_RUN/stm32f10x_rtc.o
+ .ARM.attributes
+                0x000004c6       0x31 ROM_RUN/stm32f10x_spi.o
+ .ARM.attributes
+                0x000004f7       0x31 ROM_RUN/stm32f10x_systick.o
+ .ARM.attributes
+                0x00000528       0x31 ROM_RUN/stm32f10x_tim.o
+ .ARM.attributes
+                0x00000559       0x31 ROM_RUN/stm32f10x_usart.o
+ .ARM.attributes
+                0x0000058a       0x31 ROM_RUN/stm32f10x_wwdg.o
+ .ARM.attributes
+                0x000005bb       0x31 ROM_RUN/stm32f10x_vector.o
+ .ARM.attributes
+                0x000005ec       0x31 ROM_RUN/usb_core.o
+ .ARM.attributes
+                0x0000061d       0x31 ROM_RUN/usb_init.o
+ .ARM.attributes
+                0x0000064e       0x31 ROM_RUN/usb_int.o
+ .ARM.attributes
+                0x0000067f       0x31 ROM_RUN/usb_mem.o
+ .ARM.attributes
+                0x000006b0       0x31 ROM_RUN/usb_regs.o
+ .ARM.attributes
+                0x000006e1       0x19 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+ .ARM.attributes
+                0x000006fa       0x19 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+ .ARM.attributes
+                0x00000713       0x19 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
+ .ARM.attributes
+                0x0000072c       0x19 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+ .ARM.attributes
+                0x00000745       0x19 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+ .ARM.attributes
+                0x0000075e       0x27 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .ARM.attributes
+                0x00000785       0x17 c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+
+.comment        0x00000000      0x594
+ *(.comment)
+ .comment       0x00000000       0x2a ROM_RUN/Eval50xx-Main.o
+ .comment       0x0000002a       0x2a ROM_RUN/Eval50xx-IO.o
+ .comment       0x00000054       0x2a ROM_RUN/Eval50xx-SPI.o
+ .comment       0x0000007e       0x2a ROM_RUN/Eval50xx-UART.o
+ .comment       0x000000a8       0x2a ROM_RUN/Eval50xx-USB.o
+ .comment       0x000000d2       0x2a ROM_RUN/Eval50xx-SysTick.o
+ .comment       0x000000fc       0x2a ROM_RUN/Eval50xx-Commands.o
+ .comment       0x00000126       0x2a ROM_RUN/Eval50xx-Registers.o
+ .comment       0x00000150       0x2a ROM_RUN/stm32f10x_it.o
+ .comment       0x0000017a       0x2a ROM_RUN/stm32f10x_adc.o
+ .comment       0x000001a4       0x2a ROM_RUN/stm32f10x_bkp.o
+ .comment       0x000001ce       0x2a ROM_RUN/stm32f10x_can.o
+ .comment       0x000001f8       0x2a ROM_RUN/stm32f10x_dma.o
+ .comment       0x00000222       0x2a ROM_RUN/stm32f10x_exti.o
+ .comment       0x0000024c       0x2a ROM_RUN/stm32f10x_flash.o
+ .comment       0x00000276       0x2a ROM_RUN/stm32f10x_gpio.o
+ .comment       0x000002a0       0x2a ROM_RUN/stm32f10x_i2c.o
+ .comment       0x000002ca       0x2a ROM_RUN/stm32f10x_iwdg.o
+ .comment       0x000002f4       0x2a ROM_RUN/stm32f10x_lib.o
+ .comment       0x0000031e       0x2a ROM_RUN/stm32f10x_nvic.o
+ .comment       0x00000348       0x2a ROM_RUN/stm32f10x_pwr.o
+ .comment       0x00000372       0x2a ROM_RUN/stm32f10x_rcc.o
+ .comment       0x0000039c       0x2a ROM_RUN/stm32f10x_rtc.o
+ .comment       0x000003c6       0x2a ROM_RUN/stm32f10x_spi.o
+ .comment       0x000003f0       0x2a ROM_RUN/stm32f10x_systick.o
+ .comment       0x0000041a       0x2a ROM_RUN/stm32f10x_tim.o
+ .comment       0x00000444       0x2a ROM_RUN/stm32f10x_usart.o
+ .comment       0x0000046e       0x2a ROM_RUN/stm32f10x_wwdg.o
+ .comment       0x00000498       0x2a ROM_RUN/stm32f10x_vector.o
+ .comment       0x000004c2       0x2a ROM_RUN/usb_core.o
+ .comment       0x000004ec       0x2a ROM_RUN/usb_init.o
+ .comment       0x00000516       0x2a ROM_RUN/usb_int.o
+ .comment       0x00000540       0x2a ROM_RUN/usb_mem.o
+ .comment       0x0000056a       0x2a ROM_RUN/usb_regs.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0x440
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x20 ROM_RUN/cortexm3_macro.o
+ .debug_aranges
+                0x00000020       0x20 ROM_RUN/Eval50xx-Main.o
+ .debug_aranges
+                0x00000040       0x20 ROM_RUN/Eval50xx-IO.o
+ .debug_aranges
+                0x00000060       0x20 ROM_RUN/Eval50xx-SPI.o
+ .debug_aranges
+                0x00000080       0x20 ROM_RUN/Eval50xx-UART.o
+ .debug_aranges
+                0x000000a0       0x20 ROM_RUN/Eval50xx-USB.o
+ .debug_aranges
+                0x000000c0       0x20 ROM_RUN/Eval50xx-SysTick.o
+ .debug_aranges
+                0x000000e0       0x20 ROM_RUN/Eval50xx-Commands.o
+ .debug_aranges
+                0x00000100       0x20 ROM_RUN/Eval50xx-Registers.o
+ .debug_aranges
+                0x00000120       0x20 ROM_RUN/stm32f10x_it.o
+ .debug_aranges
+                0x00000140       0x20 ROM_RUN/stm32f10x_adc.o
+ .debug_aranges
+                0x00000160       0x20 ROM_RUN/stm32f10x_bkp.o
+ .debug_aranges
+                0x00000180       0x20 ROM_RUN/stm32f10x_can.o
+ .debug_aranges
+                0x000001a0       0x20 ROM_RUN/stm32f10x_dma.o
+ .debug_aranges
+                0x000001c0       0x20 ROM_RUN/stm32f10x_exti.o
+ .debug_aranges
+                0x000001e0       0x20 ROM_RUN/stm32f10x_flash.o
+ .debug_aranges
+                0x00000200       0x20 ROM_RUN/stm32f10x_gpio.o
+ .debug_aranges
+                0x00000220       0x20 ROM_RUN/stm32f10x_i2c.o
+ .debug_aranges
+                0x00000240       0x20 ROM_RUN/stm32f10x_iwdg.o
+ .debug_aranges
+                0x00000260       0x20 ROM_RUN/stm32f10x_nvic.o
+ .debug_aranges
+                0x00000280       0x20 ROM_RUN/stm32f10x_pwr.o
+ .debug_aranges
+                0x000002a0       0x20 ROM_RUN/stm32f10x_rcc.o
+ .debug_aranges
+                0x000002c0       0x20 ROM_RUN/stm32f10x_rtc.o
+ .debug_aranges
+                0x000002e0       0x20 ROM_RUN/stm32f10x_spi.o
+ .debug_aranges
+                0x00000300       0x20 ROM_RUN/stm32f10x_systick.o
+ .debug_aranges
+                0x00000320       0x20 ROM_RUN/stm32f10x_tim.o
+ .debug_aranges
+                0x00000340       0x20 ROM_RUN/stm32f10x_usart.o
+ .debug_aranges
+                0x00000360       0x20 ROM_RUN/stm32f10x_wwdg.o
+ .debug_aranges
+                0x00000380       0x20 ROM_RUN/stm32f10x_vector.o
+ .debug_aranges
+                0x000003a0       0x20 ROM_RUN/usb_core.o
+ .debug_aranges
+                0x000003c0       0x20 ROM_RUN/usb_init.o
+ .debug_aranges
+                0x000003e0       0x20 ROM_RUN/usb_int.o
+ .debug_aranges
+                0x00000400       0x20 ROM_RUN/usb_mem.o
+ .debug_aranges
+                0x00000420       0x20 ROM_RUN/usb_regs.o
+
+.debug_pubnames
+                0x00000000     0x3aae
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x00000000       0x53 ROM_RUN/Eval50xx-Main.o
+ .debug_pubnames
+                0x00000053       0x8c ROM_RUN/Eval50xx-IO.o
+ .debug_pubnames
+                0x000000df       0x2f ROM_RUN/Eval50xx-SPI.o
+ .debug_pubnames
+                0x0000010e       0xdb ROM_RUN/Eval50xx-UART.o
+ .debug_pubnames
+                0x000001e9      0x5c8 ROM_RUN/Eval50xx-USB.o
+ .debug_pubnames
+                0x000007b1       0x45 ROM_RUN/Eval50xx-SysTick.o
+ .debug_pubnames
+                0x000007f6       0x86 ROM_RUN/Eval50xx-Commands.o
+ .debug_pubnames
+                0x0000087c       0x4f ROM_RUN/Eval50xx-Registers.o
+ .debug_pubnames
+                0x000008cb      0x626 ROM_RUN/stm32f10x_it.o
+ .debug_pubnames
+                0x00000ef1      0x401 ROM_RUN/stm32f10x_adc.o
+ .debug_pubnames
+                0x000012f2      0x128 ROM_RUN/stm32f10x_bkp.o
+ .debug_pubnames
+                0x0000141a      0x152 ROM_RUN/stm32f10x_can.o
+ .debug_pubnames
+                0x0000156c       0xcf ROM_RUN/stm32f10x_dma.o
+ .debug_pubnames
+                0x0000163b       0xbb ROM_RUN/stm32f10x_exti.o
+ .debug_pubnames
+                0x000016f6      0x26e ROM_RUN/stm32f10x_flash.o
+ .debug_pubnames
+                0x00001964      0x17b ROM_RUN/stm32f10x_gpio.o
+ .debug_pubnames
+                0x00001adf      0x2b0 ROM_RUN/stm32f10x_i2c.o
+ .debug_pubnames
+                0x00001d8f       0x91 ROM_RUN/stm32f10x_iwdg.o
+ .debug_pubnames
+                0x00001e20      0x360 ROM_RUN/stm32f10x_nvic.o
+ .debug_pubnames
+                0x00002180       0xcb ROM_RUN/stm32f10x_pwr.o
+ .debug_pubnames
+                0x0000224b      0x2c4 ROM_RUN/stm32f10x_rcc.o
+ .debug_pubnames
+                0x0000250f      0x136 ROM_RUN/stm32f10x_rtc.o
+ .debug_pubnames
+                0x00002645      0x1f6 ROM_RUN/stm32f10x_spi.o
+ .debug_pubnames
+                0x0000283b       0xa1 ROM_RUN/stm32f10x_systick.o
+ .debug_pubnames
+                0x000028dc      0x7b0 ROM_RUN/stm32f10x_tim.o
+ .debug_pubnames
+                0x0000308c      0x25f ROM_RUN/stm32f10x_usart.o
+ .debug_pubnames
+                0x000032eb       0xb0 ROM_RUN/stm32f10x_wwdg.o
+ .debug_pubnames
+                0x0000339b       0x35 ROM_RUN/stm32f10x_vector.o
+ .debug_pubnames
+                0x000033d0      0x1a5 ROM_RUN/usb_core.o
+ .debug_pubnames
+                0x00003575       0x98 ROM_RUN/usb_init.o
+ .debug_pubnames
+                0x0000360d       0x46 ROM_RUN/usb_int.o
+ .debug_pubnames
+                0x00003653       0x42 ROM_RUN/usb_mem.o
+ .debug_pubnames
+                0x00003695      0x419 ROM_RUN/usb_regs.o
+
+.debug_info     0x00000000     0xdc76
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x00000000       0x5d ROM_RUN/cortexm3_macro.o
+ .debug_info    0x0000005d      0x211 ROM_RUN/Eval50xx-Main.o
+ .debug_info    0x0000026e      0x675 ROM_RUN/Eval50xx-IO.o
+ .debug_info    0x000008e3      0x3f3 ROM_RUN/Eval50xx-SPI.o
+ .debug_info    0x00000cd6      0x583 ROM_RUN/Eval50xx-UART.o
+ .debug_info    0x00001259      0xf57 ROM_RUN/Eval50xx-USB.o
+ .debug_info    0x000021b0      0x125 ROM_RUN/Eval50xx-SysTick.o
+ .debug_info    0x000022d5      0xadd ROM_RUN/Eval50xx-Commands.o
+ .debug_info    0x00002db2      0x1ac ROM_RUN/Eval50xx-Registers.o
+ .debug_info    0x00002f5e      0x595 ROM_RUN/stm32f10x_it.o
+ .debug_info    0x000034f3      0xb0f ROM_RUN/stm32f10x_adc.o
+ .debug_info    0x00004002      0x790 ROM_RUN/stm32f10x_bkp.o
+ .debug_info    0x00004792      0x906 ROM_RUN/stm32f10x_can.o
+ .debug_info    0x00005098      0x3f0 ROM_RUN/stm32f10x_dma.o
+ .debug_info    0x00005488      0x2f0 ROM_RUN/stm32f10x_exti.o
+ .debug_info    0x00005778      0x6f4 ROM_RUN/stm32f10x_flash.o
+ .debug_info    0x00005e6c      0x64c ROM_RUN/stm32f10x_gpio.o
+ .debug_info    0x000064b8      0xac5 ROM_RUN/stm32f10x_i2c.o
+ .debug_info    0x00006f7d      0x197 ROM_RUN/stm32f10x_iwdg.o
+ .debug_info    0x00007114       0x53 ROM_RUN/stm32f10x_lib.o
+ .debug_info    0x00007167      0x8e5 ROM_RUN/stm32f10x_nvic.o
+ .debug_info    0x00007a4c      0x243 ROM_RUN/stm32f10x_pwr.o
+ .debug_info    0x00007c8f      0x83d ROM_RUN/stm32f10x_rcc.o
+ .debug_info    0x000084cc      0x3f7 ROM_RUN/stm32f10x_rtc.o
+ .debug_info    0x000088c3      0x8e0 ROM_RUN/stm32f10x_spi.o
+ .debug_info    0x000091a3      0x1ef ROM_RUN/stm32f10x_systick.o
+ .debug_info    0x00009392     0x1cd5 ROM_RUN/stm32f10x_tim.o
+ .debug_info    0x0000b067      0x958 ROM_RUN/stm32f10x_usart.o
+ .debug_info    0x0000b9bf      0x1df ROM_RUN/stm32f10x_wwdg.o
+ .debug_info    0x0000bb9e       0xe3 ROM_RUN/stm32f10x_vector.o
+ .debug_info    0x0000bc81      0xbfd ROM_RUN/usb_core.o
+ .debug_info    0x0000c87e      0x450 ROM_RUN/usb_init.o
+ .debug_info    0x0000ccce      0x1a3 ROM_RUN/usb_int.o
+ .debug_info    0x0000ce71      0x160 ROM_RUN/usb_mem.o
+ .debug_info    0x0000cfd1      0xca5 ROM_RUN/usb_regs.o
+
+.debug_abbrev   0x00000000     0x31ee
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000       0x14 ROM_RUN/cortexm3_macro.o
+ .debug_abbrev  0x00000014      0x14c ROM_RUN/Eval50xx-Main.o
+ .debug_abbrev  0x00000160      0x133 ROM_RUN/Eval50xx-IO.o
+ .debug_abbrev  0x00000293       0xfb ROM_RUN/Eval50xx-SPI.o
+ .debug_abbrev  0x0000038e      0x1b9 ROM_RUN/Eval50xx-UART.o
+ .debug_abbrev  0x00000547      0x288 ROM_RUN/Eval50xx-USB.o
+ .debug_abbrev  0x000007cf       0xb3 ROM_RUN/Eval50xx-SysTick.o
+ .debug_abbrev  0x00000882      0x1de ROM_RUN/Eval50xx-Commands.o
+ .debug_abbrev  0x00000a60       0xc5 ROM_RUN/Eval50xx-Registers.o
+ .debug_abbrev  0x00000b25       0x67 ROM_RUN/stm32f10x_it.o
+ .debug_abbrev  0x00000b8c      0x1c0 ROM_RUN/stm32f10x_adc.o
+ .debug_abbrev  0x00000d4c      0x16f ROM_RUN/stm32f10x_bkp.o
+ .debug_abbrev  0x00000ebb      0x1eb ROM_RUN/stm32f10x_can.o
+ .debug_abbrev  0x000010a6      0x167 ROM_RUN/stm32f10x_dma.o
+ .debug_abbrev  0x0000120d      0x163 ROM_RUN/stm32f10x_exti.o
+ .debug_abbrev  0x00001370      0x204 ROM_RUN/stm32f10x_flash.o
+ .debug_abbrev  0x00001574      0x252 ROM_RUN/stm32f10x_gpio.o
+ .debug_abbrev  0x000017c6      0x1a1 ROM_RUN/stm32f10x_i2c.o
+ .debug_abbrev  0x00001967       0xf2 ROM_RUN/stm32f10x_iwdg.o
+ .debug_abbrev  0x00001a59       0x28 ROM_RUN/stm32f10x_lib.o
+ .debug_abbrev  0x00001a81      0x259 ROM_RUN/stm32f10x_nvic.o
+ .debug_abbrev  0x00001cda      0x14f ROM_RUN/stm32f10x_pwr.o
+ .debug_abbrev  0x00001e29      0x219 ROM_RUN/stm32f10x_rcc.o
+ .debug_abbrev  0x00002042      0x1a8 ROM_RUN/stm32f10x_rtc.o
+ .debug_abbrev  0x000021ea      0x1a6 ROM_RUN/stm32f10x_spi.o
+ .debug_abbrev  0x00002390      0x126 ROM_RUN/stm32f10x_systick.o
+ .debug_abbrev  0x000024b6      0x245 ROM_RUN/stm32f10x_tim.o
+ .debug_abbrev  0x000026fb      0x1e1 ROM_RUN/stm32f10x_usart.o
+ .debug_abbrev  0x000028dc      0x118 ROM_RUN/stm32f10x_wwdg.o
+ .debug_abbrev  0x000029f4       0xb5 ROM_RUN/stm32f10x_vector.o
+ .debug_abbrev  0x00002aa9      0x30c ROM_RUN/usb_core.o
+ .debug_abbrev  0x00002db5      0x100 ROM_RUN/usb_init.o
+ .debug_abbrev  0x00002eb5       0xd4 ROM_RUN/usb_int.o
+ .debug_abbrev  0x00002f89       0x93 ROM_RUN/usb_mem.o
+ .debug_abbrev  0x0000301c      0x1d2 ROM_RUN/usb_regs.o
+
+.debug_line     0x00000000     0x2ce4
+ *(.debug_line)
+ .debug_line    0x00000000       0x9b ROM_RUN/cortexm3_macro.o
+ .debug_line    0x0000009b       0xb9 ROM_RUN/Eval50xx-Main.o
+ .debug_line    0x00000154      0x153 ROM_RUN/Eval50xx-IO.o
+ .debug_line    0x000002a7       0xe9 ROM_RUN/Eval50xx-SPI.o
+ .debug_line    0x00000390      0x13f ROM_RUN/Eval50xx-UART.o
+ .debug_line    0x000004cf      0x21e ROM_RUN/Eval50xx-USB.o
+ .debug_line    0x000006ed       0x8a ROM_RUN/Eval50xx-SysTick.o
+ .debug_line    0x00000777      0x27e ROM_RUN/Eval50xx-Commands.o
+ .debug_line    0x000009f5       0x8c ROM_RUN/Eval50xx-Registers.o
+ .debug_line    0x00000a81      0x149 ROM_RUN/stm32f10x_it.o
+ .debug_line    0x00000bca      0x206 ROM_RUN/stm32f10x_adc.o
+ .debug_line    0x00000dd0       0xbe ROM_RUN/stm32f10x_bkp.o
+ .debug_line    0x00000e8e      0x1e4 ROM_RUN/stm32f10x_can.o
+ .debug_line    0x00001072      0x10f ROM_RUN/stm32f10x_dma.o
+ .debug_line    0x00001181       0xd8 ROM_RUN/stm32f10x_exti.o
+ .debug_line    0x00001259      0x1f2 ROM_RUN/stm32f10x_flash.o
+ .debug_line    0x0000144b      0x15f ROM_RUN/stm32f10x_gpio.o
+ .debug_line    0x000015aa      0x1e7 ROM_RUN/stm32f10x_i2c.o
+ .debug_line    0x00001791       0x98 ROM_RUN/stm32f10x_iwdg.o
+ .debug_line    0x00001829       0x1d ROM_RUN/stm32f10x_lib.o
+ .debug_line    0x00001846      0x1a4 ROM_RUN/stm32f10x_nvic.o
+ .debug_line    0x000019ea       0xc8 ROM_RUN/stm32f10x_pwr.o
+ .debug_line    0x00001ab2      0x18e ROM_RUN/stm32f10x_rcc.o
+ .debug_line    0x00001c40       0xdf ROM_RUN/stm32f10x_rtc.o
+ .debug_line    0x00001d1f      0x1ac ROM_RUN/stm32f10x_spi.o
+ .debug_line    0x00001ecb       0xa9 ROM_RUN/stm32f10x_systick.o
+ .debug_line    0x00001f74      0x516 ROM_RUN/stm32f10x_tim.o
+ .debug_line    0x0000248a      0x1da ROM_RUN/stm32f10x_usart.o
+ .debug_line    0x00002664       0xab ROM_RUN/stm32f10x_wwdg.o
+ .debug_line    0x0000270f       0x56 ROM_RUN/stm32f10x_vector.o
+ .debug_line    0x00002765      0x201 ROM_RUN/usb_core.o
+ .debug_line    0x00002966       0x76 ROM_RUN/usb_init.o
+ .debug_line    0x000029dc       0xe3 ROM_RUN/usb_int.o
+ .debug_line    0x00002abf       0x78 ROM_RUN/usb_mem.o
+ .debug_line    0x00002b37      0x1ad ROM_RUN/usb_regs.o
+
+.debug_frame    0x00000000     0x2fd4
+ *(.debug_frame)
+ .debug_frame   0x00000000       0x54 ROM_RUN/Eval50xx-Main.o
+ .debug_frame   0x00000054       0xdc ROM_RUN/Eval50xx-IO.o
+ .debug_frame   0x00000130       0x58 ROM_RUN/Eval50xx-SPI.o
+ .debug_frame   0x00000188       0xc0 ROM_RUN/Eval50xx-UART.o
+ .debug_frame   0x00000248      0x31c ROM_RUN/Eval50xx-USB.o
+ .debug_frame   0x00000564       0x4c ROM_RUN/Eval50xx-SysTick.o
+ .debug_frame   0x000005b0       0x60 ROM_RUN/Eval50xx-Commands.o
+ .debug_frame   0x00000610       0x78 ROM_RUN/Eval50xx-Registers.o
+ .debug_frame   0x00000688      0x46c ROM_RUN/stm32f10x_it.o
+ .debug_frame   0x00000af4      0x280 ROM_RUN/stm32f10x_adc.o
+ .debug_frame   0x00000d74       0xdc ROM_RUN/stm32f10x_bkp.o
+ .debug_frame   0x00000e50      0x17c ROM_RUN/stm32f10x_can.o
+ .debug_frame   0x00000fcc       0xc0 ROM_RUN/stm32f10x_dma.o
+ .debug_frame   0x0000108c       0x9c ROM_RUN/stm32f10x_exti.o
+ .debug_frame   0x00001128      0x21c ROM_RUN/stm32f10x_flash.o
+ .debug_frame   0x00001344      0x170 ROM_RUN/stm32f10x_gpio.o
+ .debug_frame   0x000014b4      0x234 ROM_RUN/stm32f10x_i2c.o
+ .debug_frame   0x000016e8       0x70 ROM_RUN/stm32f10x_iwdg.o
+ .debug_frame   0x00001758      0x254 ROM_RUN/stm32f10x_nvic.o
+ .debug_frame   0x000019ac       0xc4 ROM_RUN/stm32f10x_pwr.o
+ .debug_frame   0x00001a70      0x228 ROM_RUN/stm32f10x_rcc.o
+ .debug_frame   0x00001c98      0x114 ROM_RUN/stm32f10x_rtc.o
+ .debug_frame   0x00001dac      0x1b0 ROM_RUN/stm32f10x_spi.o
+ .debug_frame   0x00001f5c       0x70 ROM_RUN/stm32f10x_systick.o
+ .debug_frame   0x00001fcc      0x694 ROM_RUN/stm32f10x_tim.o
+ .debug_frame   0x00002660      0x1e8 ROM_RUN/stm32f10x_usart.o
+ .debug_frame   0x00002848       0x9c ROM_RUN/stm32f10x_wwdg.o
+ .debug_frame   0x000028e4       0x30 ROM_RUN/stm32f10x_vector.o
+ .debug_frame   0x00002914      0x1e0 ROM_RUN/usb_core.o
+ .debug_frame   0x00002af4       0x2c ROM_RUN/usb_init.o
+ .debug_frame   0x00002b20       0x54 ROM_RUN/usb_int.o
+ .debug_frame   0x00002b74       0x48 ROM_RUN/usb_mem.o
+ .debug_frame   0x00002bbc      0x418 ROM_RUN/usb_regs.o
+
+.debug_str      0x00000000     0x5639
+ *(.debug_str)
+ .debug_str     0x00000000      0x11d ROM_RUN/Eval50xx-Main.o
+                                0x170 (size before relaxing)
+ .debug_str     0x0000011d      0x3b9 ROM_RUN/Eval50xx-IO.o
+                                0x49a (size before relaxing)
+ .debug_str     0x000004d6       0xeb ROM_RUN/Eval50xx-SPI.o
+                                0x332 (size before relaxing)
+ .debug_str     0x000005c1      0x23d ROM_RUN/Eval50xx-UART.o
+                                0x479 (size before relaxing)
+ .debug_str     0x000007fe      0x937 ROM_RUN/Eval50xx-USB.o
+                                0xcd1 (size before relaxing)
+ .debug_str     0x00001135       0x56 ROM_RUN/Eval50xx-SysTick.o
+                                0x155 (size before relaxing)
+ .debug_str     0x0000118b      0x235 ROM_RUN/Eval50xx-Commands.o
+                                0x554 (size before relaxing)
+ .debug_str     0x000013c0       0x70 ROM_RUN/Eval50xx-Registers.o
+                                0x133 (size before relaxing)
+ .debug_str     0x00001430      0x501 ROM_RUN/stm32f10x_it.o
+                                0x58b (size before relaxing)
+ .debug_str     0x00001931      0x4cc ROM_RUN/stm32f10x_adc.o
+                                0x5f1 (size before relaxing)
+ .debug_str     0x00001dfd      0x2f6 ROM_RUN/stm32f10x_bkp.o
+                                0x49f (size before relaxing)
+ .debug_str     0x000020f3      0x3e0 ROM_RUN/stm32f10x_can.o
+                                0x507 (size before relaxing)
+ .debug_str     0x000024d3      0x1ad ROM_RUN/stm32f10x_dma.o
+                                0x288 (size before relaxing)
+ .debug_str     0x00002680      0x190 ROM_RUN/stm32f10x_exti.o
+                                0x258 (size before relaxing)
+ .debug_str     0x00002810      0x371 ROM_RUN/stm32f10x_flash.o
+                                0x44d (size before relaxing)
+ .debug_str     0x00002b81      0x1fb ROM_RUN/stm32f10x_gpio.o
+                                0x3bc (size before relaxing)
+ .debug_str     0x00002d7c      0x3d8 ROM_RUN/stm32f10x_i2c.o
+                                0x52b (size before relaxing)
+ .debug_str     0x00003154       0xab ROM_RUN/stm32f10x_iwdg.o
+                                0x145 (size before relaxing)
+ .debug_str     0x000031ff       0x19 ROM_RUN/stm32f10x_lib.o
+                                 0x91 (size before relaxing)
+ .debug_str     0x00003218      0x43c ROM_RUN/stm32f10x_nvic.o
+                                0x5c2 (size before relaxing)
+ .debug_str     0x00003654       0xe0 ROM_RUN/stm32f10x_pwr.o
+                                0x1a2 (size before relaxing)
+ .debug_str     0x00003734      0x39c ROM_RUN/stm32f10x_rcc.o
+                                0x504 (size before relaxing)
+ .debug_str     0x00003ad0      0x164 ROM_RUN/stm32f10x_rtc.o
+                                0x28c (size before relaxing)
+ .debug_str     0x00003c34      0x290 ROM_RUN/stm32f10x_spi.o
+                                0x4e7 (size before relaxing)
+ .debug_str     0x00003ec4       0xd3 ROM_RUN/stm32f10x_systick.o
+                                0x19f (size before relaxing)
+ .debug_str     0x00003f97      0x9bb ROM_RUN/stm32f10x_tim.o
+                                0xcce (size before relaxing)
+ .debug_str     0x00004952      0x35b ROM_RUN/stm32f10x_usart.o
+                                0x559 (size before relaxing)
+ .debug_str     0x00004cad       0xa7 ROM_RUN/stm32f10x_wwdg.o
+                                0x15a (size before relaxing)
+ .debug_str     0x00004d54       0x70 ROM_RUN/stm32f10x_vector.o
+                                 0xa8 (size before relaxing)
+ .debug_str     0x00004dc4      0x3ee ROM_RUN/usb_core.o
+                                0x93e (size before relaxing)
+ .debug_str     0x000051b2       0x1d ROM_RUN/usb_init.o
+                                0x42d (size before relaxing)
+ .debug_str     0x000051cf       0x28 ROM_RUN/usb_int.o
+                                 0xe2 (size before relaxing)
+ .debug_str     0x000051f7       0x6b ROM_RUN/usb_mem.o
+                                 0xe3 (size before relaxing)
+ .debug_str     0x00005262      0x3d7 ROM_RUN/usb_regs.o
+                                0x46b (size before relaxing)
+
+.debug_loc      0x00000000     0x44fa
+ *(.debug_loc)
+ .debug_loc     0x00000000       0x3e ROM_RUN/Eval50xx-Main.o
+ .debug_loc     0x0000003e       0xc5 ROM_RUN/Eval50xx-IO.o
+ .debug_loc     0x00000103       0xa4 ROM_RUN/Eval50xx-SPI.o
+ .debug_loc     0x000001a7      0x100 ROM_RUN/Eval50xx-UART.o
+ .debug_loc     0x000002a7      0x48d ROM_RUN/Eval50xx-USB.o
+ .debug_loc     0x00000734       0x1f ROM_RUN/Eval50xx-SysTick.o
+ .debug_loc     0x00000753      0x1f0 ROM_RUN/Eval50xx-Commands.o
+ .debug_loc     0x00000943      0x195 ROM_RUN/Eval50xx-Registers.o
+ .debug_loc     0x00000ad8       0x3e ROM_RUN/stm32f10x_it.o
+ .debug_loc     0x00000b16      0x396 ROM_RUN/stm32f10x_adc.o
+ .debug_loc     0x00000eac       0x32 ROM_RUN/stm32f10x_bkp.o
+ .debug_loc     0x00000ede      0x2aa ROM_RUN/stm32f10x_can.o
+ .debug_loc     0x00001188       0x9f ROM_RUN/stm32f10x_dma.o
+ .debug_loc     0x00001227       0x8c ROM_RUN/stm32f10x_exti.o
+ .debug_loc     0x000012b3      0x598 ROM_RUN/stm32f10x_flash.o
+ .debug_loc     0x0000184b      0x27f ROM_RUN/stm32f10x_gpio.o
+ .debug_loc     0x00001aca      0x2f6 ROM_RUN/stm32f10x_i2c.o
+ .debug_loc     0x00001dc0       0x13 ROM_RUN/stm32f10x_iwdg.o
+ .debug_loc     0x00001dd3      0x38b ROM_RUN/stm32f10x_nvic.o
+ .debug_loc     0x0000215e       0xd5 ROM_RUN/stm32f10x_pwr.o
+ .debug_loc     0x00002233      0x185 ROM_RUN/stm32f10x_rcc.o
+ .debug_loc     0x000023b8      0x124 ROM_RUN/stm32f10x_rtc.o
+ .debug_loc     0x000024dc      0x2d9 ROM_RUN/stm32f10x_spi.o
+ .debug_loc     0x000027b5       0x26 ROM_RUN/stm32f10x_systick.o
+ .debug_loc     0x000027db      0xb1b ROM_RUN/stm32f10x_tim.o
+ .debug_loc     0x000032f6      0x323 ROM_RUN/stm32f10x_usart.o
+ .debug_loc     0x00003619       0x76 ROM_RUN/stm32f10x_wwdg.o
+ .debug_loc     0x0000368f       0x32 ROM_RUN/stm32f10x_vector.o
+ .debug_loc     0x000036c1      0x6c4 ROM_RUN/usb_core.o
+ .debug_loc     0x00003d85       0x1f ROM_RUN/usb_init.o
+ .debug_loc     0x00003da4      0x134 ROM_RUN/usb_int.o
+ .debug_loc     0x00003ed8       0x8a ROM_RUN/usb_mem.o
+ .debug_loc     0x00003f62      0x598 ROM_RUN/usb_regs.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+OUTPUT(ROM_RUN/Eval50xx.elf elf32-littlearm)
+
+.debug_ranges   0x00000000       0xa0
+ .debug_ranges  0x00000000       0x40 ROM_RUN/usb_int.o
+ .debug_ranges  0x00000040       0x60 ROM_RUN/usb_regs.o
+
+Cross Reference Table
+
+Symbol                                            File
+ADC3_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+ADC_AnalogWatchdogCmd                             ROM_RUN/stm32f10x_adc.o
+ADC_AnalogWatchdogSingleChannelConfig             ROM_RUN/stm32f10x_adc.o
+ADC_AnalogWatchdogThresholdsConfig                ROM_RUN/stm32f10x_adc.o
+ADC_AutoInjectedConvCmd                           ROM_RUN/stm32f10x_adc.o
+ADC_ClearFlag                                     ROM_RUN/stm32f10x_adc.o
+ADC_ClearITPendingBit                             ROM_RUN/stm32f10x_adc.o
+ADC_Cmd                                           ROM_RUN/stm32f10x_adc.o
+ADC_DMACmd                                        ROM_RUN/stm32f10x_adc.o
+ADC_DeInit                                        ROM_RUN/stm32f10x_adc.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+ADC_DiscModeChannelCountConfig                    ROM_RUN/stm32f10x_adc.o
+ADC_DiscModeCmd                                   ROM_RUN/stm32f10x_adc.o
+ADC_ExternalTrigConvCmd                           ROM_RUN/stm32f10x_adc.o
+ADC_ExternalTrigInjectedConvCmd                   ROM_RUN/stm32f10x_adc.o
+ADC_ExternalTrigInjectedConvConfig                ROM_RUN/stm32f10x_adc.o
+ADC_GetCalibrationStatus                          ROM_RUN/stm32f10x_adc.o
+ADC_GetConversionValue                            ROM_RUN/stm32f10x_adc.o
+ADC_GetDualModeConversionValue                    ROM_RUN/stm32f10x_adc.o
+ADC_GetFlagStatus                                 ROM_RUN/stm32f10x_adc.o
+ADC_GetITStatus                                   ROM_RUN/stm32f10x_adc.o
+ADC_GetInjectedConversionValue                    ROM_RUN/stm32f10x_adc.o
+ADC_GetResetCalibrationStatus                     ROM_RUN/stm32f10x_adc.o
+ADC_GetSoftwareStartConvStatus                    ROM_RUN/stm32f10x_adc.o
+ADC_GetSoftwareStartInjectedConvCmdStatus         ROM_RUN/stm32f10x_adc.o
+ADC_IRQHandler                                    ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+ADC_ITConfig                                      ROM_RUN/stm32f10x_adc.o
+ADC_Init                                          ROM_RUN/stm32f10x_adc.o
+ADC_InjectedChannelConfig                         ROM_RUN/stm32f10x_adc.o
+ADC_InjectedDiscModeCmd                           ROM_RUN/stm32f10x_adc.o
+ADC_InjectedSequencerLengthConfig                 ROM_RUN/stm32f10x_adc.o
+ADC_RegularChannelConfig                          ROM_RUN/stm32f10x_adc.o
+ADC_ResetCalibration                              ROM_RUN/stm32f10x_adc.o
+ADC_SetInjectedOffset                             ROM_RUN/stm32f10x_adc.o
+ADC_SoftwareStartConvCmd                          ROM_RUN/stm32f10x_adc.o
+ADC_SoftwareStartInjectedConvCmd                  ROM_RUN/stm32f10x_adc.o
+ADC_StartCalibration                              ROM_RUN/stm32f10x_adc.o
+ADC_StructInit                                    ROM_RUN/stm32f10x_adc.o
+ADC_TempSensorVrefintCmd                          ROM_RUN/stm32f10x_adc.o
+ActualCommand                                     ROM_RUN/Eval50xx-Commands.o
+ActualReply                                       ROM_RUN/Eval50xx-Commands.o
+BKP_ClearFlag                                     ROM_RUN/stm32f10x_bkp.o
+BKP_ClearITPendingBit                             ROM_RUN/stm32f10x_bkp.o
+BKP_DeInit                                        ROM_RUN/stm32f10x_bkp.o
+BKP_GetFlagStatus                                 ROM_RUN/stm32f10x_bkp.o
+BKP_GetITStatus                                   ROM_RUN/stm32f10x_bkp.o
+BKP_ITConfig                                      ROM_RUN/stm32f10x_bkp.o
+BKP_RTCOutputConfig                               ROM_RUN/stm32f10x_bkp.o
+BKP_ReadBackupRegister                            ROM_RUN/stm32f10x_bkp.o
+BKP_SetRTCCalibrationValue                        ROM_RUN/stm32f10x_bkp.o
+BKP_TamperPinCmd                                  ROM_RUN/stm32f10x_bkp.o
+BKP_TamperPinLevelConfig                          ROM_RUN/stm32f10x_bkp.o
+BKP_WriteBackupRegister                           ROM_RUN/stm32f10x_bkp.o
+BusFaultException                                 ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+ByteSwap                                          ROM_RUN/usb_regs.o
+                                                  ROM_RUN/usb_core.o
+CAN_CancelTransmit                                ROM_RUN/stm32f10x_can.o
+CAN_ClearFlag                                     ROM_RUN/stm32f10x_can.o
+CAN_ClearITPendingBit                             ROM_RUN/stm32f10x_can.o
+CAN_DeInit                                        ROM_RUN/stm32f10x_can.o
+CAN_FIFORelease                                   ROM_RUN/stm32f10x_can.o
+CAN_FilterInit                                    ROM_RUN/stm32f10x_can.o
+CAN_GetFlagStatus                                 ROM_RUN/stm32f10x_can.o
+CAN_GetITStatus                                   ROM_RUN/stm32f10x_can.o
+CAN_ITConfig                                      ROM_RUN/stm32f10x_can.o
+CAN_Init                                          ROM_RUN/stm32f10x_can.o
+CAN_MessagePending                                ROM_RUN/stm32f10x_can.o
+CAN_RX1_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+CAN_Receive                                       ROM_RUN/stm32f10x_can.o
+CAN_SCE_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+CAN_Sleep                                         ROM_RUN/stm32f10x_can.o
+CAN_StructInit                                    ROM_RUN/stm32f10x_can.o
+CAN_Transmit                                      ROM_RUN/stm32f10x_can.o
+CAN_TransmitStatus                                ROM_RUN/stm32f10x_can.o
+CAN_WakeUp                                        ROM_RUN/stm32f10x_can.o
+CTR_HP                                            ROM_RUN/usb_int.o
+CTR_LP                                            ROM_RUN/usb_int.o
+                                                  ROM_RUN/Eval50xx-USB.o
+CheckUARTTimeout                                  ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+ClearDTOG_RX                                      ROM_RUN/usb_regs.o
+                                                  ROM_RUN/usb_core.o
+ClearDTOG_TX                                      ROM_RUN/usb_regs.o
+                                                  ROM_RUN/usb_core.o
+ClearEPDoubleBuff                                 ROM_RUN/usb_regs.o
+ClearEP_CTR_RX                                    ROM_RUN/usb_regs.o
+ClearEP_CTR_TX                                    ROM_RUN/usb_regs.o
+ClearEP_KIND                                      ROM_RUN/usb_regs.o
+ClearUARTRxBuffer                                 ROM_RUN/Eval50xx-UART.o
+Clear_Status_Out                                  ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+Config_Descriptor                                 ROM_RUN/Eval50xx-USB.o
+DMA1_Channel1_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA1_Channel2_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA1_Channel3_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA1_Channel4_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA1_Channel5_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA1_Channel6_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA1_Channel7_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA2_Channel1_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA2_Channel2_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA2_Channel3_IRQHandler                          ROM_RUN/stm32f10x_it.o
+DMA2_Channel4_5_IRQHandler                        ROM_RUN/stm32f10x_it.o
+DMAChannel1_IRQHandler                            ROM_RUN/stm32f10x_vector.o
+DMAChannel2_IRQHandler                            ROM_RUN/stm32f10x_vector.o
+DMAChannel3_IRQHandler                            ROM_RUN/stm32f10x_vector.o
+DMAChannel4_IRQHandler                            ROM_RUN/stm32f10x_vector.o
+DMAChannel5_IRQHandler                            ROM_RUN/stm32f10x_vector.o
+DMAChannel6_IRQHandler                            ROM_RUN/stm32f10x_vector.o
+DMAChannel7_IRQHandler                            ROM_RUN/stm32f10x_vector.o
+DMA_ClearFlag                                     ROM_RUN/stm32f10x_dma.o
+DMA_ClearITPendingBit                             ROM_RUN/stm32f10x_dma.o
+DMA_Cmd                                           ROM_RUN/stm32f10x_dma.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+DMA_DeInit                                        ROM_RUN/stm32f10x_dma.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+DMA_GetCurrDataCounter                            ROM_RUN/stm32f10x_dma.o
+DMA_GetFlagStatus                                 ROM_RUN/stm32f10x_dma.o
+DMA_GetITStatus                                   ROM_RUN/stm32f10x_dma.o
+DMA_ITConfig                                      ROM_RUN/stm32f10x_dma.o
+DMA_Init                                          ROM_RUN/stm32f10x_dma.o
+DMA_StructInit                                    ROM_RUN/stm32f10x_dma.o
+Data_Mul_MaxPacketSize                            ROM_RUN/usb_core.o
+DebugMonitor                                      ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+DetachUSB                                         ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+Device_Descriptor                                 ROM_RUN/Eval50xx-USB.o
+Device_Info                                       ROM_RUN/usb_init.o
+                                                  ROM_RUN/Eval50xx-USB.o
+Device_Property                                   ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/usb_init.o
+                                                  ROM_RUN/usb_core.o
+Device_Table                                      ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/usb_core.o
+DisableInterrupts                                 ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+                                                  ROM_RUN/Eval50xx-UART.o
+DisablePins                                       ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-Main.o
+EP1_IN_Callback                                   ROM_RUN/Eval50xx-USB.o
+EP3_OUT_Callback                                  ROM_RUN/Eval50xx-USB.o
+EPindex                                           ROM_RUN/usb_int.o
+                                                  ROM_RUN/usb_init.o
+                                                  ROM_RUN/Eval50xx-USB.o
+EXTI0_IRQHandler                                  ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+EXTI15_10_IRQHandler                              ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+EXTI1_IRQHandler                                  ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+EXTI2_IRQHandler                                  ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+EXTI3_IRQHandler                                  ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+EXTI4_IRQHandler                                  ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+EXTI9_5_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+EXTI_ClearFlag                                    ROM_RUN/stm32f10x_exti.o
+EXTI_ClearITPendingBit                            ROM_RUN/stm32f10x_exti.o
+EXTI_DeInit                                       ROM_RUN/stm32f10x_exti.o
+EXTI_GenerateSWInterrupt                          ROM_RUN/stm32f10x_exti.o
+EXTI_GetFlagStatus                                ROM_RUN/stm32f10x_exti.o
+EXTI_GetITStatus                                  ROM_RUN/stm32f10x_exti.o
+EXTI_Init                                         ROM_RUN/stm32f10x_exti.o
+EXTI_StructInit                                   ROM_RUN/stm32f10x_exti.o
+EnableInterrupts                                  ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-Main.o
+Enter_LowPowerMode                                ROM_RUN/Eval50xx-USB.o
+ExecuteActualCommand                              ROM_RUN/Eval50xx-Commands.o
+ExtClockFlag                                      ROM_RUN/Eval50xx-Main.o
+FLASH_ClearFlag                                   ROM_RUN/stm32f10x_flash.o
+FLASH_EnableWriteProtection                       ROM_RUN/stm32f10x_flash.o
+FLASH_EraseAllPages                               ROM_RUN/stm32f10x_flash.o
+FLASH_EraseOptionBytes                            ROM_RUN/stm32f10x_flash.o
+FLASH_ErasePage                                   ROM_RUN/stm32f10x_flash.o
+FLASH_GetFlagStatus                               ROM_RUN/stm32f10x_flash.o
+FLASH_GetPrefetchBufferStatus                     ROM_RUN/stm32f10x_flash.o
+FLASH_GetReadOutProtectionStatus                  ROM_RUN/stm32f10x_flash.o
+FLASH_GetStatus                                   ROM_RUN/stm32f10x_flash.o
+FLASH_GetUserOptionByte                           ROM_RUN/stm32f10x_flash.o
+FLASH_GetWriteProtectionOptionByte                ROM_RUN/stm32f10x_flash.o
+FLASH_HalfCycleAccessCmd                          ROM_RUN/stm32f10x_flash.o
+FLASH_IRQHandler                                  ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+FLASH_ITConfig                                    ROM_RUN/stm32f10x_flash.o
+FLASH_Lock                                        ROM_RUN/stm32f10x_flash.o
+FLASH_PrefetchBufferCmd                           ROM_RUN/stm32f10x_flash.o
+                                                  ROM_RUN/Eval50xx-Main.o
+FLASH_ProgramHalfWord                             ROM_RUN/stm32f10x_flash.o
+FLASH_ProgramOptionByteData                       ROM_RUN/stm32f10x_flash.o
+FLASH_ProgramWord                                 ROM_RUN/stm32f10x_flash.o
+FLASH_ReadOutProtection                           ROM_RUN/stm32f10x_flash.o
+FLASH_SetLatency                                  ROM_RUN/stm32f10x_flash.o
+                                                  ROM_RUN/Eval50xx-Main.o
+FLASH_Unlock                                      ROM_RUN/stm32f10x_flash.o
+FLASH_UserOptionByteConfig                        ROM_RUN/stm32f10x_flash.o
+FLASH_WaitForLastOperation                        ROM_RUN/stm32f10x_flash.o
+FSMC_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+FreeUserBuffer                                    ROM_RUN/usb_regs.o
+GPIO_AFIODeInit                                   ROM_RUN/stm32f10x_gpio.o
+GPIO_DeInit                                       ROM_RUN/stm32f10x_gpio.o
+GPIO_EXTILineConfig                               ROM_RUN/stm32f10x_gpio.o
+GPIO_EventOutputCmd                               ROM_RUN/stm32f10x_gpio.o
+GPIO_EventOutputConfig                            ROM_RUN/stm32f10x_gpio.o
+GPIO_Init                                         ROM_RUN/stm32f10x_gpio.o
+                                                  ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-SPI.o
+                                                  ROM_RUN/Eval50xx-IO.o
+GPIO_PinLockConfig                                ROM_RUN/stm32f10x_gpio.o
+GPIO_PinRemapConfig                               ROM_RUN/stm32f10x_gpio.o
+                                                  ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-IO.o
+GPIO_ReadInputData                                ROM_RUN/stm32f10x_gpio.o
+GPIO_ReadInputDataBit                             ROM_RUN/stm32f10x_gpio.o
+GPIO_ReadOutputData                               ROM_RUN/stm32f10x_gpio.o
+GPIO_ReadOutputDataBit                            ROM_RUN/stm32f10x_gpio.o
+GPIO_ResetBits                                    ROM_RUN/stm32f10x_gpio.o
+                                                  ROM_RUN/Eval50xx-USB.o
+GPIO_SetBits                                      ROM_RUN/stm32f10x_gpio.o
+                                                  ROM_RUN/Eval50xx-USB.o
+GPIO_StructInit                                   ROM_RUN/stm32f10x_gpio.o
+GPIO_Write                                        ROM_RUN/stm32f10x_gpio.o
+GPIO_WriteBit                                     ROM_RUN/stm32f10x_gpio.o
+GetBTABLE                                         ROM_RUN/usb_regs.o
+GetCNTR                                           ROM_RUN/usb_regs.o
+GetDADDR                                          ROM_RUN/usb_regs.o
+GetENDPOINT                                       ROM_RUN/usb_regs.o
+GetEPAddress                                      ROM_RUN/usb_regs.o
+GetEPDblBuf0Addr                                  ROM_RUN/usb_regs.o
+GetEPDblBuf0Count                                 ROM_RUN/usb_regs.o
+GetEPDblBuf1Addr                                  ROM_RUN/usb_regs.o
+GetEPDblBuf1Count                                 ROM_RUN/usb_regs.o
+GetEPDblBufDir                                    ROM_RUN/usb_regs.o
+GetEPRxAddr                                       ROM_RUN/usb_regs.o
+                                                  ROM_RUN/usb_core.o
+GetEPRxCount                                      ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+GetEPRxStatus                                     ROM_RUN/usb_regs.o
+GetEPTxAddr                                       ROM_RUN/usb_regs.o
+                                                  ROM_RUN/usb_core.o
+GetEPTxCount                                      ROM_RUN/usb_regs.o
+GetEPTxStatus                                     ROM_RUN/usb_regs.o
+GetEPType                                         ROM_RUN/usb_regs.o
+GetFNR                                            ROM_RUN/usb_regs.o
+GetISTR                                           ROM_RUN/usb_regs.o
+GetMeasuredSpeed                                  ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+GetRxStallStatus                                  ROM_RUN/usb_regs.o
+GetSysTimer                                       ROM_RUN/Eval50xx-SysTick.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+                                                  ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-Main.o
+GetTxStallStatus                                  ROM_RUN/usb_regs.o
+GetUSBCmd                                         ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+Get_SerialNum                                     ROM_RUN/Eval50xx-USB.o
+HardFaultException                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+I2C1_ER_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+I2C1_EV_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+I2C2_ER_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+I2C2_EV_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+I2C_ARPCmd                                        ROM_RUN/stm32f10x_i2c.o
+I2C_AcknowledgeConfig                             ROM_RUN/stm32f10x_i2c.o
+I2C_CalculatePEC                                  ROM_RUN/stm32f10x_i2c.o
+I2C_CheckEvent                                    ROM_RUN/stm32f10x_i2c.o
+I2C_ClearFlag                                     ROM_RUN/stm32f10x_i2c.o
+I2C_ClearITPendingBit                             ROM_RUN/stm32f10x_i2c.o
+I2C_Cmd                                           ROM_RUN/stm32f10x_i2c.o
+I2C_DMACmd                                        ROM_RUN/stm32f10x_i2c.o
+I2C_DMALastTransferCmd                            ROM_RUN/stm32f10x_i2c.o
+I2C_DeInit                                        ROM_RUN/stm32f10x_i2c.o
+I2C_DualAddressCmd                                ROM_RUN/stm32f10x_i2c.o
+I2C_FastModeDutyCycleConfig                       ROM_RUN/stm32f10x_i2c.o
+I2C_GeneralCallCmd                                ROM_RUN/stm32f10x_i2c.o
+I2C_GenerateSTART                                 ROM_RUN/stm32f10x_i2c.o
+I2C_GenerateSTOP                                  ROM_RUN/stm32f10x_i2c.o
+I2C_GetFlagStatus                                 ROM_RUN/stm32f10x_i2c.o
+I2C_GetITStatus                                   ROM_RUN/stm32f10x_i2c.o
+I2C_GetLastEvent                                  ROM_RUN/stm32f10x_i2c.o
+I2C_GetPEC                                        ROM_RUN/stm32f10x_i2c.o
+I2C_ITConfig                                      ROM_RUN/stm32f10x_i2c.o
+I2C_Init                                          ROM_RUN/stm32f10x_i2c.o
+I2C_OwnAddress2Config                             ROM_RUN/stm32f10x_i2c.o
+I2C_PECPositionConfig                             ROM_RUN/stm32f10x_i2c.o
+I2C_ReadRegister                                  ROM_RUN/stm32f10x_i2c.o
+I2C_ReceiveData                                   ROM_RUN/stm32f10x_i2c.o
+I2C_SMBusAlertConfig                              ROM_RUN/stm32f10x_i2c.o
+I2C_Send7bitAddress                               ROM_RUN/stm32f10x_i2c.o
+I2C_SendData                                      ROM_RUN/stm32f10x_i2c.o
+I2C_SoftwareResetCmd                              ROM_RUN/stm32f10x_i2c.o
+I2C_StretchClockCmd                               ROM_RUN/stm32f10x_i2c.o
+I2C_StructInit                                    ROM_RUN/stm32f10x_i2c.o
+I2C_TransmitPEC                                   ROM_RUN/stm32f10x_i2c.o
+I2S_Cmd                                           ROM_RUN/stm32f10x_spi.o
+I2S_Init                                          ROM_RUN/stm32f10x_spi.o
+I2S_StructInit                                    ROM_RUN/stm32f10x_spi.o
+IWDG_Enable                                       ROM_RUN/stm32f10x_iwdg.o
+IWDG_GetFlagStatus                                ROM_RUN/stm32f10x_iwdg.o
+IWDG_ReloadCounter                                ROM_RUN/stm32f10x_iwdg.o
+IWDG_SetPrescaler                                 ROM_RUN/stm32f10x_iwdg.o
+IWDG_SetReload                                    ROM_RUN/stm32f10x_iwdg.o
+IWDG_WriteAccessCmd                               ROM_RUN/stm32f10x_iwdg.o
+In0_Process                                       ROM_RUN/usb_core.o
+                                                  ROM_RUN/usb_int.o
+InitIO                                            ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-Main.o
+InitMotorDrivers                                  ROM_RUN/Eval50xx-Main.o
+InitSPI                                           ROM_RUN/Eval50xx-SPI.o
+                                                  ROM_RUN/Eval50xx-Main.o
+InitSysTick                                       ROM_RUN/Eval50xx-SysTick.o
+                                                  ROM_RUN/Eval50xx-Main.o
+InitUART                                          ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-Main.o
+InitUSB                                           ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/Eval50xx-Main.o
+Leave_LowPowerMode                                ROM_RUN/Eval50xx-USB.o
+MemManageException                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+NMIException                                      ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+NOP_Process                                       ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+NVIC_BASEPRICONFIG                                ROM_RUN/stm32f10x_nvic.o
+NVIC_ClearIRQChannelPendingBit                    ROM_RUN/stm32f10x_nvic.o
+NVIC_ClearSystemHandlerPendingBit                 ROM_RUN/stm32f10x_nvic.o
+NVIC_DeInit                                       ROM_RUN/stm32f10x_nvic.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+NVIC_GenerateCoreReset                            ROM_RUN/stm32f10x_nvic.o
+                                                  ROM_RUN/Eval50xx-IO.o
+NVIC_GenerateSystemReset                          ROM_RUN/stm32f10x_nvic.o
+                                                  ROM_RUN/Eval50xx-IO.o
+NVIC_GetBASEPRI                                   ROM_RUN/stm32f10x_nvic.o
+NVIC_GetCPUID                                     ROM_RUN/stm32f10x_nvic.o
+NVIC_GetCurrentActiveHandler                      ROM_RUN/stm32f10x_nvic.o
+NVIC_GetCurrentPendingIRQChannel                  ROM_RUN/stm32f10x_nvic.o
+NVIC_GetFaultAddress                              ROM_RUN/stm32f10x_nvic.o
+NVIC_GetFaultHandlerSources                       ROM_RUN/stm32f10x_nvic.o
+NVIC_GetIRQChannelActiveBitStatus                 ROM_RUN/stm32f10x_nvic.o
+NVIC_GetIRQChannelPendingBitStatus                ROM_RUN/stm32f10x_nvic.o
+NVIC_GetSystemHandlerActiveBitStatus              ROM_RUN/stm32f10x_nvic.o
+NVIC_GetSystemHandlerPendingBitStatus             ROM_RUN/stm32f10x_nvic.o
+NVIC_Init                                         ROM_RUN/stm32f10x_nvic.o
+                                                  ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/Eval50xx-UART.o
+NVIC_PriorityGroupConfig                          ROM_RUN/stm32f10x_nvic.o
+                                                  ROM_RUN/Eval50xx-Main.o
+NVIC_RESETFAULTMASK                               ROM_RUN/stm32f10x_nvic.o
+NVIC_RESETPRIMASK                                 ROM_RUN/stm32f10x_nvic.o
+NVIC_SCBDeInit                                    ROM_RUN/stm32f10x_nvic.o
+NVIC_SETFAULTMASK                                 ROM_RUN/stm32f10x_nvic.o
+NVIC_SETPRIMASK                                   ROM_RUN/stm32f10x_nvic.o
+NVIC_SetIRQChannelPendingBit                      ROM_RUN/stm32f10x_nvic.o
+NVIC_SetSystemHandlerPendingBit                   ROM_RUN/stm32f10x_nvic.o
+NVIC_SetVectorTable                               ROM_RUN/stm32f10x_nvic.o
+                                                  ROM_RUN/Eval50xx-Main.o
+NVIC_StructInit                                   ROM_RUN/stm32f10x_nvic.o
+NVIC_SystemHandlerConfig                          ROM_RUN/stm32f10x_nvic.o
+NVIC_SystemHandlerPriorityConfig                  ROM_RUN/stm32f10x_nvic.o
+                                                  ROM_RUN/Eval50xx-SysTick.o
+NVIC_SystemLPConfig                               ROM_RUN/stm32f10x_nvic.o
+Out0_Process                                      ROM_RUN/usb_core.o
+                                                  ROM_RUN/usb_int.o
+PMAToUserBufferCopy                               ROM_RUN/usb_mem.o
+                                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+PVD_IRQHandler                                    ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+PWR_BackupAccessCmd                               ROM_RUN/stm32f10x_pwr.o
+PWR_ClearFlag                                     ROM_RUN/stm32f10x_pwr.o
+PWR_DeInit                                        ROM_RUN/stm32f10x_pwr.o
+PWR_EnterSTANDBYMode                              ROM_RUN/stm32f10x_pwr.o
+PWR_EnterSTOPMode                                 ROM_RUN/stm32f10x_pwr.o
+PWR_GetFlagStatus                                 ROM_RUN/stm32f10x_pwr.o
+PWR_PVDCmd                                        ROM_RUN/stm32f10x_pwr.o
+PWR_PVDLevelConfig                                ROM_RUN/stm32f10x_pwr.o
+PWR_WakeUpPinCmd                                  ROM_RUN/stm32f10x_pwr.o
+PendSVC                                           ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+Post0_Process                                     ROM_RUN/usb_core.o
+PowerOff                                          ROM_RUN/Eval50xx-USB.o
+PowerOn                                           ROM_RUN/Eval50xx-USB.o
+ProcessCommands                                   ROM_RUN/Eval50xx-Commands.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_ADCCLKConfig                                  ROM_RUN/stm32f10x_rcc.o
+RCC_AHBPeriphClockCmd                             ROM_RUN/stm32f10x_rcc.o
+RCC_APB1PeriphClockCmd                            ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-IO.o
+RCC_APB1PeriphResetCmd                            ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/stm32f10x_wwdg.o
+                                                  ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/stm32f10x_tim.o
+                                                  ROM_RUN/stm32f10x_spi.o
+                                                  ROM_RUN/stm32f10x_pwr.o
+                                                  ROM_RUN/stm32f10x_i2c.o
+                                                  ROM_RUN/stm32f10x_can.o
+RCC_APB2PeriphClockCmd                            ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-SPI.o
+                                                  ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_APB2PeriphResetCmd                            ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/stm32f10x_tim.o
+                                                  ROM_RUN/stm32f10x_spi.o
+                                                  ROM_RUN/stm32f10x_gpio.o
+                                                  ROM_RUN/stm32f10x_adc.o
+                                                  ROM_RUN/Eval50xx-UART.o
+RCC_AdjustHSICalibrationValue                     ROM_RUN/stm32f10x_rcc.o
+RCC_BackupResetCmd                                ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/stm32f10x_bkp.o
+RCC_ClearFlag                                     ROM_RUN/stm32f10x_rcc.o
+RCC_ClearITPendingBit                             ROM_RUN/stm32f10x_rcc.o
+RCC_ClockSecuritySystemCmd                        ROM_RUN/stm32f10x_rcc.o
+RCC_DeInit                                        ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_GetClocksFreq                                 ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/stm32f10x_spi.o
+                                                  ROM_RUN/stm32f10x_i2c.o
+RCC_GetFlagStatus                                 ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_GetITStatus                                   ROM_RUN/stm32f10x_rcc.o
+RCC_GetSYSCLKSource                               ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_HCLKConfig                                    ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_HSEConfig                                     ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_HSICmd                                        ROM_RUN/stm32f10x_rcc.o
+RCC_IRQHandler                                    ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+RCC_ITConfig                                      ROM_RUN/stm32f10x_rcc.o
+RCC_LSEConfig                                     ROM_RUN/stm32f10x_rcc.o
+RCC_LSICmd                                        ROM_RUN/stm32f10x_rcc.o
+RCC_MCOConfig                                     ROM_RUN/stm32f10x_rcc.o
+RCC_PCLK1Config                                   ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_PCLK2Config                                   ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_PLLCmd                                        ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_PLLConfig                                     ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_RTCCLKCmd                                     ROM_RUN/stm32f10x_rcc.o
+RCC_RTCCLKConfig                                  ROM_RUN/stm32f10x_rcc.o
+RCC_SYSCLKConfig                                  ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RCC_USBCLKConfig                                  ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-USB.o
+RCC_WaitForHSEStartUp                             ROM_RUN/stm32f10x_rcc.o
+                                                  ROM_RUN/Eval50xx-Main.o
+RTCAlarm_IRQHandler                               ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+RTC_ClearFlag                                     ROM_RUN/stm32f10x_rtc.o
+RTC_ClearITPendingBit                             ROM_RUN/stm32f10x_rtc.o
+RTC_EnterConfigMode                               ROM_RUN/stm32f10x_rtc.o
+RTC_ExitConfigMode                                ROM_RUN/stm32f10x_rtc.o
+RTC_GetCounter                                    ROM_RUN/stm32f10x_rtc.o
+RTC_GetDivider                                    ROM_RUN/stm32f10x_rtc.o
+RTC_GetFlagStatus                                 ROM_RUN/stm32f10x_rtc.o
+RTC_GetITStatus                                   ROM_RUN/stm32f10x_rtc.o
+RTC_IRQHandler                                    ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+RTC_ITConfig                                      ROM_RUN/stm32f10x_rtc.o
+RTC_SetAlarm                                      ROM_RUN/stm32f10x_rtc.o
+RTC_SetCounter                                    ROM_RUN/stm32f10x_rtc.o
+RTC_SetPrescaler                                  ROM_RUN/stm32f10x_rtc.o
+RTC_WaitForLastTask                               ROM_RUN/stm32f10x_rtc.o
+RTC_WaitForSynchro                                ROM_RUN/stm32f10x_rtc.o
+ReadTMC562Int                                     ROM_RUN/Eval50xx-Registers.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+                                                  ROM_RUN/Eval50xx-IO.o
+ReadUART                                          ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+ReadWriteSPI                                      ROM_RUN/Eval50xx-SPI.o
+                                                  ROM_RUN/Eval50xx-Registers.o
+Request                                           ROM_RUN/Eval50xx-USB.o
+ResetCPU                                          ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+Reset_Handler                                     ROM_RUN/stm32f10x_vector.o
+Resume                                            ROM_RUN/Eval50xx-USB.o
+ResumeS                                           ROM_RUN/Eval50xx-USB.o
+Resume_Init                                       ROM_RUN/Eval50xx-USB.o
+SDIO_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+SPI1_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+SPI2_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+SPI3_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+SPI_BiDirectionalLineConfig                       ROM_RUN/stm32f10x_spi.o
+SPI_CalculateCRC                                  ROM_RUN/stm32f10x_spi.o
+SPI_Cmd                                           ROM_RUN/stm32f10x_spi.o
+                                                  ROM_RUN/Eval50xx-SPI.o
+SPI_DataSizeConfig                                ROM_RUN/stm32f10x_spi.o
+SPI_GetCRC                                        ROM_RUN/stm32f10x_spi.o
+SPI_GetCRCPolynomial                              ROM_RUN/stm32f10x_spi.o
+SPI_I2S_ClearFlag                                 ROM_RUN/stm32f10x_spi.o
+SPI_I2S_ClearITPendingBit                         ROM_RUN/stm32f10x_spi.o
+SPI_I2S_DMACmd                                    ROM_RUN/stm32f10x_spi.o
+SPI_I2S_DeInit                                    ROM_RUN/stm32f10x_spi.o
+SPI_I2S_GetFlagStatus                             ROM_RUN/stm32f10x_spi.o
+                                                  ROM_RUN/Eval50xx-SPI.o
+SPI_I2S_GetITStatus                               ROM_RUN/stm32f10x_spi.o
+SPI_I2S_ITConfig                                  ROM_RUN/stm32f10x_spi.o
+SPI_I2S_ReceiveData                               ROM_RUN/stm32f10x_spi.o
+                                                  ROM_RUN/Eval50xx-SPI.o
+SPI_I2S_SendData                                  ROM_RUN/stm32f10x_spi.o
+                                                  ROM_RUN/Eval50xx-SPI.o
+SPI_Init                                          ROM_RUN/stm32f10x_spi.o
+                                                  ROM_RUN/Eval50xx-SPI.o
+SPI_NSSInternalSoftwareConfig                     ROM_RUN/stm32f10x_spi.o
+SPI_SSOutputCmd                                   ROM_RUN/stm32f10x_spi.o
+SPI_StructInit                                    ROM_RUN/stm32f10x_spi.o
+SPI_TransmitCRC                                   ROM_RUN/stm32f10x_spi.o
+SVCHandler                                        ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+SaveRState                                        ROM_RUN/usb_int.o
+                                                  ROM_RUN/usb_core.o
+SaveState                                         ROM_RUN/usb_init.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SaveTState                                        ROM_RUN/usb_int.o
+                                                  ROM_RUN/usb_core.o
+SetBTABLE                                         ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetCNTR                                           ROM_RUN/usb_regs.o
+SetDADDR                                          ROM_RUN/usb_regs.o
+SetDeviceAddress                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetDouBleBuffEPStall                              ROM_RUN/usb_regs.o
+SetENDPOINT                                       ROM_RUN/usb_regs.o
+SetEPAddress                                      ROM_RUN/usb_regs.o
+SetEPCountRxReg                                   ROM_RUN/usb_regs.o
+SetEPDblBuf0Addr                                  ROM_RUN/usb_regs.o
+SetEPDblBuf0Count                                 ROM_RUN/usb_regs.o
+SetEPDblBuf1Addr                                  ROM_RUN/usb_regs.o
+SetEPDblBuf1Count                                 ROM_RUN/usb_regs.o
+SetEPDblBuffAddr                                  ROM_RUN/usb_regs.o
+SetEPDblBuffCount                                 ROM_RUN/usb_regs.o
+SetEPDoubleBuff                                   ROM_RUN/usb_regs.o
+SetEPRxAddr                                       ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEPRxCount                                      ROM_RUN/usb_regs.o
+                                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEPRxStatus                                     ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEPRxValid                                      ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEPTxAddr                                       ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEPTxCount                                      ROM_RUN/usb_regs.o
+                                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEPTxStatus                                     ROM_RUN/usb_regs.o
+                                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEPTxValid                                      ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEPType                                         ROM_RUN/usb_regs.o
+                                                  ROM_RUN/Eval50xx-USB.o
+SetEP_KIND                                        ROM_RUN/usb_regs.o
+SetISTR                                           ROM_RUN/usb_regs.o
+SetUARTTransmitDelay                              ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-Main.o
+Set_Status_Out                                    ROM_RUN/usb_regs.o
+Set_USBClock                                      ROM_RUN/Eval50xx-USB.o
+Setup0_Process                                    ROM_RUN/usb_core.o
+                                                  ROM_RUN/usb_int.o
+SpecialReply                                      ROM_RUN/Eval50xx-Commands.o
+Standard_ClearFeature                             ROM_RUN/usb_core.o
+Standard_GetConfiguration                         ROM_RUN/usb_core.o
+Standard_GetDescriptorData                        ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+Standard_GetInterface                             ROM_RUN/usb_core.o
+Standard_GetStatus                                ROM_RUN/usb_core.o
+Standard_SetConfiguration                         ROM_RUN/usb_core.o
+Standard_SetDeviceFeature                         ROM_RUN/usb_core.o
+Standard_SetEndPointFeature                       ROM_RUN/usb_core.o
+Standard_SetInterface                             ROM_RUN/usb_core.o
+StatusInfo                                        ROM_RUN/usb_core.o
+String_Descriptor                                 ROM_RUN/Eval50xx-USB.o
+Suspend                                           ROM_RUN/Eval50xx-USB.o
+SysTickHandler                                    ROM_RUN/Eval50xx-SysTick.o
+                                                  ROM_RUN/stm32f10x_vector.o
+SysTick_CLKSourceConfig                           ROM_RUN/stm32f10x_systick.o
+                                                  ROM_RUN/Eval50xx-SysTick.o
+SysTick_CounterCmd                                ROM_RUN/stm32f10x_systick.o
+                                                  ROM_RUN/Eval50xx-SysTick.o
+SysTick_GetCounter                                ROM_RUN/stm32f10x_systick.o
+SysTick_GetFlagStatus                             ROM_RUN/stm32f10x_systick.o
+SysTick_ITConfig                                  ROM_RUN/stm32f10x_systick.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+                                                  ROM_RUN/Eval50xx-SysTick.o
+SysTick_SetReload                                 ROM_RUN/stm32f10x_systick.o
+                                                  ROM_RUN/Eval50xx-SysTick.o
+SystemControl                                     ROM_RUN/Eval50xx-IO.o
+                                                  ROM_RUN/Eval50xx-Main.o
+TAMPER_IRQHandler                                 ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+TIM1_BRK_IRQHandler                               ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+TIM1_CC_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+TIM1_TRG_COM_IRQHandler                           ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+TIM1_UP_IRQHandler                                ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+TIM2_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+TIM3_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+TIM4_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+TIM5_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+TIM6_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+TIM7_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+TIM8_BRK_IRQHandler                               ROM_RUN/stm32f10x_it.o
+TIM8_CC_IRQHandler                                ROM_RUN/stm32f10x_it.o
+TIM8_TRG_COM_IRQHandler                           ROM_RUN/stm32f10x_it.o
+TIM8_UP_IRQHandler                                ROM_RUN/stm32f10x_it.o
+TIM_ARRPreloadConfig                              ROM_RUN/stm32f10x_tim.o
+                                                  ROM_RUN/Eval50xx-IO.o
+TIM_BDTRConfig                                    ROM_RUN/stm32f10x_tim.o
+TIM_BDTRStructInit                                ROM_RUN/stm32f10x_tim.o
+TIM_CCPreloadControl                              ROM_RUN/stm32f10x_tim.o
+TIM_CCxCmd                                        ROM_RUN/stm32f10x_tim.o
+TIM_CCxNCmd                                       ROM_RUN/stm32f10x_tim.o
+TIM_ClearFlag                                     ROM_RUN/stm32f10x_tim.o
+TIM_ClearITPendingBit                             ROM_RUN/stm32f10x_tim.o
+TIM_ClearOC1Ref                                   ROM_RUN/stm32f10x_tim.o
+TIM_ClearOC2Ref                                   ROM_RUN/stm32f10x_tim.o
+TIM_ClearOC3Ref                                   ROM_RUN/stm32f10x_tim.o
+TIM_ClearOC4Ref                                   ROM_RUN/stm32f10x_tim.o
+TIM_Cmd                                           ROM_RUN/stm32f10x_tim.o
+                                                  ROM_RUN/Eval50xx-IO.o
+TIM_CounterModeConfig                             ROM_RUN/stm32f10x_tim.o
+TIM_CtrlPWMOutputs                                ROM_RUN/stm32f10x_tim.o
+TIM_DMACmd                                        ROM_RUN/stm32f10x_tim.o
+TIM_DMAConfig                                     ROM_RUN/stm32f10x_tim.o
+TIM_DeInit                                        ROM_RUN/stm32f10x_tim.o
+                                                  ROM_RUN/Eval50xx-IO.o
+TIM_ETRClockMode1Config                           ROM_RUN/stm32f10x_tim.o
+TIM_ETRClockMode2Config                           ROM_RUN/stm32f10x_tim.o
+TIM_ETRConfig                                     ROM_RUN/stm32f10x_tim.o
+TIM_EncoderInterfaceConfig                        ROM_RUN/stm32f10x_tim.o
+TIM_ForcedOC1Config                               ROM_RUN/stm32f10x_tim.o
+TIM_ForcedOC2Config                               ROM_RUN/stm32f10x_tim.o
+TIM_ForcedOC3Config                               ROM_RUN/stm32f10x_tim.o
+TIM_ForcedOC4Config                               ROM_RUN/stm32f10x_tim.o
+TIM_GenerateEvent                                 ROM_RUN/stm32f10x_tim.o
+TIM_GetCapture1                                   ROM_RUN/stm32f10x_tim.o
+TIM_GetCapture2                                   ROM_RUN/stm32f10x_tim.o
+TIM_GetCapture3                                   ROM_RUN/stm32f10x_tim.o
+TIM_GetCapture4                                   ROM_RUN/stm32f10x_tim.o
+TIM_GetCounter                                    ROM_RUN/stm32f10x_tim.o
+TIM_GetFlagStatus                                 ROM_RUN/stm32f10x_tim.o
+TIM_GetITStatus                                   ROM_RUN/stm32f10x_tim.o
+TIM_GetPrescaler                                  ROM_RUN/stm32f10x_tim.o
+TIM_ICInit                                        ROM_RUN/stm32f10x_tim.o
+TIM_ICStructInit                                  ROM_RUN/stm32f10x_tim.o
+TIM_ITConfig                                      ROM_RUN/stm32f10x_tim.o
+TIM_ITRxExternalClockConfig                       ROM_RUN/stm32f10x_tim.o
+TIM_InternalClockConfig                           ROM_RUN/stm32f10x_tim.o
+TIM_OC1FastConfig                                 ROM_RUN/stm32f10x_tim.o
+TIM_OC1Init                                       ROM_RUN/stm32f10x_tim.o
+TIM_OC1NPolarityConfig                            ROM_RUN/stm32f10x_tim.o
+TIM_OC1PolarityConfig                             ROM_RUN/stm32f10x_tim.o
+TIM_OC1PreloadConfig                              ROM_RUN/stm32f10x_tim.o
+TIM_OC2FastConfig                                 ROM_RUN/stm32f10x_tim.o
+TIM_OC2Init                                       ROM_RUN/stm32f10x_tim.o
+TIM_OC2NPolarityConfig                            ROM_RUN/stm32f10x_tim.o
+TIM_OC2PolarityConfig                             ROM_RUN/stm32f10x_tim.o
+TIM_OC2PreloadConfig                              ROM_RUN/stm32f10x_tim.o
+TIM_OC3FastConfig                                 ROM_RUN/stm32f10x_tim.o
+TIM_OC3Init                                       ROM_RUN/stm32f10x_tim.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+                                                  ROM_RUN/Eval50xx-IO.o
+TIM_OC3NPolarityConfig                            ROM_RUN/stm32f10x_tim.o
+TIM_OC3PolarityConfig                             ROM_RUN/stm32f10x_tim.o
+TIM_OC3PreloadConfig                              ROM_RUN/stm32f10x_tim.o
+                                                  ROM_RUN/Eval50xx-IO.o
+TIM_OC4FastConfig                                 ROM_RUN/stm32f10x_tim.o
+TIM_OC4Init                                       ROM_RUN/stm32f10x_tim.o
+TIM_OC4PolarityConfig                             ROM_RUN/stm32f10x_tim.o
+TIM_OC4PreloadConfig                              ROM_RUN/stm32f10x_tim.o
+TIM_OCStructInit                                  ROM_RUN/stm32f10x_tim.o
+TIM_PWMIConfig                                    ROM_RUN/stm32f10x_tim.o
+TIM_PrescalerConfig                               ROM_RUN/stm32f10x_tim.o
+TIM_SelectCCDMA                                   ROM_RUN/stm32f10x_tim.o
+TIM_SelectCOM                                     ROM_RUN/stm32f10x_tim.o
+TIM_SelectHallSensor                              ROM_RUN/stm32f10x_tim.o
+TIM_SelectInputTrigger                            ROM_RUN/stm32f10x_tim.o
+TIM_SelectMasterSlaveMode                         ROM_RUN/stm32f10x_tim.o
+TIM_SelectOCxM                                    ROM_RUN/stm32f10x_tim.o
+TIM_SelectOnePulseMode                            ROM_RUN/stm32f10x_tim.o
+TIM_SelectOutputTrigger                           ROM_RUN/stm32f10x_tim.o
+TIM_SelectSlaveMode                               ROM_RUN/stm32f10x_tim.o
+TIM_SetAutoreload                                 ROM_RUN/stm32f10x_tim.o
+TIM_SetClockDivision                              ROM_RUN/stm32f10x_tim.o
+TIM_SetCompare1                                   ROM_RUN/stm32f10x_tim.o
+TIM_SetCompare2                                   ROM_RUN/stm32f10x_tim.o
+TIM_SetCompare3                                   ROM_RUN/stm32f10x_tim.o
+TIM_SetCompare4                                   ROM_RUN/stm32f10x_tim.o
+TIM_SetCounter                                    ROM_RUN/stm32f10x_tim.o
+TIM_SetIC1Prescaler                               ROM_RUN/stm32f10x_tim.o
+TIM_SetIC2Prescaler                               ROM_RUN/stm32f10x_tim.o
+TIM_SetIC3Prescaler                               ROM_RUN/stm32f10x_tim.o
+TIM_SetIC4Prescaler                               ROM_RUN/stm32f10x_tim.o
+TIM_TIxExternalClockConfig                        ROM_RUN/stm32f10x_tim.o
+TIM_TimeBaseInit                                  ROM_RUN/stm32f10x_tim.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+                                                  ROM_RUN/Eval50xx-IO.o
+TIM_TimeBaseStructInit                            ROM_RUN/stm32f10x_tim.o
+TIM_UpdateDisableConfig                           ROM_RUN/stm32f10x_tim.o
+TIM_UpdateRequestConfig                           ROM_RUN/stm32f10x_tim.o
+TMCLReplyFormat                                   ROM_RUN/Eval50xx-Commands.o
+ToWord                                            ROM_RUN/usb_regs.o
+ToggleDTOG_RX                                     ROM_RUN/usb_regs.o
+ToggleDTOG_TX                                     ROM_RUN/usb_regs.o
+UART1TimeoutFlag                                  ROM_RUN/Eval50xx-SysTick.o
+                                                  ROM_RUN/Eval50xx-UART.o
+UART1TimeoutTimer                                 ROM_RUN/Eval50xx-SysTick.o
+                                                  ROM_RUN/Eval50xx-UART.o
+UART1TransmitDelayTimer                           ROM_RUN/Eval50xx-SysTick.o
+                                                  ROM_RUN/Eval50xx-UART.o
+UART4_IRQHandler                                  ROM_RUN/stm32f10x_it.o
+UART5_IRQHandler                                  ROM_RUN/stm32f10x_it.o
+USART1_IRQHandler                                 ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+USART2_IRQHandler                                 ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/stm32f10x_vector.o
+USART3_IRQHandler                                 ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+USART_ClearFlag                                   ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/Eval50xx-UART.o
+USART_ClearITPendingBit                           ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/Eval50xx-UART.o
+USART_ClockInit                                   ROM_RUN/stm32f10x_usart.o
+USART_ClockStructInit                             ROM_RUN/stm32f10x_usart.o
+USART_Cmd                                         ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/Eval50xx-UART.o
+USART_DMACmd                                      ROM_RUN/stm32f10x_usart.o
+USART_DeInit                                      ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/Eval50xx-UART.o
+USART_GetFlagStatus                               ROM_RUN/stm32f10x_usart.o
+USART_GetITStatus                                 ROM_RUN/stm32f10x_usart.o
+USART_HalfDuplexCmd                               ROM_RUN/stm32f10x_usart.o
+USART_ITConfig                                    ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/Eval50xx-UART.o
+USART_Init                                        ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/Eval50xx-UART.o
+USART_IrDACmd                                     ROM_RUN/stm32f10x_usart.o
+USART_IrDAConfig                                  ROM_RUN/stm32f10x_usart.o
+USART_LINBreakDetectLengthConfig                  ROM_RUN/stm32f10x_usart.o
+USART_LINCmd                                      ROM_RUN/stm32f10x_usart.o
+USART_ReceiveData                                 ROM_RUN/stm32f10x_usart.o
+USART_ReceiverWakeUpCmd                           ROM_RUN/stm32f10x_usart.o
+USART_SendBreak                                   ROM_RUN/stm32f10x_usart.o
+USART_SendData                                    ROM_RUN/stm32f10x_usart.o
+USART_SetAddress                                  ROM_RUN/stm32f10x_usart.o
+USART_SetGuardTime                                ROM_RUN/stm32f10x_usart.o
+USART_SetPrescaler                                ROM_RUN/stm32f10x_usart.o
+USART_SmartCardCmd                                ROM_RUN/stm32f10x_usart.o
+USART_SmartCardNACKCmd                            ROM_RUN/stm32f10x_usart.o
+USART_StructInit                                  ROM_RUN/stm32f10x_usart.o
+                                                  ROM_RUN/Eval50xx-UART.o
+USART_WakeUpConfig                                ROM_RUN/stm32f10x_usart.o
+USBGetData                                        ROM_RUN/Eval50xx-USB.o
+USBSendData                                       ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+USBWakeUp_IRQHandler                              ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+USB_Cable_Config                                  ROM_RUN/Eval50xx-USB.o
+USB_HP_CAN_TX_IRQHandler                          ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+USB_Init                                          ROM_RUN/usb_init.o
+                                                  ROM_RUN/Eval50xx-USB.o
+USB_Interrupts_Config                             ROM_RUN/Eval50xx-USB.o
+USB_Istr                                          ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/stm32f10x_it.o
+USB_LP_CAN_RX0_IRQHandler                         ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+UsageFaultException                               ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+UserToPMABufferCopy                               ROM_RUN/usb_mem.o
+                                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+User_Standard_Requests                            ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/usb_init.o
+VersionString                                     ROM_RUN/Eval50xx-Main.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+Virtual_Com_Port_ConfigDescriptor                 ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_Data_Setup                       ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_DeviceDescriptor                 ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_GetConfigDescriptor              ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_GetDeviceDescriptor              ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_GetLineCoding                    ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_GetStringDescriptor              ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_Get_Interface_Setting            ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_NoData_Setup                     ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_Reset                            ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_SetConfiguration                 ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_SetDeviceAddress                 ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_SetLineCoding                    ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_Status_In                        ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_Status_Out                       ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_StringLangID                     ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_StringProduct                    ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_StringSerial                     ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_StringVendor                     ROM_RUN/Eval50xx-USB.o
+Virtual_Com_Port_init                             ROM_RUN/Eval50xx-USB.o
+WWDG_ClearFlag                                    ROM_RUN/stm32f10x_wwdg.o
+WWDG_DeInit                                       ROM_RUN/stm32f10x_wwdg.o
+WWDG_Enable                                       ROM_RUN/stm32f10x_wwdg.o
+WWDG_EnableIT                                     ROM_RUN/stm32f10x_wwdg.o
+WWDG_GetFlagStatus                                ROM_RUN/stm32f10x_wwdg.o
+WWDG_IRQHandler                                   ROM_RUN/stm32f10x_it.o
+                                                  ROM_RUN/stm32f10x_vector.o
+WWDG_SetCounter                                   ROM_RUN/stm32f10x_wwdg.o
+WWDG_SetPrescaler                                 ROM_RUN/stm32f10x_wwdg.o
+WWDG_SetWindowValue                               ROM_RUN/stm32f10x_wwdg.o
+WriteTMC562Datagram                               ROM_RUN/Eval50xx-Registers.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+                                                  ROM_RUN/Eval50xx-Main.o
+WriteTMC562Int                                    ROM_RUN/Eval50xx-Registers.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+WriteUART                                         ROM_RUN/Eval50xx-UART.o
+                                                  ROM_RUN/Eval50xx-Commands.o
+_Jv_RegisterClasses                               c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+__BASEPRICONFIG                                   ROM_RUN/cortexm3_macro.o
+                                                  ROM_RUN/stm32f10x_nvic.o
+__DMB                                             ROM_RUN/cortexm3_macro.o
+__DSB                                             ROM_RUN/cortexm3_macro.o
+__GetBASEPRI                                      ROM_RUN/cortexm3_macro.o
+                                                  ROM_RUN/stm32f10x_nvic.o
+__ISB                                             ROM_RUN/cortexm3_macro.o
+__MRS_CONTROL                                     ROM_RUN/cortexm3_macro.o
+__MRS_MSP                                         ROM_RUN/cortexm3_macro.o
+__MRS_PSP                                         ROM_RUN/cortexm3_macro.o
+__MSR_CONTROL                                     ROM_RUN/cortexm3_macro.o
+__MSR_MSP                                         ROM_RUN/cortexm3_macro.o
+__MSR_PSP                                         ROM_RUN/cortexm3_macro.o
+__RESETFAULTMASK                                  ROM_RUN/cortexm3_macro.o
+                                                  ROM_RUN/stm32f10x_nvic.o
+__RESETPRIMASK                                    ROM_RUN/cortexm3_macro.o
+                                                  ROM_RUN/stm32f10x_nvic.o
+__REV_HalfWord                                    ROM_RUN/cortexm3_macro.o
+__REV_Word                                        ROM_RUN/cortexm3_macro.o
+__SETFAULTMASK                                    ROM_RUN/cortexm3_macro.o
+                                                  ROM_RUN/stm32f10x_nvic.o
+__SETPRIMASK                                      ROM_RUN/cortexm3_macro.o
+                                                  ROM_RUN/stm32f10x_nvic.o
+__SEV                                             ROM_RUN/cortexm3_macro.o
+__SVC                                             ROM_RUN/cortexm3_macro.o
+__WFE                                             ROM_RUN/cortexm3_macro.o
+                                                  ROM_RUN/stm32f10x_pwr.o
+__WFI                                             ROM_RUN/cortexm3_macro.o
+                                                  ROM_RUN/stm32f10x_pwr.o
+__adddf3                                          c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__addsf3                                          c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__aeabi_d2iz                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
+                                                  ROM_RUN/Eval50xx-IO.o
+__aeabi_dadd                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__aeabi_ddiv                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+__aeabi_dmul                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+                                                  ROM_RUN/Eval50xx-IO.o
+__aeabi_drsub                                     c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__aeabi_dsub                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__aeabi_f2d                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+                                                  ROM_RUN/Eval50xx-IO.o
+__aeabi_fadd                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__aeabi_fdiv                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+                                                  ROM_RUN/Eval50xx-IO.o
+__aeabi_fmul                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+__aeabi_frsub                                     c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__aeabi_fsub                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__aeabi_i2d                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__aeabi_i2f                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+                                                  ROM_RUN/Eval50xx-IO.o
+__aeabi_l2d                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__aeabi_l2f                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__aeabi_ui2d                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__aeabi_ui2f                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__aeabi_ul2d                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__aeabi_ul2f                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__deregister_frame_info                           c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+__divdf3                                          c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+__divsf3                                          c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+__dso_handle                                      c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+__extendsfdf2                                     c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__fixdfsi                                         c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
+__floatdidf                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__floatdisf                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__floatsidf                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__floatsisf                                       c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__floatundidf                                     c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__floatundisf                                     c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__floatunsidf                                     c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__floatunsisf                                     c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+__muldf3                                          c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+__mulsf3                                          c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivsf3.o)
+__register_frame_info                             c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+__subdf3                                          c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+__subsf3                                          c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubsf3.o)
+_ebss                                             ROM_RUN/stm32f10x_vector.o
+_edata                                            ROM_RUN/stm32f10x_vector.o
+_estack                                           ROM_RUN/stm32f10x_vector.o
+_fini                                             c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+_init                                             c:/tools/codesourcerylite/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+_sbss                                             ROM_RUN/stm32f10x_vector.o
+_sdata                                            ROM_RUN/stm32f10x_vector.o
+_sidata                                           ROM_RUN/stm32f10x_vector.o
+bDeviceState                                      ROM_RUN/Eval50xx-USB.o
+bIntPackSOF                                       ROM_RUN/Eval50xx-USB.o
+buffer_in                                         ROM_RUN/Eval50xx-USB.o
+buffer_out                                        ROM_RUN/Eval50xx-USB.o
+count_in                                          ROM_RUN/Eval50xx-USB.o
+count_out                                         ROM_RUN/Eval50xx-USB.o
+fSuspendEnabled                                   ROM_RUN/Eval50xx-USB.o
+g_pfnVectors                                      ROM_RUN/stm32f10x_vector.o
+linecoding                                        ROM_RUN/Eval50xx-USB.o
+main                                              ROM_RUN/Eval50xx-Main.o
+                                                  ROM_RUN/stm32f10x_vector.o
+pEpInt_IN                                         ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/usb_int.o
+pEpInt_OUT                                        ROM_RUN/Eval50xx-USB.o
+                                                  ROM_RUN/usb_int.o
+pInformation                                      ROM_RUN/usb_init.o
+                                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+pProperty                                         ROM_RUN/usb_init.o
+                                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+pUser_Standard_Requests                           ROM_RUN/usb_init.o
+                                                  ROM_RUN/usb_core.o
+                                                  ROM_RUN/Eval50xx-USB.o
+wInterrupt_Mask                                   ROM_RUN/usb_init.o
+                                                  ROM_RUN/Eval50xx-USB.o
+wIstr                                             ROM_RUN/usb_int.o
+                                                  ROM_RUN/Eval50xx-USB.o

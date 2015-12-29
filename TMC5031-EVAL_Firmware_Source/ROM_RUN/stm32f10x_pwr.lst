@@ -1,0 +1,588 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_pwr.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	PWR_BackupAccessCmd
+  24              		.thumb
+  25              		.thumb_func
+  27              	PWR_BackupAccessCmd:
+  28              	.LFB1:
+  29              		.file 1 "lib//src/stm32f10x_pwr.c"
+   1:lib//src/stm32f10x_pwr.c **** /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+   2:lib//src/stm32f10x_pwr.c **** * File Name          : stm32f10x_pwr.c
+   3:lib//src/stm32f10x_pwr.c **** * Author             : MCD Application Team
+   4:lib//src/stm32f10x_pwr.c **** * Version            : V2.0
+   5:lib//src/stm32f10x_pwr.c **** * Date               : 05/23/2008
+   6:lib//src/stm32f10x_pwr.c **** * Description        : This file provides all the PWR firmware functions.
+   7:lib//src/stm32f10x_pwr.c **** ********************************************************************************
+   8:lib//src/stm32f10x_pwr.c **** * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+   9:lib//src/stm32f10x_pwr.c **** * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  10:lib//src/stm32f10x_pwr.c **** * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+  11:lib//src/stm32f10x_pwr.c **** * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+  12:lib//src/stm32f10x_pwr.c **** * CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+  13:lib//src/stm32f10x_pwr.c **** * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  14:lib//src/stm32f10x_pwr.c **** * FOR MORE INFORMATION PLEASE CAREFULLY READ THE LICENSE AGREEMENT FILE LOCATED 
+  15:lib//src/stm32f10x_pwr.c **** * IN THE ROOT DIRECTORY OF THIS FIRMWARE PACKAGE.
+  16:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+  17:lib//src/stm32f10x_pwr.c **** 
+  18:lib//src/stm32f10x_pwr.c **** /* Includes ------------------------------------------------------------------*/
+  19:lib//src/stm32f10x_pwr.c **** #include "stm32f10x_pwr.h"
+  20:lib//src/stm32f10x_pwr.c **** #include "stm32f10x_rcc.h"
+  21:lib//src/stm32f10x_pwr.c **** 
+  22:lib//src/stm32f10x_pwr.c **** /* Private typedef -----------------------------------------------------------*/
+  23:lib//src/stm32f10x_pwr.c **** /* Private define ------------------------------------------------------------*/
+  24:lib//src/stm32f10x_pwr.c **** /* --------- PWR registers bit address in the alias region ---------- */
+  25:lib//src/stm32f10x_pwr.c **** #define PWR_OFFSET               (PWR_BASE - PERIPH_BASE)
+  26:lib//src/stm32f10x_pwr.c **** 
+  27:lib//src/stm32f10x_pwr.c **** /* --- CR Register ---*/
+  28:lib//src/stm32f10x_pwr.c **** /* Alias word address of DBP bit */
+  29:lib//src/stm32f10x_pwr.c **** #define CR_OFFSET                (PWR_OFFSET + 0x00)
+  30:lib//src/stm32f10x_pwr.c **** #define DBP_BitNumber            0x08
+  31:lib//src/stm32f10x_pwr.c **** #define CR_DBP_BB                (PERIPH_BB_BASE + (CR_OFFSET * 32) + (DBP_BitNumber * 4))
+  32:lib//src/stm32f10x_pwr.c **** 
+  33:lib//src/stm32f10x_pwr.c **** /* Alias word address of PVDE bit */
+  34:lib//src/stm32f10x_pwr.c **** #define PVDE_BitNumber           0x04
+  35:lib//src/stm32f10x_pwr.c **** #define CR_PVDE_BB               (PERIPH_BB_BASE + (CR_OFFSET * 32) + (PVDE_BitNumber * 4))
+  36:lib//src/stm32f10x_pwr.c **** 
+  37:lib//src/stm32f10x_pwr.c **** /* --- CSR Register ---*/
+  38:lib//src/stm32f10x_pwr.c **** /* Alias word address of EWUP bit */
+  39:lib//src/stm32f10x_pwr.c **** #define CSR_OFFSET               (PWR_OFFSET + 0x04)
+  40:lib//src/stm32f10x_pwr.c **** #define EWUP_BitNumber           0x08
+  41:lib//src/stm32f10x_pwr.c **** #define CSR_EWUP_BB              (PERIPH_BB_BASE + (CSR_OFFSET * 32) + (EWUP_BitNumber * 4))
+  42:lib//src/stm32f10x_pwr.c **** 
+  43:lib//src/stm32f10x_pwr.c **** /* ------------------ PWR registers bit mask ------------------------ */
+  44:lib//src/stm32f10x_pwr.c **** /* CR register bit mask */
+  45:lib//src/stm32f10x_pwr.c **** #define CR_PDDS_Set              ((u32)0x00000002)
+  46:lib//src/stm32f10x_pwr.c **** #define CR_DS_Mask               ((u32)0xFFFFFFFC)
+  47:lib//src/stm32f10x_pwr.c **** #define CR_CWUF_Set              ((u32)0x00000004)
+  48:lib//src/stm32f10x_pwr.c **** #define CR_PLS_Mask              ((u32)0xFFFFFF1F)
+  49:lib//src/stm32f10x_pwr.c **** 
+  50:lib//src/stm32f10x_pwr.c **** /* --------- Cortex System Control register bit mask ---------------- */
+  51:lib//src/stm32f10x_pwr.c **** /* Cortex System Control register address */
+  52:lib//src/stm32f10x_pwr.c **** #define SCB_SysCtrl              ((u32)0xE000ED10)
+  53:lib//src/stm32f10x_pwr.c **** /* SLEEPDEEP bit mask */
+  54:lib//src/stm32f10x_pwr.c **** #define SysCtrl_SLEEPDEEP_Set    ((u32)0x00000004)
+  55:lib//src/stm32f10x_pwr.c **** 
+  56:lib//src/stm32f10x_pwr.c **** /* Private macro -------------------------------------------------------------*/
+  57:lib//src/stm32f10x_pwr.c **** /* Private variables ---------------------------------------------------------*/
+  58:lib//src/stm32f10x_pwr.c **** /* Private function prototypes -----------------------------------------------*/
+  59:lib//src/stm32f10x_pwr.c **** /* Private functions ---------------------------------------------------------*/
+  60:lib//src/stm32f10x_pwr.c **** 
+  61:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+  62:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_DeInit
+  63:lib//src/stm32f10x_pwr.c **** * Description    : Deinitializes the PWR peripheral registers to their default
+  64:lib//src/stm32f10x_pwr.c **** *                  reset values.
+  65:lib//src/stm32f10x_pwr.c **** * Input          : None
+  66:lib//src/stm32f10x_pwr.c **** * Output         : None
+  67:lib//src/stm32f10x_pwr.c **** * Return         : None
+  68:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+  69:lib//src/stm32f10x_pwr.c **** void PWR_DeInit(void)
+  70:lib//src/stm32f10x_pwr.c **** {
+  71:lib//src/stm32f10x_pwr.c ****   RCC_APB1PeriphResetCmd(RCC_APB1Periph_PWR, ENABLE);
+  72:lib//src/stm32f10x_pwr.c ****   RCC_APB1PeriphResetCmd(RCC_APB1Periph_PWR, DISABLE);
+  73:lib//src/stm32f10x_pwr.c **** }
+  74:lib//src/stm32f10x_pwr.c **** 
+  75:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+  76:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_BackupAccessCmd
+  77:lib//src/stm32f10x_pwr.c **** * Description    : Enables or disables access to the RTC and backup registers.
+  78:lib//src/stm32f10x_pwr.c **** * Input          : - NewState: new state of the access to the RTC and backup
+  79:lib//src/stm32f10x_pwr.c **** *                    registers. This parameter can be: ENABLE or DISABLE.
+  80:lib//src/stm32f10x_pwr.c **** * Output         : None
+  81:lib//src/stm32f10x_pwr.c **** * Return         : None
+  82:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+  83:lib//src/stm32f10x_pwr.c **** void PWR_BackupAccessCmd(FunctionalState NewState)
+  84:lib//src/stm32f10x_pwr.c **** {
+  30              		.loc 1 84 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+  85:lib//src/stm32f10x_pwr.c ****   /* Check the parameters */
+  86:lib//src/stm32f10x_pwr.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+  87:lib//src/stm32f10x_pwr.c **** 
+  88:lib//src/stm32f10x_pwr.c ****   *(vu32 *) CR_DBP_BB = (u32)NewState;
+  35              		.loc 1 88 0
+  36 0000 014B     		ldr	r3, .L3
+  37 0002 1860     		str	r0, [r3, #0]
+  89:lib//src/stm32f10x_pwr.c **** }
+  38              		.loc 1 89 0
+  39 0004 7047     		bx	lr
+  40              	.L4:
+  41 0006 00BF     		.align	2
+  42              	.L3:
+  43 0008 20000E42 		.word	1108213792
+  44              	.LFE1:
+  46              		.align	2
+  47              		.global	PWR_PVDCmd
+  48              		.thumb
+  49              		.thumb_func
+  51              	PWR_PVDCmd:
+  52              	.LFB2:
+  90:lib//src/stm32f10x_pwr.c **** 
+  91:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+  92:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_PVDCmd
+  93:lib//src/stm32f10x_pwr.c **** * Description    : Enables or disables the Power Voltage Detector(PVD).
+  94:lib//src/stm32f10x_pwr.c **** * Input          : - NewState: new state of the PVD.
+  95:lib//src/stm32f10x_pwr.c **** *                    This parameter can be: ENABLE or DISABLE.
+  96:lib//src/stm32f10x_pwr.c **** * Output         : None
+  97:lib//src/stm32f10x_pwr.c **** * Return         : None
+  98:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+  99:lib//src/stm32f10x_pwr.c **** void PWR_PVDCmd(FunctionalState NewState)
+ 100:lib//src/stm32f10x_pwr.c **** {
+  53              		.loc 1 100 0
+  54              		@ args = 0, pretend = 0, frame = 0
+  55              		@ frame_needed = 0, uses_anonymous_args = 0
+  56              		@ link register save eliminated.
+  57              	.LVL1:
+ 101:lib//src/stm32f10x_pwr.c ****   /* Check the parameters */
+ 102:lib//src/stm32f10x_pwr.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 103:lib//src/stm32f10x_pwr.c **** 
+ 104:lib//src/stm32f10x_pwr.c ****   *(vu32 *) CR_PVDE_BB = (u32)NewState;
+  58              		.loc 1 104 0
+  59 000c 014B     		ldr	r3, .L7
+  60 000e 1860     		str	r0, [r3, #0]
+ 105:lib//src/stm32f10x_pwr.c **** }
+  61              		.loc 1 105 0
+  62 0010 7047     		bx	lr
+  63              	.L8:
+  64 0012 00BF     		.align	2
+  65              	.L7:
+  66 0014 10000E42 		.word	1108213776
+  67              	.LFE2:
+  69              		.align	2
+  70              		.global	PWR_PVDLevelConfig
+  71              		.thumb
+  72              		.thumb_func
+  74              	PWR_PVDLevelConfig:
+  75              	.LFB3:
+ 106:lib//src/stm32f10x_pwr.c **** 
+ 107:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+ 108:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_PVDLevelConfig
+ 109:lib//src/stm32f10x_pwr.c **** * Description    : Configures the voltage threshold detected by the Power Voltage
+ 110:lib//src/stm32f10x_pwr.c **** *                  Detector(PVD).
+ 111:lib//src/stm32f10x_pwr.c **** * Input          : - PWR_PVDLevel: specifies the PVD detection level
+ 112:lib//src/stm32f10x_pwr.c **** *                    This parameter can be one of the following values:
+ 113:lib//src/stm32f10x_pwr.c **** *                       - PWR_PVDLevel_2V2: PVD detection level set to 2.2V
+ 114:lib//src/stm32f10x_pwr.c **** *                       - PWR_PVDLevel_2V3: PVD detection level set to 2.3V
+ 115:lib//src/stm32f10x_pwr.c **** *                       - PWR_PVDLevel_2V4: PVD detection level set to 2.4V
+ 116:lib//src/stm32f10x_pwr.c **** *                       - PWR_PVDLevel_2V5: PVD detection level set to 2.5V
+ 117:lib//src/stm32f10x_pwr.c **** *                       - PWR_PVDLevel_2V6: PVD detection level set to 2.6V
+ 118:lib//src/stm32f10x_pwr.c **** *                       - PWR_PVDLevel_2V7: PVD detection level set to 2.7V
+ 119:lib//src/stm32f10x_pwr.c **** *                       - PWR_PVDLevel_2V8: PVD detection level set to 2.8V
+ 120:lib//src/stm32f10x_pwr.c **** *                       - PWR_PVDLevel_2V9: PVD detection level set to 2.9V
+ 121:lib//src/stm32f10x_pwr.c **** * Output         : None
+ 122:lib//src/stm32f10x_pwr.c **** * Return         : None
+ 123:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+ 124:lib//src/stm32f10x_pwr.c **** void PWR_PVDLevelConfig(u32 PWR_PVDLevel)
+ 125:lib//src/stm32f10x_pwr.c **** {
+  76              		.loc 1 125 0
+  77              		@ args = 0, pretend = 0, frame = 0
+  78              		@ frame_needed = 0, uses_anonymous_args = 0
+  79              		@ link register save eliminated.
+  80              	.LVL2:
+ 126:lib//src/stm32f10x_pwr.c ****   u32 tmpreg = 0;
+ 127:lib//src/stm32f10x_pwr.c **** 
+ 128:lib//src/stm32f10x_pwr.c ****   /* Check the parameters */
+ 129:lib//src/stm32f10x_pwr.c ****   assert_param(IS_PWR_PVD_LEVEL(PWR_PVDLevel));
+ 130:lib//src/stm32f10x_pwr.c **** 
+ 131:lib//src/stm32f10x_pwr.c ****   tmpreg = PWR->CR;
+  81              		.loc 1 131 0
+  82 0018 034B     		ldr	r3, .L11
+  83 001a 1A68     		ldr	r2, [r3, #0]
+  84              	.LVL3:
+ 132:lib//src/stm32f10x_pwr.c **** 
+ 133:lib//src/stm32f10x_pwr.c ****   /* Clear PLS[7:5] bits */
+ 134:lib//src/stm32f10x_pwr.c ****   tmpreg &= CR_PLS_Mask;
+  85              		.loc 1 134 0
+  86 001c 22F0E002 		bic	r2, r2, #224
+  87              	.LVL4:
+ 135:lib//src/stm32f10x_pwr.c **** 
+ 136:lib//src/stm32f10x_pwr.c ****   /* Set PLS[7:5] bits according to PWR_PVDLevel value */
+ 137:lib//src/stm32f10x_pwr.c ****   tmpreg |= PWR_PVDLevel;
+  88              		.loc 1 137 0
+  89 0020 40EA0202 		orr	r2, r0, r2
+  90              	.LVL5:
+ 138:lib//src/stm32f10x_pwr.c **** 
+ 139:lib//src/stm32f10x_pwr.c ****   /* Store the new value */
+ 140:lib//src/stm32f10x_pwr.c ****   PWR->CR = tmpreg;
+  91              		.loc 1 140 0
+  92 0024 1A60     		str	r2, [r3, #0]
+ 141:lib//src/stm32f10x_pwr.c **** }
+  93              		.loc 1 141 0
+  94 0026 7047     		bx	lr
+  95              	.L12:
+  96              		.align	2
+  97              	.L11:
+  98 0028 00700040 		.word	1073770496
+  99              	.LFE3:
+ 101              		.align	2
+ 102              		.global	PWR_WakeUpPinCmd
+ 103              		.thumb
+ 104              		.thumb_func
+ 106              	PWR_WakeUpPinCmd:
+ 107              	.LFB4:
+ 142:lib//src/stm32f10x_pwr.c **** 
+ 143:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+ 144:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_WakeUpPinCmd
+ 145:lib//src/stm32f10x_pwr.c **** * Description    : Enables or disables the WakeUp Pin functionality.
+ 146:lib//src/stm32f10x_pwr.c **** * Input          : - NewState: new state of the WakeUp Pin functionality.
+ 147:lib//src/stm32f10x_pwr.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 148:lib//src/stm32f10x_pwr.c **** * Output         : None
+ 149:lib//src/stm32f10x_pwr.c **** * Return         : None
+ 150:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+ 151:lib//src/stm32f10x_pwr.c **** void PWR_WakeUpPinCmd(FunctionalState NewState)
+ 152:lib//src/stm32f10x_pwr.c **** {
+ 108              		.loc 1 152 0
+ 109              		@ args = 0, pretend = 0, frame = 0
+ 110              		@ frame_needed = 0, uses_anonymous_args = 0
+ 111              		@ link register save eliminated.
+ 112              	.LVL6:
+ 153:lib//src/stm32f10x_pwr.c ****   /* Check the parameters */
+ 154:lib//src/stm32f10x_pwr.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 155:lib//src/stm32f10x_pwr.c **** 
+ 156:lib//src/stm32f10x_pwr.c ****   *(vu32 *) CSR_EWUP_BB = (u32)NewState;
+ 113              		.loc 1 156 0
+ 114 002c 014B     		ldr	r3, .L15
+ 115 002e 1860     		str	r0, [r3, #0]
+ 157:lib//src/stm32f10x_pwr.c **** }
+ 116              		.loc 1 157 0
+ 117 0030 7047     		bx	lr
+ 118              	.L16:
+ 119 0032 00BF     		.align	2
+ 120              	.L15:
+ 121 0034 A0000E42 		.word	1108213920
+ 122              	.LFE4:
+ 124              		.align	2
+ 125              		.global	PWR_GetFlagStatus
+ 126              		.thumb
+ 127              		.thumb_func
+ 129              	PWR_GetFlagStatus:
+ 130              	.LFB7:
+ 158:lib//src/stm32f10x_pwr.c **** 
+ 159:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+ 160:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_EnterSTOPMode
+ 161:lib//src/stm32f10x_pwr.c **** * Description    : Enters STOP mode.
+ 162:lib//src/stm32f10x_pwr.c **** * Input          : - PWR_Regulator: specifies the regulator state in STOP mode.
+ 163:lib//src/stm32f10x_pwr.c **** *                    This parameter can be one of the following values:
+ 164:lib//src/stm32f10x_pwr.c **** *                       - PWR_Regulator_ON: STOP mode with regulator ON
+ 165:lib//src/stm32f10x_pwr.c **** *                       - PWR_Regulator_LowPower: STOP mode with
+ 166:lib//src/stm32f10x_pwr.c **** *                         regulator in low power mode
+ 167:lib//src/stm32f10x_pwr.c **** *                  - PWR_STOPEntry: specifies if STOP mode in entered with WFI or 
+ 168:lib//src/stm32f10x_pwr.c **** *                    WFE instruction.
+ 169:lib//src/stm32f10x_pwr.c **** *                    This parameter can be one of the following values:
+ 170:lib//src/stm32f10x_pwr.c **** *                       - PWR_STOPEntry_WFI: enter STOP mode with WFI instruction
+ 171:lib//src/stm32f10x_pwr.c **** *                       - PWR_STOPEntry_WFE: enter STOP mode with WFE instruction
+ 172:lib//src/stm32f10x_pwr.c **** * Output         : None
+ 173:lib//src/stm32f10x_pwr.c **** * Return         : None
+ 174:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+ 175:lib//src/stm32f10x_pwr.c **** void PWR_EnterSTOPMode(u32 PWR_Regulator, u8 PWR_STOPEntry)
+ 176:lib//src/stm32f10x_pwr.c **** {
+ 177:lib//src/stm32f10x_pwr.c ****   u32 tmpreg = 0;
+ 178:lib//src/stm32f10x_pwr.c **** 
+ 179:lib//src/stm32f10x_pwr.c ****   /* Check the parameters */
+ 180:lib//src/stm32f10x_pwr.c ****   assert_param(IS_PWR_REGULATOR(PWR_Regulator));
+ 181:lib//src/stm32f10x_pwr.c ****   assert_param(IS_PWR_STOP_ENTRY(PWR_STOPEntry));
+ 182:lib//src/stm32f10x_pwr.c ****   
+ 183:lib//src/stm32f10x_pwr.c ****   /* Select the regulator state in STOP mode ---------------------------------*/
+ 184:lib//src/stm32f10x_pwr.c ****   tmpreg = PWR->CR;
+ 185:lib//src/stm32f10x_pwr.c **** 
+ 186:lib//src/stm32f10x_pwr.c ****   /* Clear PDDS and LPDS bits */
+ 187:lib//src/stm32f10x_pwr.c ****   tmpreg &= CR_DS_Mask;
+ 188:lib//src/stm32f10x_pwr.c **** 
+ 189:lib//src/stm32f10x_pwr.c ****   /* Set LPDS bit according to PWR_Regulator value */
+ 190:lib//src/stm32f10x_pwr.c ****   tmpreg |= PWR_Regulator;
+ 191:lib//src/stm32f10x_pwr.c **** 
+ 192:lib//src/stm32f10x_pwr.c ****   /* Store the new value */
+ 193:lib//src/stm32f10x_pwr.c ****   PWR->CR = tmpreg;
+ 194:lib//src/stm32f10x_pwr.c **** 
+ 195:lib//src/stm32f10x_pwr.c ****   /* Set SLEEPDEEP bit of Cortex System Control Register */
+ 196:lib//src/stm32f10x_pwr.c ****   *(vu32 *) SCB_SysCtrl |= SysCtrl_SLEEPDEEP_Set;
+ 197:lib//src/stm32f10x_pwr.c ****   
+ 198:lib//src/stm32f10x_pwr.c ****   /* Select STOP mode entry --------------------------------------------------*/
+ 199:lib//src/stm32f10x_pwr.c ****   if(PWR_STOPEntry == PWR_STOPEntry_WFI)
+ 200:lib//src/stm32f10x_pwr.c ****   {   
+ 201:lib//src/stm32f10x_pwr.c ****     /* Request Wait For Interrupt */
+ 202:lib//src/stm32f10x_pwr.c ****     __WFI();
+ 203:lib//src/stm32f10x_pwr.c ****   }
+ 204:lib//src/stm32f10x_pwr.c ****   else
+ 205:lib//src/stm32f10x_pwr.c ****   {
+ 206:lib//src/stm32f10x_pwr.c ****     /* Request Wait For Event */
+ 207:lib//src/stm32f10x_pwr.c ****     __WFE();
+ 208:lib//src/stm32f10x_pwr.c ****   }
+ 209:lib//src/stm32f10x_pwr.c **** }
+ 210:lib//src/stm32f10x_pwr.c **** 
+ 211:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+ 212:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_EnterSTANDBYMode
+ 213:lib//src/stm32f10x_pwr.c **** * Description    : Enters STANDBY mode.
+ 214:lib//src/stm32f10x_pwr.c **** * Input          : None
+ 215:lib//src/stm32f10x_pwr.c **** * Output         : None
+ 216:lib//src/stm32f10x_pwr.c **** * Return         : None
+ 217:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+ 218:lib//src/stm32f10x_pwr.c **** void PWR_EnterSTANDBYMode(void)
+ 219:lib//src/stm32f10x_pwr.c **** {
+ 220:lib//src/stm32f10x_pwr.c ****   /* Clear Wake-up flag */
+ 221:lib//src/stm32f10x_pwr.c ****   PWR->CR |= CR_CWUF_Set;
+ 222:lib//src/stm32f10x_pwr.c **** 
+ 223:lib//src/stm32f10x_pwr.c ****   /* Select STANDBY mode */
+ 224:lib//src/stm32f10x_pwr.c ****   PWR->CR |= CR_PDDS_Set;
+ 225:lib//src/stm32f10x_pwr.c **** 
+ 226:lib//src/stm32f10x_pwr.c ****   /* Set SLEEPDEEP bit of Cortex System Control Register */
+ 227:lib//src/stm32f10x_pwr.c ****   *(vu32 *) SCB_SysCtrl |= SysCtrl_SLEEPDEEP_Set;
+ 228:lib//src/stm32f10x_pwr.c **** 
+ 229:lib//src/stm32f10x_pwr.c ****   /* Request Wait For Interrupt */
+ 230:lib//src/stm32f10x_pwr.c ****   __WFI();
+ 231:lib//src/stm32f10x_pwr.c **** }
+ 232:lib//src/stm32f10x_pwr.c **** 
+ 233:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+ 234:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_GetFlagStatus
+ 235:lib//src/stm32f10x_pwr.c **** * Description    : Checks whether the specified PWR flag is set or not.
+ 236:lib//src/stm32f10x_pwr.c **** * Input          : - PWR_FLAG: specifies the flag to check.
+ 237:lib//src/stm32f10x_pwr.c **** *                    This parameter can be one of the following values:
+ 238:lib//src/stm32f10x_pwr.c **** *                       - PWR_FLAG_WU: Wake Up flag
+ 239:lib//src/stm32f10x_pwr.c **** *                       - PWR_FLAG_SB: StandBy flag
+ 240:lib//src/stm32f10x_pwr.c **** *                       - PWR_FLAG_PVDO: PVD Output
+ 241:lib//src/stm32f10x_pwr.c **** * Output         : None
+ 242:lib//src/stm32f10x_pwr.c **** * Return         : The new state of PWR_FLAG (SET or RESET).
+ 243:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+ 244:lib//src/stm32f10x_pwr.c **** FlagStatus PWR_GetFlagStatus(u32 PWR_FLAG)
+ 245:lib//src/stm32f10x_pwr.c **** {
+ 131              		.loc 1 245 0
+ 132              		@ args = 0, pretend = 0, frame = 0
+ 133              		@ frame_needed = 0, uses_anonymous_args = 0
+ 134              		@ link register save eliminated.
+ 135              	.LVL7:
+ 246:lib//src/stm32f10x_pwr.c ****   FlagStatus bitstatus = RESET;
+ 247:lib//src/stm32f10x_pwr.c **** 
+ 248:lib//src/stm32f10x_pwr.c ****   /* Check the parameters */
+ 249:lib//src/stm32f10x_pwr.c ****   assert_param(IS_PWR_GET_FLAG(PWR_FLAG));
+ 250:lib//src/stm32f10x_pwr.c ****   
+ 251:lib//src/stm32f10x_pwr.c ****   if ((PWR->CSR & PWR_FLAG) != (u32)RESET)
+ 136              		.loc 1 251 0
+ 137 0038 034B     		ldr	r3, .L19
+ 138 003a 5B68     		ldr	r3, [r3, #4]
+ 139 003c 1842     		tst	r0, r3
+ 252:lib//src/stm32f10x_pwr.c ****   {
+ 253:lib//src/stm32f10x_pwr.c ****     bitstatus = SET;
+ 254:lib//src/stm32f10x_pwr.c ****   }
+ 255:lib//src/stm32f10x_pwr.c ****   else
+ 256:lib//src/stm32f10x_pwr.c ****   {
+ 257:lib//src/stm32f10x_pwr.c ****     bitstatus = RESET;
+ 258:lib//src/stm32f10x_pwr.c ****   }
+ 259:lib//src/stm32f10x_pwr.c **** 
+ 260:lib//src/stm32f10x_pwr.c ****   /* Return the flag status */
+ 261:lib//src/stm32f10x_pwr.c ****   return bitstatus;
+ 262:lib//src/stm32f10x_pwr.c **** }
+ 140              		.loc 1 262 0
+ 141 003e 0CBF     		ite	eq
+ 142 0040 0020     		moveq	r0, #0
+ 143 0042 0120     		movne	r0, #1
+ 144              	.LVL8:
+ 145 0044 7047     		bx	lr
+ 146              	.L20:
+ 147 0046 00BF     		.align	2
+ 148              	.L19:
+ 149 0048 00700040 		.word	1073770496
+ 150              	.LFE7:
+ 152              		.align	2
+ 153              		.global	PWR_ClearFlag
+ 154              		.thumb
+ 155              		.thumb_func
+ 157              	PWR_ClearFlag:
+ 158              	.LFB8:
+ 263:lib//src/stm32f10x_pwr.c **** 
+ 264:lib//src/stm32f10x_pwr.c **** /*******************************************************************************
+ 265:lib//src/stm32f10x_pwr.c **** * Function Name  : PWR_ClearFlag
+ 266:lib//src/stm32f10x_pwr.c **** * Description    : Clears the PWR's pending flags.
+ 267:lib//src/stm32f10x_pwr.c **** * Input          : - PWR_FLAG: specifies the flag to clear.
+ 268:lib//src/stm32f10x_pwr.c **** *                    This parameter can be one of the following values:
+ 269:lib//src/stm32f10x_pwr.c **** *                       - PWR_FLAG_WU: Wake Up flag
+ 270:lib//src/stm32f10x_pwr.c **** *                       - PWR_FLAG_SB: StandBy flag
+ 271:lib//src/stm32f10x_pwr.c **** * Output         : None
+ 272:lib//src/stm32f10x_pwr.c **** * Return         : None
+ 273:lib//src/stm32f10x_pwr.c **** *******************************************************************************/
+ 274:lib//src/stm32f10x_pwr.c **** void PWR_ClearFlag(u32 PWR_FLAG)
+ 275:lib//src/stm32f10x_pwr.c **** {
+ 159              		.loc 1 275 0
+ 160              		@ args = 0, pretend = 0, frame = 0
+ 161              		@ frame_needed = 0, uses_anonymous_args = 0
+ 162              		@ link register save eliminated.
+ 163              	.LVL9:
+ 276:lib//src/stm32f10x_pwr.c ****   /* Check the parameters */
+ 277:lib//src/stm32f10x_pwr.c ****   assert_param(IS_PWR_CLEAR_FLAG(PWR_FLAG));
+ 278:lib//src/stm32f10x_pwr.c ****          
+ 279:lib//src/stm32f10x_pwr.c ****   PWR->CR |=  PWR_FLAG << 2;
+ 164              		.loc 1 279 0
+ 165 004c 024B     		ldr	r3, .L23
+ 166 004e 1A68     		ldr	r2, [r3, #0]
+ 167 0050 42EA8002 		orr	r2, r2, r0, lsl #2
+ 168 0054 1A60     		str	r2, [r3, #0]
+ 280:lib//src/stm32f10x_pwr.c **** }
+ 169              		.loc 1 280 0
+ 170 0056 7047     		bx	lr
+ 171              	.L24:
+ 172              		.align	2
+ 173              	.L23:
+ 174 0058 00700040 		.word	1073770496
+ 175              	.LFE8:
+ 177              		.align	2
+ 178              		.global	PWR_EnterSTANDBYMode
+ 179              		.thumb
+ 180              		.thumb_func
+ 182              	PWR_EnterSTANDBYMode:
+ 183              	.LFB6:
+ 184              		.loc 1 219 0
+ 185              		@ args = 0, pretend = 0, frame = 0
+ 186              		@ frame_needed = 0, uses_anonymous_args = 0
+ 187 005c 08B5     		push	{r3, lr}
+ 188              	.LCFI0:
+ 189              		.loc 1 221 0
+ 190 005e 084B     		ldr	r3, .L27
+ 191              		.loc 1 227 0
+ 192 0060 084A     		ldr	r2, .L27+4
+ 193              		.loc 1 221 0
+ 194 0062 1968     		ldr	r1, [r3, #0]
+ 195 0064 41F00401 		orr	r1, r1, #4
+ 196 0068 1960     		str	r1, [r3, #0]
+ 197              		.loc 1 224 0
+ 198 006a 1968     		ldr	r1, [r3, #0]
+ 199 006c 41F00201 		orr	r1, r1, #2
+ 200 0070 1960     		str	r1, [r3, #0]
+ 201              		.loc 1 227 0
+ 202 0072 1368     		ldr	r3, [r2, #0]
+ 203 0074 43F00403 		orr	r3, r3, #4
+ 204 0078 1360     		str	r3, [r2, #0]
+ 205              		.loc 1 230 0
+ 206 007a FFF7FEFF 		bl	__WFI
+ 207              		.loc 1 231 0
+ 208 007e 08BD     		pop	{r3, pc}
+ 209              	.L28:
+ 210              		.align	2
+ 211              	.L27:
+ 212 0080 00700040 		.word	1073770496
+ 213 0084 10ED00E0 		.word	-536810224
+ 214              	.LFE6:
+ 216              		.align	2
+ 217              		.global	PWR_EnterSTOPMode
+ 218              		.thumb
+ 219              		.thumb_func
+ 221              	PWR_EnterSTOPMode:
+ 222              	.LFB5:
+ 223              		.loc 1 176 0
+ 224              		@ args = 0, pretend = 0, frame = 0
+ 225              		@ frame_needed = 0, uses_anonymous_args = 0
+ 226              	.LVL10:
+ 227              		.loc 1 184 0
+ 228 0088 0A4A     		ldr	r2, .L34
+ 229              		.loc 1 176 0
+ 230 008a 10B5     		push	{r4, lr}
+ 231              	.LCFI1:
+ 232              		.loc 1 184 0
+ 233 008c 1468     		ldr	r4, [r2, #0]
+ 234              	.LVL11:
+ 235              		.loc 1 196 0
+ 236 008e 0A4B     		ldr	r3, .L34+4
+ 237              		.loc 1 187 0
+ 238 0090 24F0030C 		bic	ip, r4, #3
+ 239              	.LVL12:
+ 240              		.loc 1 190 0
+ 241 0094 40EA0C00 		orr	r0, r0, ip
+ 242              	.LVL13:
+ 243              		.loc 1 193 0
+ 244 0098 1060     		str	r0, [r2, #0]
+ 245              		.loc 1 196 0
+ 246 009a 1A68     		ldr	r2, [r3, #0]
+ 247              		.loc 1 199 0
+ 248 009c 0129     		cmp	r1, #1
+ 249              		.loc 1 196 0
+ 250 009e 42F00402 		orr	r2, r2, #4
+ 251 00a2 1A60     		str	r2, [r3, #0]
+ 252              		.loc 1 199 0
+ 253 00a4 02D1     		bne	.L30
+ 254              		.loc 1 202 0
+ 255 00a6 FFF7FEFF 		bl	__WFI
+ 256              	.LVL14:
+ 257 00aa 01E0     		b	.L32
+ 258              	.LVL15:
+ 259              	.L30:
+ 260              		.loc 1 207 0
+ 261 00ac FFF7FEFF 		bl	__WFE
+ 262              	.LVL16:
+ 263              	.L32:
+ 264              		.loc 1 209 0
+ 265 00b0 10BD     		pop	{r4, pc}
+ 266              	.L35:
+ 267 00b2 00BF     		.align	2
+ 268              	.L34:
+ 269 00b4 00700040 		.word	1073770496
+ 270 00b8 10ED00E0 		.word	-536810224
+ 271              	.LFE5:
+ 273              		.align	2
+ 274              		.global	PWR_DeInit
+ 275              		.thumb
+ 276              		.thumb_func
+ 278              	PWR_DeInit:
+ 279              	.LFB0:
+ 280              		.loc 1 70 0
+ 281              		@ args = 0, pretend = 0, frame = 0
+ 282              		@ frame_needed = 0, uses_anonymous_args = 0
+ 283              		.loc 1 71 0
+ 284 00bc 0121     		movs	r1, #1
+ 285              		.loc 1 70 0
+ 286 00be 08B5     		push	{r3, lr}
+ 287              	.LCFI2:
+ 288              		.loc 1 71 0
+ 289 00c0 4FF08050 		mov	r0, #268435456
+ 290 00c4 FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 291              		.loc 1 72 0
+ 292 00c8 4FF08050 		mov	r0, #268435456
+ 293 00cc 0021     		movs	r1, #0
+ 294 00ce FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 295              		.loc 1 73 0
+ 296 00d2 08BD     		pop	{r3, pc}
+ 297              	.LFE0:
+ 417              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_pwr.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:27     .text:00000000 PWR_BackupAccessCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:43     .text:00000008 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:46     .text:0000000c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:51     .text:0000000c PWR_PVDCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:66     .text:00000014 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:69     .text:00000018 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:74     .text:00000018 PWR_PVDLevelConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:98     .text:00000028 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:101    .text:0000002c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:106    .text:0000002c PWR_WakeUpPinCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:121    .text:00000034 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:124    .text:00000038 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:129    .text:00000038 PWR_GetFlagStatus
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:149    .text:00000048 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:152    .text:0000004c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:157    .text:0000004c PWR_ClearFlag
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:174    .text:00000058 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:177    .text:0000005c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:182    .text:0000005c PWR_EnterSTANDBYMode
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:212    .text:00000080 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:216    .text:00000088 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:221    .text:00000088 PWR_EnterSTOPMode
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:269    .text:000000b4 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:273    .text:000000bc $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:278    .text:000000bc PWR_DeInit
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccUm39PT.s:312    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+__WFI
+__WFE
+RCC_APB1PeriphResetCmd

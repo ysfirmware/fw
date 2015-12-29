@@ -1,0 +1,3092 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"Eval50xx-USB.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	Enter_LowPowerMode
+  24              		.thumb
+  25              		.thumb_func
+  27              	Enter_LowPowerMode:
+  28              	.LFB1:
+  29              		.file 1 "Eval50xx-USB.c"
+   1:Eval50xx-USB.c **** /****************************************************
+   2:Eval50xx-USB.c ****   Projekt: TMC562-EVAL
+   3:Eval50xx-USB.c **** 
+   4:Eval50xx-USB.c ****   Modul:   Eval562-USB.c
+   5:Eval50xx-USB.c ****            USB-Funktionen
+   6:Eval50xx-USB.c **** 
+   7:Eval50xx-USB.c ****   Datum:   29.4.2010 OK
+   8:Eval50xx-USB.c **** *****************************************************/
+   9:Eval50xx-USB.c **** 
+  10:Eval50xx-USB.c **** 
+  11:Eval50xx-USB.c **** #include "stm32f10x_lib.h"
+  12:Eval50xx-USB.c **** #include "Eval50xx.h"
+  13:Eval50xx-USB.c **** 
+  14:Eval50xx-USB.c **** #include "usb_lib.h"
+  15:Eval50xx-USB.c **** 
+  16:Eval50xx-USB.c **** 
+  17:Eval50xx-USB.c **** //----- Code von ST ------
+  18:Eval50xx-USB.c **** #define USB_DEVICE_DESCRIPTOR_TYPE              0x01
+  19:Eval50xx-USB.c **** #define USB_CONFIGURATION_DESCRIPTOR_TYPE       0x02
+  20:Eval50xx-USB.c **** #define USB_STRING_DESCRIPTOR_TYPE              0x03
+  21:Eval50xx-USB.c **** #define USB_INTERFACE_DESCRIPTOR_TYPE           0x04
+  22:Eval50xx-USB.c **** #define USB_ENDPOINT_DESCRIPTOR_TYPE            0x05
+  23:Eval50xx-USB.c **** 
+  24:Eval50xx-USB.c **** #define VIRTUAL_COM_PORT_DATA_SIZE              64
+  25:Eval50xx-USB.c **** #define VIRTUAL_COM_PORT_INT_SIZE               8
+  26:Eval50xx-USB.c **** 
+  27:Eval50xx-USB.c **** #define VIRTUAL_COM_PORT_SIZ_DEVICE_DESC        18
+  28:Eval50xx-USB.c **** #define VIRTUAL_COM_PORT_SIZ_CONFIG_DESC        67
+  29:Eval50xx-USB.c **** #define VIRTUAL_COM_PORT_SIZ_STRING_LANGID      4
+  30:Eval50xx-USB.c **** #define VIRTUAL_COM_PORT_SIZ_STRING_VENDOR      38
+  31:Eval50xx-USB.c **** #define VIRTUAL_COM_PORT_SIZ_STRING_PRODUCT     50
+  32:Eval50xx-USB.c **** #define VIRTUAL_COM_PORT_SIZ_STRING_SERIAL      26
+  33:Eval50xx-USB.c **** 
+  34:Eval50xx-USB.c **** #define STANDARD_ENDPOINT_DESC_SIZE             0x09
+  35:Eval50xx-USB.c **** 
+  36:Eval50xx-USB.c **** #define Virtual_Com_Port_GetConfiguration          NOP_Process
+  37:Eval50xx-USB.c **** //#define Virtual_Com_Port_SetConfiguration          NOP_Process
+  38:Eval50xx-USB.c **** #define Virtual_Com_Port_GetInterface              NOP_Process
+  39:Eval50xx-USB.c **** #define Virtual_Com_Port_SetInterface              NOP_Process
+  40:Eval50xx-USB.c **** #define Virtual_Com_Port_GetStatus                 NOP_Process
+  41:Eval50xx-USB.c **** #define Virtual_Com_Port_ClearFeature              NOP_Process
+  42:Eval50xx-USB.c **** #define Virtual_Com_Port_SetEndPointFeature        NOP_Process
+  43:Eval50xx-USB.c **** #define Virtual_Com_Port_SetDeviceFeature          NOP_Process
+  44:Eval50xx-USB.c **** //#define Virtual_Com_Port_SetDeviceAddress          NOP_Process
+  45:Eval50xx-USB.c **** 
+  46:Eval50xx-USB.c **** #define SEND_ENCAPSULATED_COMMAND   0x00
+  47:Eval50xx-USB.c **** #define GET_ENCAPSULATED_RESPONSE   0x01
+  48:Eval50xx-USB.c **** #define SET_COMM_FEATURE            0x02
+  49:Eval50xx-USB.c **** #define GET_COMM_FEATURE            0x03
+  50:Eval50xx-USB.c **** #define CLEAR_COMM_FEATURE          0x04
+  51:Eval50xx-USB.c **** #define SET_LINE_CODING             0x20
+  52:Eval50xx-USB.c **** #define GET_LINE_CODING             0x21
+  53:Eval50xx-USB.c **** #define SET_CONTROL_LINE_STATE      0x22
+  54:Eval50xx-USB.c **** #define SEND_BREAK                  0x23
+  55:Eval50xx-USB.c **** 
+  56:Eval50xx-USB.c **** /* Exported functions ------------------------------------------------------- */
+  57:Eval50xx-USB.c **** void Virtual_Com_Port_init(void);
+  58:Eval50xx-USB.c **** void Virtual_Com_Port_Reset(void);
+  59:Eval50xx-USB.c **** void Virtual_Com_Port_SetConfiguration(void);
+  60:Eval50xx-USB.c **** void Virtual_Com_Port_SetDeviceAddress (void);
+  61:Eval50xx-USB.c **** void Virtual_Com_Port_Status_In (void);
+  62:Eval50xx-USB.c **** void Virtual_Com_Port_Status_Out (void);
+  63:Eval50xx-USB.c **** RESULT Virtual_Com_Port_Data_Setup(u8);
+  64:Eval50xx-USB.c **** RESULT Virtual_Com_Port_NoData_Setup(u8);
+  65:Eval50xx-USB.c **** RESULT Virtual_Com_Port_Get_Interface_Setting(u8 Interface, u8 AlternateSetting);
+  66:Eval50xx-USB.c **** u8 *Virtual_Com_Port_GetDeviceDescriptor(u16 );
+  67:Eval50xx-USB.c **** u8 *Virtual_Com_Port_GetConfigDescriptor(u16);
+  68:Eval50xx-USB.c **** u8 *Virtual_Com_Port_GetStringDescriptor(u16);
+  69:Eval50xx-USB.c **** u8 *Virtual_Com_Port_GetLineCoding(u16 Length);
+  70:Eval50xx-USB.c **** u8 *Virtual_Com_Port_SetLineCoding(u16 Length);
+  71:Eval50xx-USB.c **** 
+  72:Eval50xx-USB.c **** void EP3_OUT_Callback(void);
+  73:Eval50xx-USB.c **** void EP1_IN_Callback(void);
+  74:Eval50xx-USB.c **** 
+  75:Eval50xx-USB.c **** 
+  76:Eval50xx-USB.c **** typedef struct
+  77:Eval50xx-USB.c **** {
+  78:Eval50xx-USB.c ****   u32 bitrate;
+  79:Eval50xx-USB.c ****   u8 format;
+  80:Eval50xx-USB.c ****   u8 paritytype;
+  81:Eval50xx-USB.c ****   u8 datatype;
+  82:Eval50xx-USB.c **** } LINE_CODING;
+  83:Eval50xx-USB.c **** 
+  84:Eval50xx-USB.c **** typedef enum _RESUME_STATE
+  85:Eval50xx-USB.c **** {
+  86:Eval50xx-USB.c ****   RESUME_EXTERNAL,
+  87:Eval50xx-USB.c ****   RESUME_INTERNAL,
+  88:Eval50xx-USB.c ****   RESUME_LATER,
+  89:Eval50xx-USB.c ****   RESUME_WAIT,
+  90:Eval50xx-USB.c ****   RESUME_START,
+  91:Eval50xx-USB.c ****   RESUME_ON,
+  92:Eval50xx-USB.c ****   RESUME_OFF,
+  93:Eval50xx-USB.c ****   RESUME_ESOF
+  94:Eval50xx-USB.c **** } RESUME_STATE;
+  95:Eval50xx-USB.c **** 
+  96:Eval50xx-USB.c **** typedef enum _DEVICE_STATE
+  97:Eval50xx-USB.c **** {
+  98:Eval50xx-USB.c ****   UNCONNECTED,
+  99:Eval50xx-USB.c ****   ATTACHED,
+ 100:Eval50xx-USB.c ****   POWERED,
+ 101:Eval50xx-USB.c ****   SUSPENDED,
+ 102:Eval50xx-USB.c ****   ADDRESSED,
+ 103:Eval50xx-USB.c ****   CONFIGURED
+ 104:Eval50xx-USB.c **** } DEVICE_STATE;
+ 105:Eval50xx-USB.c **** 
+ 106:Eval50xx-USB.c **** /* USB Standard Device Descriptor */
+ 107:Eval50xx-USB.c **** #define USB_DISCONNECT                     GPIOC
+ 108:Eval50xx-USB.c **** #define USB_DISCONNECT_PIN                 GPIO_Pin_14
+ 109:Eval50xx-USB.c **** #define RCC_APB2Periph_GPIO_DISCONNECT     RCC_APB2Periph_GPIOB
+ 110:Eval50xx-USB.c **** 
+ 111:Eval50xx-USB.c **** const u8 Virtual_Com_Port_DeviceDescriptor[] =
+ 112:Eval50xx-USB.c **** {
+ 113:Eval50xx-USB.c ****   0x12,   /* bLength */
+ 114:Eval50xx-USB.c ****   USB_DEVICE_DESCRIPTOR_TYPE,     /* bDescriptorType */
+ 115:Eval50xx-USB.c ****   0x10,  //***OK
+ 116:Eval50xx-USB.c ****   0x01,  //***OK
+ 117:Eval50xx-USB.c ****   0x02,   /* bDeviceClass: CDC */
+ 118:Eval50xx-USB.c ****   0x00,   /* bDeviceSubClass */
+ 119:Eval50xx-USB.c ****   0x00,   /* bDeviceProtocol */
+ 120:Eval50xx-USB.c ****   0x40,   /* bMaxPacketSize0 */
+ 121:Eval50xx-USB.c ****   0xD0,   // idVendorL (0x16D0)
+ 122:Eval50xx-USB.c ****   0x16,   //
+ 123:Eval50xx-USB.c ****   0x2F,   // idProductL (0x72F)
+ 124:Eval50xx-USB.c ****   0x07,   //
+ 125:Eval50xx-USB.c ****   0x01,   // release
+ 126:Eval50xx-USB.c ****   0x00,   // release
+ 127:Eval50xx-USB.c ****   1,      /* Index of string descriptor describing manufacturer */
+ 128:Eval50xx-USB.c ****   2,      /* Index of string descriptor describing product */
+ 129:Eval50xx-USB.c ****   3,      /* Index of string descriptor describing the device's serial number */
+ 130:Eval50xx-USB.c ****   0x01    /* bNumConfigurations */
+ 131:Eval50xx-USB.c **** };
+ 132:Eval50xx-USB.c **** 
+ 133:Eval50xx-USB.c **** 
+ 134:Eval50xx-USB.c **** const u8 Virtual_Com_Port_ConfigDescriptor[] =
+ 135:Eval50xx-USB.c **** {
+ 136:Eval50xx-USB.c ****   /*Configuation Descriptor*/
+ 137:Eval50xx-USB.c ****   0x09,   /* bLength: Configuation Descriptor size */
+ 138:Eval50xx-USB.c ****   USB_CONFIGURATION_DESCRIPTOR_TYPE,      /* bDescriptorType: Configuration */
+ 139:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_SIZ_CONFIG_DESC,       /* wTotalLength:no of returned bytes */
+ 140:Eval50xx-USB.c ****   0x00,
+ 141:Eval50xx-USB.c ****   0x02,   /* bNumInterfaces: 2 interface */
+ 142:Eval50xx-USB.c ****   0x01,   /* bConfigurationValue: Configuration value */
+ 143:Eval50xx-USB.c ****   0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
+ 144:Eval50xx-USB.c ****   0xC0,   /* bmAttributes: self powered */
+ 145:Eval50xx-USB.c ****   0x32,   /* MaxPower 0 mA */
+ 146:Eval50xx-USB.c ****   /*Interface Descriptor*/
+ 147:Eval50xx-USB.c ****   0x09,   /* bLength: Interface Descriptor size */
+ 148:Eval50xx-USB.c ****   USB_INTERFACE_DESCRIPTOR_TYPE,  /* bDescriptorType: Interface */
+ 149:Eval50xx-USB.c ****   /* Interface descriptor type */
+ 150:Eval50xx-USB.c ****   0x00,   /* bInterfaceNumber: Number of Interface */
+ 151:Eval50xx-USB.c ****   0x00,   /* bAlternateSetting: Alternate setting */
+ 152:Eval50xx-USB.c ****   0x01,   /* bNumEndpoints: One endpoints used */
+ 153:Eval50xx-USB.c ****   0x02,   /* bInterfaceClass: Communication Interface Class */
+ 154:Eval50xx-USB.c ****   0x02,   /* bInterfaceSubClass: Abstract Control Model */
+ 155:Eval50xx-USB.c ****   0x01,   /* bInterfaceProtocol: Common AT commands */
+ 156:Eval50xx-USB.c ****   0x00,   /* iInterface: */
+ 157:Eval50xx-USB.c ****   /*Header Functional Descriptor*/
+ 158:Eval50xx-USB.c ****   0x05,   /* bLength: Endpoint Descriptor size */
+ 159:Eval50xx-USB.c ****   0x24,   /* bDescriptorType: CS_INTERFACE */
+ 160:Eval50xx-USB.c ****   0x00,   /* bDescriptorSubtype: Header Func Desc */
+ 161:Eval50xx-USB.c ****   0x10,   /* bcdCDC: spec release number */
+ 162:Eval50xx-USB.c ****   0x01,
+ 163:Eval50xx-USB.c ****   /*Call Managment Functional Descriptor*/
+ 164:Eval50xx-USB.c ****   0x05,   /* bFunctionLength */
+ 165:Eval50xx-USB.c ****   0x24,   /* bDescriptorType: CS_INTERFACE */
+ 166:Eval50xx-USB.c ****   0x01,   /* bDescriptorSubtype: Call Management Func Desc */
+ 167:Eval50xx-USB.c ****   0x00,   /* bmCapabilities: D0+D1 */
+ 168:Eval50xx-USB.c ****   0x01,   /* bDataInterface: 1 */
+ 169:Eval50xx-USB.c ****   /*ACM Functional Descriptor*/
+ 170:Eval50xx-USB.c ****   0x04,   /* bFunctionLength */
+ 171:Eval50xx-USB.c ****   0x24,   /* bDescriptorType: CS_INTERFACE */
+ 172:Eval50xx-USB.c ****   0x02,   /* bDescriptorSubtype: Abstract Control Management desc */
+ 173:Eval50xx-USB.c ****   0x02,   /* bmCapabilities */
+ 174:Eval50xx-USB.c ****   /*Union Functional Descriptor*/
+ 175:Eval50xx-USB.c ****   0x05,   /* bFunctionLength */
+ 176:Eval50xx-USB.c ****   0x24,   /* bDescriptorType: CS_INTERFACE */
+ 177:Eval50xx-USB.c ****   0x06,   /* bDescriptorSubtype: Union func desc */
+ 178:Eval50xx-USB.c ****   0x00,   /* bMasterInterface: Communication class interface */
+ 179:Eval50xx-USB.c ****   0x01,   /* bSlaveInterface0: Data Class Interface */
+ 180:Eval50xx-USB.c ****   /*Endpoint 2 Descriptor*/
+ 181:Eval50xx-USB.c ****   0x07,   /* bLength: Endpoint Descriptor size */
+ 182:Eval50xx-USB.c ****   USB_ENDPOINT_DESCRIPTOR_TYPE,   /* bDescriptorType: Endpoint */
+ 183:Eval50xx-USB.c ****   0x82,   /* bEndpointAddress: (IN2) */
+ 184:Eval50xx-USB.c ****   0x03,   /* bmAttributes: Interrupt */
+ 185:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_INT_SIZE,      /* wMaxPacketSize: */
+ 186:Eval50xx-USB.c ****   0x00,
+ 187:Eval50xx-USB.c ****   0xFF,   /* bInterval: */
+ 188:Eval50xx-USB.c ****   /*Data class interface descriptor*/
+ 189:Eval50xx-USB.c ****   0x09,   /* bLength: Endpoint Descriptor size */
+ 190:Eval50xx-USB.c ****   USB_INTERFACE_DESCRIPTOR_TYPE,  /* bDescriptorType: */
+ 191:Eval50xx-USB.c ****   0x01,   /* bInterfaceNumber: Number of Interface */
+ 192:Eval50xx-USB.c ****   0x00,   /* bAlternateSetting: Alternate setting */
+ 193:Eval50xx-USB.c ****   0x02,   /* bNumEndpoints: Two endpoints used */
+ 194:Eval50xx-USB.c ****   0x0A,   /* bInterfaceClass: CDC */
+ 195:Eval50xx-USB.c ****   0x00,   /* bInterfaceSubClass: */
+ 196:Eval50xx-USB.c ****   0x00,   /* bInterfaceProtocol: */
+ 197:Eval50xx-USB.c ****   0x00,   /* iInterface: */
+ 198:Eval50xx-USB.c ****   /*Endpoint 3 Descriptor*/
+ 199:Eval50xx-USB.c ****   0x07,   /* bLength: Endpoint Descriptor size */
+ 200:Eval50xx-USB.c ****   USB_ENDPOINT_DESCRIPTOR_TYPE,   /* bDescriptorType: Endpoint */
+ 201:Eval50xx-USB.c ****   0x03,   /* bEndpointAddress: (OUT3) */
+ 202:Eval50xx-USB.c ****   0x02,   /* bmAttributes: Bulk */
+ 203:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_DATA_SIZE,             /* wMaxPacketSize: */
+ 204:Eval50xx-USB.c ****   0x00,
+ 205:Eval50xx-USB.c ****   0x00,   /* bInterval: ignore for Bulk transfer */
+ 206:Eval50xx-USB.c ****   /*Endpoint 1 Descriptor*/
+ 207:Eval50xx-USB.c ****   0x07,   /* bLength: Endpoint Descriptor size */
+ 208:Eval50xx-USB.c ****   USB_ENDPOINT_DESCRIPTOR_TYPE,   /* bDescriptorType: Endpoint */
+ 209:Eval50xx-USB.c ****   0x81,   /* bEndpointAddress: (IN1) */
+ 210:Eval50xx-USB.c ****   0x02,   /* bmAttributes: Bulk */
+ 211:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_DATA_SIZE,             /* wMaxPacketSize: */
+ 212:Eval50xx-USB.c ****   0x00,
+ 213:Eval50xx-USB.c ****   0x00    /* bInterval */
+ 214:Eval50xx-USB.c **** };
+ 215:Eval50xx-USB.c **** 
+ 216:Eval50xx-USB.c **** /* USB String Descriptors */
+ 217:Eval50xx-USB.c **** const u8 Virtual_Com_Port_StringLangID[VIRTUAL_COM_PORT_SIZ_STRING_LANGID] =
+ 218:Eval50xx-USB.c **** {
+ 219:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_SIZ_STRING_LANGID,
+ 220:Eval50xx-USB.c ****   USB_STRING_DESCRIPTOR_TYPE,
+ 221:Eval50xx-USB.c ****   0x09,
+ 222:Eval50xx-USB.c ****   0x04 /* LangID = 0x0409: U.S. English */
+ 223:Eval50xx-USB.c **** };
+ 224:Eval50xx-USB.c **** 
+ 225:Eval50xx-USB.c **** const u8 Virtual_Com_Port_StringVendor[VIRTUAL_COM_PORT_SIZ_STRING_VENDOR] =
+ 226:Eval50xx-USB.c **** {
+ 227:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_SIZ_STRING_VENDOR,     /* Size of Vendor string */
+ 228:Eval50xx-USB.c ****   USB_STRING_DESCRIPTOR_TYPE,             /* bDescriptorType*/
+ 229:Eval50xx-USB.c ****   /* Manufacturer: "STMicroelectronics" */
+ 230:Eval50xx-USB.c ****   'T', 0, 'r', 0, 'i', 0, 'n', 0, 'a', 0, 'm', 0, 'i', 0, 'c', 0,
+ 231:Eval50xx-USB.c ****   'M', 0, 'o', 0, 't', 0, 'i', 0, 'o', 0, 'n', 0, ' ', 0, 'C', 0,
+ 232:Eval50xx-USB.c ****   't', 0, 'l', 0
+ 233:Eval50xx-USB.c **** };
+ 234:Eval50xx-USB.c **** 
+ 235:Eval50xx-USB.c **** const u8 Virtual_Com_Port_StringProduct[VIRTUAL_COM_PORT_SIZ_STRING_PRODUCT] =
+ 236:Eval50xx-USB.c **** {
+ 237:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_SIZ_STRING_PRODUCT,          /* bLength */
+ 238:Eval50xx-USB.c ****   USB_STRING_DESCRIPTOR_TYPE,        /* bDescriptorType */
+ 239:Eval50xx-USB.c ****   /* Product name: "STM32 Virtual COM Port" */
+ 240:Eval50xx-USB.c ****   'T', 0, 'M', 0, 'C', 0, '5', 0, '0', 0, '3', 0, '1', 0, '-', 0,
+ 241:Eval50xx-USB.c ****   'E', 0, 'v', 0, 'a', 0, 'l', 0, ' ', 0, '(', 0, 'v', 0, 'i', 0,
+ 242:Eval50xx-USB.c ****   'r', 0, 't', 0, '.', 0, ' ', 0, 'C', 0, 'O', 0, 'M', 0, ')', 0
+ 243:Eval50xx-USB.c **** };
+ 244:Eval50xx-USB.c **** 
+ 245:Eval50xx-USB.c **** u8 Virtual_Com_Port_StringSerial[VIRTUAL_COM_PORT_SIZ_STRING_SERIAL] =
+ 246:Eval50xx-USB.c **** {
+ 247:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_SIZ_STRING_SERIAL,           /* bLength */
+ 248:Eval50xx-USB.c ****   USB_STRING_DESCRIPTOR_TYPE,                   /* bDescriptorType */
+ 249:Eval50xx-USB.c ****   'T', 0, 'M', 0, 'C', 0, '5', 0, '0', 0, '3', 0, '1', 0
+ 250:Eval50xx-USB.c **** };
+ 251:Eval50xx-USB.c **** 
+ 252:Eval50xx-USB.c **** 
+ 253:Eval50xx-USB.c **** //***
+ 254:Eval50xx-USB.c **** 
+ 255:Eval50xx-USB.c **** u8 buffer_out[VIRTUAL_COM_PORT_DATA_SIZE];
+ 256:Eval50xx-USB.c **** u8 buffer_in[VIRTUAL_COM_PORT_DATA_SIZE];
+ 257:Eval50xx-USB.c **** u32 count_out = 0;
+ 258:Eval50xx-USB.c **** u32 count_in = 0;
+ 259:Eval50xx-USB.c **** 
+ 260:Eval50xx-USB.c **** 
+ 261:Eval50xx-USB.c **** //***
+ 262:Eval50xx-USB.c **** 
+ 263:Eval50xx-USB.c **** volatile u16 wIstr;  /* ISTR register last read value */
+ 264:Eval50xx-USB.c **** volatile u8 bIntPackSOF = 0;  /* SOFs received between 2 consecutive packets */
+ 265:Eval50xx-USB.c **** 
+ 266:Eval50xx-USB.c **** void (*pEpInt_IN[7])(void) =
+ 267:Eval50xx-USB.c **** {
+ 268:Eval50xx-USB.c ****   EP1_IN_Callback,
+ 269:Eval50xx-USB.c ****   EP2_IN_Callback,
+ 270:Eval50xx-USB.c ****   EP3_IN_Callback,
+ 271:Eval50xx-USB.c ****   EP4_IN_Callback,
+ 272:Eval50xx-USB.c ****   EP5_IN_Callback,
+ 273:Eval50xx-USB.c ****   EP6_IN_Callback,
+ 274:Eval50xx-USB.c ****   EP7_IN_Callback,
+ 275:Eval50xx-USB.c **** };
+ 276:Eval50xx-USB.c **** 
+ 277:Eval50xx-USB.c **** void (*pEpInt_OUT[7])(void) =
+ 278:Eval50xx-USB.c **** {
+ 279:Eval50xx-USB.c ****   EP1_OUT_Callback,
+ 280:Eval50xx-USB.c ****   EP2_OUT_Callback,
+ 281:Eval50xx-USB.c ****   EP3_OUT_Callback,
+ 282:Eval50xx-USB.c ****   EP4_OUT_Callback,
+ 283:Eval50xx-USB.c ****   EP5_OUT_Callback,
+ 284:Eval50xx-USB.c ****   EP6_OUT_Callback,
+ 285:Eval50xx-USB.c ****   EP7_OUT_Callback,
+ 286:Eval50xx-USB.c **** };
+ 287:Eval50xx-USB.c **** 
+ 288:Eval50xx-USB.c **** 
+ 289:Eval50xx-USB.c **** //***
+ 290:Eval50xx-USB.c **** 
+ 291:Eval50xx-USB.c **** u8 Request = 0;
+ 292:Eval50xx-USB.c **** 
+ 293:Eval50xx-USB.c **** LINE_CODING linecoding =
+ 294:Eval50xx-USB.c **** {
+ 295:Eval50xx-USB.c ****   115200, /* baud rate*/
+ 296:Eval50xx-USB.c ****   0x00,   /* stop bits-1*/
+ 297:Eval50xx-USB.c ****   0x00,   /* parity - none*/
+ 298:Eval50xx-USB.c ****   0x08    /* no. of bits 8*/
+ 299:Eval50xx-USB.c **** };
+ 300:Eval50xx-USB.c **** 
+ 301:Eval50xx-USB.c **** /*  The number of current endpoint, it will be used to specify an endpoint */
+ 302:Eval50xx-USB.c **** u8  EPindex;
+ 303:Eval50xx-USB.c **** /*  The number of current device, it is an index to the Device_Table */
+ 304:Eval50xx-USB.c **** /* u8 Device_no; */
+ 305:Eval50xx-USB.c **** /*  Points to the DEVICE_INFO structure of current device */
+ 306:Eval50xx-USB.c **** /*  The purpose of this register is to speed up the execution */
+ 307:Eval50xx-USB.c **** DEVICE_INFO *pInformation;
+ 308:Eval50xx-USB.c **** /*  Points to the DEVICE_PROP structure of current device */
+ 309:Eval50xx-USB.c **** /*  The purpose of this register is to speed up the execution */
+ 310:Eval50xx-USB.c **** DEVICE_PROP *pProperty;
+ 311:Eval50xx-USB.c **** /*  Temporary save the state of Rx & Tx status. */
+ 312:Eval50xx-USB.c **** /*  Whenever the Rx or Tx state is changed, its value is saved */
+ 313:Eval50xx-USB.c **** /*  in this variable first and will be set to the EPRB or EPRA */
+ 314:Eval50xx-USB.c **** /*  at the end of interrupt process */
+ 315:Eval50xx-USB.c **** u16 SaveState;
+ 316:Eval50xx-USB.c **** u16  wInterrupt_Mask;
+ 317:Eval50xx-USB.c **** DEVICE_INFO Device_Info;
+ 318:Eval50xx-USB.c **** USER_STANDARD_REQUESTS  *pUser_Standard_Requests;
+ 319:Eval50xx-USB.c **** 
+ 320:Eval50xx-USB.c **** /* -------------------------------------------------------------------------- */
+ 321:Eval50xx-USB.c **** /*  Structures initializations */
+ 322:Eval50xx-USB.c **** /* -------------------------------------------------------------------------- */
+ 323:Eval50xx-USB.c **** 
+ 324:Eval50xx-USB.c **** DEVICE Device_Table =
+ 325:Eval50xx-USB.c **** {
+ 326:Eval50xx-USB.c ****   EP_NUM,
+ 327:Eval50xx-USB.c ****   1
+ 328:Eval50xx-USB.c **** };
+ 329:Eval50xx-USB.c **** 
+ 330:Eval50xx-USB.c **** DEVICE_PROP Device_Property =
+ 331:Eval50xx-USB.c **** {
+ 332:Eval50xx-USB.c ****   Virtual_Com_Port_init,
+ 333:Eval50xx-USB.c ****   Virtual_Com_Port_Reset,
+ 334:Eval50xx-USB.c ****   Virtual_Com_Port_Status_In,
+ 335:Eval50xx-USB.c ****   Virtual_Com_Port_Status_Out,
+ 336:Eval50xx-USB.c ****   Virtual_Com_Port_Data_Setup,
+ 337:Eval50xx-USB.c ****   Virtual_Com_Port_NoData_Setup,
+ 338:Eval50xx-USB.c ****   Virtual_Com_Port_Get_Interface_Setting,
+ 339:Eval50xx-USB.c ****   Virtual_Com_Port_GetDeviceDescriptor,
+ 340:Eval50xx-USB.c ****   Virtual_Com_Port_GetConfigDescriptor,
+ 341:Eval50xx-USB.c ****   Virtual_Com_Port_GetStringDescriptor,
+ 342:Eval50xx-USB.c ****   0,
+ 343:Eval50xx-USB.c ****   0x40 /*MAX PACKET SIZE*/
+ 344:Eval50xx-USB.c **** };
+ 345:Eval50xx-USB.c **** 
+ 346:Eval50xx-USB.c **** USER_STANDARD_REQUESTS User_Standard_Requests =
+ 347:Eval50xx-USB.c **** {
+ 348:Eval50xx-USB.c ****   Virtual_Com_Port_GetConfiguration,
+ 349:Eval50xx-USB.c ****   Virtual_Com_Port_SetConfiguration,
+ 350:Eval50xx-USB.c ****   Virtual_Com_Port_GetInterface,
+ 351:Eval50xx-USB.c ****   Virtual_Com_Port_SetInterface,
+ 352:Eval50xx-USB.c ****   Virtual_Com_Port_GetStatus,
+ 353:Eval50xx-USB.c ****   Virtual_Com_Port_ClearFeature,
+ 354:Eval50xx-USB.c ****   Virtual_Com_Port_SetEndPointFeature,
+ 355:Eval50xx-USB.c ****   Virtual_Com_Port_SetDeviceFeature,
+ 356:Eval50xx-USB.c ****   Virtual_Com_Port_SetDeviceAddress
+ 357:Eval50xx-USB.c **** };
+ 358:Eval50xx-USB.c **** 
+ 359:Eval50xx-USB.c **** ONE_DESCRIPTOR Device_Descriptor =
+ 360:Eval50xx-USB.c **** {
+ 361:Eval50xx-USB.c ****   (u8*) Virtual_Com_Port_DeviceDescriptor,
+ 362:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_SIZ_DEVICE_DESC
+ 363:Eval50xx-USB.c **** };
+ 364:Eval50xx-USB.c **** 
+ 365:Eval50xx-USB.c **** ONE_DESCRIPTOR Config_Descriptor =
+ 366:Eval50xx-USB.c **** {
+ 367:Eval50xx-USB.c ****   (u8*) Virtual_Com_Port_ConfigDescriptor,
+ 368:Eval50xx-USB.c ****   VIRTUAL_COM_PORT_SIZ_CONFIG_DESC
+ 369:Eval50xx-USB.c **** };
+ 370:Eval50xx-USB.c **** 
+ 371:Eval50xx-USB.c **** ONE_DESCRIPTOR String_Descriptor[4] =
+ 372:Eval50xx-USB.c **** {
+ 373:Eval50xx-USB.c ****   {(u8*) Virtual_Com_Port_StringLangID, VIRTUAL_COM_PORT_SIZ_STRING_LANGID},
+ 374:Eval50xx-USB.c ****   {(u8*) Virtual_Com_Port_StringVendor, VIRTUAL_COM_PORT_SIZ_STRING_VENDOR},
+ 375:Eval50xx-USB.c ****   {(u8*) Virtual_Com_Port_StringProduct, VIRTUAL_COM_PORT_SIZ_STRING_PRODUCT},
+ 376:Eval50xx-USB.c ****   {(u8*) Virtual_Com_Port_StringSerial, VIRTUAL_COM_PORT_SIZ_STRING_SERIAL}
+ 377:Eval50xx-USB.c **** };
+ 378:Eval50xx-USB.c **** 
+ 379:Eval50xx-USB.c **** 
+ 380:Eval50xx-USB.c **** //***
+ 381:Eval50xx-USB.c **** 
+ 382:Eval50xx-USB.c **** vu32 bDeviceState = UNCONNECTED; /* USB device status */
+ 383:Eval50xx-USB.c **** volatile bool fSuspendEnabled = TRUE;  /* True when suspend is possible */
+ 384:Eval50xx-USB.c **** 
+ 385:Eval50xx-USB.c **** struct
+ 386:Eval50xx-USB.c **** {
+ 387:Eval50xx-USB.c ****   volatile RESUME_STATE eState;
+ 388:Eval50xx-USB.c ****   volatile u8 bESOFcnt;
+ 389:Eval50xx-USB.c **** } ResumeS;
+ 390:Eval50xx-USB.c **** 
+ 391:Eval50xx-USB.c **** 
+ 392:Eval50xx-USB.c **** 
+ 393:Eval50xx-USB.c **** /*******************************************************************************
+ 394:Eval50xx-USB.c **** * Function Name  : Set_USBClock
+ 395:Eval50xx-USB.c **** * Description    : Configures USB Clock input (48MHz)
+ 396:Eval50xx-USB.c **** * Input          : None.
+ 397:Eval50xx-USB.c **** * Return         : None.
+ 398:Eval50xx-USB.c **** *******************************************************************************/
+ 399:Eval50xx-USB.c **** void Set_USBClock(void)
+ 400:Eval50xx-USB.c **** {
+ 401:Eval50xx-USB.c ****   /* USBCLK = PLLCLK / 1.5 */
+ 402:Eval50xx-USB.c ****   RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_1Div5);
+ 403:Eval50xx-USB.c **** 
+ 404:Eval50xx-USB.c ****   /* Enable USB clock */
+ 405:Eval50xx-USB.c ****   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);
+ 406:Eval50xx-USB.c **** }
+ 407:Eval50xx-USB.c **** 
+ 408:Eval50xx-USB.c **** 
+ 409:Eval50xx-USB.c **** /*******************************************************************************
+ 410:Eval50xx-USB.c **** * Function Name  : Enter_LowPowerMode
+ 411:Eval50xx-USB.c **** * Description    : Power-off system clocks and power while entering suspend mode
+ 412:Eval50xx-USB.c **** * Input          : None.
+ 413:Eval50xx-USB.c **** * Return         : None.
+ 414:Eval50xx-USB.c **** *******************************************************************************/
+ 415:Eval50xx-USB.c **** void Enter_LowPowerMode(void)
+ 416:Eval50xx-USB.c **** {
+  30              		.loc 1 416 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+ 417:Eval50xx-USB.c ****   /* Set the device state to suspend */
+ 418:Eval50xx-USB.c ****   bDeviceState = SUSPENDED;
+  34              		.loc 1 418 0
+  35 0000 014B     		ldr	r3, .L3
+  36 0002 0322     		movs	r2, #3
+  37 0004 1A60     		str	r2, [r3, #0]
+ 419:Eval50xx-USB.c **** }
+  38              		.loc 1 419 0
+  39 0006 7047     		bx	lr
+  40              	.L4:
+  41              		.align	2
+  42              	.L3:
+  43 0008 00000000 		.word	.LANCHOR0
+  44              	.LFE1:
+  46              		.align	2
+  47              		.global	Leave_LowPowerMode
+  48              		.thumb
+  49              		.thumb_func
+  51              	Leave_LowPowerMode:
+  52              	.LFB2:
+ 420:Eval50xx-USB.c **** 
+ 421:Eval50xx-USB.c **** 
+ 422:Eval50xx-USB.c **** /*******************************************************************************
+ 423:Eval50xx-USB.c **** * Function Name  : Leave_LowPowerMode
+ 424:Eval50xx-USB.c **** * Description    : Restores system clocks and power while exiting suspend mode
+ 425:Eval50xx-USB.c **** * Input          : None.
+ 426:Eval50xx-USB.c **** * Return         : None.
+ 427:Eval50xx-USB.c **** *******************************************************************************/
+ 428:Eval50xx-USB.c **** void Leave_LowPowerMode(void)
+ 429:Eval50xx-USB.c **** {
+  53              		.loc 1 429 0
+  54              		@ args = 0, pretend = 0, frame = 0
+  55              		@ frame_needed = 0, uses_anonymous_args = 0
+  56              		@ link register save eliminated.
+ 430:Eval50xx-USB.c ****   DEVICE_INFO *pInfo = &Device_Info;
+ 431:Eval50xx-USB.c **** 
+ 432:Eval50xx-USB.c ****   /* Set the device state to the correct state */
+ 433:Eval50xx-USB.c ****   if (pInfo->Current_Configuration != 0)
+  57              		.loc 1 433 0
+  58 000c 044A     		ldr	r2, .L11
+  59 000e 054B     		ldr	r3, .L11+4
+  60 0010 927A     		ldrb	r2, [r2, #10]	@ zero_extendqisi2
+  61 0012 0AB1     		cbz	r2, .L6
+ 434:Eval50xx-USB.c ****   {
+ 435:Eval50xx-USB.c ****     /* Device configured */
+ 436:Eval50xx-USB.c ****     bDeviceState = CONFIGURED;
+  62              		.loc 1 436 0
+  63 0014 0522     		movs	r2, #5
+  64 0016 00E0     		b	.L9
+  65              	.L6:
+ 437:Eval50xx-USB.c ****   }
+ 438:Eval50xx-USB.c ****   else
+ 439:Eval50xx-USB.c ****   {
+ 440:Eval50xx-USB.c ****     bDeviceState = ATTACHED;
+  66              		.loc 1 440 0
+  67 0018 0122     		movs	r2, #1
+  68              	.L9:
+  69 001a 1A60     		str	r2, [r3, #0]
+ 441:Eval50xx-USB.c ****   }
+ 442:Eval50xx-USB.c **** }
+  70              		.loc 1 442 0
+  71 001c 7047     		bx	lr
+  72              	.L12:
+  73 001e 00BF     		.align	2
+  74              	.L11:
+  75 0020 00000000 		.word	Device_Info
+  76 0024 00000000 		.word	.LANCHOR0
+  77              	.LFE2:
+  79              		.align	2
+  80              		.global	Get_SerialNum
+  81              		.thumb
+  82              		.thumb_func
+  84              	Get_SerialNum:
+  85              	.LFB5:
+ 443:Eval50xx-USB.c **** 
+ 444:Eval50xx-USB.c **** 
+ 445:Eval50xx-USB.c **** /*******************************************************************************
+ 446:Eval50xx-USB.c **** * Function Name  : USB_Interrupts_Config
+ 447:Eval50xx-USB.c **** * Description    : Configures the USB interrupts
+ 448:Eval50xx-USB.c **** * Input          : None.
+ 449:Eval50xx-USB.c **** * Return         : None.
+ 450:Eval50xx-USB.c **** *******************************************************************************/
+ 451:Eval50xx-USB.c **** void USB_Interrupts_Config(void)
+ 452:Eval50xx-USB.c **** {
+ 453:Eval50xx-USB.c ****   NVIC_InitTypeDef NVIC_InitStructure;
+ 454:Eval50xx-USB.c **** 
+ 455:Eval50xx-USB.c ****   NVIC_InitStructure.NVIC_IRQChannel = USB_LP_CAN_RX0_IRQChannel;
+ 456:Eval50xx-USB.c ****   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+ 457:Eval50xx-USB.c ****   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+ 458:Eval50xx-USB.c ****   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+ 459:Eval50xx-USB.c ****   NVIC_Init(&NVIC_InitStructure);
+ 460:Eval50xx-USB.c **** 
+ 461:Eval50xx-USB.c **** }
+ 462:Eval50xx-USB.c **** 
+ 463:Eval50xx-USB.c **** 
+ 464:Eval50xx-USB.c **** /*******************************************************************************
+ 465:Eval50xx-USB.c **** * Function Name  : USB_Cable_Config
+ 466:Eval50xx-USB.c **** * Description    : Software Connection/Disconnection of USB Cable
+ 467:Eval50xx-USB.c **** * Input          : None.
+ 468:Eval50xx-USB.c **** * Return         : Status
+ 469:Eval50xx-USB.c **** *******************************************************************************/
+ 470:Eval50xx-USB.c **** void USB_Cable_Config (FunctionalState NewState)
+ 471:Eval50xx-USB.c **** {
+ 472:Eval50xx-USB.c ****   if (NewState != DISABLE)
+ 473:Eval50xx-USB.c ****   {
+ 474:Eval50xx-USB.c ****     GPIO_SetBits(USB_DISCONNECT, USB_DISCONNECT_PIN);
+ 475:Eval50xx-USB.c ****   }
+ 476:Eval50xx-USB.c ****   else
+ 477:Eval50xx-USB.c ****   {
+ 478:Eval50xx-USB.c ****     GPIO_ResetBits(USB_DISCONNECT, USB_DISCONNECT_PIN);
+ 479:Eval50xx-USB.c ****   }
+ 480:Eval50xx-USB.c **** }
+ 481:Eval50xx-USB.c **** 
+ 482:Eval50xx-USB.c **** 
+ 483:Eval50xx-USB.c **** /*******************************************************************************
+ 484:Eval50xx-USB.c **** * Function Name  : Get_SerialNum.
+ 485:Eval50xx-USB.c **** * Description    : Create the serial number string descriptor.
+ 486:Eval50xx-USB.c **** * Input          : None.
+ 487:Eval50xx-USB.c **** * Output         : None.
+ 488:Eval50xx-USB.c **** * Return         : None.
+ 489:Eval50xx-USB.c **** *******************************************************************************/
+ 490:Eval50xx-USB.c **** void Get_SerialNum(void)
+ 491:Eval50xx-USB.c **** {
+  86              		.loc 1 491 0
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89              		@ link register save eliminated.
+ 492:Eval50xx-USB.c ****   u32 Device_Serial0, Device_Serial1, Device_Serial2;
+ 493:Eval50xx-USB.c **** 
+ 494:Eval50xx-USB.c ****   #if defined(USB_SERIAL_NUMBER)
+ 495:Eval50xx-USB.c ****   Device_Serial0 = *(vu32*)(0x1FFFF7E8);
+ 496:Eval50xx-USB.c ****   Device_Serial1 = *(vu32*)(0x1FFFF7EC);
+ 497:Eval50xx-USB.c ****   Device_Serial2 = *(vu32*)(0x1FFFF7F0);
+ 498:Eval50xx-USB.c ****   #else
+ 499:Eval50xx-USB.c ****   Device_Serial0 = 0;
+ 500:Eval50xx-USB.c ****   Device_Serial1 = 0;
+ 501:Eval50xx-USB.c ****   Device_Serial2 = 0;
+ 502:Eval50xx-USB.c ****   #endif
+ 503:Eval50xx-USB.c **** 
+ 504:Eval50xx-USB.c ****   if (Device_Serial0 != 0)
+ 505:Eval50xx-USB.c ****   {
+ 506:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[2] = (u8)(Device_Serial0 & 0x000000FF);
+ 507:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[4] = (u8)((Device_Serial0 & 0x0000FF00) >> 8);
+ 508:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[6] = (u8)((Device_Serial0 & 0x00FF0000) >> 16);
+ 509:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[8] = (u8)((Device_Serial0 & 0xFF000000) >> 24);
+ 510:Eval50xx-USB.c **** 
+ 511:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[10] = (u8)(Device_Serial1 & 0x000000FF);
+ 512:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[12] = (u8)((Device_Serial1 & 0x0000FF00) >> 8);
+ 513:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[14] = (u8)((Device_Serial1 & 0x00FF0000) >> 16);
+ 514:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[16] = (u8)((Device_Serial1 & 0xFF000000) >> 24);
+ 515:Eval50xx-USB.c **** 
+ 516:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[18] = (u8)(Device_Serial2 & 0x000000FF);
+ 517:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[20] = (u8)((Device_Serial2 & 0x0000FF00) >> 8);
+ 518:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[22] = (u8)((Device_Serial2 & 0x00FF0000) >> 16);
+ 519:Eval50xx-USB.c ****     Virtual_Com_Port_StringSerial[24] = (u8)((Device_Serial2 & 0xFF000000) >> 24);
+ 520:Eval50xx-USB.c ****   }
+ 521:Eval50xx-USB.c **** }
+  90              		.loc 1 521 0
+  91 0028 7047     		bx	lr
+  92              	.LFE5:
+  94 002a 00BF     		.align	2
+  95              		.global	EP1_IN_Callback
+  96              		.thumb
+  97              		.thumb_func
+  99              	EP1_IN_Callback:
+ 100              	.LFB7:
+ 522:Eval50xx-USB.c **** 
+ 523:Eval50xx-USB.c **** //*******************
+ 524:Eval50xx-USB.c **** 
+ 525:Eval50xx-USB.c **** 
+ 526:Eval50xx-USB.c **** /*******************************************************************************
+ 527:Eval50xx-USB.c **** * Function Name  : EP3_IN_Callback
+ 528:Eval50xx-USB.c **** * Description    :
+ 529:Eval50xx-USB.c **** * Input          : None.
+ 530:Eval50xx-USB.c **** * Output         : None.
+ 531:Eval50xx-USB.c **** * Return         : None.
+ 532:Eval50xx-USB.c **** *******************************************************************************/
+ 533:Eval50xx-USB.c **** void EP3_OUT_Callback(void)
+ 534:Eval50xx-USB.c **** {
+ 535:Eval50xx-USB.c ****   count_out = GetEPRxCount(ENDP3);
+ 536:Eval50xx-USB.c ****   PMAToUserBufferCopy(buffer_out, ENDP3_RXADDR, count_out);
+ 537:Eval50xx-USB.c ****   SetEPRxValid(ENDP3);
+ 538:Eval50xx-USB.c **** }
+ 539:Eval50xx-USB.c **** 
+ 540:Eval50xx-USB.c **** 
+ 541:Eval50xx-USB.c **** /*******************************************************************************
+ 542:Eval50xx-USB.c **** * Function Name  : EP1_IN_Callback
+ 543:Eval50xx-USB.c **** * Description    :
+ 544:Eval50xx-USB.c **** * Input          : None.
+ 545:Eval50xx-USB.c **** * Output         : None.
+ 546:Eval50xx-USB.c **** * Return         : None.
+ 547:Eval50xx-USB.c **** *******************************************************************************/
+ 548:Eval50xx-USB.c **** void EP1_IN_Callback(void)
+ 549:Eval50xx-USB.c **** {
+ 101              		.loc 1 549 0
+ 102              		@ args = 0, pretend = 0, frame = 0
+ 103              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104              		@ link register save eliminated.
+ 550:Eval50xx-USB.c ****   count_in = 0;
+ 105              		.loc 1 550 0
+ 106 002c 014B     		ldr	r3, .L17
+ 107 002e 0022     		movs	r2, #0
+ 108 0030 5A60     		str	r2, [r3, #4]
+ 551:Eval50xx-USB.c **** }
+ 109              		.loc 1 551 0
+ 110 0032 7047     		bx	lr
+ 111              	.L18:
+ 112              		.align	2
+ 113              	.L17:
+ 114 0034 00000000 		.word	.LANCHOR0
+ 115              	.LFE7:
+ 117              		.align	2
+ 118              		.global	Suspend
+ 119              		.thumb
+ 120              		.thumb_func
+ 122              	Suspend:
+ 123              	.LFB11:
+ 552:Eval50xx-USB.c **** 
+ 553:Eval50xx-USB.c **** //*******************
+ 554:Eval50xx-USB.c **** 
+ 555:Eval50xx-USB.c **** 
+ 556:Eval50xx-USB.c **** /*******************************************************************************
+ 557:Eval50xx-USB.c **** * Function Name  : USB_Istr.
+ 558:Eval50xx-USB.c **** * Description    : ISTR events interrupt service routine.
+ 559:Eval50xx-USB.c **** * Input          : None.
+ 560:Eval50xx-USB.c **** * Output         : None.
+ 561:Eval50xx-USB.c **** * Return         : None.
+ 562:Eval50xx-USB.c **** *******************************************************************************/
+ 563:Eval50xx-USB.c **** void USB_Istr(void)
+ 564:Eval50xx-USB.c **** {
+ 565:Eval50xx-USB.c **** 
+ 566:Eval50xx-USB.c ****   wIstr = _GetISTR();
+ 567:Eval50xx-USB.c **** 
+ 568:Eval50xx-USB.c **** #if (IMR_MSK & ISTR_RESET)
+ 569:Eval50xx-USB.c ****   if (wIstr & ISTR_RESET & wInterrupt_Mask)
+ 570:Eval50xx-USB.c ****   {
+ 571:Eval50xx-USB.c ****     _SetISTR((u16)CLR_RESET);
+ 572:Eval50xx-USB.c ****     Device_Property.Reset();
+ 573:Eval50xx-USB.c **** #ifdef RESET_CALLBACK
+ 574:Eval50xx-USB.c ****     RESET_Callback();
+ 575:Eval50xx-USB.c **** #endif
+ 576:Eval50xx-USB.c ****   }
+ 577:Eval50xx-USB.c **** #endif
+ 578:Eval50xx-USB.c ****   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+ 579:Eval50xx-USB.c **** #if (IMR_MSK & ISTR_DOVR)
+ 580:Eval50xx-USB.c ****   if (wIstr & ISTR_DOVR & wInterrupt_Mask)
+ 581:Eval50xx-USB.c ****   {
+ 582:Eval50xx-USB.c ****     _SetISTR((u16)CLR_DOVR);
+ 583:Eval50xx-USB.c **** #ifdef DOVR_CALLBACK
+ 584:Eval50xx-USB.c ****     DOVR_Callback();
+ 585:Eval50xx-USB.c **** #endif
+ 586:Eval50xx-USB.c ****   }
+ 587:Eval50xx-USB.c **** #endif
+ 588:Eval50xx-USB.c ****   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+ 589:Eval50xx-USB.c **** #if (IMR_MSK & ISTR_ERR)
+ 590:Eval50xx-USB.c ****   if (wIstr & ISTR_ERR & wInterrupt_Mask)
+ 591:Eval50xx-USB.c ****   {
+ 592:Eval50xx-USB.c ****     _SetISTR((u16)CLR_ERR);
+ 593:Eval50xx-USB.c **** #ifdef ERR_CALLBACK
+ 594:Eval50xx-USB.c ****     ERR_Callback();
+ 595:Eval50xx-USB.c **** #endif
+ 596:Eval50xx-USB.c ****   }
+ 597:Eval50xx-USB.c **** #endif
+ 598:Eval50xx-USB.c ****   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+ 599:Eval50xx-USB.c **** #if (IMR_MSK & ISTR_WKUP)
+ 600:Eval50xx-USB.c ****   if (wIstr & ISTR_WKUP & wInterrupt_Mask)
+ 601:Eval50xx-USB.c ****   {
+ 602:Eval50xx-USB.c ****     _SetISTR((u16)CLR_WKUP);
+ 603:Eval50xx-USB.c ****     Resume(RESUME_EXTERNAL);
+ 604:Eval50xx-USB.c **** #ifdef WKUP_CALLBACK
+ 605:Eval50xx-USB.c ****     WKUP_Callback();
+ 606:Eval50xx-USB.c **** #endif
+ 607:Eval50xx-USB.c ****   }
+ 608:Eval50xx-USB.c **** #endif
+ 609:Eval50xx-USB.c ****   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+ 610:Eval50xx-USB.c **** #if (IMR_MSK & ISTR_SUSP)
+ 611:Eval50xx-USB.c ****   if (wIstr & ISTR_SUSP & wInterrupt_Mask)
+ 612:Eval50xx-USB.c ****   {
+ 613:Eval50xx-USB.c **** 
+ 614:Eval50xx-USB.c ****     /* check if SUSPEND is possible */
+ 615:Eval50xx-USB.c ****     if (fSuspendEnabled)
+ 616:Eval50xx-USB.c ****     {
+ 617:Eval50xx-USB.c ****       Suspend();
+ 618:Eval50xx-USB.c ****     }
+ 619:Eval50xx-USB.c ****     else
+ 620:Eval50xx-USB.c ****     {
+ 621:Eval50xx-USB.c ****       /* if not possible then resume after xx ms */
+ 622:Eval50xx-USB.c ****       Resume(RESUME_LATER);
+ 623:Eval50xx-USB.c ****     }
+ 624:Eval50xx-USB.c ****     /* clear of the ISTR bit must be done after setting of CNTR_FSUSP */
+ 625:Eval50xx-USB.c ****     _SetISTR((u16)CLR_SUSP);
+ 626:Eval50xx-USB.c **** #ifdef SUSP_CALLBACK
+ 627:Eval50xx-USB.c ****     SUSP_Callback();
+ 628:Eval50xx-USB.c **** #endif
+ 629:Eval50xx-USB.c ****   }
+ 630:Eval50xx-USB.c **** #endif
+ 631:Eval50xx-USB.c ****   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+ 632:Eval50xx-USB.c **** #if (IMR_MSK & ISTR_SOF)
+ 633:Eval50xx-USB.c ****   if (wIstr & ISTR_SOF & wInterrupt_Mask)
+ 634:Eval50xx-USB.c ****   {
+ 635:Eval50xx-USB.c ****     _SetISTR((u16)CLR_SOF);
+ 636:Eval50xx-USB.c ****     bIntPackSOF++;
+ 637:Eval50xx-USB.c **** 
+ 638:Eval50xx-USB.c **** #ifdef SOF_CALLBACK
+ 639:Eval50xx-USB.c ****     SOF_Callback();
+ 640:Eval50xx-USB.c **** #endif
+ 641:Eval50xx-USB.c ****   }
+ 642:Eval50xx-USB.c **** #endif
+ 643:Eval50xx-USB.c ****   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+ 644:Eval50xx-USB.c **** #if (IMR_MSK & ISTR_ESOF)
+ 645:Eval50xx-USB.c ****   if (wIstr & ISTR_ESOF & wInterrupt_Mask)
+ 646:Eval50xx-USB.c ****   {
+ 647:Eval50xx-USB.c ****     _SetISTR((u16)CLR_ESOF);
+ 648:Eval50xx-USB.c ****     /* resume handling timing is made with ESOFs */
+ 649:Eval50xx-USB.c ****     Resume(RESUME_ESOF); /* request without change of the machine state */
+ 650:Eval50xx-USB.c **** 
+ 651:Eval50xx-USB.c **** #ifdef ESOF_CALLBACK
+ 652:Eval50xx-USB.c ****     ESOF_Callback();
+ 653:Eval50xx-USB.c **** #endif
+ 654:Eval50xx-USB.c ****   }
+ 655:Eval50xx-USB.c **** #endif
+ 656:Eval50xx-USB.c ****   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+ 657:Eval50xx-USB.c **** #if (IMR_MSK & ISTR_CTR)
+ 658:Eval50xx-USB.c ****   if (wIstr & ISTR_CTR & wInterrupt_Mask)
+ 659:Eval50xx-USB.c ****   {
+ 660:Eval50xx-USB.c ****     /* servicing of the endpoint correct transfer interrupt */
+ 661:Eval50xx-USB.c ****     /* clear of the CTR flag into the sub */
+ 662:Eval50xx-USB.c ****     CTR_LP();
+ 663:Eval50xx-USB.c **** #ifdef CTR_CALLBACK
+ 664:Eval50xx-USB.c ****     CTR_Callback();
+ 665:Eval50xx-USB.c **** #endif
+ 666:Eval50xx-USB.c ****   }
+ 667:Eval50xx-USB.c **** #endif
+ 668:Eval50xx-USB.c **** } /* USB_Istr */
+ 669:Eval50xx-USB.c **** 
+ 670:Eval50xx-USB.c **** 
+ 671:Eval50xx-USB.c **** //*******************
+ 672:Eval50xx-USB.c **** 
+ 673:Eval50xx-USB.c **** /*******************************************************************************
+ 674:Eval50xx-USB.c **** * Function Name  : PowerOn
+ 675:Eval50xx-USB.c **** * Description    : USB IP power ON Routine.
+ 676:Eval50xx-USB.c **** * Input          : None.
+ 677:Eval50xx-USB.c **** * Output         : None.
+ 678:Eval50xx-USB.c **** * Return         : USB_SUCCESS.
+ 679:Eval50xx-USB.c **** *******************************************************************************/
+ 680:Eval50xx-USB.c **** RESULT PowerOn(void)
+ 681:Eval50xx-USB.c **** {
+ 682:Eval50xx-USB.c ****   u16 wRegVal;
+ 683:Eval50xx-USB.c **** 
+ 684:Eval50xx-USB.c ****   /*** cable plugged-in ? ***/
+ 685:Eval50xx-USB.c ****   USB_Cable_Config(ENABLE);
+ 686:Eval50xx-USB.c **** 
+ 687:Eval50xx-USB.c ****   /*** CNTR_PWDN = 0 ***/
+ 688:Eval50xx-USB.c ****   wRegVal = CNTR_FRES;
+ 689:Eval50xx-USB.c ****   _SetCNTR(wRegVal);
+ 690:Eval50xx-USB.c **** 
+ 691:Eval50xx-USB.c ****   /*** CNTR_FRES = 0 ***/
+ 692:Eval50xx-USB.c ****   wInterrupt_Mask = 0;
+ 693:Eval50xx-USB.c ****   _SetCNTR(wInterrupt_Mask);
+ 694:Eval50xx-USB.c ****   /*** Clear pending interrupts ***/
+ 695:Eval50xx-USB.c ****   _SetISTR(0);
+ 696:Eval50xx-USB.c ****   /*** Set interrupt mask ***/
+ 697:Eval50xx-USB.c ****   wInterrupt_Mask = CNTR_RESETM | CNTR_SUSPM | CNTR_WKUPM;
+ 698:Eval50xx-USB.c ****   _SetCNTR(wInterrupt_Mask);
+ 699:Eval50xx-USB.c **** 
+ 700:Eval50xx-USB.c ****   return USB_SUCCESS;
+ 701:Eval50xx-USB.c **** }
+ 702:Eval50xx-USB.c **** 
+ 703:Eval50xx-USB.c **** 
+ 704:Eval50xx-USB.c **** /*******************************************************************************
+ 705:Eval50xx-USB.c **** * Function Name  : PowerOff
+ 706:Eval50xx-USB.c **** * Description    : Handles switch-off conditions
+ 707:Eval50xx-USB.c **** * Input          : None.
+ 708:Eval50xx-USB.c **** * Output         : None.
+ 709:Eval50xx-USB.c **** * Return         : USB_SUCCESS.
+ 710:Eval50xx-USB.c **** *******************************************************************************/
+ 711:Eval50xx-USB.c **** RESULT PowerOff()
+ 712:Eval50xx-USB.c **** {
+ 713:Eval50xx-USB.c ****   /* disable all ints and force USB reset */
+ 714:Eval50xx-USB.c ****   _SetCNTR(CNTR_FRES);
+ 715:Eval50xx-USB.c ****   /* clear interrupt status register */
+ 716:Eval50xx-USB.c ****   _SetISTR(0);
+ 717:Eval50xx-USB.c ****   /* Disable the Pull-Up*/
+ 718:Eval50xx-USB.c ****   USB_Cable_Config(DISABLE);
+ 719:Eval50xx-USB.c ****   /* switch-off device */
+ 720:Eval50xx-USB.c ****   _SetCNTR(CNTR_FRES + CNTR_PDWN);
+ 721:Eval50xx-USB.c ****   /* sw variables reset */
+ 722:Eval50xx-USB.c ****   /* ... */
+ 723:Eval50xx-USB.c **** 
+ 724:Eval50xx-USB.c ****   return USB_SUCCESS;
+ 725:Eval50xx-USB.c **** }
+ 726:Eval50xx-USB.c **** 
+ 727:Eval50xx-USB.c **** 
+ 728:Eval50xx-USB.c **** /*******************************************************************************
+ 729:Eval50xx-USB.c **** * Function Name  : Suspend
+ 730:Eval50xx-USB.c **** * Description    : sets suspend mode operating conditions
+ 731:Eval50xx-USB.c **** * Input          : None.
+ 732:Eval50xx-USB.c **** * Output         : None.
+ 733:Eval50xx-USB.c **** * Return         : USB_SUCCESS.
+ 734:Eval50xx-USB.c **** *******************************************************************************/
+ 735:Eval50xx-USB.c **** void Suspend(void)
+ 736:Eval50xx-USB.c **** {
+ 124              		.loc 1 736 0
+ 125              		@ args = 0, pretend = 0, frame = 0
+ 126              		@ frame_needed = 0, uses_anonymous_args = 0
+ 127 0038 08B5     		push	{r3, lr}
+ 128              	.LCFI0:
+ 737:Eval50xx-USB.c ****   u16 wCNTR;
+ 738:Eval50xx-USB.c ****   /* suspend preparation */
+ 739:Eval50xx-USB.c ****   /* ... */
+ 740:Eval50xx-USB.c **** 
+ 741:Eval50xx-USB.c ****   /* macrocell enters suspend mode */
+ 742:Eval50xx-USB.c ****   wCNTR = _GetCNTR();
+ 129              		.loc 1 742 0
+ 130 003a 074B     		ldr	r3, .L21
+ 131 003c 1A68     		ldr	r2, [r3, #0]
+ 132 003e 92B2     		uxth	r2, r2
+ 133              	.LVL0:
+ 743:Eval50xx-USB.c ****   wCNTR |= CNTR_FSUSP;
+ 744:Eval50xx-USB.c ****   _SetCNTR(wCNTR);
+ 134              		.loc 1 744 0
+ 135 0040 42F00802 		orr	r2, r2, #8
+ 136              	.LVL1:
+ 137 0044 1A60     		str	r2, [r3, #0]
+ 745:Eval50xx-USB.c **** 
+ 746:Eval50xx-USB.c ****   /* ------------------ ONLY WITH BUS-POWERED DEVICES ---------------------- */
+ 747:Eval50xx-USB.c ****   /* power reduction */
+ 748:Eval50xx-USB.c ****   /* ... on connected devices */
+ 749:Eval50xx-USB.c **** 
+ 750:Eval50xx-USB.c **** 
+ 751:Eval50xx-USB.c ****   /* force low-power mode in the macrocell */
+ 752:Eval50xx-USB.c ****   wCNTR = _GetCNTR();
+ 138              		.loc 1 752 0
+ 139 0046 1A68     		ldr	r2, [r3, #0]
+ 140 0048 92B2     		uxth	r2, r2
+ 141              	.LVL2:
+ 753:Eval50xx-USB.c ****   wCNTR |= CNTR_LPMODE;
+ 754:Eval50xx-USB.c ****   _SetCNTR(wCNTR);
+ 142              		.loc 1 754 0
+ 143 004a 42F00402 		orr	r2, r2, #4
+ 144              	.LVL3:
+ 145 004e 1A60     		str	r2, [r3, #0]
+ 755:Eval50xx-USB.c **** 
+ 756:Eval50xx-USB.c ****   /* switch-off the clocks */
+ 757:Eval50xx-USB.c ****   /* ... */
+ 758:Eval50xx-USB.c ****   Enter_LowPowerMode();
+ 146              		.loc 1 758 0
+ 147 0050 FFF7FEFF 		bl	Enter_LowPowerMode
+ 759:Eval50xx-USB.c **** 
+ 760:Eval50xx-USB.c **** }
+ 148              		.loc 1 760 0
+ 149 0054 08BD     		pop	{r3, pc}
+ 150              	.L22:
+ 151 0056 00BF     		.align	2
+ 152              	.L21:
+ 153 0058 405C0040 		.word	1073765440
+ 154              	.LFE11:
+ 156              		.align	2
+ 157              		.global	Resume_Init
+ 158              		.thumb
+ 159              		.thumb_func
+ 161              	Resume_Init:
+ 162              	.LFB12:
+ 761:Eval50xx-USB.c **** 
+ 762:Eval50xx-USB.c **** 
+ 763:Eval50xx-USB.c **** /*******************************************************************************
+ 764:Eval50xx-USB.c **** * Function Name  : Resume_Init
+ 765:Eval50xx-USB.c **** * Description    : Handles wake-up restoring normal operations
+ 766:Eval50xx-USB.c **** * Input          : None.
+ 767:Eval50xx-USB.c **** * Output         : None.
+ 768:Eval50xx-USB.c **** * Return         : USB_SUCCESS.
+ 769:Eval50xx-USB.c **** *******************************************************************************/
+ 770:Eval50xx-USB.c **** void Resume_Init(void)
+ 771:Eval50xx-USB.c **** {
+ 163              		.loc 1 771 0
+ 164              		@ args = 0, pretend = 0, frame = 0
+ 165              		@ frame_needed = 0, uses_anonymous_args = 0
+ 166 005c 10B5     		push	{r4, lr}
+ 167              	.LCFI1:
+ 772:Eval50xx-USB.c ****   u16 wCNTR;
+ 773:Eval50xx-USB.c ****   /* ------------------ ONLY WITH BUS-POWERED DEVICES ---------------------- */
+ 774:Eval50xx-USB.c ****   /* restart the clocks */
+ 775:Eval50xx-USB.c ****   /* ...  */
+ 776:Eval50xx-USB.c **** 
+ 777:Eval50xx-USB.c ****   /* CNTR_LPMODE = 0 */
+ 778:Eval50xx-USB.c ****   wCNTR = _GetCNTR();
+ 168              		.loc 1 778 0
+ 169 005e 064C     		ldr	r4, .L25
+ 779:Eval50xx-USB.c ****   wCNTR &= (~CNTR_LPMODE);
+ 780:Eval50xx-USB.c ****   _SetCNTR(wCNTR);
+ 170              		.loc 1 780 0
+ 171 0060 4FF6FB73 		movw	r3, #65531
+ 172              		.loc 1 778 0
+ 173 0064 2268     		ldr	r2, [r4, #0]
+ 174              		.loc 1 780 0
+ 175 0066 02EA0303 		and	r3, r2, r3
+ 176 006a 2360     		str	r3, [r4, #0]
+ 781:Eval50xx-USB.c **** 
+ 782:Eval50xx-USB.c ****   /* restore full power */
+ 783:Eval50xx-USB.c ****   /* ... on connected devices */
+ 784:Eval50xx-USB.c ****   Leave_LowPowerMode();
+ 177              		.loc 1 784 0
+ 178 006c FFF7FEFF 		bl	Leave_LowPowerMode
+ 785:Eval50xx-USB.c **** 
+ 786:Eval50xx-USB.c ****   /* reset FSUSP bit */
+ 787:Eval50xx-USB.c ****   _SetCNTR(IMR_MSK);
+ 179              		.loc 1 787 0
+ 180 0070 4FF40643 		mov	r3, #34304
+ 181 0074 2360     		str	r3, [r4, #0]
+ 788:Eval50xx-USB.c **** 
+ 789:Eval50xx-USB.c ****   /* reverse suspend preparation */
+ 790:Eval50xx-USB.c ****   /* ... */
+ 791:Eval50xx-USB.c **** 
+ 792:Eval50xx-USB.c **** }
+ 182              		.loc 1 792 0
+ 183 0076 10BD     		pop	{r4, pc}
+ 184              	.L26:
+ 185              		.align	2
+ 186              	.L25:
+ 187 0078 405C0040 		.word	1073765440
+ 188              	.LFE12:
+ 190              		.align	2
+ 191              		.global	Resume
+ 192              		.thumb
+ 193              		.thumb_func
+ 195              	Resume:
+ 196              	.LFB13:
+ 793:Eval50xx-USB.c **** 
+ 794:Eval50xx-USB.c **** 
+ 795:Eval50xx-USB.c **** /*******************************************************************************
+ 796:Eval50xx-USB.c **** * Function Name  : Resume
+ 797:Eval50xx-USB.c **** * Description    : This is the state machine handling resume operations and
+ 798:Eval50xx-USB.c **** *                 timing sequence. The control is based on the Resume structure
+ 799:Eval50xx-USB.c **** *                 variables and on the ESOF interrupt calling this subroutine
+ 800:Eval50xx-USB.c **** *                 without changing machine state.
+ 801:Eval50xx-USB.c **** * Input          : a state machine value (RESUME_STATE)
+ 802:Eval50xx-USB.c **** *                  RESUME_ESOF doesn't change ResumeS.eState allowing
+ 803:Eval50xx-USB.c **** *                  decrementing of the ESOF counter in different states.
+ 804:Eval50xx-USB.c **** * Output         : None.
+ 805:Eval50xx-USB.c **** * Return         : None.
+ 806:Eval50xx-USB.c **** *******************************************************************************/
+ 807:Eval50xx-USB.c **** void Resume(RESUME_STATE eResumeSetVal)
+ 808:Eval50xx-USB.c **** {
+ 197              		.loc 1 808 0
+ 198              		@ args = 0, pretend = 0, frame = 0
+ 199              		@ frame_needed = 0, uses_anonymous_args = 0
+ 200              	.LVL4:
+ 809:Eval50xx-USB.c ****   u16 wCNTR;
+ 810:Eval50xx-USB.c **** 
+ 811:Eval50xx-USB.c ****   if (eResumeSetVal != RESUME_ESOF)
+ 201              		.loc 1 811 0
+ 202 007c 0728     		cmp	r0, #7
+ 812:Eval50xx-USB.c ****     ResumeS.eState = eResumeSetVal;
+ 203              		.loc 1 812 0
+ 204 007e 18BF     		it	ne
+ 205 0080 1F4B     		ldrne	r3, .L41
+ 206              		.loc 1 808 0
+ 207 0082 10B5     		push	{r4, lr}
+ 208              	.LCFI2:
+ 813:Eval50xx-USB.c **** 
+ 814:Eval50xx-USB.c ****   switch (ResumeS.eState)
+ 209              		.loc 1 814 0
+ 210 0084 1E4C     		ldr	r4, .L41
+ 211              		.loc 1 812 0
+ 212 0086 18BF     		it	ne
+ 213 0088 1870     		strbne	r0, [r3, #0]
+ 214              		.loc 1 814 0
+ 215 008a 2378     		ldrb	r3, [r4, #0]	@ zero_extendqisi2
+ 216 008c 052B     		cmp	r3, #5
+ 217 008e 33D8     		bhi	.L29
+ 218 0090 DFE803F0 		tbb	[pc, r3]
+ 219              	.L36:
+ 220 0094 03       		.byte	(.L30-.L36)/2
+ 221 0095 06       		.byte	(.L31-.L36)/2
+ 222 0096 0A       		.byte	(.L32-.L36)/2
+ 223 0097 0E       		.byte	(.L33-.L36)/2
+ 224 0098 16       		.byte	(.L34-.L36)/2
+ 225 0099 21       		.byte	(.L35-.L36)/2
+ 226              		.align	1
+ 227              	.L30:
+ 815:Eval50xx-USB.c ****   {
+ 816:Eval50xx-USB.c ****     case RESUME_EXTERNAL:
+ 817:Eval50xx-USB.c ****       Resume_Init();
+ 228              		.loc 1 817 0
+ 229 009a FFF7FEFF 		bl	Resume_Init
+ 230              	.LVL5:
+ 231 009e 2BE0     		b	.L29
+ 232              	.LVL6:
+ 233              	.L31:
+ 818:Eval50xx-USB.c ****       ResumeS.eState = RESUME_OFF;
+ 819:Eval50xx-USB.c ****       break;
+ 820:Eval50xx-USB.c ****     case RESUME_INTERNAL:
+ 821:Eval50xx-USB.c ****       Resume_Init();
+ 234              		.loc 1 821 0
+ 235 00a0 FFF7FEFF 		bl	Resume_Init
+ 236              	.LVL7:
+ 822:Eval50xx-USB.c ****       ResumeS.eState = RESUME_START;
+ 237              		.loc 1 822 0
+ 238 00a4 0423     		movs	r3, #4
+ 239 00a6 28E0     		b	.L39
+ 240              	.LVL8:
+ 241              	.L32:
+ 823:Eval50xx-USB.c ****       break;
+ 824:Eval50xx-USB.c ****     case RESUME_LATER:
+ 825:Eval50xx-USB.c ****       ResumeS.bESOFcnt = 2;
+ 242              		.loc 1 825 0
+ 243 00a8 0223     		movs	r3, #2
+ 244 00aa 6370     		strb	r3, [r4, #1]
+ 826:Eval50xx-USB.c ****       ResumeS.eState = RESUME_WAIT;
+ 245              		.loc 1 826 0
+ 246 00ac 0133     		adds	r3, r3, #1
+ 247 00ae 24E0     		b	.L39
+ 248              	.L33:
+ 827:Eval50xx-USB.c ****       break;
+ 828:Eval50xx-USB.c ****     case RESUME_WAIT:
+ 829:Eval50xx-USB.c ****       ResumeS.bESOFcnt--;
+ 249              		.loc 1 829 0
+ 250 00b0 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ 251 00b2 013B     		subs	r3, r3, #1
+ 252 00b4 DBB2     		uxtb	r3, r3
+ 253 00b6 6370     		strb	r3, [r4, #1]
+ 830:Eval50xx-USB.c ****       if (ResumeS.bESOFcnt == 0)
+ 254              		.loc 1 830 0
+ 255 00b8 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ 256 00ba FBB9     		cbnz	r3, .L38
+ 831:Eval50xx-USB.c ****         ResumeS.eState = RESUME_START;
+ 257              		.loc 1 831 0
+ 258 00bc 0422     		movs	r2, #4
+ 259 00be 18E0     		b	.L40
+ 260              	.L34:
+ 832:Eval50xx-USB.c ****       break;
+ 833:Eval50xx-USB.c ****     case RESUME_START:
+ 834:Eval50xx-USB.c ****       wCNTR = _GetCNTR();
+ 261              		.loc 1 834 0
+ 262 00c0 104B     		ldr	r3, .L41+4
+ 263 00c2 1A68     		ldr	r2, [r3, #0]
+ 264 00c4 92B2     		uxth	r2, r2
+ 265              	.LVL9:
+ 835:Eval50xx-USB.c ****       wCNTR |= CNTR_RESUME;
+ 836:Eval50xx-USB.c ****       _SetCNTR(wCNTR);
+ 266              		.loc 1 836 0
+ 267 00c6 42F01002 		orr	r2, r2, #16
+ 268              	.LVL10:
+ 269 00ca 1A60     		str	r2, [r3, #0]
+ 837:Eval50xx-USB.c ****       ResumeS.eState = RESUME_ON;
+ 270              		.loc 1 837 0
+ 271 00cc 0523     		movs	r3, #5
+ 272 00ce 2370     		strb	r3, [r4, #0]
+ 838:Eval50xx-USB.c ****       ResumeS.bESOFcnt = 10;
+ 273              		.loc 1 838 0
+ 274 00d0 DB18     		adds	r3, r3, r3
+ 275 00d2 6370     		strb	r3, [r4, #1]
+ 839:Eval50xx-USB.c ****       break;
+ 276              		.loc 1 839 0
+ 277 00d4 12E0     		b	.L38
+ 278              	.L35:
+ 840:Eval50xx-USB.c ****     case RESUME_ON:
+ 841:Eval50xx-USB.c ****       ResumeS.bESOFcnt--;
+ 279              		.loc 1 841 0
+ 280 00d6 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ 281 00d8 013B     		subs	r3, r3, #1
+ 282 00da DBB2     		uxtb	r3, r3
+ 283 00dc 6370     		strb	r3, [r4, #1]
+ 842:Eval50xx-USB.c ****       if (ResumeS.bESOFcnt == 0)
+ 284              		.loc 1 842 0
+ 285 00de 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ 286 00e0 63B9     		cbnz	r3, .L38
+ 843:Eval50xx-USB.c ****       {
+ 844:Eval50xx-USB.c ****         wCNTR = _GetCNTR();
+ 287              		.loc 1 844 0
+ 288 00e2 084A     		ldr	r2, .L41+4
+ 845:Eval50xx-USB.c ****         wCNTR &= (~CNTR_RESUME);
+ 846:Eval50xx-USB.c ****         _SetCNTR(wCNTR);
+ 289              		.loc 1 846 0
+ 290 00e4 4FF6EF73 		movw	r3, #65519
+ 291              		.loc 1 844 0
+ 292 00e8 1168     		ldr	r1, [r2, #0]
+ 293              		.loc 1 846 0
+ 294 00ea 01EA0303 		and	r3, r1, r3
+ 295 00ee 1360     		str	r3, [r2, #0]
+ 847:Eval50xx-USB.c ****         ResumeS.eState = RESUME_OFF;
+ 296              		.loc 1 847 0
+ 297 00f0 0622     		movs	r2, #6
+ 298              	.L40:
+ 299 00f2 034B     		ldr	r3, .L41
+ 300 00f4 1A70     		strb	r2, [r3, #0]
+ 301 00f6 01E0     		b	.L38
+ 302              	.L29:
+ 848:Eval50xx-USB.c ****       }
+ 849:Eval50xx-USB.c ****       break;
+ 850:Eval50xx-USB.c ****     case RESUME_OFF:
+ 851:Eval50xx-USB.c ****     case RESUME_ESOF:
+ 852:Eval50xx-USB.c ****     default:
+ 853:Eval50xx-USB.c ****       ResumeS.eState = RESUME_OFF;
+ 303              		.loc 1 853 0
+ 304 00f8 0623     		movs	r3, #6
+ 305              	.L39:
+ 306 00fa 2370     		strb	r3, [r4, #0]
+ 307              	.L38:
+ 854:Eval50xx-USB.c ****       break;
+ 855:Eval50xx-USB.c ****   }
+ 856:Eval50xx-USB.c **** }
+ 308              		.loc 1 856 0
+ 309 00fc 10BD     		pop	{r4, pc}
+ 310              	.L42:
+ 311 00fe 00BF     		.align	2
+ 312              	.L41:
+ 313 0100 00000000 		.word	ResumeS
+ 314 0104 405C0040 		.word	1073765440
+ 315              	.LFE13:
+ 317              		.align	2
+ 318              		.global	Virtual_Com_Port_SetConfiguration
+ 319              		.thumb
+ 320              		.thumb_func
+ 322              	Virtual_Com_Port_SetConfiguration:
+ 323              	.LFB16:
+ 857:Eval50xx-USB.c **** 
+ 858:Eval50xx-USB.c **** 
+ 859:Eval50xx-USB.c **** //**********************
+ 860:Eval50xx-USB.c **** 
+ 861:Eval50xx-USB.c **** /*******************************************************************************
+ 862:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_init.
+ 863:Eval50xx-USB.c **** * Description    : Virtual COM Port Mouse init routine.
+ 864:Eval50xx-USB.c **** * Input          : None.
+ 865:Eval50xx-USB.c **** * Output         : None.
+ 866:Eval50xx-USB.c **** * Return         : None.
+ 867:Eval50xx-USB.c **** *******************************************************************************/
+ 868:Eval50xx-USB.c **** void Virtual_Com_Port_init(void)
+ 869:Eval50xx-USB.c **** {
+ 870:Eval50xx-USB.c ****   // Update the serial number string descriptor with the data from the unique ID
+ 871:Eval50xx-USB.c ****   Get_SerialNum();
+ 872:Eval50xx-USB.c **** 
+ 873:Eval50xx-USB.c ****   pInformation->Current_Configuration = 0;
+ 874:Eval50xx-USB.c **** 
+ 875:Eval50xx-USB.c ****   /* Connect the device */
+ 876:Eval50xx-USB.c ****   PowerOn();
+ 877:Eval50xx-USB.c ****   /* USB interrupts initialization */
+ 878:Eval50xx-USB.c ****   /* clear pending interrupts */
+ 879:Eval50xx-USB.c ****   _SetISTR(0);
+ 880:Eval50xx-USB.c ****   wInterrupt_Mask = IMR_MSK;
+ 881:Eval50xx-USB.c ****   /* set interrupts mask */
+ 882:Eval50xx-USB.c ****   _SetCNTR(wInterrupt_Mask);
+ 883:Eval50xx-USB.c **** 
+ 884:Eval50xx-USB.c ****   bDeviceState = UNCONNECTED;
+ 885:Eval50xx-USB.c **** }
+ 886:Eval50xx-USB.c **** 
+ 887:Eval50xx-USB.c **** 
+ 888:Eval50xx-USB.c **** /*******************************************************************************
+ 889:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_Reset
+ 890:Eval50xx-USB.c **** * Description    : Virtual_Com_Port Mouse reset routine
+ 891:Eval50xx-USB.c **** * Input          : None.
+ 892:Eval50xx-USB.c **** * Output         : None.
+ 893:Eval50xx-USB.c **** * Return         : None.
+ 894:Eval50xx-USB.c **** *******************************************************************************/
+ 895:Eval50xx-USB.c **** void Virtual_Com_Port_Reset(void)
+ 896:Eval50xx-USB.c **** {
+ 897:Eval50xx-USB.c ****   /* Set Virtual_Com_Port DEVICE as not configured */
+ 898:Eval50xx-USB.c ****   pInformation->Current_Configuration = 0;
+ 899:Eval50xx-USB.c **** 
+ 900:Eval50xx-USB.c ****   /* Current Feature initialization */
+ 901:Eval50xx-USB.c ****   pInformation->Current_Feature = Virtual_Com_Port_ConfigDescriptor[7];
+ 902:Eval50xx-USB.c **** 
+ 903:Eval50xx-USB.c ****   /* Set Virtual_Com_Port DEVICE with the default Interface*/
+ 904:Eval50xx-USB.c ****   pInformation->Current_Interface = 0;
+ 905:Eval50xx-USB.c ****   SetBTABLE(BTABLE_ADDRESS);
+ 906:Eval50xx-USB.c **** 
+ 907:Eval50xx-USB.c ****   /* Initialize Endpoint 0 */
+ 908:Eval50xx-USB.c ****   SetEPType(ENDP0, EP_CONTROL);
+ 909:Eval50xx-USB.c ****   SetEPTxStatus(ENDP0, EP_TX_STALL);
+ 910:Eval50xx-USB.c ****   SetEPRxAddr(ENDP0, ENDP0_RXADDR);
+ 911:Eval50xx-USB.c ****   SetEPTxAddr(ENDP0, ENDP0_TXADDR);
+ 912:Eval50xx-USB.c ****   Clear_Status_Out(ENDP0);
+ 913:Eval50xx-USB.c ****   SetEPRxCount(ENDP0, Device_Property.MaxPacketSize);
+ 914:Eval50xx-USB.c ****   SetEPRxValid(ENDP0);
+ 915:Eval50xx-USB.c **** 
+ 916:Eval50xx-USB.c ****   /* Initialize Endpoint 1 */
+ 917:Eval50xx-USB.c ****   SetEPType(ENDP1, EP_BULK);
+ 918:Eval50xx-USB.c ****   SetEPTxAddr(ENDP1, ENDP1_TXADDR);
+ 919:Eval50xx-USB.c ****   SetEPTxStatus(ENDP1, EP_TX_NAK);
+ 920:Eval50xx-USB.c ****   SetEPRxStatus(ENDP1, EP_RX_DIS);
+ 921:Eval50xx-USB.c **** 
+ 922:Eval50xx-USB.c ****   /* Initialize Endpoint 2 */
+ 923:Eval50xx-USB.c ****   SetEPType(ENDP2, EP_INTERRUPT);
+ 924:Eval50xx-USB.c ****   SetEPTxAddr(ENDP2, ENDP2_TXADDR);
+ 925:Eval50xx-USB.c ****   SetEPRxStatus(ENDP2, EP_RX_DIS);
+ 926:Eval50xx-USB.c ****   SetEPTxStatus(ENDP2, EP_TX_NAK);
+ 927:Eval50xx-USB.c **** 
+ 928:Eval50xx-USB.c ****   /* Initialize Endpoint 3 */
+ 929:Eval50xx-USB.c ****   SetEPType(ENDP3, EP_BULK);
+ 930:Eval50xx-USB.c ****   SetEPRxAddr(ENDP3, ENDP3_RXADDR);
+ 931:Eval50xx-USB.c ****   SetEPRxCount(ENDP3, VIRTUAL_COM_PORT_DATA_SIZE);
+ 932:Eval50xx-USB.c ****   SetEPRxStatus(ENDP3, EP_RX_VALID);
+ 933:Eval50xx-USB.c ****   SetEPTxStatus(ENDP3, EP_TX_DIS);
+ 934:Eval50xx-USB.c **** 
+ 935:Eval50xx-USB.c ****   /* Set this device to response on default address */
+ 936:Eval50xx-USB.c ****   SetDeviceAddress(0);
+ 937:Eval50xx-USB.c **** 
+ 938:Eval50xx-USB.c ****   bDeviceState = ATTACHED;
+ 939:Eval50xx-USB.c **** }
+ 940:Eval50xx-USB.c **** 
+ 941:Eval50xx-USB.c **** 
+ 942:Eval50xx-USB.c **** /*******************************************************************************
+ 943:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_SetConfiguration.
+ 944:Eval50xx-USB.c **** * Description    : Udpade the device state to configured.
+ 945:Eval50xx-USB.c **** * Input          : None.
+ 946:Eval50xx-USB.c **** * Output         : None.
+ 947:Eval50xx-USB.c **** * Return         : None.
+ 948:Eval50xx-USB.c **** *******************************************************************************/
+ 949:Eval50xx-USB.c **** void Virtual_Com_Port_SetConfiguration(void)
+ 950:Eval50xx-USB.c **** {
+ 324              		.loc 1 950 0
+ 325              		@ args = 0, pretend = 0, frame = 0
+ 326              		@ frame_needed = 0, uses_anonymous_args = 0
+ 327              		@ link register save eliminated.
+ 951:Eval50xx-USB.c ****   DEVICE_INFO *pInfo = &Device_Info;
+ 952:Eval50xx-USB.c **** 
+ 953:Eval50xx-USB.c ****   if (pInfo->Current_Configuration != 0)
+ 328              		.loc 1 953 0
+ 329 0108 034B     		ldr	r3, .L46
+ 330 010a 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 331 010c 13B1     		cbz	r3, .L45
+ 954:Eval50xx-USB.c ****   {
+ 955:Eval50xx-USB.c ****     /* Device configured */
+ 956:Eval50xx-USB.c ****     bDeviceState = CONFIGURED;
+ 332              		.loc 1 956 0
+ 333 010e 034B     		ldr	r3, .L46+4
+ 334 0110 0522     		movs	r2, #5
+ 335 0112 1A60     		str	r2, [r3, #0]
+ 336              	.L45:
+ 957:Eval50xx-USB.c ****   }
+ 958:Eval50xx-USB.c **** }
+ 337              		.loc 1 958 0
+ 338 0114 7047     		bx	lr
+ 339              	.L47:
+ 340 0116 00BF     		.align	2
+ 341              	.L46:
+ 342 0118 00000000 		.word	Device_Info
+ 343 011c 00000000 		.word	.LANCHOR0
+ 344              	.LFE16:
+ 346              		.align	2
+ 347              		.global	Virtual_Com_Port_SetDeviceAddress
+ 348              		.thumb
+ 349              		.thumb_func
+ 351              	Virtual_Com_Port_SetDeviceAddress:
+ 352              	.LFB17:
+ 959:Eval50xx-USB.c **** 
+ 960:Eval50xx-USB.c **** 
+ 961:Eval50xx-USB.c **** /*******************************************************************************
+ 962:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_SetConfiguration.
+ 963:Eval50xx-USB.c **** * Description    : Udpade the device state to addressed.
+ 964:Eval50xx-USB.c **** * Input          : None.
+ 965:Eval50xx-USB.c **** * Output         : None.
+ 966:Eval50xx-USB.c **** * Return         : None.
+ 967:Eval50xx-USB.c **** *******************************************************************************/
+ 968:Eval50xx-USB.c **** void Virtual_Com_Port_SetDeviceAddress (void)
+ 969:Eval50xx-USB.c **** {
+ 353              		.loc 1 969 0
+ 354              		@ args = 0, pretend = 0, frame = 0
+ 355              		@ frame_needed = 0, uses_anonymous_args = 0
+ 356              		@ link register save eliminated.
+ 970:Eval50xx-USB.c ****   bDeviceState = ADDRESSED;
+ 357              		.loc 1 970 0
+ 358 0120 014B     		ldr	r3, .L50
+ 359 0122 0422     		movs	r2, #4
+ 360 0124 1A60     		str	r2, [r3, #0]
+ 971:Eval50xx-USB.c **** }
+ 361              		.loc 1 971 0
+ 362 0126 7047     		bx	lr
+ 363              	.L51:
+ 364              		.align	2
+ 365              	.L50:
+ 366 0128 00000000 		.word	.LANCHOR0
+ 367              	.LFE17:
+ 369              		.align	2
+ 370              		.global	Virtual_Com_Port_Status_In
+ 371              		.thumb
+ 372              		.thumb_func
+ 374              	Virtual_Com_Port_Status_In:
+ 375              	.LFB18:
+ 972:Eval50xx-USB.c **** 
+ 973:Eval50xx-USB.c **** 
+ 974:Eval50xx-USB.c **** /*******************************************************************************
+ 975:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_Status_In.
+ 976:Eval50xx-USB.c **** * Description    : Virtual COM Port Status In Routine.
+ 977:Eval50xx-USB.c **** * Input          : None.
+ 978:Eval50xx-USB.c **** * Output         : None.
+ 979:Eval50xx-USB.c **** * Return         : None.
+ 980:Eval50xx-USB.c **** *******************************************************************************/
+ 981:Eval50xx-USB.c **** void Virtual_Com_Port_Status_In(void)
+ 982:Eval50xx-USB.c **** {
+ 376              		.loc 1 982 0
+ 377              		@ args = 0, pretend = 0, frame = 0
+ 378              		@ frame_needed = 0, uses_anonymous_args = 0
+ 379              		@ link register save eliminated.
+ 983:Eval50xx-USB.c ****   if (Request == SET_LINE_CODING)
+ 380              		.loc 1 983 0
+ 381 012c 034B     		ldr	r3, .L55
+ 382 012e 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 383 0130 202A     		cmp	r2, #32
+ 384 0132 01D1     		bne	.L54
+ 984:Eval50xx-USB.c ****   {
+ 985:Eval50xx-USB.c ****     Request = 0;
+ 385              		.loc 1 985 0
+ 386 0134 0022     		movs	r2, #0
+ 387 0136 1A72     		strb	r2, [r3, #8]
+ 388              	.L54:
+ 986:Eval50xx-USB.c ****   }
+ 987:Eval50xx-USB.c **** }
+ 389              		.loc 1 987 0
+ 390 0138 7047     		bx	lr
+ 391              	.L56:
+ 392 013a 00BF     		.align	2
+ 393              	.L55:
+ 394 013c 00000000 		.word	.LANCHOR0
+ 395              	.LFE18:
+ 397              		.align	2
+ 398              		.global	Virtual_Com_Port_Status_Out
+ 399              		.thumb
+ 400              		.thumb_func
+ 402              	Virtual_Com_Port_Status_Out:
+ 403              	.LFB19:
+ 988:Eval50xx-USB.c **** 
+ 989:Eval50xx-USB.c **** 
+ 990:Eval50xx-USB.c **** /*******************************************************************************
+ 991:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_Status_Out
+ 992:Eval50xx-USB.c **** * Description    : Virtual COM Port Status OUT Routine.
+ 993:Eval50xx-USB.c **** * Input          : None.
+ 994:Eval50xx-USB.c **** * Output         : None.
+ 995:Eval50xx-USB.c **** * Return         : None.
+ 996:Eval50xx-USB.c **** *******************************************************************************/
+ 997:Eval50xx-USB.c **** void Virtual_Com_Port_Status_Out(void)
+ 998:Eval50xx-USB.c **** {
+ 404              		.loc 1 998 0
+ 405              		@ args = 0, pretend = 0, frame = 0
+ 406              		@ frame_needed = 0, uses_anonymous_args = 0
+ 407              		@ link register save eliminated.
+ 999:Eval50xx-USB.c **** }
+ 408              		.loc 1 999 0
+ 409 0140 7047     		bx	lr
+ 410              	.LFE19:
+ 412 0142 00BF     		.align	2
+ 413              		.global	Virtual_Com_Port_Data_Setup
+ 414              		.thumb
+ 415              		.thumb_func
+ 417              	Virtual_Com_Port_Data_Setup:
+ 418              	.LFB20:
+1000:Eval50xx-USB.c **** 
+1001:Eval50xx-USB.c **** 
+1002:Eval50xx-USB.c **** /*******************************************************************************
+1003:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_Data_Setup
+1004:Eval50xx-USB.c **** * Description    : handle the data class specific requests
+1005:Eval50xx-USB.c **** * Input          : Request Nb.
+1006:Eval50xx-USB.c **** * Output         : None.
+1007:Eval50xx-USB.c **** * Return         : USB_UNSUPPORT or USB_SUCCESS.
+1008:Eval50xx-USB.c **** *******************************************************************************/
+1009:Eval50xx-USB.c **** RESULT Virtual_Com_Port_Data_Setup(u8 RequestNo)
+1010:Eval50xx-USB.c **** {
+ 419              		.loc 1 1010 0
+ 420              		@ args = 0, pretend = 0, frame = 0
+ 421              		@ frame_needed = 0, uses_anonymous_args = 0
+ 422              	.LVL11:
+1011:Eval50xx-USB.c ****   u8    *(*CopyRoutine)(u16);
+1012:Eval50xx-USB.c **** 
+1013:Eval50xx-USB.c ****   CopyRoutine = NULL;
+1014:Eval50xx-USB.c **** 
+1015:Eval50xx-USB.c ****   if (RequestNo == GET_LINE_CODING)
+ 423              		.loc 1 1015 0
+ 424 0144 2128     		cmp	r0, #33
+ 425              		.loc 1 1010 0
+ 426 0146 08B5     		push	{r3, lr}
+ 427              	.LCFI3:
+ 428              		.loc 1 1015 0
+ 429 0148 08D1     		bne	.L60
+1016:Eval50xx-USB.c ****   {
+1017:Eval50xx-USB.c ****     if (Type_Recipient == (CLASS_REQUEST | INTERFACE_RECIPIENT))
+ 430              		.loc 1 1017 0
+ 431 014a 124B     		ldr	r3, .L68
+ 432 014c 1B68     		ldr	r3, [r3, #0]
+ 433 014e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 434 0150 03F07F03 		and	r3, r3, #127
+ 435 0154 212B     		cmp	r3, #33
+ 436 0156 1AD1     		bne	.L61
+ 437 0158 0F4B     		ldr	r3, .L68+4
+ 438              	.LVL12:
+ 439 015a 0EE0     		b	.L67
+ 440              	.LVL13:
+ 441              	.L60:
+1018:Eval50xx-USB.c ****     {
+1019:Eval50xx-USB.c ****       CopyRoutine = Virtual_Com_Port_GetLineCoding;
+1020:Eval50xx-USB.c ****     }
+1021:Eval50xx-USB.c ****   }
+1022:Eval50xx-USB.c ****   else if (RequestNo == SET_LINE_CODING)
+ 442              		.loc 1 1022 0
+ 443 015c 2028     		cmp	r0, #32
+ 444 015e 16D1     		bne	.L61
+1023:Eval50xx-USB.c ****   {
+1024:Eval50xx-USB.c ****     if (Type_Recipient == (CLASS_REQUEST | INTERFACE_RECIPIENT))
+ 445              		.loc 1 1024 0
+ 446 0160 0C4B     		ldr	r3, .L68
+1025:Eval50xx-USB.c ****     {
+1026:Eval50xx-USB.c ****       CopyRoutine = Virtual_Com_Port_SetLineCoding;
+1027:Eval50xx-USB.c ****     }
+1028:Eval50xx-USB.c ****     Request = SET_LINE_CODING;
+ 447              		.loc 1 1028 0
+ 448 0162 0E4A     		ldr	r2, .L68+8
+ 449              		.loc 1 1024 0
+ 450 0164 1B68     		ldr	r3, [r3, #0]
+ 451 0166 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 452              		.loc 1 1028 0
+ 453 0168 1072     		strb	r0, [r2, #8]
+ 454              		.loc 1 1024 0
+ 455 016a 0D4A     		ldr	r2, .L68+12
+ 456 016c 03F07F03 		and	r3, r3, #127
+ 457 0170 212B     		cmp	r3, #33
+ 458 0172 0CBF     		ite	eq
+ 459 0174 1346     		moveq	r3, r2
+ 460 0176 0023     		movne	r3, #0
+ 461              	.LVL14:
+1029:Eval50xx-USB.c ****   }
+1030:Eval50xx-USB.c **** 
+1031:Eval50xx-USB.c ****   if (CopyRoutine == NULL)
+ 462              		.loc 1 1031 0
+ 463 0178 4BB1     		cbz	r3, .L61
+ 464              	.L67:
+1032:Eval50xx-USB.c ****   {
+1033:Eval50xx-USB.c ****     return USB_UNSUPPORT;
+1034:Eval50xx-USB.c ****   }
+1035:Eval50xx-USB.c **** 
+1036:Eval50xx-USB.c ****   pInformation->Ctrl_Info.CopyData = CopyRoutine;
+ 465              		.loc 1 1036 0
+ 466 017a 064A     		ldr	r2, .L68
+1037:Eval50xx-USB.c ****   pInformation->Ctrl_Info.Usb_wOffset = 0;
+ 467              		.loc 1 1037 0
+ 468 017c 4FF00001 		mov	r1, #0	@ movhi
+ 469              		.loc 1 1036 0
+ 470 0180 1268     		ldr	r2, [r2, #0]
+1038:Eval50xx-USB.c ****   (*CopyRoutine)(0);
+ 471              		.loc 1 1038 0
+ 472 0182 0020     		movs	r0, #0
+ 473              	.LVL15:
+ 474              		.loc 1 1037 0
+ 475 0184 5182     		strh	r1, [r2, #18]	@ movhi
+ 476              		.loc 1 1036 0
+ 477 0186 9361     		str	r3, [r2, #24]
+ 478              		.loc 1 1038 0
+ 479 0188 9847     		blx	r3
+ 480              	.LVL16:
+ 481 018a 0020     		movs	r0, #0
+1039:Eval50xx-USB.c ****   return USB_SUCCESS;
+ 482              		.loc 1 1039 0
+ 483 018c 00E0     		b	.L65
+ 484              	.LVL17:
+ 485              	.L61:
+ 486 018e 0220     		movs	r0, #2
+ 487              	.LVL18:
+ 488              	.L65:
+1040:Eval50xx-USB.c **** }
+ 489              		.loc 1 1040 0
+ 490 0190 08BD     		pop	{r3, pc}
+ 491              	.L69:
+ 492 0192 00BF     		.align	2
+ 493              	.L68:
+ 494 0194 00000000 		.word	pInformation
+ 495 0198 00000000 		.word	Virtual_Com_Port_GetLineCoding
+ 496 019c 00000000 		.word	.LANCHOR0
+ 497 01a0 00000000 		.word	Virtual_Com_Port_SetLineCoding
+ 498              	.LFE20:
+ 500              		.align	2
+ 501              		.global	Virtual_Com_Port_NoData_Setup
+ 502              		.thumb
+ 503              		.thumb_func
+ 505              	Virtual_Com_Port_NoData_Setup:
+ 506              	.LFB21:
+1041:Eval50xx-USB.c **** 
+1042:Eval50xx-USB.c **** 
+1043:Eval50xx-USB.c **** /*******************************************************************************
+1044:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_NoData_Setup.
+1045:Eval50xx-USB.c **** * Description    : handle the no data class specific requests.
+1046:Eval50xx-USB.c **** * Input          : Request Nb.
+1047:Eval50xx-USB.c **** * Output         : None.
+1048:Eval50xx-USB.c **** * Return         : USB_UNSUPPORT or USB_SUCCESS.
+1049:Eval50xx-USB.c **** *******************************************************************************/
+1050:Eval50xx-USB.c **** RESULT Virtual_Com_Port_NoData_Setup(u8 RequestNo)
+1051:Eval50xx-USB.c **** {
+ 507              		.loc 1 1051 0
+ 508              		@ args = 0, pretend = 0, frame = 0
+ 509              		@ frame_needed = 0, uses_anonymous_args = 0
+ 510              		@ link register save eliminated.
+ 511              	.LVL19:
+1052:Eval50xx-USB.c **** 
+1053:Eval50xx-USB.c ****   if (Type_Recipient == (CLASS_REQUEST | INTERFACE_RECIPIENT))
+ 512              		.loc 1 1053 0
+ 513 01a4 074B     		ldr	r3, .L75
+ 514 01a6 1B68     		ldr	r3, [r3, #0]
+ 515 01a8 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 516 01aa 03F07F03 		and	r3, r3, #127
+ 517 01ae 212B     		cmp	r3, #33
+ 518 01b0 05D1     		bne	.L71
+1054:Eval50xx-USB.c ****   {
+1055:Eval50xx-USB.c ****     if (RequestNo == SET_COMM_FEATURE)
+ 519              		.loc 1 1055 0
+ 520 01b2 0228     		cmp	r0, #2
+ 521 01b4 01D0     		beq	.L72
+1056:Eval50xx-USB.c ****     {
+1057:Eval50xx-USB.c ****       return USB_SUCCESS;
+1058:Eval50xx-USB.c ****     }
+1059:Eval50xx-USB.c ****     else if (RequestNo == SET_CONTROL_LINE_STATE)
+ 522              		.loc 1 1059 0
+ 523 01b6 2228     		cmp	r0, #34
+ 524 01b8 01D1     		bne	.L71
+ 525              	.L72:
+ 526 01ba 0020     		movs	r0, #0
+ 527              	.LVL20:
+ 528 01bc 00E0     		b	.L73
+ 529              	.LVL21:
+ 530              	.L71:
+ 531 01be 0220     		movs	r0, #2
+ 532              	.LVL22:
+ 533              	.L73:
+1060:Eval50xx-USB.c ****     {
+1061:Eval50xx-USB.c ****       return USB_SUCCESS;
+1062:Eval50xx-USB.c ****     }
+1063:Eval50xx-USB.c ****   }
+1064:Eval50xx-USB.c **** 
+1065:Eval50xx-USB.c ****   return USB_UNSUPPORT;
+1066:Eval50xx-USB.c **** }
+ 534              		.loc 1 1066 0
+ 535 01c0 7047     		bx	lr
+ 536              	.L76:
+ 537 01c2 00BF     		.align	2
+ 538              	.L75:
+ 539 01c4 00000000 		.word	pInformation
+ 540              	.LFE21:
+ 542              		.align	2
+ 543              		.global	Virtual_Com_Port_Get_Interface_Setting
+ 544              		.thumb
+ 545              		.thumb_func
+ 547              	Virtual_Com_Port_Get_Interface_Setting:
+ 548              	.LFB25:
+1067:Eval50xx-USB.c **** 
+1068:Eval50xx-USB.c **** 
+1069:Eval50xx-USB.c **** /*******************************************************************************
+1070:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_GetDeviceDescriptor.
+1071:Eval50xx-USB.c **** * Description    : Gets the device descriptor.
+1072:Eval50xx-USB.c **** * Input          : Length.
+1073:Eval50xx-USB.c **** * Output         : None.
+1074:Eval50xx-USB.c **** * Return         : The address of the device descriptor.
+1075:Eval50xx-USB.c **** *******************************************************************************/
+1076:Eval50xx-USB.c **** u8 *Virtual_Com_Port_GetDeviceDescriptor(u16 Length)
+1077:Eval50xx-USB.c **** {
+1078:Eval50xx-USB.c ****   return Standard_GetDescriptorData(Length, &Device_Descriptor);
+1079:Eval50xx-USB.c **** }
+1080:Eval50xx-USB.c **** 
+1081:Eval50xx-USB.c **** 
+1082:Eval50xx-USB.c **** /*******************************************************************************
+1083:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_GetConfigDescriptor.
+1084:Eval50xx-USB.c **** * Description    : get the configuration descriptor.
+1085:Eval50xx-USB.c **** * Input          : Length.
+1086:Eval50xx-USB.c **** * Output         : None.
+1087:Eval50xx-USB.c **** * Return         : The address of the configuration descriptor.
+1088:Eval50xx-USB.c **** *******************************************************************************/
+1089:Eval50xx-USB.c **** u8 *Virtual_Com_Port_GetConfigDescriptor(u16 Length)
+1090:Eval50xx-USB.c **** {
+1091:Eval50xx-USB.c ****   return Standard_GetDescriptorData(Length, &Config_Descriptor);
+1092:Eval50xx-USB.c **** }
+1093:Eval50xx-USB.c **** 
+1094:Eval50xx-USB.c **** 
+1095:Eval50xx-USB.c **** /*******************************************************************************
+1096:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_GetStringDescriptor
+1097:Eval50xx-USB.c **** * Description    : Gets the string descriptors according to the needed index
+1098:Eval50xx-USB.c **** * Input          : Length.
+1099:Eval50xx-USB.c **** * Output         : None.
+1100:Eval50xx-USB.c **** * Return         : The address of the string descriptors.
+1101:Eval50xx-USB.c **** *******************************************************************************/
+1102:Eval50xx-USB.c **** u8 *Virtual_Com_Port_GetStringDescriptor(u16 Length)
+1103:Eval50xx-USB.c **** {
+1104:Eval50xx-USB.c ****   u8 wValue0 = pInformation->USBwValue0;
+1105:Eval50xx-USB.c ****   if (wValue0 > 4)
+1106:Eval50xx-USB.c ****   {
+1107:Eval50xx-USB.c ****     return NULL;
+1108:Eval50xx-USB.c ****   }
+1109:Eval50xx-USB.c ****   else
+1110:Eval50xx-USB.c ****   {
+1111:Eval50xx-USB.c ****     return Standard_GetDescriptorData(Length, &String_Descriptor[wValue0]);
+1112:Eval50xx-USB.c ****   }
+1113:Eval50xx-USB.c **** }
+1114:Eval50xx-USB.c **** 
+1115:Eval50xx-USB.c **** 
+1116:Eval50xx-USB.c **** /*******************************************************************************
+1117:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_Get_Interface_Setting.
+1118:Eval50xx-USB.c **** * Description    : test the interface and the alternate setting according to the
+1119:Eval50xx-USB.c **** *                  supported one.
+1120:Eval50xx-USB.c **** * Input1         : u8: Interface : interface number.
+1121:Eval50xx-USB.c **** * Input2         : u8: AlternateSetting : Alternate Setting number.
+1122:Eval50xx-USB.c **** * Output         : None.
+1123:Eval50xx-USB.c **** * Return         : The address of the string descriptors.
+1124:Eval50xx-USB.c **** *******************************************************************************/
+1125:Eval50xx-USB.c **** RESULT Virtual_Com_Port_Get_Interface_Setting(u8 Interface, u8 AlternateSetting)
+1126:Eval50xx-USB.c **** {
+ 549              		.loc 1 1126 0
+ 550              		@ args = 0, pretend = 0, frame = 0
+ 551              		@ frame_needed = 0, uses_anonymous_args = 0
+ 552              		@ link register save eliminated.
+ 553              	.LVL23:
+1127:Eval50xx-USB.c ****   if (AlternateSetting > 0)
+ 554              		.loc 1 1127 0
+ 555 01c8 19B9     		cbnz	r1, .L78
+1128:Eval50xx-USB.c ****   {
+1129:Eval50xx-USB.c ****     return USB_UNSUPPORT;
+1130:Eval50xx-USB.c ****   }
+1131:Eval50xx-USB.c ****   else if (Interface > 1)
+ 556              		.loc 1 1131 0
+ 557 01ca 0128     		cmp	r0, #1
+ 558 01cc 01D8     		bhi	.L78
+ 559 01ce 0846     		mov	r0, r1
+ 560              	.LVL24:
+ 561 01d0 00E0     		b	.L79
+ 562              	.LVL25:
+ 563              	.L78:
+ 564 01d2 0220     		movs	r0, #2
+ 565              	.LVL26:
+ 566              	.L79:
+1132:Eval50xx-USB.c ****   {
+1133:Eval50xx-USB.c ****     return USB_UNSUPPORT;
+1134:Eval50xx-USB.c ****   }
+1135:Eval50xx-USB.c ****   return USB_SUCCESS;
+1136:Eval50xx-USB.c **** }
+ 567              		.loc 1 1136 0
+ 568 01d4 7047     		bx	lr
+ 569              	.LFE25:
+ 571 01d6 00BF     		.align	2
+ 572              		.global	Virtual_Com_Port_GetLineCoding
+ 573              		.thumb
+ 574              		.thumb_func
+ 576              	Virtual_Com_Port_GetLineCoding:
+ 577              	.LFB26:
+1137:Eval50xx-USB.c **** 
+1138:Eval50xx-USB.c **** 
+1139:Eval50xx-USB.c **** /*******************************************************************************
+1140:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_GetLineCoding.
+1141:Eval50xx-USB.c **** * Description    : send the linecoding structure to the PC host.
+1142:Eval50xx-USB.c **** * Input          : Length.
+1143:Eval50xx-USB.c **** * Output         : None.
+1144:Eval50xx-USB.c **** * Return         : Inecoding structure base address.
+1145:Eval50xx-USB.c **** *******************************************************************************/
+1146:Eval50xx-USB.c **** u8 *Virtual_Com_Port_GetLineCoding(u16 Length)
+1147:Eval50xx-USB.c **** {
+ 578              		.loc 1 1147 0
+ 579              		@ args = 0, pretend = 0, frame = 0
+ 580              		@ frame_needed = 0, uses_anonymous_args = 0
+ 581              		@ link register save eliminated.
+ 582              	.LVL27:
+1148:Eval50xx-USB.c ****   if (Length == 0)
+ 583              		.loc 1 1148 0
+ 584 01d8 28B9     		cbnz	r0, .L82
+1149:Eval50xx-USB.c ****   {
+1150:Eval50xx-USB.c ****     pInformation->Ctrl_Info.Usb_wLength = sizeof(linecoding);
+ 585              		.loc 1 1150 0
+ 586 01da 044B     		ldr	r3, .L85
+ 587 01dc 4FF00802 		mov	r2, #8	@ movhi
+ 588 01e0 1B68     		ldr	r3, [r3, #0]
+ 589 01e2 1A82     		strh	r2, [r3, #16]	@ movhi
+1151:Eval50xx-USB.c ****     return NULL;
+ 590              		.loc 1 1151 0
+ 591 01e4 00E0     		b	.L83
+ 592              	.L82:
+1152:Eval50xx-USB.c ****   }
+1153:Eval50xx-USB.c ****   return(u8 *)&linecoding;
+ 593              		.loc 1 1153 0
+ 594 01e6 0248     		ldr	r0, .L85+4
+ 595              	.LVL28:
+ 596              	.L83:
+ 597              	.LVL29:
+1154:Eval50xx-USB.c **** }
+ 598              		.loc 1 1154 0
+ 599 01e8 7047     		bx	lr
+ 600              	.L86:
+ 601 01ea 00BF     		.align	2
+ 602              	.L85:
+ 603 01ec 00000000 		.word	pInformation
+ 604 01f0 00000000 		.word	.LANCHOR1
+ 605              	.LFE26:
+ 607              		.align	2
+ 608              		.global	Virtual_Com_Port_SetLineCoding
+ 609              		.thumb
+ 610              		.thumb_func
+ 612              	Virtual_Com_Port_SetLineCoding:
+ 613              	.LFB27:
+1155:Eval50xx-USB.c **** 
+1156:Eval50xx-USB.c **** 
+1157:Eval50xx-USB.c **** /*******************************************************************************
+1158:Eval50xx-USB.c **** * Function Name  : Virtual_Com_Port_SetLineCoding.
+1159:Eval50xx-USB.c **** * Description    : Set the linecoding structure fields.
+1160:Eval50xx-USB.c **** * Input          : Length.
+1161:Eval50xx-USB.c **** * Output         : None.
+1162:Eval50xx-USB.c **** * Return         : Linecoding structure base address.
+1163:Eval50xx-USB.c **** *******************************************************************************/
+1164:Eval50xx-USB.c **** u8 *Virtual_Com_Port_SetLineCoding(u16 Length)
+1165:Eval50xx-USB.c **** {
+ 614              		.loc 1 1165 0
+ 615              		@ args = 0, pretend = 0, frame = 0
+ 616              		@ frame_needed = 0, uses_anonymous_args = 0
+ 617              		@ link register save eliminated.
+ 618              	.LVL30:
+1166:Eval50xx-USB.c ****   if (Length == 0)
+ 619              		.loc 1 1166 0
+ 620 01f4 28B9     		cbnz	r0, .L88
+1167:Eval50xx-USB.c ****   {
+1168:Eval50xx-USB.c ****     pInformation->Ctrl_Info.Usb_wLength = sizeof(linecoding);
+ 621              		.loc 1 1168 0
+ 622 01f6 044B     		ldr	r3, .L91
+ 623 01f8 4FF00802 		mov	r2, #8	@ movhi
+ 624 01fc 1B68     		ldr	r3, [r3, #0]
+ 625 01fe 1A82     		strh	r2, [r3, #16]	@ movhi
+1169:Eval50xx-USB.c ****     return NULL;
+ 626              		.loc 1 1169 0
+ 627 0200 00E0     		b	.L89
+ 628              	.L88:
+1170:Eval50xx-USB.c ****   }
+1171:Eval50xx-USB.c ****   return(u8 *)&linecoding;
+ 629              		.loc 1 1171 0
+ 630 0202 0248     		ldr	r0, .L91+4
+ 631              	.LVL31:
+ 632              	.L89:
+ 633              	.LVL32:
+1172:Eval50xx-USB.c **** }
+ 634              		.loc 1 1172 0
+ 635 0204 7047     		bx	lr
+ 636              	.L92:
+ 637 0206 00BF     		.align	2
+ 638              	.L91:
+ 639 0208 00000000 		.word	pInformation
+ 640 020c 00000000 		.word	.LANCHOR1
+ 641              	.LFE27:
+ 643              		.align	2
+ 644              		.global	USBGetData
+ 645              		.thumb
+ 646              		.thumb_func
+ 648              	USBGetData:
+ 649              	.LFB30:
+1173:Eval50xx-USB.c **** 
+1174:Eval50xx-USB.c **** 
+1175:Eval50xx-USB.c **** //*******************
+1176:Eval50xx-USB.c **** 
+1177:Eval50xx-USB.c **** //-------- Ende des Codes von ST --------
+1178:Eval50xx-USB.c **** 
+1179:Eval50xx-USB.c **** /*******************************************************************
+1180:Eval50xx-USB.c ****    Funktion: InitUSB()
+1181:Eval50xx-USB.c ****    Parameter: ---
+1182:Eval50xx-USB.c **** 
+1183:Eval50xx-USB.c ****    Rückgabewert:  ---
+1184:Eval50xx-USB.c **** 
+1185:Eval50xx-USB.c ****    Zweck: Initialisierung der USB-Schnittstelle.
+1186:Eval50xx-USB.c **** ********************************************************************/
+1187:Eval50xx-USB.c **** void InitUSB(void)
+1188:Eval50xx-USB.c **** {
+1189:Eval50xx-USB.c ****   GPIO_InitTypeDef GPIO_InitStructure;
+1190:Eval50xx-USB.c **** 
+1191:Eval50xx-USB.c ****   Set_USBClock();
+1192:Eval50xx-USB.c ****   USB_Interrupts_Config();
+1193:Eval50xx-USB.c ****   USB_Init();
+1194:Eval50xx-USB.c **** 
+1195:Eval50xx-USB.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIO_DISCONNECT, ENABLE);
+1196:Eval50xx-USB.c **** 
+1197:Eval50xx-USB.c ****   //Pull-Up-Widerstand einschalten
+1198:Eval50xx-USB.c ****   GPIO_InitStructure.GPIO_Pin = USB_DISCONNECT_PIN;
+1199:Eval50xx-USB.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+1200:Eval50xx-USB.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+1201:Eval50xx-USB.c ****   GPIO_Init(USB_DISCONNECT, &GPIO_InitStructure);
+1202:Eval50xx-USB.c **** }
+1203:Eval50xx-USB.c **** 
+1204:Eval50xx-USB.c **** 
+1205:Eval50xx-USB.c **** void DetachUSB(void)
+1206:Eval50xx-USB.c **** {
+1207:Eval50xx-USB.c ****   PowerOff();
+1208:Eval50xx-USB.c **** }
+1209:Eval50xx-USB.c **** 
+1210:Eval50xx-USB.c **** 
+1211:Eval50xx-USB.c **** /*******************************************************************
+1212:Eval50xx-USB.c ****    Funktion: USBGetData()
+1213:Eval50xx-USB.c ****    Parameter: Array in das die Daten kopiert werden (max. 64 Bytes)
+1214:Eval50xx-USB.c **** 
+1215:Eval50xx-USB.c ****    Rückgabewert:  Anzahl der empfangenen Bytes
+1216:Eval50xx-USB.c **** 
+1217:Eval50xx-USB.c ****    Zweck: Abholen empfangener Daten von USB (maximal 64 Bytes).
+1218:Eval50xx-USB.c **** ********************************************************************/
+1219:Eval50xx-USB.c **** UINT USBGetData(UCHAR *Buffer)
+1220:Eval50xx-USB.c **** {
+ 650              		.loc 1 1220 0
+ 651              		@ args = 0, pretend = 0, frame = 0
+ 652              		@ frame_needed = 0, uses_anonymous_args = 0
+ 653              	.LVL33:
+1221:Eval50xx-USB.c ****   UINT Size;
+1222:Eval50xx-USB.c ****   UINT i;
+1223:Eval50xx-USB.c **** 
+1224:Eval50xx-USB.c ****   if((count_out!=0) && (bDeviceState==CONFIGURED))
+ 654              		.loc 1 1224 0
+ 655 0210 0B4B     		ldr	r3, .L99
+ 656              		.loc 1 1220 0
+ 657 0212 10B5     		push	{r4, lr}
+ 658              	.LCFI4:
+ 659              		.loc 1 1224 0
+ 660 0214 DA68     		ldr	r2, [r3, #12]
+ 661              	.LVL34:
+ 662 0216 82B1     		cbz	r2, .L94
+ 663 0218 1B68     		ldr	r3, [r3, #0]
+ 664 021a 052B     		cmp	r3, #5
+ 665 021c 01D0     		beq	.L95
+ 666 021e 0022     		movs	r2, #0
+ 667 0220 0BE0     		b	.L94
+ 668              	.L95:
+ 669 0222 0023     		movs	r3, #0
+ 670              	.LVL35:
+ 671 0224 03E0     		b	.L96
+ 672              	.L97:
+1225:Eval50xx-USB.c ****   {
+1226:Eval50xx-USB.c ****     Size=count_out;
+1227:Eval50xx-USB.c ****     for(i=0; i<count_out; i++) Buffer[i]=buffer_out[i];
+ 673              		.loc 1 1227 0
+ 674 0226 0749     		ldr	r1, .L99+4
+ 675 0228 595C     		ldrb	r1, [r3, r1]	@ zero_extendqisi2
+ 676 022a C154     		strb	r1, [r0, r3]
+ 677 022c 0133     		adds	r3, r3, #1
+ 678              	.L96:
+ 679 022e 0449     		ldr	r1, .L99
+ 680 0230 CC68     		ldr	r4, [r1, #12]
+ 681 0232 A342     		cmp	r3, r4
+ 682 0234 F7D3     		bcc	.L97
+1228:Eval50xx-USB.c ****     count_out=0;
+ 683              		.loc 1 1228 0
+ 684 0236 0023     		movs	r3, #0
+ 685              	.LVL36:
+ 686 0238 CB60     		str	r3, [r1, #12]
+ 687              	.L94:
+1229:Eval50xx-USB.c ****   }
+1230:Eval50xx-USB.c ****   else Size=0;
+1231:Eval50xx-USB.c **** 
+1232:Eval50xx-USB.c ****   return Size;
+1233:Eval50xx-USB.c **** }
+ 688              		.loc 1 1233 0
+ 689 023a 1046     		mov	r0, r2
+ 690              	.LVL37:
+ 691 023c 10BD     		pop	{r4, pc}
+ 692              	.L100:
+ 693 023e 00BF     		.align	2
+ 694              	.L99:
+ 695 0240 00000000 		.word	.LANCHOR0
+ 696 0244 00000000 		.word	buffer_out
+ 697              	.LFE30:
+ 699              		.align	2
+ 700              		.global	GetUSBCmd
+ 701              		.thumb
+ 702              		.thumb_func
+ 704              	GetUSBCmd:
+ 705              	.LFB31:
+1234:Eval50xx-USB.c **** 
+1235:Eval50xx-USB.c **** 
+1236:Eval50xx-USB.c **** /*******************************************************************
+1237:Eval50xx-USB.c ****    Funktion: GetUSBCmd()
+1238:Eval50xx-USB.c ****    Parameter: Cmd: Array (9 Bytes) für den TMCL-Befehl.
+1239:Eval50xx-USB.c **** 
+1240:Eval50xx-USB.c ****    Rückgabewert:  TRUE bei Erfolg
+1241:Eval50xx-USB.c ****                   FALSE wenn kein Befehl vorhanden
+1242:Eval50xx-USB.c **** 
+1243:Eval50xx-USB.c ****    Zweck: Abholen eines TMCL-Befehls über USB.
+1244:Eval50xx-USB.c **** ********************************************************************/
+1245:Eval50xx-USB.c **** UCHAR GetUSBCmd(UCHAR *Cmd)
+1246:Eval50xx-USB.c **** {
+ 706              		.loc 1 1246 0
+ 707              		@ args = 0, pretend = 0, frame = 0
+ 708              		@ frame_needed = 0, uses_anonymous_args = 0
+ 709              		@ link register save eliminated.
+ 710              	.LVL38:
+1247:Eval50xx-USB.c ****   UINT i;
+1248:Eval50xx-USB.c **** 
+1249:Eval50xx-USB.c ****   if(count_out>=9)
+ 711              		.loc 1 1249 0
+ 712 0248 084B     		ldr	r3, .L106
+ 713 024a DB68     		ldr	r3, [r3, #12]
+ 714 024c 082B     		cmp	r3, #8
+ 715 024e 01D8     		bhi	.L102
+ 716 0250 0020     		movs	r0, #0
+ 717              	.LVL39:
+ 718 0252 0AE0     		b	.L103
+ 719              	.LVL40:
+ 720              	.L102:
+ 721 0254 0023     		movs	r3, #0
+ 722              	.LVL41:
+ 723              	.L104:
+1250:Eval50xx-USB.c ****   {
+1251:Eval50xx-USB.c ****     for(i=0; i<9; i++) Cmd[i]=buffer_out[i];
+ 724              		.loc 1 1251 0
+ 725 0256 064A     		ldr	r2, .L106+4
+ 726 0258 9A5C     		ldrb	r2, [r3, r2]	@ zero_extendqisi2
+ 727 025a C254     		strb	r2, [r0, r3]
+ 728 025c 0133     		adds	r3, r3, #1
+ 729 025e 092B     		cmp	r3, #9
+ 730 0260 F9D1     		bne	.L104
+1252:Eval50xx-USB.c ****     count_out=0;
+ 731              		.loc 1 1252 0
+ 732 0262 024B     		ldr	r3, .L106
+ 733              	.LVL42:
+ 734 0264 0022     		movs	r2, #0
+ 735 0266 DA60     		str	r2, [r3, #12]
+ 736 0268 0120     		movs	r0, #1
+ 737              	.LVL43:
+ 738              	.L103:
+1253:Eval50xx-USB.c **** 
+1254:Eval50xx-USB.c ****     return TRUE;
+1255:Eval50xx-USB.c ****   }
+1256:Eval50xx-USB.c ****   else return FALSE;
+1257:Eval50xx-USB.c **** }
+ 739              		.loc 1 1257 0
+ 740 026a 7047     		bx	lr
+ 741              	.L107:
+ 742              		.align	2
+ 743              	.L106:
+ 744 026c 00000000 		.word	.LANCHOR0
+ 745 0270 00000000 		.word	buffer_out
+ 746              	.LFE31:
+ 748              		.align	2
+ 749              		.global	USBSendData
+ 750              		.thumb
+ 751              		.thumb_func
+ 753              	USBSendData:
+ 754              	.LFB32:
+1258:Eval50xx-USB.c **** 
+1259:Eval50xx-USB.c **** 
+1260:Eval50xx-USB.c **** /*******************************************************************
+1261:Eval50xx-USB.c ****    Funktion: USBSendData()
+1262:Eval50xx-USB.c ****    Parameter: Buffer: Array mit den zu sendenden Daten
+1263:Eval50xx-USB.c ****               Size: Anzahl der zu sendenden Bytes
+1264:Eval50xx-USB.c **** 
+1265:Eval50xx-USB.c ****    Rückgabewert:  ---
+1266:Eval50xx-USB.c **** 
+1267:Eval50xx-USB.c ****    Zweck: Initialisierung der USB-Schnittstelle.
+1268:Eval50xx-USB.c **** ********************************************************************/
+1269:Eval50xx-USB.c **** void USBSendData(UCHAR *Buffer, UINT Size)
+1270:Eval50xx-USB.c **** {
+ 755              		.loc 1 1270 0
+ 756              		@ args = 0, pretend = 0, frame = 0
+ 757              		@ frame_needed = 0, uses_anonymous_args = 0
+ 758              	.LVL44:
+ 759 0274 10B5     		push	{r4, lr}
+ 760              	.LCFI5:
+1271:Eval50xx-USB.c ****   count_in=Size;
+ 761              		.loc 1 1271 0
+ 762 0276 074C     		ldr	r4, .L110
+ 763              		.loc 1 1270 0
+ 764 0278 0B46     		mov	r3, r1
+1272:Eval50xx-USB.c ****   UserToPMABufferCopy(Buffer, ENDP1_TXADDR, count_in);
+ 765              		.loc 1 1272 0
+ 766 027a 8AB2     		uxth	r2, r1
+ 767 027c C021     		movs	r1, #192
+ 768              	.LVL45:
+ 769              		.loc 1 1271 0
+ 770 027e 6360     		str	r3, [r4, #4]
+ 771              		.loc 1 1272 0
+ 772 0280 FFF7FEFF 		bl	UserToPMABufferCopy
+ 773              	.LVL46:
+1273:Eval50xx-USB.c ****   SetEPTxCount(ENDP1, count_in);
+ 774              		.loc 1 1273 0
+ 775 0284 0120     		movs	r0, #1
+ 776 0286 A188     		ldrh	r1, [r4, #4]
+ 777 0288 FFF7FEFF 		bl	SetEPTxCount
+1274:Eval50xx-USB.c ****   SetEPTxValid(ENDP1);
+ 778              		.loc 1 1274 0
+ 779 028c 0120     		movs	r0, #1
+ 780 028e FFF7FEFF 		bl	SetEPTxValid
+1275:Eval50xx-USB.c **** }
+ 781              		.loc 1 1275 0
+ 782 0292 10BD     		pop	{r4, pc}
+ 783              	.L111:
+ 784              		.align	2
+ 785              	.L110:
+ 786 0294 00000000 		.word	.LANCHOR0
+ 787              	.LFE32:
+ 789              		.align	2
+ 790              		.global	Virtual_Com_Port_GetStringDescriptor
+ 791              		.thumb
+ 792              		.thumb_func
+ 794              	Virtual_Com_Port_GetStringDescriptor:
+ 795              	.LFB24:
+ 796              		.loc 1 1103 0
+ 797              		@ args = 0, pretend = 0, frame = 0
+ 798              		@ frame_needed = 0, uses_anonymous_args = 0
+ 799              	.LVL47:
+ 800 0298 08B5     		push	{r3, lr}
+ 801              	.LCFI6:
+ 802              		.loc 1 1104 0
+ 803 029a 064B     		ldr	r3, .L116
+ 804 029c 1B68     		ldr	r3, [r3, #0]
+ 805 029e DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 806              	.LVL48:
+ 807              		.loc 1 1105 0
+ 808 02a0 042B     		cmp	r3, #4
+ 809 02a2 01D9     		bls	.L113
+ 810 02a4 0020     		movs	r0, #0
+ 811              	.LVL49:
+ 812 02a6 04E0     		b	.L114
+ 813              	.LVL50:
+ 814              	.L113:
+ 815              		.loc 1 1111 0
+ 816 02a8 0349     		ldr	r1, .L116+4
+ 817 02aa 01EBC301 		add	r1, r1, r3, lsl #3
+ 818 02ae FFF7FEFF 		bl	Standard_GetDescriptorData
+ 819              	.LVL51:
+ 820              	.L114:
+ 821              		.loc 1 1113 0
+ 822 02b2 08BD     		pop	{r3, pc}
+ 823              	.L117:
+ 824              		.align	2
+ 825              	.L116:
+ 826 02b4 00000000 		.word	pInformation
+ 827 02b8 08000000 		.word	.LANCHOR1+8
+ 828              	.LFE24:
+ 830              		.align	2
+ 831              		.global	Virtual_Com_Port_GetConfigDescriptor
+ 832              		.thumb
+ 833              		.thumb_func
+ 835              	Virtual_Com_Port_GetConfigDescriptor:
+ 836              	.LFB23:
+ 837              		.loc 1 1090 0
+ 838              		@ args = 0, pretend = 0, frame = 0
+ 839              		@ frame_needed = 0, uses_anonymous_args = 0
+ 840              	.LVL52:
+ 841 02bc 08B5     		push	{r3, lr}
+ 842              	.LCFI7:
+ 843              		.loc 1 1091 0
+ 844 02be 0249     		ldr	r1, .L120
+ 845 02c0 FFF7FEFF 		bl	Standard_GetDescriptorData
+ 846              	.LVL53:
+ 847              		.loc 1 1092 0
+ 848 02c4 08BD     		pop	{r3, pc}
+ 849              	.L121:
+ 850 02c6 00BF     		.align	2
+ 851              	.L120:
+ 852 02c8 28000000 		.word	.LANCHOR1+40
+ 853              	.LFE23:
+ 855              		.align	2
+ 856              		.global	Virtual_Com_Port_GetDeviceDescriptor
+ 857              		.thumb
+ 858              		.thumb_func
+ 860              	Virtual_Com_Port_GetDeviceDescriptor:
+ 861              	.LFB22:
+ 862              		.loc 1 1077 0
+ 863              		@ args = 0, pretend = 0, frame = 0
+ 864              		@ frame_needed = 0, uses_anonymous_args = 0
+ 865              	.LVL54:
+ 866 02cc 08B5     		push	{r3, lr}
+ 867              	.LCFI8:
+ 868              		.loc 1 1078 0
+ 869 02ce 0249     		ldr	r1, .L124
+ 870 02d0 FFF7FEFF 		bl	Standard_GetDescriptorData
+ 871              	.LVL55:
+ 872              		.loc 1 1079 0
+ 873 02d4 08BD     		pop	{r3, pc}
+ 874              	.L125:
+ 875 02d6 00BF     		.align	2
+ 876              	.L124:
+ 877 02d8 30000000 		.word	.LANCHOR1+48
+ 878              	.LFE22:
+ 880              		.align	2
+ 881              		.global	Virtual_Com_Port_Reset
+ 882              		.thumb
+ 883              		.thumb_func
+ 885              	Virtual_Com_Port_Reset:
+ 886              	.LFB15:
+ 887              		.loc 1 896 0
+ 888              		@ args = 0, pretend = 0, frame = 0
+ 889              		@ frame_needed = 0, uses_anonymous_args = 0
+ 890              		.loc 1 898 0
+ 891 02dc 334B     		ldr	r3, .L128
+ 892              		.loc 1 896 0
+ 893 02de 10B5     		push	{r4, lr}
+ 894              	.LCFI9:
+ 895              		.loc 1 898 0
+ 896 02e0 1B68     		ldr	r3, [r3, #0]
+ 897              		.loc 1 901 0
+ 898 02e2 6FF03F02 		mvn	r2, #63
+ 899              		.loc 1 898 0
+ 900 02e6 0024     		movs	r4, #0
+ 901              		.loc 1 901 0
+ 902 02e8 5A72     		strb	r2, [r3, #9]
+ 903              		.loc 1 904 0
+ 904 02ea DC72     		strb	r4, [r3, #11]
+ 905              		.loc 1 898 0
+ 906 02ec 9C72     		strb	r4, [r3, #10]
+ 907              		.loc 1 905 0
+ 908 02ee 2046     		mov	r0, r4
+ 909 02f0 FFF7FEFF 		bl	SetBTABLE
+ 910              		.loc 1 908 0
+ 911 02f4 2046     		mov	r0, r4
+ 912 02f6 4FF40071 		mov	r1, #512
+ 913 02fa FFF7FEFF 		bl	SetEPType
+ 914              		.loc 1 909 0
+ 915 02fe 1021     		movs	r1, #16
+ 916 0300 2046     		mov	r0, r4
+ 917 0302 FFF7FEFF 		bl	SetEPTxStatus
+ 918              		.loc 1 910 0
+ 919 0306 4021     		movs	r1, #64
+ 920 0308 2046     		mov	r0, r4
+ 921 030a FFF7FEFF 		bl	SetEPRxAddr
+ 922              		.loc 1 911 0
+ 923 030e 8021     		movs	r1, #128
+ 924 0310 2046     		mov	r0, r4
+ 925 0312 FFF7FEFF 		bl	SetEPTxAddr
+ 926              		.loc 1 912 0
+ 927 0316 2046     		mov	r0, r4
+ 928 0318 FFF7FEFF 		bl	Clear_Status_Out
+ 929              		.loc 1 913 0
+ 930 031c 244B     		ldr	r3, .L128+4
+ 931 031e 2046     		mov	r0, r4
+ 932 0320 93F86410 		ldrb	r1, [r3, #100]	@ zero_extendqisi2
+ 933 0324 FFF7FEFF 		bl	SetEPRxCount
+ 934              		.loc 1 914 0
+ 935 0328 2046     		mov	r0, r4
+ 936 032a FFF7FEFF 		bl	SetEPRxValid
+ 937              		.loc 1 917 0
+ 938 032e 0120     		movs	r0, #1
+ 939 0330 2146     		mov	r1, r4
+ 940 0332 FFF7FEFF 		bl	SetEPType
+ 941              		.loc 1 918 0
+ 942 0336 0120     		movs	r0, #1
+ 943 0338 C021     		movs	r1, #192
+ 944 033a FFF7FEFF 		bl	SetEPTxAddr
+ 945              		.loc 1 919 0
+ 946 033e 0120     		movs	r0, #1
+ 947 0340 2021     		movs	r1, #32
+ 948 0342 FFF7FEFF 		bl	SetEPTxStatus
+ 949              		.loc 1 920 0
+ 950 0346 0120     		movs	r0, #1
+ 951 0348 2146     		mov	r1, r4
+ 952 034a FFF7FEFF 		bl	SetEPRxStatus
+ 953              		.loc 1 923 0
+ 954 034e 0220     		movs	r0, #2
+ 955 0350 4FF4C061 		mov	r1, #1536
+ 956 0354 FFF7FEFF 		bl	SetEPType
+ 957              		.loc 1 924 0
+ 958 0358 0220     		movs	r0, #2
+ 959 035a 4FF48071 		mov	r1, #256
+ 960 035e FFF7FEFF 		bl	SetEPTxAddr
+ 961              		.loc 1 925 0
+ 962 0362 0220     		movs	r0, #2
+ 963 0364 2146     		mov	r1, r4
+ 964 0366 FFF7FEFF 		bl	SetEPRxStatus
+ 965              		.loc 1 926 0
+ 966 036a 0220     		movs	r0, #2
+ 967 036c 2021     		movs	r1, #32
+ 968 036e FFF7FEFF 		bl	SetEPTxStatus
+ 969              		.loc 1 929 0
+ 970 0372 0320     		movs	r0, #3
+ 971 0374 2146     		mov	r1, r4
+ 972 0376 FFF7FEFF 		bl	SetEPType
+ 973              		.loc 1 930 0
+ 974 037a 0320     		movs	r0, #3
+ 975 037c 4FF48871 		mov	r1, #272
+ 976 0380 FFF7FEFF 		bl	SetEPRxAddr
+ 977              		.loc 1 931 0
+ 978 0384 0320     		movs	r0, #3
+ 979 0386 4021     		movs	r1, #64
+ 980 0388 FFF7FEFF 		bl	SetEPRxCount
+ 981              		.loc 1 932 0
+ 982 038c 0320     		movs	r0, #3
+ 983 038e 4FF44051 		mov	r1, #12288
+ 984 0392 FFF7FEFF 		bl	SetEPRxStatus
+ 985              		.loc 1 933 0
+ 986 0396 2146     		mov	r1, r4
+ 987 0398 0320     		movs	r0, #3
+ 988 039a FFF7FEFF 		bl	SetEPTxStatus
+ 989              		.loc 1 936 0
+ 990 039e 2046     		mov	r0, r4
+ 991 03a0 FFF7FEFF 		bl	SetDeviceAddress
+ 992              		.loc 1 938 0
+ 993 03a4 034B     		ldr	r3, .L128+8
+ 994 03a6 0122     		movs	r2, #1
+ 995 03a8 1A60     		str	r2, [r3, #0]
+ 996              		.loc 1 939 0
+ 997 03aa 10BD     		pop	{r4, pc}
+ 998              	.L129:
+ 999              		.align	2
+ 1000              	.L128:
+ 1001 03ac 00000000 		.word	pInformation
+ 1002 03b0 00000000 		.word	.LANCHOR1
+ 1003 03b4 00000000 		.word	.LANCHOR0
+ 1004              	.LFE15:
+ 1006              		.align	2
+ 1007              		.global	USB_Istr
+ 1008              		.thumb
+ 1009              		.thumb_func
+ 1011              	USB_Istr:
+ 1012              	.LFB8:
+ 1013              		.loc 1 564 0
+ 1014              		@ args = 0, pretend = 0, frame = 0
+ 1015              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1016 03b8 08B5     		push	{r3, lr}
+ 1017              	.LCFI10:
+ 1018              		.loc 1 566 0
+ 1019 03ba 174B     		ldr	r3, .L135
+ 1020 03bc 174A     		ldr	r2, .L135+4
+ 1021 03be 1968     		ldr	r1, [r3, #0]
+ 1022 03c0 89B2     		uxth	r1, r1
+ 1023 03c2 1180     		strh	r1, [r2, #0]	@ movhi
+ 1024              		.loc 1 569 0
+ 1025 03c4 1649     		ldr	r1, .L135+8
+ 1026 03c6 1288     		ldrh	r2, [r2, #0]
+ 1027 03c8 0988     		ldrh	r1, [r1, #0]
+ 1028 03ca 01EA0202 		and	r2, r1, r2
+ 1029 03ce 12F4806F 		tst	r2, #1024
+ 1030 03d2 05D0     		beq	.L131
+ 1031              		.loc 1 571 0
+ 1032 03d4 4FF6FF32 		movw	r2, #64511
+ 1033 03d8 1A60     		str	r2, [r3, #0]
+ 1034              		.loc 1 572 0
+ 1035 03da 124B     		ldr	r3, .L135+12
+ 1036 03dc DB6B     		ldr	r3, [r3, #60]
+ 1037 03de 9847     		blx	r3
+ 1038              	.L131:
+ 1039              		.loc 1 633 0
+ 1040 03e0 0E4B     		ldr	r3, .L135+4
+ 1041 03e2 1A88     		ldrh	r2, [r3, #0]
+ 1042 03e4 0E4B     		ldr	r3, .L135+8
+ 1043 03e6 1B88     		ldrh	r3, [r3, #0]
+ 1044 03e8 03EA0202 		and	r2, r3, r2
+ 1045 03ec 12F4007F 		tst	r2, #512
+ 1046 03f0 08D0     		beq	.L132
+ 1047              		.loc 1 635 0
+ 1048 03f2 0949     		ldr	r1, .L135
+ 1049              		.loc 1 636 0
+ 1050 03f4 0C4A     		ldr	r2, .L135+16
+ 1051              		.loc 1 635 0
+ 1052 03f6 4FF6FF50 		movw	r0, #65023
+ 1053 03fa 0860     		str	r0, [r1, #0]
+ 1054              		.loc 1 636 0
+ 1055 03fc 117C     		ldrb	r1, [r2, #16]	@ zero_extendqisi2
+ 1056 03fe 0131     		adds	r1, r1, #1
+ 1057 0400 C9B2     		uxtb	r1, r1
+ 1058 0402 1174     		strb	r1, [r2, #16]
+ 1059              	.L132:
+ 1060              		.loc 1 658 0
+ 1061 0404 054A     		ldr	r2, .L135+4
+ 1062 0406 1288     		ldrh	r2, [r2, #0]
+ 1063 0408 1340     		ands	r3, r3, r2
+ 1064 040a 13F4004F 		tst	r3, #32768
+ 1065 040e 01D0     		beq	.L134
+ 1066              		.loc 1 662 0
+ 1067 0410 FFF7FEFF 		bl	CTR_LP
+ 1068              	.L134:
+ 1069              		.loc 1 668 0
+ 1070 0414 08BD     		pop	{r3, pc}
+ 1071              	.L136:
+ 1072 0416 00BF     		.align	2
+ 1073              	.L135:
+ 1074 0418 445C0040 		.word	1073765444
+ 1075 041c 00000000 		.word	wIstr
+ 1076 0420 00000000 		.word	wInterrupt_Mask
+ 1077 0424 00000000 		.word	.LANCHOR1
+ 1078 0428 00000000 		.word	.LANCHOR0
+ 1079              	.LFE8:
+ 1081              		.align	2
+ 1082              		.global	EP3_OUT_Callback
+ 1083              		.thumb
+ 1084              		.thumb_func
+ 1086              	EP3_OUT_Callback:
+ 1087              	.LFB6:
+ 1088              		.loc 1 534 0
+ 1089              		@ args = 0, pretend = 0, frame = 0
+ 1090              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1091 042c 10B5     		push	{r4, lr}
+ 1092              	.LCFI11:
+ 1093              		.loc 1 535 0
+ 1094 042e 0320     		movs	r0, #3
+ 1095 0430 FFF7FEFF 		bl	GetEPRxCount
+ 1096 0434 064C     		ldr	r4, .L139
+ 1097 0436 0346     		mov	r3, r0
+ 1098              		.loc 1 536 0
+ 1099 0438 0246     		mov	r2, r0
+ 1100 043a 4FF48871 		mov	r1, #272
+ 1101 043e 0548     		ldr	r0, .L139+4
+ 1102              		.loc 1 535 0
+ 1103 0440 E360     		str	r3, [r4, #12]
+ 1104              		.loc 1 536 0
+ 1105 0442 FFF7FEFF 		bl	PMAToUserBufferCopy
+ 1106              		.loc 1 537 0
+ 1107 0446 0320     		movs	r0, #3
+ 1108 0448 FFF7FEFF 		bl	SetEPRxValid
+ 1109              		.loc 1 538 0
+ 1110 044c 10BD     		pop	{r4, pc}
+ 1111              	.L140:
+ 1112 044e 00BF     		.align	2
+ 1113              	.L139:
+ 1114 0450 00000000 		.word	.LANCHOR0
+ 1115 0454 00000000 		.word	buffer_out
+ 1116              	.LFE6:
+ 1118              		.align	2
+ 1119              		.global	USB_Cable_Config
+ 1120              		.thumb
+ 1121              		.thumb_func
+ 1123              	USB_Cable_Config:
+ 1124              	.LFB4:
+ 1125              		.loc 1 471 0
+ 1126              		@ args = 0, pretend = 0, frame = 0
+ 1127              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1128              	.LVL56:
+ 1129 0458 08B5     		push	{r3, lr}
+ 1130              	.LCFI12:
+ 1131              		.loc 1 472 0
+ 1132 045a 28B1     		cbz	r0, .L142
+ 1133              		.loc 1 474 0
+ 1134 045c 0548     		ldr	r0, .L145
+ 1135              	.LVL57:
+ 1136 045e 4FF48041 		mov	r1, #16384
+ 1137 0462 FFF7FEFF 		bl	GPIO_SetBits
+ 1138 0466 04E0     		b	.L144
+ 1139              	.LVL58:
+ 1140              	.L142:
+ 1141              		.loc 1 478 0
+ 1142 0468 0248     		ldr	r0, .L145
+ 1143              	.LVL59:
+ 1144 046a 4FF48041 		mov	r1, #16384
+ 1145 046e FFF7FEFF 		bl	GPIO_ResetBits
+ 1146              	.L144:
+ 1147              		.loc 1 480 0
+ 1148 0472 08BD     		pop	{r3, pc}
+ 1149              	.L146:
+ 1150              		.align	2
+ 1151              	.L145:
+ 1152 0474 00100140 		.word	1073811456
+ 1153              	.LFE4:
+ 1155              		.align	2
+ 1156              		.global	PowerOff
+ 1157              		.thumb
+ 1158              		.thumb_func
+ 1160              	PowerOff:
+ 1161              	.LFB10:
+ 1162              		.loc 1 712 0
+ 1163              		@ args = 0, pretend = 0, frame = 0
+ 1164              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1165 0478 38B5     		push	{r3, r4, r5, lr}
+ 1166              	.LCFI13:
+ 1167              		.loc 1 714 0
+ 1168 047a 064D     		ldr	r5, .L149
+ 1169 047c 0123     		movs	r3, #1
+ 1170 047e 2B60     		str	r3, [r5, #0]
+ 1171              		.loc 1 716 0
+ 1172 0480 054B     		ldr	r3, .L149+4
+ 1173 0482 0024     		movs	r4, #0
+ 1174              		.loc 1 718 0
+ 1175 0484 2046     		mov	r0, r4
+ 1176              		.loc 1 716 0
+ 1177 0486 1C60     		str	r4, [r3, #0]
+ 1178              		.loc 1 718 0
+ 1179 0488 FFF7FEFF 		bl	USB_Cable_Config
+ 1180              		.loc 1 720 0
+ 1181 048c 0323     		movs	r3, #3
+ 1182 048e 2B60     		str	r3, [r5, #0]
+ 1183              		.loc 1 725 0
+ 1184 0490 2046     		mov	r0, r4
+ 1185 0492 38BD     		pop	{r3, r4, r5, pc}
+ 1186              	.L150:
+ 1187              		.align	2
+ 1188              	.L149:
+ 1189 0494 405C0040 		.word	1073765440
+ 1190 0498 445C0040 		.word	1073765444
+ 1191              	.LFE10:
+ 1193              		.align	2
+ 1194              		.global	DetachUSB
+ 1195              		.thumb
+ 1196              		.thumb_func
+ 1198              	DetachUSB:
+ 1199              	.LFB29:
+ 1200              		.loc 1 1206 0
+ 1201              		@ args = 0, pretend = 0, frame = 0
+ 1202              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1203 049c 08B5     		push	{r3, lr}
+ 1204              	.LCFI14:
+ 1205              		.loc 1 1207 0
+ 1206 049e FFF7FEFF 		bl	PowerOff
+ 1207              		.loc 1 1208 0
+ 1208 04a2 08BD     		pop	{r3, pc}
+ 1209              	.LFE29:
+ 1211              		.align	2
+ 1212              		.global	PowerOn
+ 1213              		.thumb
+ 1214              		.thumb_func
+ 1216              	PowerOn:
+ 1217              	.LFB9:
+ 1218              		.loc 1 681 0
+ 1219              		@ args = 0, pretend = 0, frame = 0
+ 1220              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1221 04a4 08B5     		push	{r3, lr}
+ 1222              	.LCFI15:
+ 1223              		.loc 1 685 0
+ 1224 04a6 0120     		movs	r0, #1
+ 1225 04a8 FFF7FEFF 		bl	USB_Cable_Config
+ 1226              		.loc 1 689 0
+ 1227 04ac 064B     		ldr	r3, .L155
+ 1228 04ae 0121     		movs	r1, #1
+ 1229 04b0 1960     		str	r1, [r3, #0]
+ 1230              		.loc 1 697 0
+ 1231 04b2 0649     		ldr	r1, .L155+4
+ 1232 04b4 4FF4E052 		mov	r2, #7168
+ 1233 04b8 0A80     		strh	r2, [r1, #0]	@ movhi
+ 1234              		.loc 1 695 0
+ 1235 04ba 0549     		ldr	r1, .L155+8
+ 1236              		.loc 1 693 0
+ 1237 04bc 0020     		movs	r0, #0
+ 1238 04be 1860     		str	r0, [r3, #0]
+ 1239              		.loc 1 695 0
+ 1240 04c0 0860     		str	r0, [r1, #0]
+ 1241              		.loc 1 698 0
+ 1242 04c2 1A60     		str	r2, [r3, #0]
+ 1243              		.loc 1 701 0
+ 1244 04c4 08BD     		pop	{r3, pc}
+ 1245              	.L156:
+ 1246 04c6 00BF     		.align	2
+ 1247              	.L155:
+ 1248 04c8 405C0040 		.word	1073765440
+ 1249 04cc 00000000 		.word	wInterrupt_Mask
+ 1250 04d0 445C0040 		.word	1073765444
+ 1251              	.LFE9:
+ 1253              		.align	2
+ 1254              		.global	Virtual_Com_Port_init
+ 1255              		.thumb
+ 1256              		.thumb_func
+ 1258              	Virtual_Com_Port_init:
+ 1259              	.LFB14:
+ 1260              		.loc 1 869 0
+ 1261              		@ args = 0, pretend = 0, frame = 0
+ 1262              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1263              		.loc 1 873 0
+ 1264 04d4 084B     		ldr	r3, .L159
+ 1265              		.loc 1 869 0
+ 1266 04d6 10B5     		push	{r4, lr}
+ 1267              	.LCFI16:
+ 1268              		.loc 1 873 0
+ 1269 04d8 1B68     		ldr	r3, [r3, #0]
+ 1270 04da 0024     		movs	r4, #0
+ 1271 04dc 9C72     		strb	r4, [r3, #10]
+ 1272              		.loc 1 876 0
+ 1273 04de FFF7FEFF 		bl	PowerOn
+ 1274              		.loc 1 879 0
+ 1275 04e2 064A     		ldr	r2, .L159+4
+ 1276              		.loc 1 880 0
+ 1277 04e4 4FF40643 		mov	r3, #34304
+ 1278              		.loc 1 879 0
+ 1279 04e8 1460     		str	r4, [r2, #0]
+ 1280              		.loc 1 882 0
+ 1281 04ea 043A     		subs	r2, r2, #4
+ 1282 04ec 1360     		str	r3, [r2, #0]
+ 1283              		.loc 1 884 0
+ 1284 04ee 044A     		ldr	r2, .L159+8
+ 1285 04f0 1460     		str	r4, [r2, #0]
+ 1286              		.loc 1 880 0
+ 1287 04f2 044A     		ldr	r2, .L159+12
+ 1288 04f4 1380     		strh	r3, [r2, #0]	@ movhi
+ 1289              		.loc 1 885 0
+ 1290 04f6 10BD     		pop	{r4, pc}
+ 1291              	.L160:
+ 1292              		.align	2
+ 1293              	.L159:
+ 1294 04f8 00000000 		.word	pInformation
+ 1295 04fc 445C0040 		.word	1073765444
+ 1296 0500 00000000 		.word	.LANCHOR0
+ 1297 0504 00000000 		.word	wInterrupt_Mask
+ 1298              	.LFE14:
+ 1300              		.align	2
+ 1301              		.global	USB_Interrupts_Config
+ 1302              		.thumb
+ 1303              		.thumb_func
+ 1305              	USB_Interrupts_Config:
+ 1306              	.LFB3:
+ 1307              		.loc 1 452 0
+ 1308              		@ args = 0, pretend = 0, frame = 8
+ 1309              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1310 0508 07B5     		push	{r0, r1, r2, lr}
+ 1311              	.LCFI17:
+ 1312              		.loc 1 455 0
+ 1313 050a 1422     		movs	r2, #20
+ 1314              		.loc 1 456 0
+ 1315 050c 0023     		movs	r3, #0
+ 1316              		.loc 1 455 0
+ 1317 050e 8DF80420 		strb	r2, [sp, #4]
+ 1318              		.loc 1 459 0
+ 1319 0512 01A8     		add	r0, sp, #4
+ 1320              		.loc 1 458 0
+ 1321 0514 0122     		movs	r2, #1
+ 1322              		.loc 1 457 0
+ 1323 0516 8DF80630 		strb	r3, [sp, #6]
+ 1324              		.loc 1 458 0
+ 1325 051a 8DF80720 		strb	r2, [sp, #7]
+ 1326              		.loc 1 456 0
+ 1327 051e 8DF80530 		strb	r3, [sp, #5]
+ 1328              		.loc 1 459 0
+ 1329 0522 FFF7FEFF 		bl	NVIC_Init
+ 1330              		.loc 1 461 0
+ 1331 0526 0EBD     		pop	{r1, r2, r3, pc}
+ 1332              	.LFE3:
+ 1334              		.align	2
+ 1335              		.global	Set_USBClock
+ 1336              		.thumb
+ 1337              		.thumb_func
+ 1339              	Set_USBClock:
+ 1340              	.LFB0:
+ 1341              		.loc 1 400 0
+ 1342              		@ args = 0, pretend = 0, frame = 0
+ 1343              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1344              		.loc 1 402 0
+ 1345 0528 0020     		movs	r0, #0
+ 1346              		.loc 1 400 0
+ 1347 052a 08B5     		push	{r3, lr}
+ 1348              	.LCFI18:
+ 1349              		.loc 1 402 0
+ 1350 052c FFF7FEFF 		bl	RCC_USBCLKConfig
+ 1351              		.loc 1 405 0
+ 1352 0530 4FF40000 		mov	r0, #8388608
+ 1353 0534 0121     		movs	r1, #1
+ 1354 0536 FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+ 1355              		.loc 1 406 0
+ 1356 053a 08BD     		pop	{r3, pc}
+ 1357              	.LFE0:
+ 1359              		.align	2
+ 1360              		.global	InitUSB
+ 1361              		.thumb
+ 1362              		.thumb_func
+ 1364              	InitUSB:
+ 1365              	.LFB28:
+ 1366              		.loc 1 1188 0
+ 1367              		@ args = 0, pretend = 0, frame = 8
+ 1368              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1369 053c 07B5     		push	{r0, r1, r2, lr}
+ 1370              	.LCFI19:
+ 1371              		.loc 1 1191 0
+ 1372 053e FFF7FEFF 		bl	Set_USBClock
+ 1373              		.loc 1 1192 0
+ 1374 0542 FFF7FEFF 		bl	USB_Interrupts_Config
+ 1375              		.loc 1 1193 0
+ 1376 0546 FFF7FEFF 		bl	USB_Init
+ 1377              		.loc 1 1195 0
+ 1378 054a 0820     		movs	r0, #8
+ 1379 054c 0121     		movs	r1, #1
+ 1380 054e FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 1381              		.loc 1 1199 0
+ 1382 0552 0323     		movs	r3, #3
+ 1383 0554 8DF80630 		strb	r3, [sp, #6]
+ 1384              		.loc 1 1200 0
+ 1385 0558 0D33     		adds	r3, r3, #13
+ 1386 055a 8DF80730 		strb	r3, [sp, #7]
+ 1387              		.loc 1 1201 0
+ 1388 055e 0448     		ldr	r0, .L167
+ 1389              		.loc 1 1198 0
+ 1390 0560 4FF48043 		mov	r3, #16384	@ movhi
+ 1391              		.loc 1 1201 0
+ 1392 0564 01A9     		add	r1, sp, #4
+ 1393              		.loc 1 1198 0
+ 1394 0566 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 1395              		.loc 1 1201 0
+ 1396 056a FFF7FEFF 		bl	GPIO_Init
+ 1397              		.loc 1 1202 0
+ 1398 056e 0EBD     		pop	{r1, r2, r3, pc}
+ 1399              	.L168:
+ 1400              		.align	2
+ 1401              	.L167:
+ 1402 0570 00100140 		.word	1073811456
+ 1403              	.LFE28:
+ 1405              		.global	Virtual_Com_Port_DeviceDescriptor
+ 1406              		.global	Virtual_Com_Port_ConfigDescriptor
+ 1407              		.global	Virtual_Com_Port_StringLangID
+ 1408              		.global	Virtual_Com_Port_StringVendor
+ 1409              		.global	Virtual_Com_Port_StringProduct
+ 1410              		.global	Virtual_Com_Port_StringSerial
+ 1411              		.global	count_out
+ 1412              		.global	count_in
+ 1413              		.global	bIntPackSOF
+ 1414              		.global	pEpInt_IN
+ 1415              		.global	pEpInt_OUT
+ 1416              		.global	Request
+ 1417              		.global	linecoding
+ 1418              		.global	Device_Table
+ 1419              		.global	Device_Property
+ 1420              		.global	User_Standard_Requests
+ 1421              		.global	Device_Descriptor
+ 1422              		.global	Config_Descriptor
+ 1423              		.global	String_Descriptor
+ 1424              		.global	bDeviceState
+ 1425              		.global	fSuspendEnabled
+ 1426              		.comm	wIstr,2,2
+ 1427              		.comm	Device_Info,28,4
+ 1428              		.comm	EPindex,1,1
+ 1429              		.comm	pInformation,4,4
+ 1430              		.comm	pProperty,4,4
+ 1431              		.comm	pUser_Standard_Requests,4,4
+ 1432              		.comm	SaveState,2,2
+ 1433              		.comm	wInterrupt_Mask,2,2
+ 1434              		.comm	buffer_out,64,4
+ 1435              		.comm	buffer_in,64,4
+ 1436              		.comm	ResumeS,2,4
+ 1437              		.section	.rodata
+ 1438              		.align	2
+ 1441              	Virtual_Com_Port_DeviceDescriptor:
+ 1442 0000 12       		.byte	18
+ 1443 0001 01       		.byte	1
+ 1444 0002 10       		.byte	16
+ 1445 0003 01       		.byte	1
+ 1446 0004 02       		.byte	2
+ 1447 0005 00       		.byte	0
+ 1448 0006 00       		.byte	0
+ 1449 0007 40       		.byte	64
+ 1450 0008 D0       		.byte	-48
+ 1451 0009 16       		.byte	22
+ 1452 000a 2F       		.byte	47
+ 1453 000b 07       		.byte	7
+ 1454 000c 01       		.byte	1
+ 1455 000d 00       		.byte	0
+ 1456 000e 01       		.byte	1
+ 1457 000f 02       		.byte	2
+ 1458 0010 03       		.byte	3
+ 1459 0011 01       		.byte	1
+ 1460 0012 0000     		.space	2
+ 1463              	Virtual_Com_Port_ConfigDescriptor:
+ 1464 0014 09       		.byte	9
+ 1465 0015 02       		.byte	2
+ 1466 0016 43       		.byte	67
+ 1467 0017 00       		.byte	0
+ 1468 0018 02       		.byte	2
+ 1469 0019 01       		.byte	1
+ 1470 001a 00       		.byte	0
+ 1471 001b C0       		.byte	-64
+ 1472 001c 32       		.byte	50
+ 1473 001d 09       		.byte	9
+ 1474 001e 04       		.byte	4
+ 1475 001f 00       		.byte	0
+ 1476 0020 00       		.byte	0
+ 1477 0021 01       		.byte	1
+ 1478 0022 02       		.byte	2
+ 1479 0023 02       		.byte	2
+ 1480 0024 01       		.byte	1
+ 1481 0025 00       		.byte	0
+ 1482 0026 05       		.byte	5
+ 1483 0027 24       		.byte	36
+ 1484 0028 00       		.byte	0
+ 1485 0029 10       		.byte	16
+ 1486 002a 01       		.byte	1
+ 1487 002b 05       		.byte	5
+ 1488 002c 24       		.byte	36
+ 1489 002d 01       		.byte	1
+ 1490 002e 00       		.byte	0
+ 1491 002f 01       		.byte	1
+ 1492 0030 04       		.byte	4
+ 1493 0031 24       		.byte	36
+ 1494 0032 02       		.byte	2
+ 1495 0033 02       		.byte	2
+ 1496 0034 05       		.byte	5
+ 1497 0035 24       		.byte	36
+ 1498 0036 06       		.byte	6
+ 1499 0037 00       		.byte	0
+ 1500 0038 01       		.byte	1
+ 1501 0039 07       		.byte	7
+ 1502 003a 05       		.byte	5
+ 1503 003b 82       		.byte	-126
+ 1504 003c 03       		.byte	3
+ 1505 003d 08       		.byte	8
+ 1506 003e 00       		.byte	0
+ 1507 003f FF       		.byte	-1
+ 1508 0040 09       		.byte	9
+ 1509 0041 04       		.byte	4
+ 1510 0042 01       		.byte	1
+ 1511 0043 00       		.byte	0
+ 1512 0044 02       		.byte	2
+ 1513 0045 0A       		.byte	10
+ 1514 0046 00       		.byte	0
+ 1515 0047 00       		.byte	0
+ 1516 0048 00       		.byte	0
+ 1517 0049 07       		.byte	7
+ 1518 004a 05       		.byte	5
+ 1519 004b 03       		.byte	3
+ 1520 004c 02       		.byte	2
+ 1521 004d 40       		.byte	64
+ 1522 004e 00       		.byte	0
+ 1523 004f 00       		.byte	0
+ 1524 0050 07       		.byte	7
+ 1525 0051 05       		.byte	5
+ 1526 0052 81       		.byte	-127
+ 1527 0053 02       		.byte	2
+ 1528 0054 40       		.byte	64
+ 1529 0055 00       		.byte	0
+ 1530 0056 00       		.byte	0
+ 1531 0057 00       		.space	1
+ 1534              	Virtual_Com_Port_StringLangID:
+ 1535 0058 04       		.byte	4
+ 1536 0059 03       		.byte	3
+ 1537 005a 09       		.byte	9
+ 1538 005b 04       		.byte	4
+ 1541              	Virtual_Com_Port_StringVendor:
+ 1542 005c 26       		.byte	38
+ 1543 005d 03       		.byte	3
+ 1544 005e 54       		.byte	84
+ 1545 005f 00       		.byte	0
+ 1546 0060 72       		.byte	114
+ 1547 0061 00       		.byte	0
+ 1548 0062 69       		.byte	105
+ 1549 0063 00       		.byte	0
+ 1550 0064 6E       		.byte	110
+ 1551 0065 00       		.byte	0
+ 1552 0066 61       		.byte	97
+ 1553 0067 00       		.byte	0
+ 1554 0068 6D       		.byte	109
+ 1555 0069 00       		.byte	0
+ 1556 006a 69       		.byte	105
+ 1557 006b 00       		.byte	0
+ 1558 006c 63       		.byte	99
+ 1559 006d 00       		.byte	0
+ 1560 006e 4D       		.byte	77
+ 1561 006f 00       		.byte	0
+ 1562 0070 6F       		.byte	111
+ 1563 0071 00       		.byte	0
+ 1564 0072 74       		.byte	116
+ 1565 0073 00       		.byte	0
+ 1566 0074 69       		.byte	105
+ 1567 0075 00       		.byte	0
+ 1568 0076 6F       		.byte	111
+ 1569 0077 00       		.byte	0
+ 1570 0078 6E       		.byte	110
+ 1571 0079 00       		.byte	0
+ 1572 007a 20       		.byte	32
+ 1573 007b 00       		.byte	0
+ 1574 007c 43       		.byte	67
+ 1575 007d 00       		.byte	0
+ 1576 007e 74       		.byte	116
+ 1577 007f 00       		.byte	0
+ 1578 0080 6C       		.byte	108
+ 1579 0081 00       		.byte	0
+ 1580 0082 0000     		.space	2
+ 1583              	Virtual_Com_Port_StringProduct:
+ 1584 0084 32       		.byte	50
+ 1585 0085 03       		.byte	3
+ 1586 0086 54       		.byte	84
+ 1587 0087 00       		.byte	0
+ 1588 0088 4D       		.byte	77
+ 1589 0089 00       		.byte	0
+ 1590 008a 43       		.byte	67
+ 1591 008b 00       		.byte	0
+ 1592 008c 35       		.byte	53
+ 1593 008d 00       		.byte	0
+ 1594 008e 30       		.byte	48
+ 1595 008f 00       		.byte	0
+ 1596 0090 33       		.byte	51
+ 1597 0091 00       		.byte	0
+ 1598 0092 31       		.byte	49
+ 1599 0093 00       		.byte	0
+ 1600 0094 2D       		.byte	45
+ 1601 0095 00       		.byte	0
+ 1602 0096 45       		.byte	69
+ 1603 0097 00       		.byte	0
+ 1604 0098 76       		.byte	118
+ 1605 0099 00       		.byte	0
+ 1606 009a 61       		.byte	97
+ 1607 009b 00       		.byte	0
+ 1608 009c 6C       		.byte	108
+ 1609 009d 00       		.byte	0
+ 1610 009e 20       		.byte	32
+ 1611 009f 00       		.byte	0
+ 1612 00a0 28       		.byte	40
+ 1613 00a1 00       		.byte	0
+ 1614 00a2 76       		.byte	118
+ 1615 00a3 00       		.byte	0
+ 1616 00a4 69       		.byte	105
+ 1617 00a5 00       		.byte	0
+ 1618 00a6 72       		.byte	114
+ 1619 00a7 00       		.byte	0
+ 1620 00a8 74       		.byte	116
+ 1621 00a9 00       		.byte	0
+ 1622 00aa 2E       		.byte	46
+ 1623 00ab 00       		.byte	0
+ 1624 00ac 20       		.byte	32
+ 1625 00ad 00       		.byte	0
+ 1626 00ae 43       		.byte	67
+ 1627 00af 00       		.byte	0
+ 1628 00b0 4F       		.byte	79
+ 1629 00b1 00       		.byte	0
+ 1630 00b2 4D       		.byte	77
+ 1631 00b3 00       		.byte	0
+ 1632 00b4 29       		.byte	41
+ 1633 00b5 00       		.byte	0
+ 1634 00b6 0000     		.data
+ 1635              		.align	2
+ 1636              		.set	.LANCHOR1,. + 0
+ 1639              	linecoding:
+ 1640 0000 00C20100 		.word	115200
+ 1641 0004 00       		.byte	0
+ 1642 0005 00       		.byte	0
+ 1643 0006 08       		.byte	8
+ 1644 0007 00       		.space	1
+ 1647              	String_Descriptor:
+ 1648 0008 00000000 		.word	Virtual_Com_Port_StringLangID
+ 1649 000c 0400     		.short	4
+ 1650 000e 0000     		.space	2
+ 1651 0010 00000000 		.word	Virtual_Com_Port_StringVendor
+ 1652 0014 2600     		.short	38
+ 1653 0016 0000     		.space	2
+ 1654 0018 00000000 		.word	Virtual_Com_Port_StringProduct
+ 1655 001c 3200     		.short	50
+ 1656 001e 0000     		.space	2
+ 1657 0020 00000000 		.word	Virtual_Com_Port_StringSerial
+ 1658 0024 1A00     		.short	26
+ 1659 0026 0000     		.space	2
+ 1662              	Config_Descriptor:
+ 1663 0028 00000000 		.word	Virtual_Com_Port_ConfigDescriptor
+ 1664 002c 4300     		.short	67
+ 1665 002e 0000     		.space	2
+ 1668              	Device_Descriptor:
+ 1669 0030 00000000 		.word	Virtual_Com_Port_DeviceDescriptor
+ 1670 0034 1200     		.short	18
+ 1671 0036 0000     		.space	2
+ 1674              	Device_Property:
+ 1675 0038 00000000 		.word	Virtual_Com_Port_init
+ 1676 003c 00000000 		.word	Virtual_Com_Port_Reset
+ 1677 0040 00000000 		.word	Virtual_Com_Port_Status_In
+ 1678 0044 00000000 		.word	Virtual_Com_Port_Status_Out
+ 1679 0048 00000000 		.word	Virtual_Com_Port_Data_Setup
+ 1680 004c 00000000 		.word	Virtual_Com_Port_NoData_Setup
+ 1681 0050 00000000 		.word	Virtual_Com_Port_Get_Interface_Setting
+ 1682 0054 00000000 		.word	Virtual_Com_Port_GetDeviceDescriptor
+ 1683 0058 00000000 		.word	Virtual_Com_Port_GetConfigDescriptor
+ 1684 005c 00000000 		.word	Virtual_Com_Port_GetStringDescriptor
+ 1685 0060 00000000 		.word	0
+ 1686 0064 40       		.byte	64
+ 1687 0065 000000   		.space	3
+ 1690              	Virtual_Com_Port_StringSerial:
+ 1691 0068 1A       		.byte	26
+ 1692 0069 03       		.byte	3
+ 1693 006a 54       		.byte	84
+ 1694 006b 00       		.byte	0
+ 1695 006c 4D       		.byte	77
+ 1696 006d 00       		.byte	0
+ 1697 006e 43       		.byte	67
+ 1698 006f 00       		.byte	0
+ 1699 0070 35       		.byte	53
+ 1700 0071 00       		.byte	0
+ 1701 0072 30       		.byte	48
+ 1702 0073 00       		.byte	0
+ 1703 0074 33       		.byte	51
+ 1704 0075 00       		.byte	0
+ 1705 0076 31       		.byte	49
+ 1706 0077 00       		.byte	0
+ 1707 0078 00000000 		.space	10
+ 1707      00000000 
+ 1707      0000
+ 1708 0082 0000     		.space	2
+ 1711              	pEpInt_IN:
+ 1712 0084 00000000 		.word	EP1_IN_Callback
+ 1713 0088 00000000 		.word	NOP_Process
+ 1714 008c 00000000 		.word	NOP_Process
+ 1715 0090 00000000 		.word	NOP_Process
+ 1716 0094 00000000 		.word	NOP_Process
+ 1717 0098 00000000 		.word	NOP_Process
+ 1718 009c 00000000 		.word	NOP_Process
+ 1721              	pEpInt_OUT:
+ 1722 00a0 00000000 		.word	NOP_Process
+ 1723 00a4 00000000 		.word	NOP_Process
+ 1724 00a8 00000000 		.word	EP3_OUT_Callback
+ 1725 00ac 00000000 		.word	NOP_Process
+ 1726 00b0 00000000 		.word	NOP_Process
+ 1727 00b4 00000000 		.word	NOP_Process
+ 1728 00b8 00000000 		.word	NOP_Process
+ 1731              	Device_Table:
+ 1732 00bc 04       		.byte	4
+ 1733 00bd 01       		.byte	1
+ 1734 00be 0000     		.space	2
+ 1737              	User_Standard_Requests:
+ 1738 00c0 00000000 		.word	NOP_Process
+ 1739 00c4 00000000 		.word	Virtual_Com_Port_SetConfiguration
+ 1740 00c8 00000000 		.word	NOP_Process
+ 1741 00cc 00000000 		.word	NOP_Process
+ 1742 00d0 00000000 		.word	NOP_Process
+ 1743 00d4 00000000 		.word	NOP_Process
+ 1744 00d8 00000000 		.word	NOP_Process
+ 1745 00dc 00000000 		.word	NOP_Process
+ 1746 00e0 00000000 		.word	Virtual_Com_Port_SetDeviceAddress
+ 1749              	fSuspendEnabled:
+ 1750 00e4 01       		.byte	1
+ 1751 00e5 000000   		.bss
+ 1752              		.align	2
+ 1753              		.set	.LANCHOR0,. + 0
+ 1756              	bDeviceState:
+ 1757 0000 00000000 		.space	4
+ 1760              	count_in:
+ 1761 0004 00000000 		.space	4
+ 1764              	Request:
+ 1765 0008 00       		.space	1
+ 1766 0009 000000   		.space	3
+ 1769              	count_out:
+ 1770 000c 00000000 		.space	4
+ 1773              	bIntPackSOF:
+ 1774 0010 00       		.space	1
+ 2273              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Eval50xx-USB.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:27     .text:00000000 Enter_LowPowerMode
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:43     .text:00000008 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:46     .text:0000000c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:51     .text:0000000c Leave_LowPowerMode
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:75     .text:00000020 $d
+                            *COM*:0000001c Device_Info
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:79     .text:00000028 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:84     .text:00000028 Get_SerialNum
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:99     .text:0000002c EP1_IN_Callback
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:114    .text:00000034 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:117    .text:00000038 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:122    .text:00000038 Suspend
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:153    .text:00000058 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:156    .text:0000005c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:161    .text:0000005c Resume_Init
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:187    .text:00000078 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:190    .text:0000007c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:195    .text:0000007c Resume
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:220    .text:00000094 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:226    .text:0000009a $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:313    .text:00000100 $d
+                            *COM*:00000002 ResumeS
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:317    .text:00000108 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:322    .text:00000108 Virtual_Com_Port_SetConfiguration
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:342    .text:00000118 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:346    .text:00000120 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:351    .text:00000120 Virtual_Com_Port_SetDeviceAddress
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:366    .text:00000128 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:369    .text:0000012c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:374    .text:0000012c Virtual_Com_Port_Status_In
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:394    .text:0000013c $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:397    .text:00000140 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:402    .text:00000140 Virtual_Com_Port_Status_Out
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:417    .text:00000144 Virtual_Com_Port_Data_Setup
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:494    .text:00000194 $d
+                            *COM*:00000004 pInformation
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:576    .text:000001d8 Virtual_Com_Port_GetLineCoding
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:612    .text:000001f4 Virtual_Com_Port_SetLineCoding
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:500    .text:000001a4 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:505    .text:000001a4 Virtual_Com_Port_NoData_Setup
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:539    .text:000001c4 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:542    .text:000001c8 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:547    .text:000001c8 Virtual_Com_Port_Get_Interface_Setting
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:603    .text:000001ec $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:607    .text:000001f4 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:639    .text:00000208 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:643    .text:00000210 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:648    .text:00000210 USBGetData
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:695    .text:00000240 $d
+                            *COM*:00000040 buffer_out
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:699    .text:00000248 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:704    .text:00000248 GetUSBCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:744    .text:0000026c $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:748    .text:00000274 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:753    .text:00000274 USBSendData
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:786    .text:00000294 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:789    .text:00000298 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:794    .text:00000298 Virtual_Com_Port_GetStringDescriptor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:826    .text:000002b4 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:830    .text:000002bc $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:835    .text:000002bc Virtual_Com_Port_GetConfigDescriptor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:852    .text:000002c8 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:855    .text:000002cc $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:860    .text:000002cc Virtual_Com_Port_GetDeviceDescriptor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:877    .text:000002d8 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:880    .text:000002dc $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:885    .text:000002dc Virtual_Com_Port_Reset
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1001   .text:000003ac $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1006   .text:000003b8 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1011   .text:000003b8 USB_Istr
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1074   .text:00000418 $d
+                            *COM*:00000002 wIstr
+                            *COM*:00000002 wInterrupt_Mask
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1081   .text:0000042c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1086   .text:0000042c EP3_OUT_Callback
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1114   .text:00000450 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1118   .text:00000458 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1123   .text:00000458 USB_Cable_Config
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1152   .text:00000474 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1155   .text:00000478 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1160   .text:00000478 PowerOff
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1189   .text:00000494 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1193   .text:0000049c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1198   .text:0000049c DetachUSB
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1216   .text:000004a4 PowerOn
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1248   .text:000004c8 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1253   .text:000004d4 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1258   .text:000004d4 Virtual_Com_Port_init
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1294   .text:000004f8 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1300   .text:00000508 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1305   .text:00000508 USB_Interrupts_Config
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1339   .text:00000528 Set_USBClock
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1364   .text:0000053c InitUSB
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1402   .text:00000570 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1441   .rodata:00000000 Virtual_Com_Port_DeviceDescriptor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1463   .rodata:00000014 Virtual_Com_Port_ConfigDescriptor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1534   .rodata:00000058 Virtual_Com_Port_StringLangID
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1541   .rodata:0000005c Virtual_Com_Port_StringVendor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1583   .rodata:00000084 Virtual_Com_Port_StringProduct
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1690   .data:00000068 Virtual_Com_Port_StringSerial
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1769   .bss:0000000c count_out
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1760   .bss:00000004 count_in
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1773   .bss:00000010 bIntPackSOF
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1711   .data:00000084 pEpInt_IN
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1721   .data:000000a0 pEpInt_OUT
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1764   .bss:00000008 Request
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1639   .data:00000000 linecoding
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1731   .data:000000bc Device_Table
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1674   .data:00000038 Device_Property
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1737   .data:000000c0 User_Standard_Requests
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1668   .data:00000030 Device_Descriptor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1662   .data:00000028 Config_Descriptor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1647   .data:00000008 String_Descriptor
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1756   .bss:00000000 bDeviceState
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1749   .data:000000e4 fSuspendEnabled
+                            *COM*:00000001 EPindex
+                            *COM*:00000004 pProperty
+                            *COM*:00000004 pUser_Standard_Requests
+                            *COM*:00000002 SaveState
+                            *COM*:00000040 buffer_in
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1438   .rodata:00000000 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1635   .data:00000000 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1752   .bss:00000000 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccjxUxtt.s:1788   .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+UserToPMABufferCopy
+SetEPTxCount
+SetEPTxValid
+Standard_GetDescriptorData
+SetBTABLE
+SetEPType
+SetEPTxStatus
+SetEPRxAddr
+SetEPTxAddr
+Clear_Status_Out
+SetEPRxCount
+SetEPRxValid
+SetEPRxStatus
+SetDeviceAddress
+CTR_LP
+GetEPRxCount
+PMAToUserBufferCopy
+GPIO_SetBits
+GPIO_ResetBits
+NVIC_Init
+RCC_USBCLKConfig
+RCC_APB1PeriphClockCmd
+USB_Init
+RCC_APB2PeriphClockCmd
+GPIO_Init
+NOP_Process

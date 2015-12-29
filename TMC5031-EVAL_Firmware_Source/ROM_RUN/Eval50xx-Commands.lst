@@ -1,0 +1,2706 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"Eval50xx-Commands.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	ExecuteActualCommand
+  24              		.thumb
+  25              		.thumb_func
+  27              	ExecuteActualCommand:
+  28              	.LFB0:
+  29              		.file 1 "Eval50xx-Commands.c"
+   1:Eval50xx-Commands.c **** /****************************************************
+   2:Eval50xx-Commands.c ****   Projekt: TMC562-EVAL
+   3:Eval50xx-Commands.c **** 
+   4:Eval50xx-Commands.c ****   Modul:   Eval562-Commands.c
+   5:Eval50xx-Commands.c ****            Kommandointerpreter
+   6:Eval50xx-Commands.c ****            BD: Hab ich geändert :-)
+   7:Eval50xx-Commands.c **** 
+   8:Eval50xx-Commands.c ****   Datum:   17.10.2011 OK
+   9:Eval50xx-Commands.c **** *****************************************************/
+  10:Eval50xx-Commands.c **** 
+  11:Eval50xx-Commands.c **** #include <stdlib.h>
+  12:Eval50xx-Commands.c **** #include "stm32f10x_lib.h"
+  13:Eval50xx-Commands.c **** #include "bits.h"
+  14:Eval50xx-Commands.c **** 
+  15:Eval50xx-Commands.c **** #include "Eval50xx.h"
+  16:Eval50xx-Commands.c **** #include "Eval50xx-Commands.h"
+  17:Eval50xx-Commands.c **** #include "Eval50xx-UART.h"
+  18:Eval50xx-Commands.c **** #include "Eval50xx-USB.h"
+  19:Eval50xx-Commands.c **** #include "Eval50xx-SPI.h"
+  20:Eval50xx-Commands.c **** #include "Eval50xx-SysTick.h"
+  21:Eval50xx-Commands.c **** #include "Eval50xx-IO.h"
+  22:Eval50xx-Commands.c **** #include "Eval50xx-Registers.h"
+  23:Eval50xx-Commands.c **** 
+  24:Eval50xx-Commands.c **** 
+  25:Eval50xx-Commands.c **** //Die Adressen sind hier fest eingestellt
+  26:Eval50xx-Commands.c **** #define SERIAL_HOST_ADDRESS 2
+  27:Eval50xx-Commands.c **** #define SERIAL_MODULE_ADDRESS 1
+  28:Eval50xx-Commands.c **** 
+  29:Eval50xx-Commands.c **** //Globale Variablen
+  30:Eval50xx-Commands.c **** static UCHAR TMCLCommandState;
+  31:Eval50xx-Commands.c **** TTMCLCommand ActualCommand;
+  32:Eval50xx-Commands.c **** TTMCLReply ActualReply;
+  33:Eval50xx-Commands.c **** UCHAR TMCLReplyFormat;
+  34:Eval50xx-Commands.c **** UCHAR SpecialReply[9];
+  35:Eval50xx-Commands.c **** static UCHAR UARTCmd[9];
+  36:Eval50xx-Commands.c **** static UCHAR UARTCount;
+  37:Eval50xx-Commands.c **** static UCHAR ResetRequested;
+  38:Eval50xx-Commands.c **** static UCHAR DemoMode;
+  39:Eval50xx-Commands.c **** 
+  40:Eval50xx-Commands.c **** static int VMax[N_O_MOTORS];
+  41:Eval50xx-Commands.c **** static UCHAR VMaxModified[N_O_MOTORS];
+  42:Eval50xx-Commands.c **** 
+  43:Eval50xx-Commands.c **** 
+  44:Eval50xx-Commands.c **** //Importierte Variablen
+  45:Eval50xx-Commands.c **** extern const char *VersionString;
+  46:Eval50xx-Commands.c **** 
+  47:Eval50xx-Commands.c **** //Prototypen für die TMCL-Funktionen
+  48:Eval50xx-Commands.c **** static void RotateRight(void);
+  49:Eval50xx-Commands.c **** static void RotateLeft(void);
+  50:Eval50xx-Commands.c **** static void MotorStop(void);
+  51:Eval50xx-Commands.c **** static void MoveToPosition(void);
+  52:Eval50xx-Commands.c **** static void SetAxisParameter(void);
+  53:Eval50xx-Commands.c **** static void GetAxisParameter(void);
+  54:Eval50xx-Commands.c **** static void SetGlobalParameter(void);
+  55:Eval50xx-Commands.c **** static void GetGlobalParameter(void);
+  56:Eval50xx-Commands.c **** static void UserFunc0(void);
+  57:Eval50xx-Commands.c **** static void UserFunc1(void);
+  58:Eval50xx-Commands.c **** static void UserFunc2(void);
+  59:Eval50xx-Commands.c **** static void UserFunc3(void);
+  60:Eval50xx-Commands.c **** static void UserFunc4(void);
+  61:Eval50xx-Commands.c **** static void UserFunc5(void);
+  62:Eval50xx-Commands.c **** static void UserFunc6(void);
+  63:Eval50xx-Commands.c **** static void UserFunc7(void);
+  64:Eval50xx-Commands.c **** static void GetVersion(void);
+  65:Eval50xx-Commands.c **** static void Boot(void);
+  66:Eval50xx-Commands.c **** static void SoftwareReset(void);
+  67:Eval50xx-Commands.c **** 
+  68:Eval50xx-Commands.c **** 
+  69:Eval50xx-Commands.c **** /*******************************************************************
+  70:Eval50xx-Commands.c ****    Funktion: ExecuteActualCommand()
+  71:Eval50xx-Commands.c ****    Parameter: ---
+  72:Eval50xx-Commands.c **** 
+  73:Eval50xx-Commands.c ****    Rückgabewert: ---
+  74:Eval50xx-Commands.c **** 
+  75:Eval50xx-Commands.c ****    Zweck: Ausführen des Befehls, der in der globalen Variablen
+  76:Eval50xx-Commands.c ****           ActualCommand steht.
+  77:Eval50xx-Commands.c **** ********************************************************************/
+  78:Eval50xx-Commands.c **** void ExecuteActualCommand(void)
+  79:Eval50xx-Commands.c **** {
+  30              		.loc 1 79 0
+  31              		@ args = 0, pretend = 0, frame = 32
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  34              	.LCFI0:
+  80:Eval50xx-Commands.c ****   //Antworttelegramm vorbelegen
+  81:Eval50xx-Commands.c ****   ActualReply.Opcode=ActualCommand.Opcode;
+  35              		.loc 1 81 0
+  36 0002 954E     		ldr	r6, .L144
+  37 0004 954F     		ldr	r7, .L144+4
+  38 0006 3478     		ldrb	r4, [r6, #0]	@ zero_extendqisi2
+  82:Eval50xx-Commands.c ****   ActualReply.Status=REPLY_OK;
+  83:Eval50xx-Commands.c ****   ActualReply.Value.Int32=ActualCommand.Value.Int32;
+  39              		.loc 1 83 0
+  40 0008 7168     		ldr	r1, [r6, #4]
+  41              		.loc 1 82 0
+  42 000a 6423     		movs	r3, #100
+  84:Eval50xx-Commands.c **** 
+  85:Eval50xx-Commands.c ****   //Befehl ausführen
+  86:Eval50xx-Commands.c ****   switch(ActualCommand.Opcode)
+  43              		.loc 1 86 0
+  44 000c 412C     		cmp	r4, #65
+  45              		.loc 1 79 0
+  46 000e 8BB0     		sub	sp, sp, #44
+  47              	.LCFI1:
+  48              		.loc 1 82 0
+  49 0010 3B70     		strb	r3, [r7, #0]
+  50              		.loc 1 81 0
+  51 0012 7C70     		strb	r4, [r7, #1]
+  52              		.loc 1 83 0
+  53 0014 7960     		str	r1, [r7, #4]
+  54              		.loc 1 86 0
+  55 0016 19D8     		bhi	.L20
+  56 0018 402C     		cmp	r4, #64
+  57 001a 80F09C83 		bcs	.L107
+  58 001e 042C     		cmp	r4, #4
+  59 0020 00F08D80 		beq	.L6
+  60 0024 06D8     		bhi	.L21
+  61 0026 022C     		cmp	r4, #2
+  62 0028 51D0     		beq	.L4
+  63 002a 73D8     		bhi	.L5
+  64 002c 012C     		cmp	r4, #1
+  65 002e 40F08F83 		bne	.L2
+  66 0032 2AE0     		b	.L138
+  67              	.L21:
+  68 0034 062C     		cmp	r4, #6
+  69 0036 00F0DB81 		beq	.L8
+  70 003a C0F0CF80 		bcc	.L7
+  71 003e 092C     		cmp	r4, #9
+  72 0040 00F0B682 		beq	.L9
+  73 0044 0A2C     		cmp	r4, #10
+  74 0046 40F08383 		bne	.L2
+  75 004a BBE2     		b	.L139
+  76              	.L20:
+  77 004c 462C     		cmp	r4, #70
+  78 004e 00F02883 		beq	.L16
+  79 0052 0BD8     		bhi	.L22
+  80 0054 432C     		cmp	r4, #67
+  81 0056 00F0D982 		beq	.L13
+  82 005a C0F0CA82 		bcc	.L12
+  83 005e 442C     		cmp	r4, #68
+  84 0060 00F01783 		beq	.L14
+  85 0064 452C     		cmp	r4, #69
+  86 0066 40F07383 		bne	.L2
+  87 006a 16E3     		b	.L140
+  88              	.L22:
+  89 006c 882C     		cmp	r4, #136
+  90 006e 00F01D83 		beq	.L17
+  91 0072 03D8     		bhi	.L23
+  92 0074 472C     		cmp	r4, #71
+  93 0076 40F06B83 		bne	.L2
+  94 007a 6CE3     		b	.L107
+  95              	.L23:
+  96 007c F22C     		cmp	r4, #242
+  97 007e 00F03283 		beq	.L18
+  98 0082 FF2C     		cmp	r4, #255
+  99 0084 40F06483 		bne	.L2
+ 100 0088 5AE3     		b	.L141
+ 101              	.L138:
+ 102              	.LBB40:
+ 103              	.LBB41:
+  87:Eval50xx-Commands.c ****   {
+  88:Eval50xx-Commands.c ****     case TMCL_ROR:
+  89:Eval50xx-Commands.c ****       RotateRight();
+  90:Eval50xx-Commands.c ****       break;
+  91:Eval50xx-Commands.c **** 
+  92:Eval50xx-Commands.c ****     case TMCL_ROL:
+  93:Eval50xx-Commands.c ****       RotateLeft();
+  94:Eval50xx-Commands.c ****       break;
+  95:Eval50xx-Commands.c **** 
+  96:Eval50xx-Commands.c ****     case TMCL_MST:
+  97:Eval50xx-Commands.c ****       MotorStop();
+  98:Eval50xx-Commands.c ****       break;
+  99:Eval50xx-Commands.c **** 
+ 100:Eval50xx-Commands.c ****     case TMCL_MVP:
+ 101:Eval50xx-Commands.c ****       MoveToPosition();
+ 102:Eval50xx-Commands.c ****       break;
+ 103:Eval50xx-Commands.c **** 
+ 104:Eval50xx-Commands.c ****     case TMCL_SAP:
+ 105:Eval50xx-Commands.c ****       SetAxisParameter();
+ 106:Eval50xx-Commands.c ****       break;
+ 107:Eval50xx-Commands.c **** 
+ 108:Eval50xx-Commands.c ****     case TMCL_GAP:
+ 109:Eval50xx-Commands.c ****       GetAxisParameter();
+ 110:Eval50xx-Commands.c ****       break;
+ 111:Eval50xx-Commands.c **** 
+ 112:Eval50xx-Commands.c ****     case TMCL_SGP:
+ 113:Eval50xx-Commands.c ****       SetGlobalParameter();
+ 114:Eval50xx-Commands.c ****       break;
+ 115:Eval50xx-Commands.c **** 
+ 116:Eval50xx-Commands.c ****     case TMCL_GGP:
+ 117:Eval50xx-Commands.c ****       GetGlobalParameter();
+ 118:Eval50xx-Commands.c ****       break;
+ 119:Eval50xx-Commands.c **** 
+ 120:Eval50xx-Commands.c ****     case TMCL_UF0:
+ 121:Eval50xx-Commands.c ****       UserFunc0();
+ 122:Eval50xx-Commands.c ****       break;
+ 123:Eval50xx-Commands.c **** 
+ 124:Eval50xx-Commands.c ****     case TMCL_UF1:
+ 125:Eval50xx-Commands.c ****       UserFunc1();
+ 126:Eval50xx-Commands.c ****       break;
+ 127:Eval50xx-Commands.c **** 
+ 128:Eval50xx-Commands.c ****     case TMCL_UF2:
+ 129:Eval50xx-Commands.c ****       UserFunc2();
+ 130:Eval50xx-Commands.c ****       break;
+ 131:Eval50xx-Commands.c **** 
+ 132:Eval50xx-Commands.c ****     case TMCL_UF3:
+ 133:Eval50xx-Commands.c ****       UserFunc3();
+ 134:Eval50xx-Commands.c ****       break;
+ 135:Eval50xx-Commands.c **** 
+ 136:Eval50xx-Commands.c ****     case TMCL_UF4:
+ 137:Eval50xx-Commands.c ****       UserFunc4();
+ 138:Eval50xx-Commands.c ****       break;
+ 139:Eval50xx-Commands.c **** 
+ 140:Eval50xx-Commands.c ****     case TMCL_UF5:
+ 141:Eval50xx-Commands.c ****       UserFunc5();
+ 142:Eval50xx-Commands.c ****       break;
+ 143:Eval50xx-Commands.c **** 
+ 144:Eval50xx-Commands.c ****     case TMCL_UF6:
+ 145:Eval50xx-Commands.c ****       UserFunc6();
+ 146:Eval50xx-Commands.c ****       break;
+ 147:Eval50xx-Commands.c **** 
+ 148:Eval50xx-Commands.c ****     case TMCL_UF7:
+ 149:Eval50xx-Commands.c ****       UserFunc7();
+ 150:Eval50xx-Commands.c ****       break;
+ 151:Eval50xx-Commands.c **** 
+ 152:Eval50xx-Commands.c ****     case TMCL_GetVersion:
+ 153:Eval50xx-Commands.c ****       GetVersion();
+ 154:Eval50xx-Commands.c ****       break;
+ 155:Eval50xx-Commands.c **** 
+ 156:Eval50xx-Commands.c ****     case TMCL_Boot:
+ 157:Eval50xx-Commands.c ****       Boot();
+ 158:Eval50xx-Commands.c ****       break;
+ 159:Eval50xx-Commands.c **** 
+ 160:Eval50xx-Commands.c ****     case TMCL_SoftwareReset:
+ 161:Eval50xx-Commands.c ****       SoftwareReset();
+ 162:Eval50xx-Commands.c ****       break;
+ 163:Eval50xx-Commands.c **** 
+ 164:Eval50xx-Commands.c ****     default:
+ 165:Eval50xx-Commands.c ****       ActualReply.Status=REPLY_INVALID_CMD;
+ 166:Eval50xx-Commands.c ****       break;
+ 167:Eval50xx-Commands.c ****   }
+ 168:Eval50xx-Commands.c **** }
+ 169:Eval50xx-Commands.c **** 
+ 170:Eval50xx-Commands.c **** 
+ 171:Eval50xx-Commands.c **** /*******************************************************************
+ 172:Eval50xx-Commands.c ****    Funktion: ProcessCommands()
+ 173:Eval50xx-Commands.c ****    Parameter: ---
+ 174:Eval50xx-Commands.c **** 
+ 175:Eval50xx-Commands.c ****    Rückgabewert: ---
+ 176:Eval50xx-Commands.c **** 
+ 177:Eval50xx-Commands.c ****    Zweck: Holen und Ausführen von Befehlen über RS232 und USB.
+ 178:Eval50xx-Commands.c ****           Diese Funktion muß periodisch aus der Hauptschleife
+ 179:Eval50xx-Commands.c ****           heraus aufgerufen werden.
+ 180:Eval50xx-Commands.c ****           Es werden 9-Byte-Kommandos ähnlich wie bei TMCL verwendet.
+ 181:Eval50xx-Commands.c **** ********************************************************************/
+ 182:Eval50xx-Commands.c **** void ProcessCommands(void)
+ 183:Eval50xx-Commands.c **** {
+ 184:Eval50xx-Commands.c ****   UCHAR Byte;
+ 185:Eval50xx-Commands.c ****   UCHAR Checksum;
+ 186:Eval50xx-Commands.c ****   UINT i;
+ 187:Eval50xx-Commands.c ****   UCHAR USBCmd[9];
+ 188:Eval50xx-Commands.c ****   UCHAR USBReply[9];
+ 189:Eval50xx-Commands.c **** 
+ 190:Eval50xx-Commands.c ****   //**Antwort auf letzten Direktmodus-Befehl senden (wenn vorhanden)**
+ 191:Eval50xx-Commands.c ****   if(DemoMode && (ActualCommand.Opcode==TMCL_GAP || ActualCommand.Opcode==TMCL_GGP
+ 192:Eval50xx-Commands.c ****                || ActualCommand.Opcode==TMCL_SAP))
+ 193:Eval50xx-Commands.c ****     ActualReply.Status=ActualCommand.Type;
+ 194:Eval50xx-Commands.c **** 
+ 195:Eval50xx-Commands.c ****   if(TMCLCommandState==TCS_UART)  //Antwort über UART
+ 196:Eval50xx-Commands.c ****   {
+ 197:Eval50xx-Commands.c ****     if(TMCLReplyFormat==RF_STANDARD)
+ 198:Eval50xx-Commands.c ****     {
+ 199:Eval50xx-Commands.c ****       Checksum=SERIAL_HOST_ADDRESS+SERIAL_MODULE_ADDRESS+
+ 200:Eval50xx-Commands.c ****                ActualReply.Status+ActualReply.Opcode+
+ 201:Eval50xx-Commands.c ****                ActualReply.Value.Byte[3]+
+ 202:Eval50xx-Commands.c ****                ActualReply.Value.Byte[2]+
+ 203:Eval50xx-Commands.c ****                ActualReply.Value.Byte[1]+
+ 204:Eval50xx-Commands.c ****                ActualReply.Value.Byte[0];
+ 205:Eval50xx-Commands.c **** 
+ 206:Eval50xx-Commands.c ****       WriteUART(SERIAL_HOST_ADDRESS);
+ 207:Eval50xx-Commands.c ****       WriteUART(SERIAL_MODULE_ADDRESS);
+ 208:Eval50xx-Commands.c ****       WriteUART(ActualReply.Status);
+ 209:Eval50xx-Commands.c ****       WriteUART(ActualReply.Opcode);
+ 210:Eval50xx-Commands.c ****       WriteUART(ActualReply.Value.Byte[3]);
+ 211:Eval50xx-Commands.c ****       WriteUART(ActualReply.Value.Byte[2]);
+ 212:Eval50xx-Commands.c ****       WriteUART(ActualReply.Value.Byte[1]);
+ 213:Eval50xx-Commands.c ****       WriteUART(ActualReply.Value.Byte[0]);
+ 214:Eval50xx-Commands.c ****       WriteUART(Checksum);
+ 215:Eval50xx-Commands.c ****     }
+ 216:Eval50xx-Commands.c ****     else if(TMCLReplyFormat==RF_SPECIAL)
+ 217:Eval50xx-Commands.c ****     {
+ 218:Eval50xx-Commands.c ****       for(i=0; i<9; i++)
+ 219:Eval50xx-Commands.c ****       {
+ 220:Eval50xx-Commands.c ****         WriteUART(SpecialReply[i]);
+ 221:Eval50xx-Commands.c ****       }
+ 222:Eval50xx-Commands.c ****     }
+ 223:Eval50xx-Commands.c ****   }
+ 224:Eval50xx-Commands.c ****   else if(TMCLCommandState==TCS_UART_ERROR)  //letztes Kommando über UART hatte falsche Prüfsumme
+ 225:Eval50xx-Commands.c ****   {
+ 226:Eval50xx-Commands.c ****     ActualReply.Opcode=0;
+ 227:Eval50xx-Commands.c ****     ActualReply.Status=REPLY_CHKERR;
+ 228:Eval50xx-Commands.c ****     ActualReply.Value.Int32=0;
+ 229:Eval50xx-Commands.c **** 
+ 230:Eval50xx-Commands.c ****     Checksum=SERIAL_HOST_ADDRESS+SERIAL_MODULE_ADDRESS+
+ 231:Eval50xx-Commands.c ****              ActualReply.Status+ActualReply.Opcode+
+ 232:Eval50xx-Commands.c ****              ActualReply.Value.Byte[3]+
+ 233:Eval50xx-Commands.c ****              ActualReply.Value.Byte[2]+
+ 234:Eval50xx-Commands.c ****              ActualReply.Value.Byte[1]+
+ 235:Eval50xx-Commands.c ****              ActualReply.Value.Byte[0];
+ 236:Eval50xx-Commands.c **** 
+ 237:Eval50xx-Commands.c ****     WriteUART(SERIAL_HOST_ADDRESS);
+ 238:Eval50xx-Commands.c ****     WriteUART(SERIAL_MODULE_ADDRESS);
+ 239:Eval50xx-Commands.c ****     WriteUART(ActualReply.Status);
+ 240:Eval50xx-Commands.c ****     WriteUART(ActualReply.Opcode);
+ 241:Eval50xx-Commands.c ****     WriteUART(ActualReply.Value.Byte[3]);
+ 242:Eval50xx-Commands.c ****     WriteUART(ActualReply.Value.Byte[2]);
+ 243:Eval50xx-Commands.c ****     WriteUART(ActualReply.Value.Byte[1]);
+ 244:Eval50xx-Commands.c ****     WriteUART(ActualReply.Value.Byte[0]);
+ 245:Eval50xx-Commands.c ****     WriteUART(Checksum);
+ 246:Eval50xx-Commands.c ****   }
+ 247:Eval50xx-Commands.c ****   else if(TMCLCommandState==TCS_USB)  //Antwort über USB
+ 248:Eval50xx-Commands.c ****   {
+ 249:Eval50xx-Commands.c ****     if(TMCLReplyFormat==RF_STANDARD)
+ 250:Eval50xx-Commands.c ****     {
+ 251:Eval50xx-Commands.c ****       Checksum=SERIAL_HOST_ADDRESS+SERIAL_MODULE_ADDRESS+
+ 252:Eval50xx-Commands.c ****                ActualReply.Status+ActualReply.Opcode+
+ 253:Eval50xx-Commands.c ****                ActualReply.Value.Byte[3]+
+ 254:Eval50xx-Commands.c ****                ActualReply.Value.Byte[2]+
+ 255:Eval50xx-Commands.c ****                ActualReply.Value.Byte[1]+
+ 256:Eval50xx-Commands.c ****                ActualReply.Value.Byte[0];
+ 257:Eval50xx-Commands.c **** 
+ 258:Eval50xx-Commands.c ****       USBReply[0]=SERIAL_HOST_ADDRESS;
+ 259:Eval50xx-Commands.c ****       USBReply[1]=SERIAL_MODULE_ADDRESS;
+ 260:Eval50xx-Commands.c ****       USBReply[2]=ActualReply.Status;
+ 261:Eval50xx-Commands.c ****       USBReply[3]=ActualReply.Opcode;
+ 262:Eval50xx-Commands.c ****       USBReply[4]=ActualReply.Value.Byte[3];
+ 263:Eval50xx-Commands.c ****       USBReply[5]=ActualReply.Value.Byte[2];
+ 264:Eval50xx-Commands.c ****       USBReply[6]=ActualReply.Value.Byte[1];
+ 265:Eval50xx-Commands.c ****       USBReply[7]=ActualReply.Value.Byte[0];
+ 266:Eval50xx-Commands.c ****       USBReply[8]=Checksum;
+ 267:Eval50xx-Commands.c ****     }
+ 268:Eval50xx-Commands.c ****     else if(TMCLReplyFormat==RF_SPECIAL)
+ 269:Eval50xx-Commands.c ****     {
+ 270:Eval50xx-Commands.c ****       for(i=0; i<9; i++)
+ 271:Eval50xx-Commands.c ****       {
+ 272:Eval50xx-Commands.c ****         USBReply[i]=SpecialReply[i];
+ 273:Eval50xx-Commands.c ****       }
+ 274:Eval50xx-Commands.c ****     }
+ 275:Eval50xx-Commands.c **** 
+ 276:Eval50xx-Commands.c ****     USBSendData(USBReply, 9);
+ 277:Eval50xx-Commands.c ****   }
+ 278:Eval50xx-Commands.c ****   else if(TMCLCommandState==TCS_USB_ERROR)  //letztes Kommando über USB hatte falsche Prüfsumme
+ 279:Eval50xx-Commands.c ****   {
+ 280:Eval50xx-Commands.c ****     ActualReply.Opcode=0;
+ 281:Eval50xx-Commands.c ****     ActualReply.Status=REPLY_CHKERR;
+ 282:Eval50xx-Commands.c ****     ActualReply.Value.Int32=0;
+ 283:Eval50xx-Commands.c **** 
+ 284:Eval50xx-Commands.c ****     Checksum=SERIAL_HOST_ADDRESS+SERIAL_MODULE_ADDRESS+
+ 285:Eval50xx-Commands.c ****              ActualReply.Status+ActualReply.Opcode+
+ 286:Eval50xx-Commands.c ****              ActualReply.Value.Byte[3]+
+ 287:Eval50xx-Commands.c ****              ActualReply.Value.Byte[2]+
+ 288:Eval50xx-Commands.c ****              ActualReply.Value.Byte[1]+
+ 289:Eval50xx-Commands.c ****              ActualReply.Value.Byte[0];
+ 290:Eval50xx-Commands.c **** 
+ 291:Eval50xx-Commands.c ****     USBReply[0]=SERIAL_HOST_ADDRESS;
+ 292:Eval50xx-Commands.c ****     USBReply[1]=SERIAL_MODULE_ADDRESS;
+ 293:Eval50xx-Commands.c ****     USBReply[2]=ActualReply.Status;
+ 294:Eval50xx-Commands.c ****     USBReply[3]=ActualReply.Opcode;
+ 295:Eval50xx-Commands.c ****     USBReply[4]=ActualReply.Value.Byte[3];
+ 296:Eval50xx-Commands.c ****     USBReply[5]=ActualReply.Value.Byte[2];
+ 297:Eval50xx-Commands.c ****     USBReply[6]=ActualReply.Value.Byte[1];
+ 298:Eval50xx-Commands.c ****     USBReply[7]=ActualReply.Value.Byte[0];
+ 299:Eval50xx-Commands.c ****     USBReply[8]=Checksum;
+ 300:Eval50xx-Commands.c **** 
+ 301:Eval50xx-Commands.c ****     USBSendData(USBReply, 9);
+ 302:Eval50xx-Commands.c ****   }
+ 303:Eval50xx-Commands.c **** 
+ 304:Eval50xx-Commands.c ****   //Zustand zurücksetzen (Antwort ist nun gesendet)
+ 305:Eval50xx-Commands.c ****   TMCLCommandState=TCS_IDLE;
+ 306:Eval50xx-Commands.c ****   TMCLReplyFormat=RF_STANDARD;
+ 307:Eval50xx-Commands.c **** 
+ 308:Eval50xx-Commands.c **** 
+ 309:Eval50xx-Commands.c ****   //Letzter Befehl war Reset-Befehl => Reset
+ 310:Eval50xx-Commands.c ****   if(ResetRequested) ResetCPU(TRUE);
+ 311:Eval50xx-Commands.c **** 
+ 312:Eval50xx-Commands.c ****   //**Befehl holen (Prioritäten: UART, USB, Speicher)**
+ 313:Eval50xx-Commands.c ****   if(ReadUART(&Byte))  //Befehl von RS232/RS485?
+ 314:Eval50xx-Commands.c ****   {
+ 315:Eval50xx-Commands.c ****     if(CheckUARTTimeout()) UARTCount=0;  //bei Timeout alles bisherige verwerfen
+ 316:Eval50xx-Commands.c ****     UARTCmd[UARTCount++]=Byte;
+ 317:Eval50xx-Commands.c **** 
+ 318:Eval50xx-Commands.c ****     if(UARTCount==9)  //Neun Bytes wurden empfangen
+ 319:Eval50xx-Commands.c ****     {
+ 320:Eval50xx-Commands.c ****       UARTCount=0;
+ 321:Eval50xx-Commands.c **** 
+ 322:Eval50xx-Commands.c ****       if(UARTCmd[0]==SERIAL_MODULE_ADDRESS)  //Stimmt die Adresse?
+ 323:Eval50xx-Commands.c ****       {
+ 324:Eval50xx-Commands.c ****         Checksum=0;
+ 325:Eval50xx-Commands.c ****         for(i=0; i<8; i++) Checksum+=UARTCmd[i];
+ 326:Eval50xx-Commands.c **** 
+ 327:Eval50xx-Commands.c ****         if(Checksum==UARTCmd[8])  //Stimmt die Prüfsumme?
+ 328:Eval50xx-Commands.c ****         {
+ 329:Eval50xx-Commands.c ****           ActualCommand.Opcode=UARTCmd[1];
+ 330:Eval50xx-Commands.c ****           ActualCommand.Type=UARTCmd[2];
+ 331:Eval50xx-Commands.c ****           ActualCommand.Motor=UARTCmd[3];
+ 332:Eval50xx-Commands.c ****           ActualCommand.Value.Byte[3]=UARTCmd[4];
+ 333:Eval50xx-Commands.c ****           ActualCommand.Value.Byte[2]=UARTCmd[5];
+ 334:Eval50xx-Commands.c ****           ActualCommand.Value.Byte[1]=UARTCmd[6];
+ 335:Eval50xx-Commands.c ****           ActualCommand.Value.Byte[0]=UARTCmd[7];
+ 336:Eval50xx-Commands.c **** 
+ 337:Eval50xx-Commands.c ****           TMCLCommandState=TCS_UART;
+ 338:Eval50xx-Commands.c **** 
+ 339:Eval50xx-Commands.c ****           UARTCount=0;
+ 340:Eval50xx-Commands.c ****         }
+ 341:Eval50xx-Commands.c ****         else TMCLCommandState=TCS_UART_ERROR;  //Prüfsumme war falsch
+ 342:Eval50xx-Commands.c ****       }
+ 343:Eval50xx-Commands.c ****     }
+ 344:Eval50xx-Commands.c ****   }
+ 345:Eval50xx-Commands.c ****   else if(GetUSBCmd(USBCmd))  //Befehl von USB?
+ 346:Eval50xx-Commands.c ****   {
+ 347:Eval50xx-Commands.c ****     if(USBCmd[0]==SERIAL_MODULE_ADDRESS)  //Stimmt die Adresse?
+ 348:Eval50xx-Commands.c ****     {
+ 349:Eval50xx-Commands.c ****       Checksum=0;
+ 350:Eval50xx-Commands.c ****       for(i=0; i<8; i++) Checksum+=USBCmd[i];
+ 351:Eval50xx-Commands.c **** 
+ 352:Eval50xx-Commands.c ****       if(Checksum==USBCmd[8])  //Stimmt die Prüfsumme?
+ 353:Eval50xx-Commands.c ****       {
+ 354:Eval50xx-Commands.c ****         ActualCommand.Opcode=USBCmd[1];
+ 355:Eval50xx-Commands.c ****         ActualCommand.Type=USBCmd[2];
+ 356:Eval50xx-Commands.c ****         ActualCommand.Motor=USBCmd[3];
+ 357:Eval50xx-Commands.c ****         ActualCommand.Value.Byte[3]=USBCmd[4];
+ 358:Eval50xx-Commands.c ****         ActualCommand.Value.Byte[2]=USBCmd[5];
+ 359:Eval50xx-Commands.c ****         ActualCommand.Value.Byte[1]=USBCmd[6];
+ 360:Eval50xx-Commands.c ****         ActualCommand.Value.Byte[0]=USBCmd[7];
+ 361:Eval50xx-Commands.c **** 
+ 362:Eval50xx-Commands.c ****         TMCLCommandState=TCS_USB;
+ 363:Eval50xx-Commands.c ****       } else TMCLCommandState=TCS_USB_ERROR;  //Prüfsumme war falsch
+ 364:Eval50xx-Commands.c ****     }
+ 365:Eval50xx-Commands.c ****   }
+ 366:Eval50xx-Commands.c **** 
+ 367:Eval50xx-Commands.c ****   //**Befehl ausführen (bzw. speichern wenn im Download-Modus)**
+ 368:Eval50xx-Commands.c ****   //Befehl ausführen, wenn erfolgreich ein Befehl geholt wurde.
+ 369:Eval50xx-Commands.c ****   if(TMCLCommandState!=TCS_IDLE && TMCLCommandState!=TCS_UART_ERROR &&
+ 370:Eval50xx-Commands.c ****      TMCLCommandState!=TCS_USB_ERROR) ExecuteActualCommand();
+ 371:Eval50xx-Commands.c **** }
+ 372:Eval50xx-Commands.c **** 
+ 373:Eval50xx-Commands.c **** 
+ 374:Eval50xx-Commands.c **** //**************************** Funktionen für die einzelnen TMCL-Befehle *****************
+ 375:Eval50xx-Commands.c **** // Für alle diese Funktionen gilt:
+ 376:Eval50xx-Commands.c **** //   -die Parameter stehen in der globalen Variablen ActualCommand
+ 377:Eval50xx-Commands.c **** //   -ein eventueller Rückgabewert wird in der globalen Variablen ActualReply abgelegt.
+ 378:Eval50xx-Commands.c **** //****************************************************************************************
+ 379:Eval50xx-Commands.c **** 
+ 380:Eval50xx-Commands.c **** /*********************************
+ 381:Eval50xx-Commands.c ****    Funktion: RotateRight()
+ 382:Eval50xx-Commands.c **** 
+ 383:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl ROR
+ 384:Eval50xx-Commands.c ****  *********************************/
+ 385:Eval50xx-Commands.c **** static void RotateRight(void)
+ 386:Eval50xx-Commands.c **** {
+ 387:Eval50xx-Commands.c ****   if(ActualCommand.Motor<N_O_MOTORS)
+ 104              		.loc 1 387 0
+ 105 008a B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 106 008c 012B     		cmp	r3, #1
+ 107 008e 00F2AE82 		bhi	.L111
+ 388:Eval50xx-Commands.c ****   {
+ 389:Eval50xx-Commands.c ****     VMaxModified[ActualCommand.Motor]=TRUE;
+ 390:Eval50xx-Commands.c ****     WriteTMC562Int(TMC562_VMAX|MOTOR_ADDR(ActualCommand.Motor), abs(ActualCommand.Value.Int32));
+ 108              		.loc 1 390 0
+ 109 0092 2025     		movs	r5, #32
+ 110 0094 15FA03F0 		lsls	r0, r5, r3
+ 111              		.loc 1 389 0
+ 112 0098 714A     		ldr	r2, .L144+8
+ 113              		.loc 1 390 0
+ 114 009a 0029     		cmp	r1, #0
+ 115 009c 40F00700 		orr	r0, r0, #7
+ 116              		.loc 1 389 0
+ 117 00a0 D454     		strb	r4, [r2, r3]
+ 118              		.loc 1 390 0
+ 119 00a2 B8BF     		it	lt
+ 120 00a4 4942     		rsblt	r1, r1, #0
+ 121 00a6 C0B2     		uxtb	r0, r0
+ 122 00a8 FFF7FEFF 		bl	WriteTMC562Int
+ 391:Eval50xx-Commands.c ****     if(ActualCommand.Value.Int32>0)
+ 123              		.loc 1 391 0
+ 124 00ac 7268     		ldr	r2, [r6, #4]
+ 125 00ae B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 126 00b0 002A     		cmp	r2, #0
+ 127 00b2 02DD     		ble	.L25
+ 392:Eval50xx-Commands.c ****       WriteTMC562Datagram(TMC562_RAMPMODE|MOTOR_ADDR(ActualCommand.Motor), 0, 0, 0, TMC562_MODE_VEL
+ 128              		.loc 1 392 0
+ 129 00b4 9D40     		lsls	r5, r5, r3
+ 130 00b6 0021     		movs	r1, #0
+ 131 00b8 3FE0     		b	.L129
+ 132              	.L25:
+ 393:Eval50xx-Commands.c ****     else
+ 394:Eval50xx-Commands.c ****       WriteTMC562Datagram(TMC562_RAMPMODE|MOTOR_ADDR(ActualCommand.Motor), 0, 0, 0, TMC562_MODE_VEL
+ 133              		.loc 1 394 0
+ 134 00ba 9D40     		lsls	r5, r5, r3
+ 135 00bc 0021     		movs	r1, #0
+ 136 00be E8B2     		uxtb	r0, r5
+ 137 00c0 0A46     		mov	r2, r1
+ 138 00c2 0B46     		mov	r3, r1
+ 139 00c4 0224     		movs	r4, #2
+ 140              	.LVL0:
+ 141              	.L117:
+ 142 00c6 0094     		str	r4, [sp, #0]
+ 143              	.LVL1:
+ 144              	.L118:
+ 145 00c8 FFF7FEFF 		bl	WriteTMC562Datagram
+ 146 00cc 43E3     		b	.L107
+ 147              	.LVL2:
+ 148              	.L4:
+ 149              	.LBE41:
+ 150              	.LBE40:
+ 151              	.LBB42:
+ 152              	.LBB43:
+ 395:Eval50xx-Commands.c ****   }
+ 396:Eval50xx-Commands.c ****   else ActualReply.Status=REPLY_INVALID_VALUE;
+ 397:Eval50xx-Commands.c **** }
+ 398:Eval50xx-Commands.c **** 
+ 399:Eval50xx-Commands.c **** 
+ 400:Eval50xx-Commands.c **** /*********************************
+ 401:Eval50xx-Commands.c ****    Funktion: RotateLeft()
+ 402:Eval50xx-Commands.c **** 
+ 403:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl ROL
+ 404:Eval50xx-Commands.c ****  *********************************/
+ 405:Eval50xx-Commands.c **** static void RotateLeft(void)
+ 406:Eval50xx-Commands.c **** {
+ 407:Eval50xx-Commands.c ****   if(ActualCommand.Motor<N_O_MOTORS)
+ 153              		.loc 1 407 0
+ 154 00ce B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 155 00d0 012B     		cmp	r3, #1
+ 156 00d2 00F28C82 		bhi	.L111
+ 408:Eval50xx-Commands.c ****   {
+ 409:Eval50xx-Commands.c ****     VMaxModified[ActualCommand.Motor]=TRUE;
+ 410:Eval50xx-Commands.c ****     WriteTMC562Int(TMC562_VMAX|MOTOR_ADDR(ActualCommand.Motor), abs(ActualCommand.Value.Int32));
+ 157              		.loc 1 410 0
+ 158 00d6 2027     		movs	r7, #32
+ 159 00d8 17FA03F0 		lsls	r0, r7, r3
+ 160              		.loc 1 409 0
+ 161 00dc 604A     		ldr	r2, .L144+8
+ 162              		.loc 1 410 0
+ 163 00de 0029     		cmp	r1, #0
+ 164 00e0 B8BF     		it	lt
+ 165 00e2 4942     		rsblt	r1, r1, #0
+ 166 00e4 40F00700 		orr	r0, r0, #7
+ 167              		.loc 1 409 0
+ 168 00e8 0125     		movs	r5, #1
+ 169 00ea D554     		strb	r5, [r2, r3]
+ 170              		.loc 1 410 0
+ 171 00ec C0B2     		uxtb	r0, r0
+ 172 00ee FFF7FEFF 		bl	WriteTMC562Int
+ 411:Eval50xx-Commands.c ****     if(ActualCommand.Value.Int32>0)
+ 173              		.loc 1 411 0
+ 174 00f2 7268     		ldr	r2, [r6, #4]
+ 175 00f4 B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 176 00f6 002A     		cmp	r2, #0
+ 177 00f8 05DD     		ble	.L27
+ 412:Eval50xx-Commands.c ****       WriteTMC562Datagram(TMC562_RAMPMODE|MOTOR_ADDR(ActualCommand.Motor), 0, 0, 0, TMC562_MODE_VEL
+ 178              		.loc 1 412 0
+ 179 00fa 9F40     		lsls	r7, r7, r3
+ 180 00fc 0021     		movs	r1, #0
+ 181 00fe F8B2     		uxtb	r0, r7
+ 182              	.LVL3:
+ 183              	.L126:
+ 184 0100 0A46     		mov	r2, r1
+ 185 0102 0B46     		mov	r3, r1
+ 186 0104 DFE7     		b	.L117
+ 187              	.LVL4:
+ 188              	.L27:
+ 413:Eval50xx-Commands.c ****     else
+ 414:Eval50xx-Commands.c ****       WriteTMC562Datagram(TMC562_RAMPMODE|MOTOR_ADDR(ActualCommand.Motor), 0, 0, 0, TMC562_MODE_VEL
+ 189              		.loc 1 414 0
+ 190 0106 9F40     		lsls	r7, r7, r3
+ 191 0108 0021     		movs	r1, #0
+ 192 010a F8B2     		uxtb	r0, r7
+ 193 010c 0A46     		mov	r2, r1
+ 194 010e 0B46     		mov	r3, r1
+ 195 0110 0095     		str	r5, [sp, #0]
+ 196 0112 D9E7     		b	.L118
+ 197              	.L5:
+ 198              	.LBE43:
+ 199              	.LBE42:
+ 200              	.LBB44:
+ 201              	.LBB45:
+ 415:Eval50xx-Commands.c ****   }
+ 416:Eval50xx-Commands.c ****   else ActualReply.Status=REPLY_INVALID_VALUE;
+ 417:Eval50xx-Commands.c **** }
+ 418:Eval50xx-Commands.c **** 
+ 419:Eval50xx-Commands.c **** 
+ 420:Eval50xx-Commands.c **** /*********************************
+ 421:Eval50xx-Commands.c ****    Funktion: MotorStop()
+ 422:Eval50xx-Commands.c **** 
+ 423:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl MST
+ 424:Eval50xx-Commands.c ****  *********************************/
+ 425:Eval50xx-Commands.c **** static void MotorStop(void)
+ 426:Eval50xx-Commands.c **** {
+ 427:Eval50xx-Commands.c ****   if(ActualCommand.Motor<N_O_MOTORS)
+ 202              		.loc 1 427 0
+ 203 0114 B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 204 0116 012B     		cmp	r3, #1
+ 205 0118 00F26982 		bhi	.L111
+ 428:Eval50xx-Commands.c ****   {
+ 429:Eval50xx-Commands.c ****     VMaxModified[ActualCommand.Motor]=TRUE;
+ 430:Eval50xx-Commands.c ****     WriteTMC562Int(TMC562_VMAX|MOTOR_ADDR(ActualCommand.Motor), 0);
+ 206              		.loc 1 430 0
+ 207 011c 2025     		movs	r5, #32
+ 208 011e 15FA03F0 		lsls	r0, r5, r3
+ 209              		.loc 1 429 0
+ 210 0122 4F4A     		ldr	r2, .L144+8
+ 211              		.loc 1 430 0
+ 212 0124 40F00700 		orr	r0, r0, #7
+ 213              		.loc 1 429 0
+ 214 0128 0124     		movs	r4, #1
+ 215              		.loc 1 430 0
+ 216 012a 0021     		movs	r1, #0
+ 217              		.loc 1 429 0
+ 218 012c D454     		strb	r4, [r2, r3]
+ 219              		.loc 1 430 0
+ 220 012e C0B2     		uxtb	r0, r0
+ 221 0130 FFF7FEFF 		bl	WriteTMC562Int
+ 431:Eval50xx-Commands.c ****     WriteTMC562Datagram(TMC562_RAMPMODE|MOTOR_ADDR(ActualCommand.Motor), 0, 0, 0, TMC562_MODE_VELPO
+ 222              		.loc 1 431 0
+ 223 0134 B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 224 0136 0021     		movs	r1, #0
+ 225 0138 9D40     		lsls	r5, r5, r3
+ 226              	.LVL5:
+ 227              	.L129:
+ 228 013a E8B2     		uxtb	r0, r5
+ 229 013c E0E7     		b	.L126
+ 230              	.LVL6:
+ 231              	.L6:
+ 232              	.LBE45:
+ 233              	.LBE44:
+ 234              	.LBB46:
+ 235              	.LBB47:
+ 432:Eval50xx-Commands.c ****   }
+ 433:Eval50xx-Commands.c ****   else ActualReply.Status=REPLY_INVALID_VALUE;
+ 434:Eval50xx-Commands.c **** }
+ 435:Eval50xx-Commands.c **** 
+ 436:Eval50xx-Commands.c **** 
+ 437:Eval50xx-Commands.c **** /*********************************
+ 438:Eval50xx-Commands.c ****    Funktion: MotorStop()
+ 439:Eval50xx-Commands.c **** 
+ 440:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl MST
+ 441:Eval50xx-Commands.c ****  *********************************/
+ 442:Eval50xx-Commands.c **** static void MoveToPosition(void)
+ 443:Eval50xx-Commands.c **** {
+ 444:Eval50xx-Commands.c ****   int ActPos;
+ 445:Eval50xx-Commands.c **** 
+ 446:Eval50xx-Commands.c ****   if(ActualCommand.Motor<N_O_MOTORS)
+ 236              		.loc 1 446 0
+ 237 013e B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 238 0140 012B     		cmp	r3, #1
+ 239 0142 49D8     		bhi	.L29
+ 447:Eval50xx-Commands.c ****   {
+ 448:Eval50xx-Commands.c ****     switch(ActualCommand.Type)
+ 240              		.loc 1 448 0
+ 241 0144 7578     		ldrb	r5, [r6, #1]	@ zero_extendqisi2
+ 242 0146 15B1     		cbz	r5, .L31
+ 243 0148 012D     		cmp	r5, #1
+ 244 014a 42D1     		bne	.L108
+ 245 014c 17E0     		b	.L142
+ 246              	.L31:
+ 449:Eval50xx-Commands.c ****     {
+ 450:Eval50xx-Commands.c ****       case MVP_ABS:
+ 451:Eval50xx-Commands.c ****         if(VMaxModified[ActualCommand.Motor])
+ 247              		.loc 1 451 0
+ 248 014e 444C     		ldr	r4, .L144+8
+ 249 0150 E25C     		ldrb	r2, [r4, r3]	@ zero_extendqisi2
+ 250 0152 5AB1     		cbz	r2, .L33
+ 452:Eval50xx-Commands.c ****         {
+ 453:Eval50xx-Commands.c ****           WriteTMC562Int(TMC562_VMAX|MOTOR_ADDR(ActualCommand.Motor), VMax[ActualCommand.Motor]);
+ 251              		.loc 1 453 0
+ 252 0154 2020     		movs	r0, #32
+ 253 0156 9840     		lsls	r0, r0, r3
+ 254 0158 04EB8303 		add	r3, r4, r3, lsl #2
+ 255 015c 40F00700 		orr	r0, r0, #7
+ 256 0160 5968     		ldr	r1, [r3, #4]
+ 257 0162 C0B2     		uxtb	r0, r0
+ 258 0164 FFF7FEFF 		bl	WriteTMC562Int
+ 454:Eval50xx-Commands.c ****           VMaxModified[ActualCommand.Motor]=FALSE;
+ 259              		.loc 1 454 0
+ 260 0168 B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 261 016a E554     		strb	r5, [r4, r3]
+ 262              	.L33:
+ 455:Eval50xx-Commands.c ****         }
+ 456:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_XTARGET|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 263              		.loc 1 456 0
+ 264 016c 3A4C     		ldr	r4, .L144
+ 265 016e 2025     		movs	r5, #32
+ 266 0170 A078     		ldrb	r0, [r4, #2]	@ zero_extendqisi2
+ 267 0172 6168     		ldr	r1, [r4, #4]
+ 268 0174 15FA00F0 		lsls	r0, r5, r0
+ 269 0178 40F00D00 		orr	r0, r0, #13
+ 270 017c 21E0     		b	.L130
+ 271              	.L142:
+ 457:Eval50xx-Commands.c ****         WriteTMC562Datagram(TMC562_RAMPMODE|MOTOR_ADDR(ActualCommand.Motor), 0, 0, 0, TMC562_MODE_P
+ 458:Eval50xx-Commands.c ****         break;
+ 459:Eval50xx-Commands.c **** 
+ 460:Eval50xx-Commands.c ****       case MVP_REL:
+ 461:Eval50xx-Commands.c ****         ActPos=ReadTMC562Int(TMC562_XACTUAL|MOTOR_ADDR(ActualCommand.Motor));
+ 272              		.loc 1 461 0
+ 273 017e 2025     		movs	r5, #32
+ 274 0180 15FA03F3 		lsls	r3, r5, r3
+ 275 0184 43F00100 		orr	r0, r3, #1
+ 276 0188 C0B2     		uxtb	r0, r0
+ 277 018a FFF7FEFF 		bl	ReadTMC562Int
+ 462:Eval50xx-Commands.c ****         if(VMaxModified[ActualCommand.Motor])
+ 278              		.loc 1 462 0
+ 279 018e 344C     		ldr	r4, .L144+8
+ 280 0190 B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 281              		.loc 1 461 0
+ 282 0192 0746     		mov	r7, r0
+ 283              	.LVL7:
+ 284              		.loc 1 462 0
+ 285 0194 E25C     		ldrb	r2, [r4, r3]	@ zero_extendqisi2
+ 286 0196 5AB1     		cbz	r2, .L34
+ 463:Eval50xx-Commands.c ****         {
+ 464:Eval50xx-Commands.c ****           WriteTMC562Int(TMC562_VMAX|MOTOR_ADDR(ActualCommand.Motor), VMax[ActualCommand.Motor]);
+ 287              		.loc 1 464 0
+ 288 0198 9D40     		lsls	r5, r5, r3
+ 289 019a 04EB8303 		add	r3, r4, r3, lsl #2
+ 290 019e 45F00700 		orr	r0, r5, #7
+ 291 01a2 5968     		ldr	r1, [r3, #4]
+ 292 01a4 C0B2     		uxtb	r0, r0
+ 293 01a6 FFF7FEFF 		bl	WriteTMC562Int
+ 465:Eval50xx-Commands.c ****           VMaxModified[ActualCommand.Motor]=FALSE;
+ 294              		.loc 1 465 0
+ 295 01aa B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 296 01ac 0022     		movs	r2, #0
+ 297 01ae E254     		strb	r2, [r4, r3]
+ 298              	.L34:
+ 466:Eval50xx-Commands.c ****         }
+ 467:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_XTARGET|MOTOR_ADDR(ActualCommand.Motor), ActPos+ActualCommand.Value.I
+ 299              		.loc 1 467 0
+ 300 01b0 294C     		ldr	r4, .L144
+ 301 01b2 2025     		movs	r5, #32
+ 302 01b4 A078     		ldrb	r0, [r4, #2]	@ zero_extendqisi2
+ 303 01b6 6168     		ldr	r1, [r4, #4]
+ 304 01b8 15FA00F0 		lsls	r0, r5, r0
+ 305 01bc 7918     		adds	r1, r7, r1
+ 306 01be 40F00D00 		orr	r0, r0, #13
+ 307              	.L130:
+ 308 01c2 C0B2     		uxtb	r0, r0
+ 309 01c4 FFF7FEFF 		bl	WriteTMC562Int
+ 468:Eval50xx-Commands.c ****         WriteTMC562Datagram(TMC562_RAMPMODE|MOTOR_ADDR(ActualCommand.Motor), 0, 0, 0, TMC562_MODE_P
+ 310              		.loc 1 468 0
+ 311 01c8 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 312 01ca 0024     		movs	r4, #0
+ 313 01cc 9D40     		lsls	r5, r5, r3
+ 314 01ce 2146     		mov	r1, r4
+ 315 01d0 B3E7     		b	.L129
+ 316              	.LVL8:
+ 317              	.L108:
+ 469:Eval50xx-Commands.c ****         break;
+ 470:Eval50xx-Commands.c **** 
+ 471:Eval50xx-Commands.c ****       default:
+ 472:Eval50xx-Commands.c ****         ActualReply.Status=REPLY_WRONG_TYPE;
+ 318              		.loc 1 472 0
+ 319 01d2 0323     		movs	r3, #3
+ 320              	.L119:
+ 321 01d4 3B70     		strb	r3, [r7, #0]
+ 322 01d6 BEE2     		b	.L107
+ 323              	.L29:
+ 473:Eval50xx-Commands.c ****         break;
+ 474:Eval50xx-Commands.c ****     }
+ 475:Eval50xx-Commands.c ****   }
+ 476:Eval50xx-Commands.c ****   else ActualReply.Status=REPLY_INVALID_VALUE;
+ 324              		.loc 1 476 0
+ 325 01d8 3C70     		strb	r4, [r7, #0]
+ 326 01da BCE2     		b	.L107
+ 327              	.L7:
+ 328              	.LBE47:
+ 329              	.LBE46:
+ 330              	.LBB48:
+ 331              	.LBB49:
+ 477:Eval50xx-Commands.c **** }
+ 478:Eval50xx-Commands.c **** 
+ 479:Eval50xx-Commands.c **** 
+ 480:Eval50xx-Commands.c **** /*********************************
+ 481:Eval50xx-Commands.c ****    Funktion: SetAxisParameter()
+ 482:Eval50xx-Commands.c **** 
+ 483:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl SAP
+ 484:Eval50xx-Commands.c ****  *********************************/
+ 485:Eval50xx-Commands.c **** static void SetAxisParameter(void)
+ 486:Eval50xx-Commands.c **** {
+ 487:Eval50xx-Commands.c ****   UINT Value;
+ 488:Eval50xx-Commands.c **** 
+ 489:Eval50xx-Commands.c ****   if(ActualCommand.Motor<N_O_MOTORS)
+ 332              		.loc 1 489 0
+ 333 01dc B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 334 01de 012B     		cmp	r3, #1
+ 335 01e0 F7D8     		bhi	.L108
+ 490:Eval50xx-Commands.c ****   {
+ 491:Eval50xx-Commands.c ****     switch(ActualCommand.Type)
+ 336              		.loc 1 491 0
+ 337 01e2 7278     		ldrb	r2, [r6, #1]	@ zero_extendqisi2
+ 338 01e4 182A     		cmp	r2, #24
+ 339 01e6 00F20181 		bhi	.L36
+ 340 01ea DFE812F0 		tbh	[pc, r2, lsl #1]
+ 341              	.L57:
+ 342 01ee 1900     		.2byte	(.L37-.L57)/2
+ 343 01f0 1F00     		.2byte	(.L38-.L57)/2
+ 344 01f2 2600     		.2byte	(.L39-.L57)/2
+ 345 01f4 FF00     		.2byte	(.L36-.L57)/2
+ 346 01f6 3B00     		.2byte	(.L40-.L57)/2
+ 347 01f8 5600     		.2byte	(.L41-.L57)/2
+ 348 01fa 5C00     		.2byte	(.L42-.L57)/2
+ 349 01fc 7100     		.2byte	(.L43-.L57)/2
+ 350 01fe FF00     		.2byte	(.L36-.L57)/2
+ 351 0200 FF00     		.2byte	(.L36-.L57)/2
+ 352 0202 FF00     		.2byte	(.L36-.L57)/2
+ 353 0204 FF00     		.2byte	(.L36-.L57)/2
+ 354 0206 8700     		.2byte	(.L44-.L57)/2
+ 355 0208 A200     		.2byte	(.L45-.L57)/2
+ 356 020a BD00     		.2byte	(.L46-.L57)/2
+ 357 020c C300     		.2byte	(.L47-.L57)/2
+ 358 020e C900     		.2byte	(.L48-.L57)/2
+ 359 0210 CF00     		.2byte	(.L49-.L57)/2
+ 360 0212 D500     		.2byte	(.L50-.L57)/2
+ 361 0214 DB00     		.2byte	(.L51-.L57)/2
+ 362 0216 E100     		.2byte	(.L52-.L57)/2
+ 363 0218 E700     		.2byte	(.L53-.L57)/2
+ 364 021a ED00     		.2byte	(.L54-.L57)/2
+ 365 021c F300     		.2byte	(.L55-.L57)/2
+ 366 021e F900     		.2byte	(.L56-.L57)/2
+ 367              	.L37:
+ 492:Eval50xx-Commands.c ****     {
+ 493:Eval50xx-Commands.c ****       case 0:
+ 494:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_XTARGET|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 368              		.loc 1 494 0
+ 369 0220 2020     		movs	r0, #32
+ 370 0222 10FA03F3 		lsls	r3, r0, r3
+ 371 0226 43F00D00 		orr	r0, r3, #13
+ 372 022a 04E0     		b	.L128
+ 373              	.L38:
+ 495:Eval50xx-Commands.c ****         break;
+ 496:Eval50xx-Commands.c **** 
+ 497:Eval50xx-Commands.c ****       case 1:
+ 498:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_XACTUAL|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 374              		.loc 1 498 0
+ 375 022c 2020     		movs	r0, #32
+ 376 022e 10FA03F3 		lsls	r3, r0, r3
+ 377 0232 43F00100 		orr	r0, r3, #1
+ 378              	.L128:
+ 379 0236 C0B2     		uxtb	r0, r0
+ 380 0238 30E2     		b	.L120
+ 381              	.L39:
+ 499:Eval50xx-Commands.c ****         break;
+ 500:Eval50xx-Commands.c **** 
+ 501:Eval50xx-Commands.c ****       case 2:
+ 502:Eval50xx-Commands.c ****         VMaxModified[ActualCommand.Motor]=TRUE;
+ 503:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_VMAX|MOTOR_ADDR(ActualCommand.Motor), abs(ActualCommand.Value.Int32))
+ 382              		.loc 1 503 0
+ 383 023a 2020     		movs	r0, #32
+ 384 023c 9840     		lsls	r0, r0, r3
+ 385              		.loc 1 502 0
+ 386 023e 084A     		ldr	r2, .L144+8
+ 387              		.loc 1 503 0
+ 388 0240 40F00700 		orr	r0, r0, #7
+ 389 0244 0029     		cmp	r1, #0
+ 390              		.loc 1 502 0
+ 391 0246 4FF0010C 		mov	ip, #1
+ 392              		.loc 1 503 0
+ 393 024a C0B2     		uxtb	r0, r0
+ 394 024c B8BF     		it	lt
+ 395 024e 4942     		rsblt	r1, r1, #0
+ 396              		.loc 1 502 0
+ 397 0250 02F803C0 		strb	ip, [r2, r3]
+ 398 0254 22E2     		b	.L120
+ 399              	.L145:
+ 400 0256 00BF     		.align	2
+ 401              	.L144:
+ 402 0258 00000000 		.word	ActualCommand
+ 403 025c 00000000 		.word	ActualReply
+ 404 0260 00000000 		.word	.LANCHOR0
+ 405              	.L40:
+ 504:Eval50xx-Commands.c ****         break;
+ 505:Eval50xx-Commands.c **** 
+ 506:Eval50xx-Commands.c ****       case 4:
+ 507:Eval50xx-Commands.c ****         VMax[ActualCommand.Motor]=abs(ActualCommand.Value.Int32);
+ 508:Eval50xx-Commands.c ****         if(ReadTMC562Int(TMC562_RAMPMODE|MOTOR_ADDR(ActualCommand.Motor))==TMC562_MODE_POSITION)
+ 406              		.loc 1 508 0
+ 407 0264 2024     		movs	r4, #32
+ 408 0266 14FA03F0 		lsls	r0, r4, r3
+ 409              		.loc 1 507 0
+ 410 026a C44A     		ldr	r2, .L146
+ 411 026c 0029     		cmp	r1, #0
+ 412 026e B8BF     		it	lt
+ 413 0270 4942     		rsblt	r1, r1, #0
+ 414 0272 02EB8303 		add	r3, r2, r3, lsl #2
+ 415              		.loc 1 508 0
+ 416 0276 C0B2     		uxtb	r0, r0
+ 417              		.loc 1 507 0
+ 418 0278 5960     		str	r1, [r3, #4]
+ 419              		.loc 1 508 0
+ 420 027a FFF7FEFF 		bl	ReadTMC562Int
+ 421 027e 0028     		cmp	r0, #0
+ 422 0280 40F06982 		bne	.L107
+ 509:Eval50xx-Commands.c ****           WriteTMC562Int(TMC562_VMAX|MOTOR_ADDR(ActualCommand.Motor), abs(ActualCommand.Value.Int32
+ 423              		.loc 1 509 0
+ 424 0284 BE4B     		ldr	r3, .L146+4
+ 425 0286 9878     		ldrb	r0, [r3, #2]	@ zero_extendqisi2
+ 426 0288 5968     		ldr	r1, [r3, #4]
+ 427 028a 8440     		lsls	r4, r4, r0
+ 428 028c 0029     		cmp	r1, #0
+ 429 028e 44F00700 		orr	r0, r4, #7
+ 430 0292 C0B2     		uxtb	r0, r0
+ 431 0294 B8BF     		it	lt
+ 432 0296 4942     		rsblt	r1, r1, #0
+ 433 0298 00E2     		b	.L120
+ 434              	.L41:
+ 510:Eval50xx-Commands.c ****         break;
+ 511:Eval50xx-Commands.c **** 
+ 512:Eval50xx-Commands.c ****       case 5:
+ 513:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_AMAX|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 435              		.loc 1 513 0
+ 436 029a 2020     		movs	r0, #32
+ 437 029c 10FA03F3 		lsls	r3, r0, r3
+ 438 02a0 43F00600 		orr	r0, r3, #6
+ 439 02a4 C7E7     		b	.L128
+ 440              	.L42:
+ 514:Eval50xx-Commands.c ****         break;
+ 515:Eval50xx-Commands.c **** 
+ 516:Eval50xx-Commands.c ****       case 6:
+ 517:Eval50xx-Commands.c ****         Value=ReadTMC562Int(TMC562_IHOLD_IRUN|MOTOR_ADDR(ActualCommand.Motor));
+ 441              		.loc 1 517 0
+ 442 02a6 2025     		movs	r5, #32
+ 443 02a8 15FA03F3 		lsls	r3, r5, r3
+ 444 02ac 43F01000 		orr	r0, r3, #16
+ 445 02b0 C0B2     		uxtb	r0, r0
+ 446 02b2 FFF7FEFF 		bl	ReadTMC562Int
+ 518:Eval50xx-Commands.c ****         WriteTMC562Datagram(TMC562_IHOLD_IRUN|MOTOR_ADDR(ActualCommand.Motor), 0, Value >> 16,
+ 447              		.loc 1 518 0
+ 448 02b6 B24B     		ldr	r3, .L146+4
+ 449              		.loc 1 517 0
+ 450 02b8 0446     		mov	r4, r0
+ 451              		.loc 1 518 0
+ 452 02ba C0F30742 		ubfx	r2, r0, #16, #8
+ 453 02be 9878     		ldrb	r0, [r3, #2]	@ zero_extendqisi2
+ 454 02c0 E4B2     		uxtb	r4, r4
+ 455              	.LVL9:
+ 456 02c2 8540     		lsls	r5, r5, r0
+ 457 02c4 45F01000 		orr	r0, r5, #16
+ 458 02c8 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 459 02ca C0B2     		uxtb	r0, r0
+ 460 02cc 0021     		movs	r1, #0
+ 461 02ce FAE6     		b	.L117
+ 462              	.LVL10:
+ 463              	.L43:
+ 519:Eval50xx-Commands.c ****                             ActualCommand.Value.Byte[0], Value & 0xff);
+ 520:Eval50xx-Commands.c ****         break;
+ 521:Eval50xx-Commands.c **** 
+ 522:Eval50xx-Commands.c ****       case 7:
+ 523:Eval50xx-Commands.c ****         Value=ReadTMC562Int(TMC562_IHOLD_IRUN|MOTOR_ADDR(ActualCommand.Motor));
+ 464              		.loc 1 523 0
+ 465 02d0 2025     		movs	r5, #32
+ 466 02d2 15FA03F3 		lsls	r3, r5, r3
+ 467 02d6 43F01000 		orr	r0, r3, #16
+ 468 02da C0B2     		uxtb	r0, r0
+ 469 02dc FFF7FEFF 		bl	ReadTMC562Int
+ 524:Eval50xx-Commands.c ****         WriteTMC562Datagram(TMC562_IHOLD_IRUN|MOTOR_ADDR(ActualCommand.Motor), 0, Value >> 16,
+ 470              		.loc 1 524 0
+ 471 02e0 A749     		ldr	r1, .L146+4
+ 472              		.loc 1 523 0
+ 473 02e2 0246     		mov	r2, r0
+ 474              		.loc 1 524 0
+ 475 02e4 C0F30723 		ubfx	r3, r0, #8, #8
+ 476 02e8 8878     		ldrb	r0, [r1, #2]	@ zero_extendqisi2
+ 477 02ea 0C79     		ldrb	r4, [r1, #4]	@ zero_extendqisi2
+ 478 02ec 8540     		lsls	r5, r5, r0
+ 479 02ee 45F01000 		orr	r0, r5, #16
+ 480 02f2 C0B2     		uxtb	r0, r0
+ 481 02f4 0021     		movs	r1, #0
+ 482 02f6 C2F30742 		ubfx	r2, r2, #16, #8
+ 483 02fa E4E6     		b	.L117
+ 484              	.L44:
+ 525:Eval50xx-Commands.c ****                             Value >> 8, ActualCommand.Value.Byte[0]);
+ 526:Eval50xx-Commands.c ****         break;
+ 527:Eval50xx-Commands.c **** 
+ 528:Eval50xx-Commands.c ****       case 12:
+ 529:Eval50xx-Commands.c ****         Value=ReadTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor));
+ 485              		.loc 1 529 0
+ 486 02fc 2024     		movs	r4, #32
+ 487 02fe 14FA03F3 		lsls	r3, r4, r3
+ 488 0302 43F01400 		orr	r0, r3, #20
+ 489 0306 C0B2     		uxtb	r0, r0
+ 490 0308 FFF7FEFF 		bl	ReadTMC562Int
+ 530:Eval50xx-Commands.c ****         if(ActualCommand.Value.Int32==0)
+ 491              		.loc 1 530 0
+ 492 030c 9C4B     		ldr	r3, .L146+4
+ 493              		.loc 1 529 0
+ 494 030e 0146     		mov	r1, r0
+ 495              		.loc 1 530 0
+ 496 0310 5A68     		ldr	r2, [r3, #4]
+ 497 0312 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 498 0314 32B9     		cbnz	r2, .L58
+ 531:Eval50xx-Commands.c ****           WriteTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor), Value|TMC562_SW_STOPR_ENABL
+ 499              		.loc 1 531 0
+ 500 0316 9C40     		lsls	r4, r4, r3
+ 501 0318 44F01400 		orr	r0, r4, #20
+ 502 031c C0B2     		uxtb	r0, r0
+ 503 031e 41F00201 		orr	r1, r1, #2
+ 504 0322 BBE1     		b	.L120
+ 505              	.L58:
+ 532:Eval50xx-Commands.c ****         else
+ 533:Eval50xx-Commands.c ****           WriteTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor), Value & ~TMC562_SW_STOPR_EN
+ 506              		.loc 1 533 0
+ 507 0324 9C40     		lsls	r4, r4, r3
+ 508 0326 44F01400 		orr	r0, r4, #20
+ 509 032a C0B2     		uxtb	r0, r0
+ 510 032c 21F00201 		bic	r1, r1, #2
+ 511 0330 B4E1     		b	.L120
+ 512              	.L45:
+ 534:Eval50xx-Commands.c ****         break;
+ 535:Eval50xx-Commands.c **** 
+ 536:Eval50xx-Commands.c ****       case 13:
+ 537:Eval50xx-Commands.c ****         Value=ReadTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor));
+ 513              		.loc 1 537 0
+ 514 0332 2024     		movs	r4, #32
+ 515 0334 14FA03F3 		lsls	r3, r4, r3
+ 516 0338 43F01400 		orr	r0, r3, #20
+ 517 033c C0B2     		uxtb	r0, r0
+ 518 033e FFF7FEFF 		bl	ReadTMC562Int
+ 538:Eval50xx-Commands.c ****         if(ActualCommand.Value.Int32==0)
+ 519              		.loc 1 538 0
+ 520 0342 8F4B     		ldr	r3, .L146+4
+ 521              		.loc 1 537 0
+ 522 0344 0146     		mov	r1, r0
+ 523              		.loc 1 538 0
+ 524 0346 5A68     		ldr	r2, [r3, #4]
+ 525 0348 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 526 034a 32B9     		cbnz	r2, .L59
+ 539:Eval50xx-Commands.c ****           WriteTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor), Value|TMC562_SW_STOPL_ENABL
+ 527              		.loc 1 539 0
+ 528 034c 9C40     		lsls	r4, r4, r3
+ 529 034e 44F01400 		orr	r0, r4, #20
+ 530 0352 C0B2     		uxtb	r0, r0
+ 531 0354 41F00101 		orr	r1, r1, #1
+ 532 0358 A0E1     		b	.L120
+ 533              	.L59:
+ 540:Eval50xx-Commands.c ****         else
+ 541:Eval50xx-Commands.c ****           WriteTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor), Value & ~TMC562_SW_STOPL_EN
+ 534              		.loc 1 541 0
+ 535 035a 9C40     		lsls	r4, r4, r3
+ 536 035c 44F01400 		orr	r0, r4, #20
+ 537 0360 C0B2     		uxtb	r0, r0
+ 538 0362 21F00101 		bic	r1, r1, #1
+ 539 0366 99E1     		b	.L120
+ 540              	.L46:
+ 542:Eval50xx-Commands.c ****         break;
+ 543:Eval50xx-Commands.c **** 
+ 544:Eval50xx-Commands.c ****       case 14:
+ 545:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 541              		.loc 1 545 0
+ 542 0368 2020     		movs	r0, #32
+ 543 036a 10FA03F3 		lsls	r3, r0, r3
+ 544 036e 43F01400 		orr	r0, r3, #20
+ 545 0372 60E7     		b	.L128
+ 546              	.L47:
+ 546:Eval50xx-Commands.c ****         break;
+ 547:Eval50xx-Commands.c **** 
+ 548:Eval50xx-Commands.c ****       case 15:
+ 549:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_A1|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 547              		.loc 1 549 0
+ 548 0374 2020     		movs	r0, #32
+ 549 0376 10FA03F3 		lsls	r3, r0, r3
+ 550 037a 43F00400 		orr	r0, r3, #4
+ 551 037e 5AE7     		b	.L128
+ 552              	.L48:
+ 550:Eval50xx-Commands.c ****         break;
+ 551:Eval50xx-Commands.c **** 
+ 552:Eval50xx-Commands.c ****       case 16:
+ 553:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_V1|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 553              		.loc 1 553 0
+ 554 0380 2020     		movs	r0, #32
+ 555 0382 10FA03F3 		lsls	r3, r0, r3
+ 556 0386 43F00500 		orr	r0, r3, #5
+ 557 038a 54E7     		b	.L128
+ 558              	.L49:
+ 554:Eval50xx-Commands.c ****         break;
+ 555:Eval50xx-Commands.c **** 
+ 556:Eval50xx-Commands.c ****       case 17:
+ 557:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_DMAX|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 559              		.loc 1 557 0
+ 560 038c 2020     		movs	r0, #32
+ 561 038e 10FA03F3 		lsls	r3, r0, r3
+ 562 0392 43F00800 		orr	r0, r3, #8
+ 563 0396 4EE7     		b	.L128
+ 564              	.L50:
+ 558:Eval50xx-Commands.c ****         break;
+ 559:Eval50xx-Commands.c **** 
+ 560:Eval50xx-Commands.c ****       case 18:
+ 561:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_D1|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 565              		.loc 1 561 0
+ 566 0398 2020     		movs	r0, #32
+ 567 039a 10FA03F3 		lsls	r3, r0, r3
+ 568 039e 43F00A00 		orr	r0, r3, #10
+ 569 03a2 48E7     		b	.L128
+ 570              	.L51:
+ 562:Eval50xx-Commands.c ****         break;
+ 563:Eval50xx-Commands.c **** 
+ 564:Eval50xx-Commands.c ****       case 19:
+ 565:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_VSTART|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 571              		.loc 1 565 0
+ 572 03a4 2020     		movs	r0, #32
+ 573 03a6 10FA03F3 		lsls	r3, r0, r3
+ 574 03aa 43F00300 		orr	r0, r3, #3
+ 575 03ae 42E7     		b	.L128
+ 576              	.L52:
+ 566:Eval50xx-Commands.c ****         break;
+ 567:Eval50xx-Commands.c **** 
+ 568:Eval50xx-Commands.c ****       case 20:
+ 569:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_VSTOP|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 577              		.loc 1 569 0
+ 578 03b0 2020     		movs	r0, #32
+ 579 03b2 10FA03F3 		lsls	r3, r0, r3
+ 580 03b6 43F00B00 		orr	r0, r3, #11
+ 581 03ba 3CE7     		b	.L128
+ 582              	.L53:
+ 570:Eval50xx-Commands.c ****         break;
+ 571:Eval50xx-Commands.c **** 
+ 572:Eval50xx-Commands.c ****       case 21:
+ 573:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_TZEROWAIT|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32)
+ 583              		.loc 1 573 0
+ 584 03bc 2020     		movs	r0, #32
+ 585 03be 10FA03F3 		lsls	r3, r0, r3
+ 586 03c2 43F00C00 		orr	r0, r3, #12
+ 587 03c6 36E7     		b	.L128
+ 588              	.L54:
+ 574:Eval50xx-Commands.c ****         break;
+ 575:Eval50xx-Commands.c **** 
+ 576:Eval50xx-Commands.c ****       case 22:
+ 577:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_VCOOLTHRS|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32)
+ 589              		.loc 1 577 0
+ 590 03c8 2020     		movs	r0, #32
+ 591 03ca 10FA03F3 		lsls	r3, r0, r3
+ 592 03ce 43F01100 		orr	r0, r3, #17
+ 593 03d2 30E7     		b	.L128
+ 594              	.L55:
+ 578:Eval50xx-Commands.c ****         break;
+ 579:Eval50xx-Commands.c **** 
+ 580:Eval50xx-Commands.c ****       case 23:
+ 581:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_VHIGH|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 595              		.loc 1 581 0
+ 596 03d4 2020     		movs	r0, #32
+ 597 03d6 10FA03F3 		lsls	r3, r0, r3
+ 598 03da 43F01200 		orr	r0, r3, #18
+ 599 03de 2AE7     		b	.L128
+ 600              	.L56:
+ 582:Eval50xx-Commands.c ****         break;
+ 583:Eval50xx-Commands.c **** 
+ 584:Eval50xx-Commands.c ****       case 24:
+ 585:Eval50xx-Commands.c ****         WriteTMC562Int(TMC562_VDCMIN|MOTOR_ADDR(ActualCommand.Motor), ActualCommand.Value.Int32);
+ 601              		.loc 1 585 0
+ 602 03e0 2020     		movs	r0, #32
+ 603 03e2 10FA03F3 		lsls	r3, r0, r3
+ 604 03e6 43F01300 		orr	r0, r3, #19
+ 605 03ea 24E7     		b	.L128
+ 606              	.L36:
+ 586:Eval50xx-Commands.c ****         break;
+ 587:Eval50xx-Commands.c **** 
+ 588:Eval50xx-Commands.c ****       default:
+ 589:Eval50xx-Commands.c ****         ActualReply.Status=REPLY_WRONG_TYPE;
+ 607              		.loc 1 589 0
+ 608 03ec 0322     		movs	r2, #3
+ 609 03ee B0E1     		b	.L125
+ 610              	.L8:
+ 611              	.LBE49:
+ 612              	.LBE48:
+ 613              	.LBB50:
+ 614              	.LBB51:
+ 590:Eval50xx-Commands.c ****         break;
+ 591:Eval50xx-Commands.c ****     }
+ 592:Eval50xx-Commands.c ****   }
+ 593:Eval50xx-Commands.c ****   else ActualReply.Status=REPLY_WRONG_TYPE;
+ 594:Eval50xx-Commands.c **** }
+ 595:Eval50xx-Commands.c **** 
+ 596:Eval50xx-Commands.c **** 
+ 597:Eval50xx-Commands.c **** /*********************************
+ 598:Eval50xx-Commands.c ****    Funktion: GetAxisParameter()
+ 599:Eval50xx-Commands.c **** 
+ 600:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl GAP
+ 601:Eval50xx-Commands.c ****  *********************************/
+ 602:Eval50xx-Commands.c **** static void GetAxisParameter(void)
+ 603:Eval50xx-Commands.c **** {
+ 604:Eval50xx-Commands.c ****   UINT Value;
+ 605:Eval50xx-Commands.c **** 
+ 606:Eval50xx-Commands.c ****   if(ActualCommand.Motor<N_O_MOTORS)
+ 615              		.loc 1 606 0
+ 616 03f0 B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 617 03f2 012B     		cmp	r3, #1
+ 618 03f4 00F2FB80 		bhi	.L111
+ 607:Eval50xx-Commands.c ****   {
+ 608:Eval50xx-Commands.c ****     switch(ActualCommand.Type)
+ 619              		.loc 1 608 0
+ 620 03f8 7278     		ldrb	r2, [r6, #1]	@ zero_extendqisi2
+ 621 03fa 3C46     		mov	r4, r7
+ 622 03fc 182A     		cmp	r2, #24
+ 623 03fe 00F2F380 		bhi	.L112
+ 624 0402 DFE812F0 		tbh	[pc, r2, lsl #1]
+ 625              	.L86:
+ 626 0406 1900     		.2byte	(.L62-.L86)/2
+ 627 0408 1F00     		.2byte	(.L63-.L86)/2
+ 628 040a 2500     		.2byte	(.L64-.L86)/2
+ 629 040c 2B00     		.2byte	(.L65-.L86)/2
+ 630 040e 3100     		.2byte	(.L66-.L86)/2
+ 631 0410 3600     		.2byte	(.L67-.L86)/2
+ 632 0412 3C00     		.2byte	(.L68-.L86)/2
+ 633 0414 4700     		.2byte	(.L69-.L86)/2
+ 634 0416 5100     		.2byte	(.L70-.L86)/2
+ 635 0418 F100     		.2byte	(.L112-.L86)/2
+ 636 041a 5C00     		.2byte	(.L71-.L86)/2
+ 637 041c 6700     		.2byte	(.L72-.L86)/2
+ 638 041e 7400     		.2byte	(.L73-.L86)/2
+ 639 0420 7F00     		.2byte	(.L74-.L86)/2
+ 640 0422 8A00     		.2byte	(.L75-.L86)/2
+ 641 0424 9000     		.2byte	(.L76-.L86)/2
+ 642 0426 9600     		.2byte	(.L77-.L86)/2
+ 643 0428 9C00     		.2byte	(.L78-.L86)/2
+ 644 042a A200     		.2byte	(.L79-.L86)/2
+ 645 042c A800     		.2byte	(.L80-.L86)/2
+ 646 042e AE00     		.2byte	(.L81-.L86)/2
+ 647 0430 B400     		.2byte	(.L82-.L86)/2
+ 648 0432 BF00     		.2byte	(.L83-.L86)/2
+ 649 0434 C500     		.2byte	(.L84-.L86)/2
+ 650 0436 CB00     		.2byte	(.L85-.L86)/2
+ 651              	.L62:
+ 609:Eval50xx-Commands.c ****     {
+ 610:Eval50xx-Commands.c ****       case 0:
+ 611:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_XTARGET|MOTOR_ADDR(ActualCommand.Motor));
+ 652              		.loc 1 611 0
+ 653 0438 2020     		movs	r0, #32
+ 654 043a 10FA03F3 		lsls	r3, r0, r3
+ 655 043e 43F00D00 		orr	r0, r3, #13
+ 656 0442 B0E0     		b	.L122
+ 657              	.L63:
+ 612:Eval50xx-Commands.c ****         break;
+ 613:Eval50xx-Commands.c **** 
+ 614:Eval50xx-Commands.c ****       case 1:
+ 615:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_XACTUAL|MOTOR_ADDR(ActualCommand.Motor));
+ 658              		.loc 1 615 0
+ 659 0444 2020     		movs	r0, #32
+ 660 0446 10FA03F3 		lsls	r3, r0, r3
+ 661 044a 43F00100 		orr	r0, r3, #1
+ 662 044e AAE0     		b	.L122
+ 663              	.L64:
+ 616:Eval50xx-Commands.c ****         break;
+ 617:Eval50xx-Commands.c **** 
+ 618:Eval50xx-Commands.c ****       case 2:
+ 619:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_VMAX|MOTOR_ADDR(ActualCommand.Motor));
+ 664              		.loc 1 619 0
+ 665 0450 2020     		movs	r0, #32
+ 666 0452 10FA03F3 		lsls	r3, r0, r3
+ 667 0456 43F00700 		orr	r0, r3, #7
+ 668 045a A4E0     		b	.L122
+ 669              	.L65:
+ 620:Eval50xx-Commands.c ****         break;
+ 621:Eval50xx-Commands.c **** 
+ 622:Eval50xx-Commands.c ****       case 3:
+ 623:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_VACTUAL|MOTOR_ADDR(ActualCommand.Motor));
+ 670              		.loc 1 623 0
+ 671 045c 2020     		movs	r0, #32
+ 672 045e 10FA03F3 		lsls	r3, r0, r3
+ 673 0462 43F00200 		orr	r0, r3, #2
+ 674 0466 9EE0     		b	.L122
+ 675              	.L66:
+ 624:Eval50xx-Commands.c ****         break;
+ 625:Eval50xx-Commands.c **** 
+ 626:Eval50xx-Commands.c ****       case 4:
+ 627:Eval50xx-Commands.c ****         ActualReply.Value.Int32=VMax[ActualCommand.Motor];
+ 676              		.loc 1 627 0
+ 677 0468 444A     		ldr	r2, .L146
+ 678 046a 02EB8303 		add	r3, r2, r3, lsl #2
+ 679 046e 5B68     		ldr	r3, [r3, #4]
+ 680 0470 B8E0     		b	.L124
+ 681              	.L67:
+ 628:Eval50xx-Commands.c ****         break;
+ 629:Eval50xx-Commands.c **** 
+ 630:Eval50xx-Commands.c ****       case 5:
+ 631:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_AMAX|MOTOR_ADDR(ActualCommand.Motor));
+ 682              		.loc 1 631 0
+ 683 0472 2020     		movs	r0, #32
+ 684 0474 10FA03F3 		lsls	r3, r0, r3
+ 685 0478 43F00600 		orr	r0, r3, #6
+ 686 047c 93E0     		b	.L122
+ 687              	.L68:
+ 632:Eval50xx-Commands.c ****         break;
+ 633:Eval50xx-Commands.c **** 
+ 634:Eval50xx-Commands.c ****       case 6:
+ 635:Eval50xx-Commands.c ****         Value=ReadTMC562Int(TMC562_IHOLD_IRUN|MOTOR_ADDR(ActualCommand.Motor));
+ 688              		.loc 1 635 0
+ 689 047e 2020     		movs	r0, #32
+ 690 0480 10FA03F3 		lsls	r3, r0, r3
+ 691 0484 43F01000 		orr	r0, r3, #16
+ 692 0488 C0B2     		uxtb	r0, r0
+ 693 048a FFF7FEFF 		bl	ReadTMC562Int
+ 636:Eval50xx-Commands.c ****         ActualReply.Value.Int32=(Value>>8) & 0xff;
+ 694              		.loc 1 636 0
+ 695 048e C0F30720 		ubfx	r0, r0, #8, #8
+ 696 0492 8BE0     		b	.L123
+ 697              	.L69:
+ 637:Eval50xx-Commands.c ****         break;
+ 638:Eval50xx-Commands.c **** 
+ 639:Eval50xx-Commands.c ****       case 7:
+ 640:Eval50xx-Commands.c ****         Value=ReadTMC562Int(TMC562_IHOLD_IRUN|MOTOR_ADDR(ActualCommand.Motor));
+ 698              		.loc 1 640 0
+ 699 0494 2020     		movs	r0, #32
+ 700 0496 10FA03F3 		lsls	r3, r0, r3
+ 701 049a 43F01000 		orr	r0, r3, #16
+ 702 049e C0B2     		uxtb	r0, r0
+ 703 04a0 FFF7FEFF 		bl	ReadTMC562Int
+ 641:Eval50xx-Commands.c ****         ActualReply.Value.Int32=Value & 0xff;
+ 704              		.loc 1 641 0
+ 705 04a4 C0B2     		uxtb	r0, r0
+ 706 04a6 81E0     		b	.L123
+ 707              	.L70:
+ 642:Eval50xx-Commands.c ****         break;
+ 643:Eval50xx-Commands.c **** 
+ 644:Eval50xx-Commands.c ****       case 8:
+ 645:Eval50xx-Commands.c ****         ActualReply.Value.Int32=(ReadTMC562Int(TMC562_RAMPSTAT|MOTOR_ADDR(ActualCommand.Motor)) & T
+ 708              		.loc 1 645 0
+ 709 04a8 2020     		movs	r0, #32
+ 710 04aa 10FA03F3 		lsls	r3, r0, r3
+ 711 04ae 43F01500 		orr	r0, r3, #21
+ 712 04b2 C0B2     		uxtb	r0, r0
+ 713 04b4 FFF7FEFF 		bl	ReadTMC562Int
+ 714 04b8 C0F34020 		ubfx	r0, r0, #9, #1
+ 715 04bc 76E0     		b	.L123
+ 716              	.L71:
+ 646:Eval50xx-Commands.c ****         break;
+ 647:Eval50xx-Commands.c **** 
+ 648:Eval50xx-Commands.c ****       case 10:
+ 649:Eval50xx-Commands.c ****         ActualReply.Value.Int32=(ReadTMC562Int(TMC562_RAMPSTAT|MOTOR_ADDR(ActualCommand.Motor)) & T
+ 717              		.loc 1 649 0
+ 718 04be 2020     		movs	r0, #32
+ 719 04c0 10FA03F3 		lsls	r3, r0, r3
+ 720 04c4 43F01500 		orr	r0, r3, #21
+ 721 04c8 C0B2     		uxtb	r0, r0
+ 722 04ca FFF7FEFF 		bl	ReadTMC562Int
+ 723 04ce 80F00200 		eor	r0, r0, #2
+ 724 04d2 14E0     		b	.L127
+ 725              	.L72:
+ 650:Eval50xx-Commands.c ****         break;
+ 651:Eval50xx-Commands.c **** 
+ 652:Eval50xx-Commands.c ****       case 11:
+ 653:Eval50xx-Commands.c ****         ActualReply.Value.Int32=(ReadTMC562Int(TMC562_RAMPSTAT|MOTOR_ADDR(ActualCommand.Motor)) & T
+ 726              		.loc 1 653 0
+ 727 04d4 2020     		movs	r0, #32
+ 728 04d6 10FA03F3 		lsls	r3, r0, r3
+ 729 04da 43F01500 		orr	r0, r3, #21
+ 730 04de C0B2     		uxtb	r0, r0
+ 731 04e0 FFF7FEFF 		bl	ReadTMC562Int
+ 732 04e4 00F00100 		and	r0, r0, #1
+ 733 04e8 80F00100 		eor	r0, r0, #1
+ 734 04ec 5EE0     		b	.L123
+ 735              	.L73:
+ 654:Eval50xx-Commands.c ****         break;
+ 655:Eval50xx-Commands.c **** 
+ 656:Eval50xx-Commands.c ****       case 12:
+ 657:Eval50xx-Commands.c ****         ActualReply.Value.Int32=(ReadTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor)) & TMC
+ 736              		.loc 1 657 0
+ 737 04ee 2020     		movs	r0, #32
+ 738 04f0 10FA03F3 		lsls	r3, r0, r3
+ 739 04f4 43F01400 		orr	r0, r3, #20
+ 740 04f8 C0B2     		uxtb	r0, r0
+ 741 04fa FFF7FEFF 		bl	ReadTMC562Int
+ 742              	.L127:
+ 743 04fe C0F34000 		ubfx	r0, r0, #1, #1
+ 744 0502 53E0     		b	.L123
+ 745              	.L74:
+ 658:Eval50xx-Commands.c ****         break;
+ 659:Eval50xx-Commands.c **** 
+ 660:Eval50xx-Commands.c ****       case 13:
+ 661:Eval50xx-Commands.c ****         ActualReply.Value.Int32=(ReadTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor)) & TMC
+ 746              		.loc 1 661 0
+ 747 0504 2020     		movs	r0, #32
+ 748 0506 10FA03F3 		lsls	r3, r0, r3
+ 749 050a 43F01400 		orr	r0, r3, #20
+ 750 050e C0B2     		uxtb	r0, r0
+ 751 0510 FFF7FEFF 		bl	ReadTMC562Int
+ 752 0514 00F00100 		and	r0, r0, #1
+ 753 0518 48E0     		b	.L123
+ 754              	.L75:
+ 662:Eval50xx-Commands.c ****         break;
+ 663:Eval50xx-Commands.c **** 
+ 664:Eval50xx-Commands.c ****       case 14:
+ 665:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_SWMODE|MOTOR_ADDR(ActualCommand.Motor));
+ 755              		.loc 1 665 0
+ 756 051a 2020     		movs	r0, #32
+ 757 051c 10FA03F3 		lsls	r3, r0, r3
+ 758 0520 43F01400 		orr	r0, r3, #20
+ 759 0524 3FE0     		b	.L122
+ 760              	.L76:
+ 666:Eval50xx-Commands.c ****         break;
+ 667:Eval50xx-Commands.c **** 
+ 668:Eval50xx-Commands.c ****       case 15:
+ 669:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_A1|MOTOR_ADDR(ActualCommand.Motor));
+ 761              		.loc 1 669 0
+ 762 0526 2020     		movs	r0, #32
+ 763 0528 10FA03F3 		lsls	r3, r0, r3
+ 764 052c 43F00400 		orr	r0, r3, #4
+ 765 0530 39E0     		b	.L122
+ 766              	.L77:
+ 670:Eval50xx-Commands.c ****         break;
+ 671:Eval50xx-Commands.c **** 
+ 672:Eval50xx-Commands.c ****       case 16:
+ 673:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_V1|MOTOR_ADDR(ActualCommand.Motor));
+ 767              		.loc 1 673 0
+ 768 0532 2020     		movs	r0, #32
+ 769 0534 10FA03F3 		lsls	r3, r0, r3
+ 770 0538 43F00500 		orr	r0, r3, #5
+ 771 053c 33E0     		b	.L122
+ 772              	.L78:
+ 674:Eval50xx-Commands.c ****         break;
+ 675:Eval50xx-Commands.c **** 
+ 676:Eval50xx-Commands.c ****       case 17:
+ 677:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_DMAX|MOTOR_ADDR(ActualCommand.Motor));
+ 773              		.loc 1 677 0
+ 774 053e 2020     		movs	r0, #32
+ 775 0540 10FA03F3 		lsls	r3, r0, r3
+ 776 0544 43F00800 		orr	r0, r3, #8
+ 777 0548 2DE0     		b	.L122
+ 778              	.L79:
+ 678:Eval50xx-Commands.c ****         break;
+ 679:Eval50xx-Commands.c **** 
+ 680:Eval50xx-Commands.c ****       case 18:
+ 681:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_D1|MOTOR_ADDR(ActualCommand.Motor));
+ 779              		.loc 1 681 0
+ 780 054a 2020     		movs	r0, #32
+ 781 054c 10FA03F3 		lsls	r3, r0, r3
+ 782 0550 43F00A00 		orr	r0, r3, #10
+ 783 0554 27E0     		b	.L122
+ 784              	.L80:
+ 682:Eval50xx-Commands.c ****         break;
+ 683:Eval50xx-Commands.c **** 
+ 684:Eval50xx-Commands.c ****       case 19:
+ 685:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_VSTART|MOTOR_ADDR(ActualCommand.Motor));
+ 785              		.loc 1 685 0
+ 786 0556 2020     		movs	r0, #32
+ 787 0558 10FA03F3 		lsls	r3, r0, r3
+ 788 055c 43F00300 		orr	r0, r3, #3
+ 789 0560 21E0     		b	.L122
+ 790              	.L81:
+ 686:Eval50xx-Commands.c ****         break;
+ 687:Eval50xx-Commands.c **** 
+ 688:Eval50xx-Commands.c ****       case 20:
+ 689:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_VSTOP|MOTOR_ADDR(ActualCommand.Motor));
+ 791              		.loc 1 689 0
+ 792 0562 2020     		movs	r0, #32
+ 793 0564 10FA03F3 		lsls	r3, r0, r3
+ 794 0568 43F00B00 		orr	r0, r3, #11
+ 795 056c 1BE0     		b	.L122
+ 796              	.L82:
+ 690:Eval50xx-Commands.c ****         break;
+ 691:Eval50xx-Commands.c **** 
+ 692:Eval50xx-Commands.c ****       case 21:
+ 693:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_TZEROWAIT|MOTOR_ADDR(ActualCommand.Motor));
+ 797              		.loc 1 693 0
+ 798 056e 2020     		movs	r0, #32
+ 799 0570 10FA03F3 		lsls	r3, r0, r3
+ 800 0574 43F00C00 		orr	r0, r3, #12
+ 801 0578 15E0     		b	.L122
+ 802              	.L147:
+ 803 057a 00BF     		.align	2
+ 804              	.L146:
+ 805 057c 00000000 		.word	.LANCHOR0
+ 806 0580 00000000 		.word	ActualCommand
+ 807              	.L83:
+ 694:Eval50xx-Commands.c ****         break;
+ 695:Eval50xx-Commands.c **** 
+ 696:Eval50xx-Commands.c ****       case 22:
+ 697:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_VCOOLTHRS|MOTOR_ADDR(ActualCommand.Motor));
+ 808              		.loc 1 697 0
+ 809 0584 2020     		movs	r0, #32
+ 810 0586 10FA03F3 		lsls	r3, r0, r3
+ 811 058a 43F01100 		orr	r0, r3, #17
+ 812 058e 0AE0     		b	.L122
+ 813              	.L84:
+ 698:Eval50xx-Commands.c ****         break;
+ 699:Eval50xx-Commands.c **** 
+ 700:Eval50xx-Commands.c ****       case 23:
+ 701:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_VHIGH|MOTOR_ADDR(ActualCommand.Motor));
+ 814              		.loc 1 701 0
+ 815 0590 2020     		movs	r0, #32
+ 816 0592 10FA03F3 		lsls	r3, r0, r3
+ 817 0596 43F01200 		orr	r0, r3, #18
+ 818 059a 04E0     		b	.L122
+ 819              	.L85:
+ 702:Eval50xx-Commands.c ****         break;
+ 703:Eval50xx-Commands.c **** 
+ 704:Eval50xx-Commands.c ****       case 24:
+ 705:Eval50xx-Commands.c ****         ActualReply.Value.Int32=ReadTMC562Int(TMC562_VDCMIN|MOTOR_ADDR(ActualCommand.Motor));
+ 820              		.loc 1 705 0
+ 821 059c 2020     		movs	r0, #32
+ 822 059e 10FA03F3 		lsls	r3, r0, r3
+ 823 05a2 43F01300 		orr	r0, r3, #19
+ 824              	.L122:
+ 825 05a6 C0B2     		uxtb	r0, r0
+ 826 05a8 FFF7FEFF 		bl	ReadTMC562Int
+ 827              	.L123:
+ 828 05ac 6060     		str	r0, [r4, #4]
+ 829 05ae D2E0     		b	.L107
+ 830              	.L9:
+ 831              	.LBE51:
+ 832              	.LBE50:
+ 833              	.LBB52:
+ 834              	.LBB53:
+ 706:Eval50xx-Commands.c ****         break;
+ 707:Eval50xx-Commands.c **** 
+ 708:Eval50xx-Commands.c ****       default:
+ 709:Eval50xx-Commands.c ****         ActualReply.Status=REPLY_WRONG_TYPE;
+ 710:Eval50xx-Commands.c ****         break;
+ 711:Eval50xx-Commands.c ****     }
+ 712:Eval50xx-Commands.c ****   }
+ 713:Eval50xx-Commands.c ****   else ActualReply.Status=REPLY_INVALID_VALUE;
+ 714:Eval50xx-Commands.c **** }
+ 715:Eval50xx-Commands.c **** 
+ 716:Eval50xx-Commands.c **** 
+ 717:Eval50xx-Commands.c **** /*********************************
+ 718:Eval50xx-Commands.c ****    Funktion: SetGlobalParameter()
+ 719:Eval50xx-Commands.c **** 
+ 720:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl SGP
+ 721:Eval50xx-Commands.c ****  *********************************/
+ 722:Eval50xx-Commands.c **** static void SetGlobalParameter(void)
+ 723:Eval50xx-Commands.c **** {
+ 724:Eval50xx-Commands.c ****   switch(ActualCommand.Motor)
+ 835              		.loc 1 724 0
+ 836 05b0 B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 837 05b2 E3B9     		cbnz	r3, .L111
+ 725:Eval50xx-Commands.c ****   {
+ 726:Eval50xx-Commands.c ****     case 0:
+ 727:Eval50xx-Commands.c ****       switch(ActualCommand.Type)
+ 838              		.loc 1 727 0
+ 839 05b4 7378     		ldrb	r3, [r6, #1]	@ zero_extendqisi2
+ 840 05b6 FE2B     		cmp	r3, #254
+ 841 05b8 7FF40BAE 		bne	.L108
+ 728:Eval50xx-Commands.c ****       {
+ 729:Eval50xx-Commands.c ****         case 254:
+ 730:Eval50xx-Commands.c ****           DemoMode=ActualCommand.Value.Byte[0];
+ 842              		.loc 1 730 0
+ 843 05bc 3279     		ldrb	r2, [r6, #4]	@ zero_extendqisi2
+ 844 05be 674B     		ldr	r3, .L148
+ 845 05c0 1A73     		strb	r2, [r3, #12]
+ 846 05c2 C8E0     		b	.L107
+ 847              	.L139:
+ 848              	.LBE53:
+ 849              	.LBE52:
+ 850              	.LBB54:
+ 851              	.LBB55:
+ 731:Eval50xx-Commands.c ****           break;
+ 732:Eval50xx-Commands.c **** 
+ 733:Eval50xx-Commands.c ****         default:
+ 734:Eval50xx-Commands.c ****           ActualReply.Status=REPLY_WRONG_TYPE;
+ 735:Eval50xx-Commands.c ****           break;
+ 736:Eval50xx-Commands.c ****       }
+ 737:Eval50xx-Commands.c ****       break;
+ 738:Eval50xx-Commands.c **** 
+ 739:Eval50xx-Commands.c ****     default:
+ 740:Eval50xx-Commands.c ****       ActualReply.Status=REPLY_INVALID_VALUE;
+ 741:Eval50xx-Commands.c ****       break;
+ 742:Eval50xx-Commands.c ****   }
+ 743:Eval50xx-Commands.c **** }
+ 744:Eval50xx-Commands.c **** 
+ 745:Eval50xx-Commands.c **** 
+ 746:Eval50xx-Commands.c **** /*********************************
+ 747:Eval50xx-Commands.c ****    Funktion: GetGlobalParameter()
+ 748:Eval50xx-Commands.c **** 
+ 749:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl GGP
+ 750:Eval50xx-Commands.c ****  *********************************/
+ 751:Eval50xx-Commands.c **** static void GetGlobalParameter(void)
+ 752:Eval50xx-Commands.c **** {
+ 753:Eval50xx-Commands.c ****   switch(ActualCommand.Motor)
+ 852              		.loc 1 753 0
+ 853 05c4 B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 854 05c6 93B9     		cbnz	r3, .L111
+ 754:Eval50xx-Commands.c ****   {
+ 755:Eval50xx-Commands.c ****     case 0:
+ 756:Eval50xx-Commands.c ****       switch(ActualCommand.Type)
+ 855              		.loc 1 756 0
+ 856 05c8 7378     		ldrb	r3, [r6, #1]	@ zero_extendqisi2
+ 857 05ca 842B     		cmp	r3, #132
+ 858 05cc 03D0     		beq	.L94
+ 859 05ce FE2B     		cmp	r3, #254
+ 860 05d0 634C     		ldr	r4, .L148+4
+ 861 05d2 09D1     		bne	.L112
+ 862 05d4 04E0     		b	.L143
+ 863              	.L94:
+ 757:Eval50xx-Commands.c ****       {
+ 758:Eval50xx-Commands.c ****         case 132:
+ 759:Eval50xx-Commands.c ****           ActualReply.Value.Int32=GetSysTimer();
+ 864              		.loc 1 759 0
+ 865 05d6 FFF7FEFF 		bl	GetSysTimer
+ 866 05da 614B     		ldr	r3, .L148+4
+ 867 05dc 5860     		str	r0, [r3, #4]
+ 868 05de BAE0     		b	.L107
+ 869              	.L143:
+ 760:Eval50xx-Commands.c ****           break;
+ 761:Eval50xx-Commands.c **** 
+ 762:Eval50xx-Commands.c ****         case 254:
+ 763:Eval50xx-Commands.c ****           ActualReply.Value.Int32=DemoMode;
+ 870              		.loc 1 763 0
+ 871 05e0 5E4B     		ldr	r3, .L148
+ 872 05e2 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 873              	.L124:
+ 874 05e4 6360     		str	r3, [r4, #4]
+ 875 05e6 B6E0     		b	.L107
+ 876              	.L112:
+ 764:Eval50xx-Commands.c ****           break;
+ 765:Eval50xx-Commands.c **** 
+ 766:Eval50xx-Commands.c ****         default:
+ 767:Eval50xx-Commands.c ****           ActualReply.Status=REPLY_WRONG_TYPE;
+ 877              		.loc 1 767 0
+ 878 05e8 0323     		movs	r3, #3
+ 879 05ea 2370     		strb	r3, [r4, #0]
+ 880 05ec B3E0     		b	.L107
+ 881              	.L111:
+ 768:Eval50xx-Commands.c ****           break;
+ 769:Eval50xx-Commands.c ****       }
+ 770:Eval50xx-Commands.c ****       break;
+ 771:Eval50xx-Commands.c **** 
+ 772:Eval50xx-Commands.c ****     default:
+ 773:Eval50xx-Commands.c ****       ActualReply.Status=REPLY_INVALID_VALUE;
+ 882              		.loc 1 773 0
+ 883 05ee 0423     		movs	r3, #4
+ 884 05f0 F0E5     		b	.L119
+ 885              	.L12:
+ 886              	.LBE55:
+ 887              	.LBE54:
+ 888              	.LBB56:
+ 889              	.LBB57:
+ 774:Eval50xx-Commands.c ****       break;
+ 775:Eval50xx-Commands.c ****   }
+ 776:Eval50xx-Commands.c **** }
+ 777:Eval50xx-Commands.c **** 
+ 778:Eval50xx-Commands.c **** 
+ 779:Eval50xx-Commands.c **** /*********************************************************
+ 780:Eval50xx-Commands.c ****    Funktion: UserFunc0()
+ 781:Eval50xx-Commands.c **** 
+ 782:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl UF0
+ 783:Eval50xx-Commands.c ****  *********************************************************/
+ 784:Eval50xx-Commands.c **** static void UserFunc0(void)
+ 785:Eval50xx-Commands.c **** {
+ 786:Eval50xx-Commands.c **** }
+ 787:Eval50xx-Commands.c **** 
+ 788:Eval50xx-Commands.c **** 
+ 789:Eval50xx-Commands.c **** /***********************************************
+ 790:Eval50xx-Commands.c ****    Funktion: UserFunc1()
+ 791:Eval50xx-Commands.c **** 
+ 792:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl UF1
+ 793:Eval50xx-Commands.c ****  ***********************************************/
+ 794:Eval50xx-Commands.c **** static void UserFunc1(void)
+ 795:Eval50xx-Commands.c **** {
+ 796:Eval50xx-Commands.c **** }
+ 797:Eval50xx-Commands.c **** 
+ 798:Eval50xx-Commands.c **** 
+ 799:Eval50xx-Commands.c **** /***********************************************
+ 800:Eval50xx-Commands.c ****    Funktion: UserFunc2()
+ 801:Eval50xx-Commands.c **** 
+ 802:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl UF2
+ 803:Eval50xx-Commands.c ****    Motortreiber Ein- und Ausschalten.
+ 804:Eval50xx-Commands.c ****  ***********************************************/
+ 805:Eval50xx-Commands.c **** static void UserFunc2(void)
+ 806:Eval50xx-Commands.c **** {
+ 807:Eval50xx-Commands.c ****   switch(ActualCommand.Type)
+ 890              		.loc 1 807 0
+ 891 05f2 7378     		ldrb	r3, [r6, #1]	@ zero_extendqisi2
+ 892 05f4 002B     		cmp	r3, #0
+ 893 05f6 7FF4ECAD 		bne	.L108
+ 808:Eval50xx-Commands.c ****   {
+ 809:Eval50xx-Commands.c ****     case 0:
+ 810:Eval50xx-Commands.c ****       if(ActualCommand.Value.Int32!=0)
+ 894              		.loc 1 810 0
+ 895 05fa 19B1     		cbz	r1, .L98
+ 811:Eval50xx-Commands.c ****         ENABLE_TMC50xx();
+ 896              		.loc 1 811 0
+ 897 05fc 594B     		ldr	r3, .L148+8
+ 898 05fe 8022     		movs	r2, #128
+ 899 0600 5A61     		str	r2, [r3, #20]
+ 900 0602 A8E0     		b	.L107
+ 901              	.L98:
+ 812:Eval50xx-Commands.c ****       else
+ 813:Eval50xx-Commands.c ****         DISABLE_TMC50xx();
+ 902              		.loc 1 813 0
+ 903 0604 574B     		ldr	r3, .L148+8
+ 904 0606 8022     		movs	r2, #128
+ 905 0608 1A61     		str	r2, [r3, #16]
+ 906 060a A4E0     		b	.L107
+ 907              	.L13:
+ 908              	.LBE57:
+ 909              	.LBE56:
+ 910              	.LBB58:
+ 911              	.LBB59:
+ 814:Eval50xx-Commands.c ****       break;
+ 815:Eval50xx-Commands.c **** 
+ 816:Eval50xx-Commands.c ****     default:
+ 817:Eval50xx-Commands.c ****       ActualReply.Status=REPLY_WRONG_TYPE;
+ 818:Eval50xx-Commands.c ****       break;
+ 819:Eval50xx-Commands.c ****   }
+ 820:Eval50xx-Commands.c **** }
+ 821:Eval50xx-Commands.c **** 
+ 822:Eval50xx-Commands.c **** 
+ 823:Eval50xx-Commands.c **** /********************************************
+ 824:Eval50xx-Commands.c ****    Funktion: UserFunc3()
+ 825:Eval50xx-Commands.c **** 
+ 826:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl UF3
+ 827:Eval50xx-Commands.c ****    Setzen der Taktfrequenz.
+ 828:Eval50xx-Commands.c ****  ********************************************/
+ 829:Eval50xx-Commands.c **** static void UserFunc3(void)
+ 830:Eval50xx-Commands.c **** {
+ 831:Eval50xx-Commands.c ****   TIM_TimeBaseInitTypeDef TIM_Base;
+ 832:Eval50xx-Commands.c ****   TIM_OCInitTypeDef       TIM_Oc;
+ 833:Eval50xx-Commands.c **** 
+ 834:Eval50xx-Commands.c **** 
+ 835:Eval50xx-Commands.c ****   switch(ActualCommand.Value.Int32)
+ 912              		.loc 1 835 0
+ 913 060c 0129     		cmp	r1, #1
+ 914 060e 09D0     		beq	.L101
+ 915 0610 0229     		cmp	r1, #2
+ 916 0612 0ED0     		beq	.L102
+ 917 0614 A1B9     		cbnz	r1, .L114
+ 836:Eval50xx-Commands.c ****   {
+ 837:Eval50xx-Commands.c ****     case 0:  // 9MHz
+ 838:Eval50xx-Commands.c ****       TIM_Base.TIM_Period=4;
+ 918              		.loc 1 838 0
+ 919 0616 4FF00403 		mov	r3, #4	@ movhi
+ 920 061a ADF82030 		strh	r3, [sp, #32]	@ movhi
+ 839:Eval50xx-Commands.c ****       TIM_Oc.TIM_Pulse=2;
+ 921              		.loc 1 839 0
+ 922 061e 4FF00200 		mov	r0, #2	@ movhi
+ 923 0622 0AE0     		b	.L115
+ 924              	.L101:
+ 840:Eval50xx-Commands.c ****       break;
+ 841:Eval50xx-Commands.c **** 
+ 842:Eval50xx-Commands.c ****     case 1: // 12MHz
+ 843:Eval50xx-Commands.c ****       TIM_Base.TIM_Period=3;
+ 925              		.loc 1 843 0
+ 926 0624 4FF00301 		mov	r1, #3	@ movhi
+ 927 0628 ADF82010 		strh	r1, [sp, #32]	@ movhi
+ 844:Eval50xx-Commands.c ****       TIM_Oc.TIM_Pulse=2;
+ 928              		.loc 1 844 0
+ 929 062c 4FF00203 		mov	r3, #2	@ movhi
+ 930 0630 0CE0     		b	.L116
+ 931              	.L102:
+ 845:Eval50xx-Commands.c ****       break;
+ 846:Eval50xx-Commands.c **** 
+ 847:Eval50xx-Commands.c ****     case 2: // 18MHz
+ 848:Eval50xx-Commands.c ****       TIM_Base.TIM_Period=2;
+ 932              		.loc 1 848 0
+ 933 0632 ADF82010 		strh	r1, [sp, #32]	@ movhi
+ 849:Eval50xx-Commands.c ****       TIM_Oc.TIM_Pulse=1;
+ 934              		.loc 1 849 0
+ 935 0636 4FF00100 		mov	r0, #1	@ movhi
+ 936              	.L115:
+ 937 063a ADF81200 		strh	r0, [sp, #18]	@ movhi
+ 938 063e 07E0     		b	.L103
+ 939              	.L114:
+ 850:Eval50xx-Commands.c ****       break;
+ 851:Eval50xx-Commands.c **** 
+ 852:Eval50xx-Commands.c ****     default: // 18MHz
+ 853:Eval50xx-Commands.c ****       TIM_Base.TIM_Period=2;
+ 940              		.loc 1 853 0
+ 941 0640 4FF00201 		mov	r1, #2	@ movhi
+ 942 0644 ADF82010 		strh	r1, [sp, #32]	@ movhi
+ 854:Eval50xx-Commands.c ****       TIM_Oc.TIM_Pulse=1;
+ 943              		.loc 1 854 0
+ 944 0648 4FF00103 		mov	r3, #1	@ movhi
+ 945              	.L116:
+ 946 064c ADF81230 		strh	r3, [sp, #18]	@ movhi
+ 947              	.L103:
+ 855:Eval50xx-Commands.c ****       break;
+ 856:Eval50xx-Commands.c ****   }
+ 857:Eval50xx-Commands.c **** 
+ 858:Eval50xx-Commands.c ****   TIM_Base.TIM_Prescaler = 0;
+ 948              		.loc 1 858 0
+ 949 0650 4FF00003 		mov	r3, #0	@ movhi
+ 859:Eval50xx-Commands.c ****   TIM_Base.TIM_ClockDivision = TIM_CKD_DIV1;
+ 860:Eval50xx-Commands.c ****   TIM_Base.TIM_CounterMode = TIM_CounterMode_CenterAligned1;
+ 861:Eval50xx-Commands.c ****   TIM_TimeBaseInit(TIM2, &TIM_Base);
+ 950              		.loc 1 861 0
+ 951 0654 07A9     		add	r1, sp, #28
+ 952              		.loc 1 858 0
+ 953 0656 ADF81C30 		strh	r3, [sp, #28]	@ movhi
+ 954              		.loc 1 859 0
+ 955 065a ADF82230 		strh	r3, [sp, #34]	@ movhi
+ 956              		.loc 1 861 0
+ 957 065e 4FF08040 		mov	r0, #1073741824
+ 958              		.loc 1 860 0
+ 959 0662 4FF02003 		mov	r3, #32	@ movhi
+ 960 0666 ADF81E30 		strh	r3, [sp, #30]	@ movhi
+ 961              		.loc 1 861 0
+ 962 066a FFF7FEFF 		bl	TIM_TimeBaseInit
+ 862:Eval50xx-Commands.c **** 
+ 863:Eval50xx-Commands.c ****   TIM_Oc.TIM_OCMode = TIM_OCMode_PWM1;
+ 963              		.loc 1 863 0
+ 964 066e 4FF06003 		mov	r3, #96	@ movhi
+ 965 0672 ADF80C30 		strh	r3, [sp, #12]	@ movhi
+ 864:Eval50xx-Commands.c ****   TIM_Oc.TIM_OutputState = TIM_OutputState_Enable;
+ 966              		.loc 1 864 0
+ 967 0676 4FF00103 		mov	r3, #1	@ movhi
+ 968 067a ADF80E30 		strh	r3, [sp, #14]	@ movhi
+ 865:Eval50xx-Commands.c **** 
+ 866:Eval50xx-Commands.c ****   TIM_Oc.TIM_OCPolarity = TIM_OCPolarity_High;
+ 867:Eval50xx-Commands.c ****   TIM_OC3Init(TIM2, &TIM_Oc);
+ 969              		.loc 1 867 0
+ 970 067e 4FF08040 		mov	r0, #1073741824
+ 971              		.loc 1 866 0
+ 972 0682 4FF00003 		mov	r3, #0	@ movhi
+ 973              		.loc 1 867 0
+ 974 0686 03A9     		add	r1, sp, #12
+ 975              		.loc 1 866 0
+ 976 0688 ADF81430 		strh	r3, [sp, #20]	@ movhi
+ 977              		.loc 1 867 0
+ 978 068c FFF7FEFF 		bl	TIM_OC3Init
+ 979              	.LBE59:
+ 980              	.LBE58:
+ 981              		.loc 1 134 0
+ 982 0690 61E0     		b	.L107
+ 983              	.L14:
+ 984              	.LBB60:
+ 985              	.LBB61:
+ 868:Eval50xx-Commands.c **** }
+ 869:Eval50xx-Commands.c **** 
+ 870:Eval50xx-Commands.c **** 
+ 871:Eval50xx-Commands.c **** /*********************************************
+ 872:Eval50xx-Commands.c ****    Funktion: UserFunc4()
+ 873:Eval50xx-Commands.c **** 
+ 874:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl UF4
+ 875:Eval50xx-Commands.c ****    Abfrage der gemessenen Geschwindigkeit.
+ 876:Eval50xx-Commands.c ****  *********************************************/
+ 877:Eval50xx-Commands.c **** static void UserFunc4(void)
+ 878:Eval50xx-Commands.c **** {
+ 879:Eval50xx-Commands.c ****   ActualReply.Value.Int32=GetMeasuredSpeed(ActualCommand.Motor);
+ 986              		.loc 1 879 0
+ 987 0692 B078     		ldrb	r0, [r6, #2]	@ zero_extendqisi2
+ 988 0694 FFF7FEFF 		bl	GetMeasuredSpeed
+ 989 0698 06E0     		b	.L121
+ 990              	.L140:
+ 991              	.LBE61:
+ 992              	.LBE60:
+ 993              	.LBB62:
+ 994              	.LBB63:
+ 880:Eval50xx-Commands.c **** }
+ 881:Eval50xx-Commands.c **** 
+ 882:Eval50xx-Commands.c **** 
+ 883:Eval50xx-Commands.c **** /*********************************
+ 884:Eval50xx-Commands.c ****    Funktion: UserFunc5()
+ 885:Eval50xx-Commands.c **** 
+ 886:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl UF5
+ 887:Eval50xx-Commands.c ****    Beschreiben eines TMC50xx-Registers.
+ 888:Eval50xx-Commands.c ****  *********************************/
+ 889:Eval50xx-Commands.c **** static void UserFunc5(void)
+ 890:Eval50xx-Commands.c **** {
+ 891:Eval50xx-Commands.c ****   WriteTMC562Int(ActualCommand.Type, ActualCommand.Value.Int32);
+ 995              		.loc 1 891 0
+ 996 069a 7078     		ldrb	r0, [r6, #1]	@ zero_extendqisi2
+ 997              	.L120:
+ 998 069c FFF7FEFF 		bl	WriteTMC562Int
+ 999              	.LBE63:
+ 1000              	.LBE62:
+ 1001              		.loc 1 142 0
+ 1002 06a0 59E0     		b	.L107
+ 1003              	.L16:
+ 1004              	.LBB64:
+ 1005              	.LBB65:
+ 892:Eval50xx-Commands.c **** }
+ 893:Eval50xx-Commands.c **** 
+ 894:Eval50xx-Commands.c **** 
+ 895:Eval50xx-Commands.c **** /*********************************
+ 896:Eval50xx-Commands.c ****    Funktion: UserFunc6()
+ 897:Eval50xx-Commands.c **** 
+ 898:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl UF6
+ 899:Eval50xx-Commands.c ****    Lesen eines TMC50xx-Registers
+ 900:Eval50xx-Commands.c ****  *********************************/
+ 901:Eval50xx-Commands.c **** static void UserFunc6(void)
+ 902:Eval50xx-Commands.c **** {
+ 903:Eval50xx-Commands.c ****   ActualReply.Value.Int32=ReadTMC562Int(ActualCommand.Type);
+ 1006              		.loc 1 903 0
+ 1007 06a2 7078     		ldrb	r0, [r6, #1]	@ zero_extendqisi2
+ 1008 06a4 FFF7FEFF 		bl	ReadTMC562Int
+ 1009              	.L121:
+ 1010 06a8 7860     		str	r0, [r7, #4]
+ 1011              	.LBE65:
+ 1012              	.LBE64:
+ 1013              		.loc 1 146 0
+ 1014 06aa 54E0     		b	.L107
+ 1015              	.L17:
+ 1016              	.LBB66:
+ 1017              	.LBB67:
+ 904:Eval50xx-Commands.c **** }
+ 905:Eval50xx-Commands.c **** 
+ 906:Eval50xx-Commands.c **** 
+ 907:Eval50xx-Commands.c **** /*********************************
+ 908:Eval50xx-Commands.c ****    Funktion: UserFunc7()
+ 909:Eval50xx-Commands.c **** 
+ 910:Eval50xx-Commands.c ****    Zweck: TMCL-Befehl UF7
+ 911:Eval50xx-Commands.c ****  *********************************/
+ 912:Eval50xx-Commands.c **** static void UserFunc7(void)
+ 913:Eval50xx-Commands.c **** {
+ 914:Eval50xx-Commands.c **** }
+ 915:Eval50xx-Commands.c **** 
+ 916:Eval50xx-Commands.c **** 
+ 917:Eval50xx-Commands.c **** /*********************************
+ 918:Eval50xx-Commands.c ****    Funktion: GetVersion
+ 919:Eval50xx-Commands.c **** 
+ 920:Eval50xx-Commands.c ****    Zweck: TMCL-Versionsabfrage
+ 921:Eval50xx-Commands.c ****  *********************************/
+ 922:Eval50xx-Commands.c **** static void GetVersion(void)
+ 923:Eval50xx-Commands.c **** {
+ 924:Eval50xx-Commands.c ****   UINT i;
+ 925:Eval50xx-Commands.c **** 
+ 926:Eval50xx-Commands.c ****   if(ActualCommand.Type==0)
+ 1018              		.loc 1 926 0
+ 1019 06ac 7378     		ldrb	r3, [r6, #1]	@ zero_extendqisi2
+ 1020 06ae 83B9     		cbnz	r3, .L104
+ 927:Eval50xx-Commands.c ****   {
+ 928:Eval50xx-Commands.c ****     TMCLReplyFormat=RF_SPECIAL;
+ 929:Eval50xx-Commands.c ****     SpecialReply[0]=SERIAL_HOST_ADDRESS;
+ 930:Eval50xx-Commands.c ****     for(i=0; i<8; i++)
+ 931:Eval50xx-Commands.c ****       SpecialReply[i+1]=VersionString[i];
+ 1021              		.loc 1 931 0
+ 1022 06b0 2D4A     		ldr	r2, .L148+12
+ 1023              		.loc 1 928 0
+ 1024 06b2 0121     		movs	r1, #1
+ 1025              		.loc 1 931 0
+ 1026 06b4 1068     		ldr	r0, [r2, #0]
+ 1027              		.loc 1 928 0
+ 1028 06b6 2D4A     		ldr	r2, .L148+16
+ 1029 06b8 1170     		strb	r1, [r2, #0]
+ 1030              		.loc 1 929 0
+ 1031 06ba 2D4A     		ldr	r2, .L148+20
+ 1032 06bc 4918     		adds	r1, r1, r1
+ 1033 06be 1170     		strb	r1, [r2, #0]
+ 1034              	.L105:
+ 1035              		.loc 1 931 0
+ 1036 06c0 0133     		adds	r3, r3, #1
+ 1037              	.LVL11:
+ 1038 06c2 C218     		adds	r2, r0, r3
+ 1039 06c4 12F8011C 		ldrb	r1, [r2, #-1]	@ zero_extendqisi2
+ 1040 06c8 294A     		ldr	r2, .L148+20
+ 1041              		.loc 1 930 0
+ 1042 06ca 082B     		cmp	r3, #8
+ 1043              		.loc 1 931 0
+ 1044 06cc 9954     		strb	r1, [r3, r2]
+ 1045              		.loc 1 930 0
+ 1046 06ce F7D1     		bne	.L105
+ 1047 06d0 41E0     		b	.L107
+ 1048              	.LVL12:
+ 1049              	.L104:
+ 932:Eval50xx-Commands.c ****   }
+ 933:Eval50xx-Commands.c ****   else if(ActualCommand.Type==1)
+ 1050              		.loc 1 933 0
+ 1051 06d2 012B     		cmp	r3, #1
+ 1052 06d4 3FD1     		bne	.L107
+ 934:Eval50xx-Commands.c ****   {
+ 935:Eval50xx-Commands.c ****     ActualReply.Value.Byte[3]=SW_TYPE_HIGH;
+ 936:Eval50xx-Commands.c ****     ActualReply.Value.Byte[2]=SW_TYPE_LOW;
+ 937:Eval50xx-Commands.c ****     ActualReply.Value.Byte[1]=SW_VERSION_HIGH;
+ 938:Eval50xx-Commands.c ****     ActualReply.Value.Byte[0]=SW_VERSION_LOW;
+ 1053              		.loc 1 938 0
+ 1054 06d6 0322     		movs	r2, #3
+ 1055 06d8 3A71     		strb	r2, [r7, #4]
+ 1056              		.loc 1 935 0
+ 1057 06da 013A     		subs	r2, r2, #1
+ 1058 06dc FA71     		strb	r2, [r7, #7]
+ 1059              		.loc 1 936 0
+ 1060 06de 3032     		adds	r2, r2, #48
+ 1061 06e0 BA71     		strb	r2, [r7, #6]
+ 1062              		.loc 1 937 0
+ 1063 06e2 7B71     		strb	r3, [r7, #5]
+ 1064 06e4 37E0     		b	.L107
+ 1065              	.L18:
+ 1066              	.LBE67:
+ 1067              	.LBE66:
+ 1068              	.LBB68:
+ 1069              	.LBB69:
+ 939:Eval50xx-Commands.c ****   }
+ 940:Eval50xx-Commands.c **** }
+ 941:Eval50xx-Commands.c **** 
+ 942:Eval50xx-Commands.c **** 
+ 943:Eval50xx-Commands.c **** /****************************************
+ 944:Eval50xx-Commands.c ****    Funktion: Boot()
+ 945:Eval50xx-Commands.c **** 
+ 946:Eval50xx-Commands.c ****    Zweck: Spezialbefehl zum Aufruf des
+ 947:Eval50xx-Commands.c ****           Bootloaders.
+ 948:Eval50xx-Commands.c ****  ***************************************/
+ 949:Eval50xx-Commands.c **** static void Boot(void)
+ 950:Eval50xx-Commands.c **** {
+ 951:Eval50xx-Commands.c ****   UINT Delay;
+ 952:Eval50xx-Commands.c **** 
+ 953:Eval50xx-Commands.c ****   if(ActualCommand.Type==0x81 && ActualCommand.Motor==0x92 &&
+ 1070              		.loc 1 953 0
+ 1071 06e6 3268     		ldr	r2, [r6, #0]
+ 1072 06e8 224B     		ldr	r3, .L148+24
+ 1073 06ea 02EA0303 		and	r3, r2, r3
+ 1074 06ee 224A     		ldr	r2, .L148+28
+ 1075 06f0 9342     		cmp	r3, r2
+ 1076 06f2 30D1     		bne	.L107
+ 1077 06f4 214B     		ldr	r3, .L148+32
+ 1078 06f6 9942     		cmp	r1, r3
+ 1079 06f8 2DD1     		bne	.L107
+ 954:Eval50xx-Commands.c ****      ActualCommand.Value.Byte[3]==0xa3 && ActualCommand.Value.Byte[2]==0xb4 &&
+ 955:Eval50xx-Commands.c ****      ActualCommand.Value.Byte[1]==0xc5 && ActualCommand.Value.Byte[0]==0xd6)
+ 956:Eval50xx-Commands.c ****   {
+ 957:Eval50xx-Commands.c ****     DetachUSB();
+ 1080              		.loc 1 957 0
+ 1081 06fa FFF7FEFF 		bl	DetachUSB
+ 958:Eval50xx-Commands.c ****     Delay=GetSysTimer();
+ 1082              		.loc 1 958 0
+ 1083 06fe FFF7FEFF 		bl	GetSysTimer
+ 1084 0702 0446     		mov	r4, r0
+ 1085              	.LVL13:
+ 1086              	.L106:
+ 959:Eval50xx-Commands.c ****     while(abs(GetSysTimer()-Delay)<1000) RESET_WATCHDOG();
+ 1087              		.loc 1 959 0
+ 1088 0704 FFF7FEFF 		bl	GetSysTimer
+ 1089 0708 001B     		subs	r0, r0, r4
+ 1090 070a 0028     		cmp	r0, #0
+ 1091 070c B8BF     		it	lt
+ 1092 070e 4042     		rsblt	r0, r0, #0
+ 1093 0710 B0F57A7F 		cmp	r0, #1000
+ 1094 0714 F6DB     		blt	.L106
+ 960:Eval50xx-Commands.c **** 
+ 961:Eval50xx-Commands.c ****     DisableInterrupts();
+ 1095              		.loc 1 961 0
+ 1096 0716 FFF7FEFF 		bl	DisableInterrupts
+ 962:Eval50xx-Commands.c ****     NVIC_DeInit();
+ 1097              		.loc 1 962 0
+ 1098 071a FFF7FEFF 		bl	NVIC_DeInit
+ 963:Eval50xx-Commands.c ****     SysTick_ITConfig(DISABLE);
+ 1099              		.loc 1 963 0
+ 1100 071e 0020     		movs	r0, #0
+ 1101 0720 FFF7FEFF 		bl	SysTick_ITConfig
+ 964:Eval50xx-Commands.c ****     DMA_Cmd(DMA1_Channel1, DISABLE);
+ 1102              		.loc 1 964 0
+ 1103 0724 0021     		movs	r1, #0
+ 1104 0726 1648     		ldr	r0, .L148+36
+ 1105 0728 FFF7FEFF 		bl	DMA_Cmd
+ 965:Eval50xx-Commands.c ****     DMA_DeInit(DMA1_Channel1);
+ 1106              		.loc 1 965 0
+ 1107 072c 1448     		ldr	r0, .L148+36
+ 1108 072e FFF7FEFF 		bl	DMA_DeInit
+ 966:Eval50xx-Commands.c ****     ADC_DeInit(ADC1);
+ 1109              		.loc 1 966 0
+ 1110 0732 1448     		ldr	r0, .L148+40
+ 1111 0734 FFF7FEFF 		bl	ADC_DeInit
+ 967:Eval50xx-Commands.c **** 
+ 968:Eval50xx-Commands.c ****     ResetCPU(FALSE);
+ 1112              		.loc 1 968 0
+ 1113 0738 0020     		movs	r0, #0
+ 1114 073a FFF7FEFF 		bl	ResetCPU
+ 1115 073e 0AE0     		b	.L107
+ 1116              	.LVL14:
+ 1117              	.L141:
+ 1118              	.LBE69:
+ 1119              	.LBE68:
+ 1120              	.LBB70:
+ 1121              	.LBB71:
+ 969:Eval50xx-Commands.c ****   }
+ 970:Eval50xx-Commands.c **** }
+ 971:Eval50xx-Commands.c **** 
+ 972:Eval50xx-Commands.c **** 
+ 973:Eval50xx-Commands.c **** /*********************************
+ 974:Eval50xx-Commands.c ****    Funktion: SoftwareReset()
+ 975:Eval50xx-Commands.c **** 
+ 976:Eval50xx-Commands.c ****    Zweck: TMCL-Reset-Befehl
+ 977:Eval50xx-Commands.c ****  *********************************/
+ 978:Eval50xx-Commands.c **** static void SoftwareReset(void)
+ 979:Eval50xx-Commands.c **** {
+ 980:Eval50xx-Commands.c ****   if(ActualCommand.Value.Int32==1234) ResetRequested=TRUE;
+ 1122              		.loc 1 980 0
+ 1123 0740 40F2D243 		movw	r3, #1234
+ 1124 0744 9942     		cmp	r1, r3
+ 1125 0746 06D1     		bne	.L107
+ 1126 0748 044B     		ldr	r3, .L148
+ 1127 074a 0122     		movs	r2, #1
+ 1128 074c 5A73     		strb	r2, [r3, #13]
+ 1129 074e 02E0     		b	.L107
+ 1130              	.L2:
+ 1131              	.LBE71:
+ 1132              	.LBE70:
+ 1133              		.loc 1 165 0
+ 1134 0750 0222     		movs	r2, #2
+ 1135              	.L125:
+ 1136 0752 034B     		ldr	r3, .L148+4
+ 1137 0754 1A70     		strb	r2, [r3, #0]
+ 1138              	.LVL15:
+ 1139              	.L107:
+ 1140              		.loc 1 168 0
+ 1141 0756 0BB0     		add	sp, sp, #44
+ 1142 0758 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1143              	.L149:
+ 1144 075a 00BF     		.align	2
+ 1145              	.L148:
+ 1146 075c 00000000 		.word	.LANCHOR0
+ 1147 0760 00000000 		.word	ActualReply
+ 1148 0764 000C0140 		.word	1073810432
+ 1149 0768 00000000 		.word	VersionString
+ 1150 076c 00000000 		.word	TMCLReplyFormat
+ 1151 0770 00000000 		.word	SpecialReply
+ 1152 0774 00FFFF00 		.word	16776960
+ 1153 0778 00819200 		.word	9601280
+ 1154 077c D6C5B4A3 		.word	-1548433962
+ 1155 0780 08000240 		.word	1073872904
+ 1156 0784 00240140 		.word	1073816576
+ 1157              	.LFE0:
+ 1159              		.align	2
+ 1160              		.global	ProcessCommands
+ 1161              		.thumb
+ 1162              		.thumb_func
+ 1164              	ProcessCommands:
+ 1165              	.LFB1:
+ 1166              		.loc 1 183 0
+ 1167              		@ args = 0, pretend = 0, frame = 24
+ 1168              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1169 0788 F0B5     		push	{r4, r5, r6, r7, lr}
+ 1170              	.LCFI2:
+ 1171              		.loc 1 191 0
+ 1172 078a 8A4B     		ldr	r3, .L175
+ 1173              		.loc 1 183 0
+ 1174 078c 87B0     		sub	sp, sp, #28
+ 1175              	.LCFI3:
+ 1176              		.loc 1 191 0
+ 1177 078e 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 1178 0790 5BB1     		cbz	r3, .L151
+ 1179 0792 894B     		ldr	r3, .L175+4
+ 1180 0794 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1181 0796 062B     		cmp	r3, #6
+ 1182 0798 03D0     		beq	.L152
+ 1183 079a 0A2B     		cmp	r3, #10
+ 1184 079c 01D0     		beq	.L152
+ 1185 079e 052B     		cmp	r3, #5
+ 1186 07a0 03D1     		bne	.L151
+ 1187              	.L152:
+ 1188              		.loc 1 193 0
+ 1189 07a2 854B     		ldr	r3, .L175+4
+ 1190 07a4 5A78     		ldrb	r2, [r3, #1]	@ zero_extendqisi2
+ 1191 07a6 854B     		ldr	r3, .L175+8
+ 1192 07a8 1A70     		strb	r2, [r3, #0]
+ 1193              	.L151:
+ 1194              		.loc 1 195 0
+ 1195 07aa 824B     		ldr	r3, .L175
+ 1196 07ac 9B7B     		ldrb	r3, [r3, #14]	@ zero_extendqisi2
+ 1197 07ae 032B     		cmp	r3, #3
+ 1198 07b0 36D1     		bne	.L153
+ 1199              		.loc 1 197 0
+ 1200 07b2 834B     		ldr	r3, .L175+12
+ 1201 07b4 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1202 07b6 3BBB     		cbnz	r3, .L154
+ 1203              		.loc 1 199 0
+ 1204 07b8 804C     		ldr	r4, .L175+8
+ 1205              		.loc 1 206 0
+ 1206 07ba 0220     		movs	r0, #2
+ 1207              		.loc 1 199 0
+ 1208 07bc 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ 1209 07be 2578     		ldrb	r5, [r4, #0]	@ zero_extendqisi2
+ 1210 07c0 E279     		ldrb	r2, [r4, #7]	@ zero_extendqisi2
+ 1211 07c2 ED18     		adds	r5, r5, r3
+ 1212 07c4 0335     		adds	r5, r5, #3
+ 1213 07c6 A379     		ldrb	r3, [r4, #6]	@ zero_extendqisi2
+ 1214 07c8 AD18     		adds	r5, r5, r2
+ 1215 07ca 6279     		ldrb	r2, [r4, #5]	@ zero_extendqisi2
+ 1216 07cc ED18     		adds	r5, r5, r3
+ 1217 07ce 2379     		ldrb	r3, [r4, #4]	@ zero_extendqisi2
+ 1218 07d0 AD18     		adds	r5, r5, r2
+ 1219 07d2 ED18     		adds	r5, r5, r3
+ 1220              		.loc 1 206 0
+ 1221 07d4 FFF7FEFF 		bl	WriteUART
+ 1222              		.loc 1 207 0
+ 1223 07d8 0120     		movs	r0, #1
+ 1224 07da FFF7FEFF 		bl	WriteUART
+ 1225              		.loc 1 208 0
+ 1226 07de 2078     		ldrb	r0, [r4, #0]	@ zero_extendqisi2
+ 1227 07e0 FFF7FEFF 		bl	WriteUART
+ 1228              		.loc 1 209 0
+ 1229 07e4 6078     		ldrb	r0, [r4, #1]	@ zero_extendqisi2
+ 1230 07e6 FFF7FEFF 		bl	WriteUART
+ 1231              		.loc 1 210 0
+ 1232 07ea E079     		ldrb	r0, [r4, #7]	@ zero_extendqisi2
+ 1233 07ec FFF7FEFF 		bl	WriteUART
+ 1234              		.loc 1 211 0
+ 1235 07f0 A079     		ldrb	r0, [r4, #6]	@ zero_extendqisi2
+ 1236 07f2 FFF7FEFF 		bl	WriteUART
+ 1237              		.loc 1 212 0
+ 1238 07f6 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 1239 07f8 FFF7FEFF 		bl	WriteUART
+ 1240              		.loc 1 199 0
+ 1241 07fc EDB2     		uxtb	r5, r5
+ 1242              	.LVL16:
+ 1243              		.loc 1 213 0
+ 1244 07fe 2079     		ldrb	r0, [r4, #4]	@ zero_extendqisi2
+ 1245 0800 FFF7FEFF 		bl	WriteUART
+ 1246              		.loc 1 214 0
+ 1247 0804 2846     		mov	r0, r5
+ 1248 0806 2CE0     		b	.L172
+ 1249              	.LVL17:
+ 1250              	.L154:
+ 1251              		.loc 1 216 0
+ 1252 0808 012B     		cmp	r3, #1
+ 1253 080a 40F08680 		bne	.L155
+ 1254 080e 0024     		movs	r4, #0
+ 1255              	.LVL18:
+ 1256              	.L156:
+ 1257              		.loc 1 220 0
+ 1258 0810 6C4B     		ldr	r3, .L175+16
+ 1259 0812 E05C     		ldrb	r0, [r4, r3]	@ zero_extendqisi2
+ 1260              		.loc 1 218 0
+ 1261 0814 0134     		adds	r4, r4, #1
+ 1262              		.loc 1 220 0
+ 1263 0816 FFF7FEFF 		bl	WriteUART
+ 1264              		.loc 1 218 0
+ 1265 081a 092C     		cmp	r4, #9
+ 1266 081c F8D1     		bne	.L156
+ 1267 081e 7CE0     		b	.L155
+ 1268              	.LVL19:
+ 1269              	.L153:
+ 1270              		.loc 1 224 0
+ 1271 0820 042B     		cmp	r3, #4
+ 1272 0822 21D1     		bne	.L157
+ 1273              		.loc 1 226 0
+ 1274 0824 654C     		ldr	r4, .L175+8
+ 1275 0826 0023     		movs	r3, #0
+ 1276              		.loc 1 227 0
+ 1277 0828 0125     		movs	r5, #1
+ 1278              		.loc 1 228 0
+ 1279 082a 6360     		str	r3, [r4, #4]
+ 1280              		.loc 1 226 0
+ 1281 082c 6370     		strb	r3, [r4, #1]
+ 1282              		.loc 1 237 0
+ 1283 082e 0220     		movs	r0, #2
+ 1284              		.loc 1 227 0
+ 1285 0830 2570     		strb	r5, [r4, #0]
+ 1286              		.loc 1 237 0
+ 1287 0832 FFF7FEFF 		bl	WriteUART
+ 1288              		.loc 1 238 0
+ 1289 0836 2846     		mov	r0, r5
+ 1290 0838 FFF7FEFF 		bl	WriteUART
+ 1291              		.loc 1 239 0
+ 1292 083c 2078     		ldrb	r0, [r4, #0]	@ zero_extendqisi2
+ 1293 083e FFF7FEFF 		bl	WriteUART
+ 1294              		.loc 1 240 0
+ 1295 0842 6078     		ldrb	r0, [r4, #1]	@ zero_extendqisi2
+ 1296 0844 FFF7FEFF 		bl	WriteUART
+ 1297              		.loc 1 241 0
+ 1298 0848 E079     		ldrb	r0, [r4, #7]	@ zero_extendqisi2
+ 1299 084a FFF7FEFF 		bl	WriteUART
+ 1300              		.loc 1 242 0
+ 1301 084e A079     		ldrb	r0, [r4, #6]	@ zero_extendqisi2
+ 1302 0850 FFF7FEFF 		bl	WriteUART
+ 1303              		.loc 1 243 0
+ 1304 0854 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 1305 0856 FFF7FEFF 		bl	WriteUART
+ 1306              		.loc 1 244 0
+ 1307 085a 2079     		ldrb	r0, [r4, #4]	@ zero_extendqisi2
+ 1308 085c FFF7FEFF 		bl	WriteUART
+ 1309              		.loc 1 245 0
+ 1310 0860 0420     		movs	r0, #4
+ 1311              	.LVL20:
+ 1312              	.L172:
+ 1313 0862 FFF7FEFF 		bl	WriteUART
+ 1314 0866 58E0     		b	.L155
+ 1315              	.LVL21:
+ 1316              	.L157:
+ 1317              		.loc 1 247 0
+ 1318 0868 072B     		cmp	r3, #7
+ 1319 086a 34D1     		bne	.L158
+ 1320              		.loc 1 249 0
+ 1321 086c 544B     		ldr	r3, .L175+12
+ 1322 086e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1323 0870 23BB     		cbnz	r3, .L159
+ 1324              		.loc 1 251 0
+ 1325 0872 524B     		ldr	r3, .L175+8
+ 1326              		.loc 1 258 0
+ 1327 0874 0225     		movs	r5, #2
+ 1328              		.loc 1 251 0
+ 1329 0876 93F800E0 		ldrb	lr, [r3, #0]	@ zero_extendqisi2
+ 1330 087a 93F801C0 		ldrb	ip, [r3, #1]	@ zero_extendqisi2
+ 1331              		.loc 1 253 0
+ 1332 087e D879     		ldrb	r0, [r3, #7]	@ zero_extendqisi2
+ 1333              		.loc 1 266 0
+ 1334 0880 0EEB0C04 		add	r4, lr, ip
+ 1335              		.loc 1 254 0
+ 1336 0884 9979     		ldrb	r1, [r3, #6]	@ zero_extendqisi2
+ 1337              		.loc 1 266 0
+ 1338 0886 0334     		adds	r4, r4, #3
+ 1339              		.loc 1 255 0
+ 1340 0888 5A79     		ldrb	r2, [r3, #5]	@ zero_extendqisi2
+ 1341              		.loc 1 266 0
+ 1342 088a 0419     		adds	r4, r0, r4
+ 1343              		.loc 1 256 0
+ 1344 088c 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 1345              		.loc 1 266 0
+ 1346 088e 0C19     		adds	r4, r1, r4
+ 1347 0890 1419     		adds	r4, r2, r4
+ 1348 0892 1C19     		adds	r4, r3, r4
+ 1349              		.loc 1 258 0
+ 1350 0894 8DF80050 		strb	r5, [sp, #0]
+ 1351              		.loc 1 259 0
+ 1352 0898 013D     		subs	r5, r5, #1
+ 1353 089a 8DF80150 		strb	r5, [sp, #1]
+ 1354              		.loc 1 266 0
+ 1355 089e 8DF80840 		strb	r4, [sp, #8]
+ 1356              		.loc 1 260 0
+ 1357 08a2 8DF802E0 		strb	lr, [sp, #2]
+ 1358              		.loc 1 261 0
+ 1359 08a6 8DF803C0 		strb	ip, [sp, #3]
+ 1360              		.loc 1 262 0
+ 1361 08aa 8DF80400 		strb	r0, [sp, #4]
+ 1362              		.loc 1 263 0
+ 1363 08ae 8DF80510 		strb	r1, [sp, #5]
+ 1364              		.loc 1 264 0
+ 1365 08b2 8DF80620 		strb	r2, [sp, #6]
+ 1366              		.loc 1 265 0
+ 1367 08b6 8DF80730 		strb	r3, [sp, #7]
+ 1368 08ba 09E0     		b	.L160
+ 1369              	.L159:
+ 1370              		.loc 1 268 0
+ 1371 08bc 012B     		cmp	r3, #1
+ 1372 08be 07D1     		bne	.L160
+ 1373 08c0 013B     		subs	r3, r3, #1
+ 1374              	.LVL22:
+ 1375              	.L161:
+ 1376              		.loc 1 272 0
+ 1377 08c2 404A     		ldr	r2, .L175+16
+ 1378 08c4 995C     		ldrb	r1, [r3, r2]	@ zero_extendqisi2
+ 1379 08c6 0DF80310 		strb	r1, [sp, r3]
+ 1380              		.loc 1 270 0
+ 1381 08ca 0133     		adds	r3, r3, #1
+ 1382 08cc 092B     		cmp	r3, #9
+ 1383 08ce F8D1     		bne	.L161
+ 1384              	.L160:
+ 1385              		.loc 1 276 0
+ 1386 08d0 6846     		mov	r0, sp
+ 1387 08d2 0921     		movs	r1, #9
+ 1388 08d4 1FE0     		b	.L173
+ 1389              	.LVL23:
+ 1390              	.L158:
+ 1391              		.loc 1 278 0
+ 1392 08d6 082B     		cmp	r3, #8
+ 1393 08d8 1FD1     		bne	.L155
+ 1394              		.loc 1 280 0
+ 1395 08da 0024     		movs	r4, #0
+ 1396 08dc 374A     		ldr	r2, .L175+8
+ 1397              		.loc 1 291 0
+ 1398 08de 4FF0020C 		mov	ip, #2
+ 1399              		.loc 1 281 0
+ 1400 08e2 0123     		movs	r3, #1
+ 1401              		.loc 1 291 0
+ 1402 08e4 8DF800C0 		strb	ip, [sp, #0]
+ 1403              		.loc 1 299 0
+ 1404 08e8 04F1040C 		add	ip, r4, #4
+ 1405              		.loc 1 301 0
+ 1406 08ec 6846     		mov	r0, sp
+ 1407 08ee 0921     		movs	r1, #9
+ 1408              		.loc 1 282 0
+ 1409 08f0 5460     		str	r4, [r2, #4]
+ 1410              		.loc 1 293 0
+ 1411 08f2 8DF80230 		strb	r3, [sp, #2]
+ 1412              		.loc 1 294 0
+ 1413 08f6 8DF80340 		strb	r4, [sp, #3]
+ 1414              		.loc 1 295 0
+ 1415 08fa 8DF80440 		strb	r4, [sp, #4]
+ 1416              		.loc 1 296 0
+ 1417 08fe 8DF80540 		strb	r4, [sp, #5]
+ 1418              		.loc 1 297 0
+ 1419 0902 8DF80640 		strb	r4, [sp, #6]
+ 1420              		.loc 1 298 0
+ 1421 0906 8DF80740 		strb	r4, [sp, #7]
+ 1422              		.loc 1 299 0
+ 1423 090a 8DF808C0 		strb	ip, [sp, #8]
+ 1424              		.loc 1 280 0
+ 1425 090e 5470     		strb	r4, [r2, #1]
+ 1426              		.loc 1 281 0
+ 1427 0910 1370     		strb	r3, [r2, #0]
+ 1428              		.loc 1 292 0
+ 1429 0912 8DF80130 		strb	r3, [sp, #1]
+ 1430              	.LVL24:
+ 1431              	.L173:
+ 1432              		.loc 1 301 0
+ 1433 0916 FFF7FEFF 		bl	USBSendData
+ 1434              	.LVL25:
+ 1435              	.L155:
+ 1436              		.loc 1 305 0
+ 1437 091a 264B     		ldr	r3, .L175
+ 1438              		.loc 1 306 0
+ 1439 091c 2848     		ldr	r0, .L175+12
+ 1440              		.loc 1 310 0
+ 1441 091e 597B     		ldrb	r1, [r3, #13]	@ zero_extendqisi2
+ 1442              		.loc 1 305 0
+ 1443 0920 0022     		movs	r2, #0
+ 1444              		.loc 1 306 0
+ 1445 0922 0270     		strb	r2, [r0, #0]
+ 1446              		.loc 1 305 0
+ 1447 0924 9A73     		strb	r2, [r3, #14]
+ 1448              		.loc 1 310 0
+ 1449 0926 11B1     		cbz	r1, .L162
+ 1450 0928 0120     		movs	r0, #1
+ 1451 092a FFF7FEFF 		bl	ResetCPU
+ 1452              	.L162:
+ 1453              		.loc 1 313 0
+ 1454 092e 0DF11700 		add	r0, sp, #23
+ 1455 0932 FFF7FEFF 		bl	ReadUART
+ 1456 0936 0446     		mov	r4, r0
+ 1457              	.LVL26:
+ 1458 0938 0028     		cmp	r0, #0
+ 1459 093a 45D0     		beq	.L163
+ 1460              		.loc 1 315 0
+ 1461 093c FFF7FEFF 		bl	CheckUARTTimeout
+ 1462 0940 10B1     		cbz	r0, .L164
+ 1463 0942 1C4B     		ldr	r3, .L175
+ 1464 0944 0022     		movs	r2, #0
+ 1465 0946 DA73     		strb	r2, [r3, #15]
+ 1466              	.L164:
+ 1467              		.loc 1 316 0
+ 1468 0948 1A4B     		ldr	r3, .L175
+ 1469 094a 9DF81700 		ldrb	r0, [sp, #23]	@ zero_extendqisi2
+ 1470              	.LVL27:
+ 1471 094e D97B     		ldrb	r1, [r3, #15]	@ zero_extendqisi2
+ 1472 0950 4A1C     		adds	r2, r1, #1
+ 1473 0952 D2B2     		uxtb	r2, r2
+ 1474 0954 C918     		adds	r1, r1, r3
+ 1475              		.loc 1 318 0
+ 1476 0956 092A     		cmp	r2, #9
+ 1477              		.loc 1 316 0
+ 1478 0958 0874     		strb	r0, [r1, #16]
+ 1479 095a DA73     		strb	r2, [r3, #15]
+ 1480              		.loc 1 318 0
+ 1481 095c 65D1     		bne	.L165
+ 1482              		.loc 1 322 0
+ 1483 095e 197C     		ldrb	r1, [r3, #16]	@ zero_extendqisi2
+ 1484              		.loc 1 320 0
+ 1485 0960 0022     		movs	r2, #0
+ 1486              		.loc 1 322 0
+ 1487 0962 0129     		cmp	r1, #1
+ 1488              		.loc 1 320 0
+ 1489 0964 DA73     		strb	r2, [r3, #15]
+ 1490              		.loc 1 322 0
+ 1491 0966 60D1     		bne	.L165
+ 1492 0968 1146     		mov	r1, r2
+ 1493              	.LVL28:
+ 1494              	.L166:
+ 1495              		.loc 1 325 0
+ 1496 096a 124B     		ldr	r3, .L175
+ 1497 096c 03F11000 		add	r0, r3, #16
+ 1498              	.LVL29:
+ 1499 0970 805C     		ldrb	r0, [r0, r2]	@ zero_extendqisi2
+ 1500 0972 0132     		adds	r2, r2, #1
+ 1501 0974 0918     		adds	r1, r1, r0
+ 1502              	.LVL30:
+ 1503 0976 082A     		cmp	r2, #8
+ 1504 0978 C9B2     		uxtb	r1, r1
+ 1505              	.LVL31:
+ 1506 097a F6D1     		bne	.L166
+ 1507              		.loc 1 327 0
+ 1508 097c 1A7E     		ldrb	r2, [r3, #24]	@ zero_extendqisi2
+ 1509              	.LVL32:
+ 1510 097e 8A42     		cmp	r2, r1
+ 1511 0980 14D1     		bne	.L167
+ 1512              		.loc 1 329 0
+ 1513 0982 0D4A     		ldr	r2, .L175+4
+ 1514              		.loc 1 335 0
+ 1515 0984 DF7D     		ldrb	r7, [r3, #23]	@ zero_extendqisi2
+ 1516              		.loc 1 329 0
+ 1517 0986 5E7C     		ldrb	r6, [r3, #17]	@ zero_extendqisi2
+ 1518              		.loc 1 330 0
+ 1519 0988 9D7C     		ldrb	r5, [r3, #18]	@ zero_extendqisi2
+ 1520              		.loc 1 331 0
+ 1521 098a DC7C     		ldrb	r4, [r3, #19]	@ zero_extendqisi2
+ 1522              		.loc 1 332 0
+ 1523 098c 93F814C0 		ldrb	ip, [r3, #20]	@ zero_extendqisi2
+ 1524              		.loc 1 333 0
+ 1525 0990 587D     		ldrb	r0, [r3, #21]	@ zero_extendqisi2
+ 1526              		.loc 1 334 0
+ 1527 0992 997D     		ldrb	r1, [r3, #22]	@ zero_extendqisi2
+ 1528              	.LVL33:
+ 1529              		.loc 1 335 0
+ 1530 0994 1771     		strb	r7, [r2, #4]
+ 1531              		.loc 1 339 0
+ 1532 0996 0027     		movs	r7, #0
+ 1533              		.loc 1 329 0
+ 1534 0998 1670     		strb	r6, [r2, #0]
+ 1535              		.loc 1 330 0
+ 1536 099a 5570     		strb	r5, [r2, #1]
+ 1537              		.loc 1 331 0
+ 1538 099c 9470     		strb	r4, [r2, #2]
+ 1539              		.loc 1 332 0
+ 1540 099e 82F807C0 		strb	ip, [r2, #7]
+ 1541              		.loc 1 333 0
+ 1542 09a2 9071     		strb	r0, [r2, #6]
+ 1543              		.loc 1 334 0
+ 1544 09a4 5171     		strb	r1, [r2, #5]
+ 1545              		.loc 1 339 0
+ 1546 09a6 DF73     		strb	r7, [r3, #15]
+ 1547              		.loc 1 337 0
+ 1548 09a8 0322     		movs	r2, #3
+ 1549 09aa 00E0     		b	.L174
+ 1550              	.LVL34:
+ 1551              	.L167:
+ 1552              		.loc 1 341 0
+ 1553 09ac 0422     		movs	r2, #4
+ 1554              	.L174:
+ 1555 09ae 9A73     		strb	r2, [r3, #14]
+ 1556 09b0 3BE0     		b	.L165
+ 1557              	.L176:
+ 1558 09b2 00BF     		.align	2
+ 1559              	.L175:
+ 1560 09b4 00000000 		.word	.LANCHOR0
+ 1561 09b8 00000000 		.word	ActualCommand
+ 1562 09bc 00000000 		.word	ActualReply
+ 1563 09c0 00000000 		.word	TMCLReplyFormat
+ 1564 09c4 00000000 		.word	SpecialReply
+ 1565              	.LVL35:
+ 1566              	.L163:
+ 1567              		.loc 1 345 0
+ 1568 09c8 03A8     		add	r0, sp, #12
+ 1569 09ca FFF7FEFF 		bl	GetUSBCmd
+ 1570 09ce 0028     		cmp	r0, #0
+ 1571 09d0 2BD0     		beq	.L165
+ 1572              		.loc 1 347 0
+ 1573 09d2 9DF80C30 		ldrb	r3, [sp, #12]	@ zero_extendqisi2
+ 1574 09d6 012B     		cmp	r3, #1
+ 1575 09d8 27D1     		bne	.L165
+ 1576 09da 2346     		mov	r3, r4
+ 1577              	.LVL36:
+ 1578              	.L168:
+ 1579              		.loc 1 350 0
+ 1580 09dc 03AA     		add	r2, sp, #12
+ 1581 09de 125D     		ldrb	r2, [r2, r4]	@ zero_extendqisi2
+ 1582 09e0 0134     		adds	r4, r4, #1
+ 1583 09e2 9B18     		adds	r3, r3, r2
+ 1584              	.LVL37:
+ 1585 09e4 082C     		cmp	r4, #8
+ 1586 09e6 DBB2     		uxtb	r3, r3
+ 1587              	.LVL38:
+ 1588 09e8 F8D1     		bne	.L168
+ 1589              		.loc 1 352 0
+ 1590 09ea 9DF81410 		ldrb	r1, [sp, #20]	@ zero_extendqisi2
+ 1591 09ee 144A     		ldr	r2, .L177
+ 1592 09f0 9942     		cmp	r1, r3
+ 1593 09f2 19D1     		bne	.L169
+ 1594              		.loc 1 354 0
+ 1595 09f4 134B     		ldr	r3, .L177+4
+ 1596              	.LVL39:
+ 1597              		.loc 1 360 0
+ 1598 09f6 9DF81370 		ldrb	r7, [sp, #19]	@ zero_extendqisi2
+ 1599              		.loc 1 354 0
+ 1600 09fa 9DF80D60 		ldrb	r6, [sp, #13]	@ zero_extendqisi2
+ 1601              		.loc 1 355 0
+ 1602 09fe 9DF80E50 		ldrb	r5, [sp, #14]	@ zero_extendqisi2
+ 1603              		.loc 1 356 0
+ 1604 0a02 9DF80F40 		ldrb	r4, [sp, #15]	@ zero_extendqisi2
+ 1605              	.LVL40:
+ 1606              		.loc 1 357 0
+ 1607 0a06 9DF810C0 		ldrb	ip, [sp, #16]	@ zero_extendqisi2
+ 1608              		.loc 1 358 0
+ 1609 0a0a 9DF81100 		ldrb	r0, [sp, #17]	@ zero_extendqisi2
+ 1610              		.loc 1 359 0
+ 1611 0a0e 9DF81210 		ldrb	r1, [sp, #18]	@ zero_extendqisi2
+ 1612              		.loc 1 360 0
+ 1613 0a12 1F71     		strb	r7, [r3, #4]
+ 1614              		.loc 1 362 0
+ 1615 0a14 0727     		movs	r7, #7
+ 1616 0a16 9773     		strb	r7, [r2, #14]
+ 1617              		.loc 1 354 0
+ 1618 0a18 1E70     		strb	r6, [r3, #0]
+ 1619              		.loc 1 355 0
+ 1620 0a1a 5D70     		strb	r5, [r3, #1]
+ 1621              		.loc 1 356 0
+ 1622 0a1c 9C70     		strb	r4, [r3, #2]
+ 1623              		.loc 1 357 0
+ 1624 0a1e 83F807C0 		strb	ip, [r3, #7]
+ 1625              		.loc 1 358 0
+ 1626 0a22 9871     		strb	r0, [r3, #6]
+ 1627              		.loc 1 359 0
+ 1628 0a24 5971     		strb	r1, [r3, #5]
+ 1629 0a26 00E0     		b	.L165
+ 1630              	.LVL41:
+ 1631              	.L169:
+ 1632              		.loc 1 363 0
+ 1633 0a28 9473     		strb	r4, [r2, #14]
+ 1634              	.LVL42:
+ 1635              	.L165:
+ 1636              		.loc 1 369 0
+ 1637 0a2a 054B     		ldr	r3, .L177
+ 1638 0a2c 9B7B     		ldrb	r3, [r3, #14]	@ zero_extendqisi2
+ 1639 0a2e 2BB1     		cbz	r3, .L171
+ 1640 0a30 042B     		cmp	r3, #4
+ 1641 0a32 03D0     		beq	.L171
+ 1642 0a34 082B     		cmp	r3, #8
+ 1643 0a36 01D0     		beq	.L171
+ 1644              		.loc 1 370 0
+ 1645 0a38 FFF7FEFF 		bl	ExecuteActualCommand
+ 1646              	.LVL43:
+ 1647              	.L171:
+ 1648              		.loc 1 371 0
+ 1649 0a3c 07B0     		add	sp, sp, #28
+ 1650 0a3e F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1651              	.L178:
+ 1652              		.align	2
+ 1653              	.L177:
+ 1654 0a40 00000000 		.word	.LANCHOR0
+ 1655 0a44 00000000 		.word	ActualCommand
+ 1656              	.LFE1:
+ 1658              		.comm	ActualCommand,8,4
+ 1659              		.comm	ActualReply,8,4
+ 1660              		.comm	TMCLReplyFormat,1,1
+ 1661              		.comm	SpecialReply,9,4
+ 1662              		.bss
+ 1663              		.align	2
+ 1664              		.set	.LANCHOR0,. + 0
+ 1667              	VMaxModified:
+ 1668 0000 0000     		.space	2
+ 1669 0002 0000     		.space	2
+ 1672              	VMax:
+ 1673 0004 00000000 		.space	8
+ 1673      00000000 
+ 1676              	DemoMode:
+ 1677 000c 00       		.space	1
+ 1680              	ResetRequested:
+ 1681 000d 00       		.space	1
+ 1684              	TMCLCommandState:
+ 1685 000e 00       		.space	1
+ 1688              	UARTCount:
+ 1689 000f 00       		.space	1
+ 1692              	UARTCmd:
+ 1693 0010 00000000 		.space	9
+ 1693      00000000 
+ 1693      00
+ 1772              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Eval50xx-Commands.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:27     .text:00000000 ExecuteActualCommand
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:342    .text:000001ee $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:369    .text:00000220 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:402    .text:00000258 $d
+                            *COM*:00000008 ActualCommand
+                            *COM*:00000008 ActualReply
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:407    .text:00000264 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:626    .text:00000406 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:653    .text:00000438 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:805    .text:0000057c $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:809    .text:00000584 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1146   .text:0000075c $d
+                            *COM*:00000001 TMCLReplyFormat
+                            *COM*:00000009 SpecialReply
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1159   .text:00000788 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1164   .text:00000788 ProcessCommands
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1560   .text:000009b4 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1568   .text:000009c8 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1654   .text:00000a40 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1663   .bss:00000000 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1667   .bss:00000000 VMaxModified
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1672   .bss:00000004 VMax
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1676   .bss:0000000c DemoMode
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1680   .bss:0000000d ResetRequested
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1684   .bss:0000000e TMCLCommandState
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1688   .bss:0000000f UARTCount
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1692   .bss:00000010 UARTCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdSEtnX.s:1707   .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+WriteTMC562Int
+WriteTMC562Datagram
+ReadTMC562Int
+GetSysTimer
+TIM_TimeBaseInit
+TIM_OC3Init
+GetMeasuredSpeed
+DetachUSB
+DisableInterrupts
+NVIC_DeInit
+SysTick_ITConfig
+DMA_Cmd
+DMA_DeInit
+ADC_DeInit
+ResetCPU
+VersionString
+WriteUART
+USBSendData
+ReadUART
+CheckUARTTimeout
+GetUSBCmd

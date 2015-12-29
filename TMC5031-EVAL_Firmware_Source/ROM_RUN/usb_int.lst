@@ -1,0 +1,578 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"usb_int.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	CTR_HP
+  24              		.thumb
+  25              		.thumb_func
+  27              	CTR_HP:
+  28              	.LFB1:
+  29              		.file 1 "lib//src/usb_int.c"
+   1:lib//src/usb_int.c **** /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+   2:lib//src/usb_int.c **** * File Name          : usb_int.c
+   3:lib//src/usb_int.c **** * Author             : MCD Application Team
+   4:lib//src/usb_int.c **** * Version            : V2.2.1
+   5:lib//src/usb_int.c **** * Date               : 09/22/2008
+   6:lib//src/usb_int.c **** * Description        : Endpoint CTR (Low and High) interrupt's service routines
+   7:lib//src/usb_int.c **** ********************************************************************************
+   8:lib//src/usb_int.c **** * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+   9:lib//src/usb_int.c **** * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  10:lib//src/usb_int.c **** * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+  11:lib//src/usb_int.c **** * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+  12:lib//src/usb_int.c **** * CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+  13:lib//src/usb_int.c **** * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  14:lib//src/usb_int.c **** *******************************************************************************/
+  15:lib//src/usb_int.c **** 
+  16:lib//src/usb_int.c **** /* Includes ------------------------------------------------------------------*/
+  17:lib//src/usb_int.c **** #include "usb_lib.h"
+  18:lib//src/usb_int.c **** 
+  19:lib//src/usb_int.c **** /* Private typedef -----------------------------------------------------------*/
+  20:lib//src/usb_int.c **** /* Private define ------------------------------------------------------------*/
+  21:lib//src/usb_int.c **** /* Private macro -------------------------------------------------------------*/
+  22:lib//src/usb_int.c **** /* Private variables ---------------------------------------------------------*/
+  23:lib//src/usb_int.c **** u16 SaveRState;
+  24:lib//src/usb_int.c **** u16 SaveTState;
+  25:lib//src/usb_int.c **** 
+  26:lib//src/usb_int.c **** /* Extern variables ----------------------------------------------------------*/
+  27:lib//src/usb_int.c **** extern void (*pEpInt_IN[7])(void);    /*  Handles IN  interrupts   */
+  28:lib//src/usb_int.c **** extern void (*pEpInt_OUT[7])(void);   /*  Handles OUT interrupts   */
+  29:lib//src/usb_int.c **** 
+  30:lib//src/usb_int.c **** /* Private function prototypes -----------------------------------------------*/
+  31:lib//src/usb_int.c **** /* Private functions ---------------------------------------------------------*/
+  32:lib//src/usb_int.c **** 
+  33:lib//src/usb_int.c **** /*******************************************************************************
+  34:lib//src/usb_int.c **** * Function Name  : CTR_LP.
+  35:lib//src/usb_int.c **** * Description    : Low priority Endpoint Correct Transfer interrupt's service
+  36:lib//src/usb_int.c **** *                  routine.
+  37:lib//src/usb_int.c **** * Input          : None.
+  38:lib//src/usb_int.c **** * Output         : None.
+  39:lib//src/usb_int.c **** * Return         : None.
+  40:lib//src/usb_int.c **** *******************************************************************************/
+  41:lib//src/usb_int.c **** void CTR_LP(void)
+  42:lib//src/usb_int.c **** {
+  43:lib//src/usb_int.c ****   u32 wEPVal = 0;
+  44:lib//src/usb_int.c ****   /* stay in loop while pending ints */
+  45:lib//src/usb_int.c ****   while (((wIstr = _GetISTR()) & ISTR_CTR) != 0)
+  46:lib//src/usb_int.c ****   {
+  47:lib//src/usb_int.c ****     _SetISTR((u16)CLR_CTR); /* clear CTR flag */
+  48:lib//src/usb_int.c ****     /* extract highest priority endpoint number */
+  49:lib//src/usb_int.c ****     EPindex = (u8)(wIstr & ISTR_EP_ID);
+  50:lib//src/usb_int.c ****     if (EPindex == 0)
+  51:lib//src/usb_int.c ****     {
+  52:lib//src/usb_int.c ****       /* Decode and service control endpoint interrupt */
+  53:lib//src/usb_int.c ****       /* calling related service routine */
+  54:lib//src/usb_int.c ****       /* (Setup0_Process, In0_Process, Out0_Process) */
+  55:lib//src/usb_int.c **** 
+  56:lib//src/usb_int.c ****       /* save RX & TX status */
+  57:lib//src/usb_int.c ****       /* and set both to NAK */
+  58:lib//src/usb_int.c ****       SaveRState = _GetEPRxStatus(ENDP0);
+  59:lib//src/usb_int.c ****       SaveTState = _GetEPTxStatus(ENDP0);
+  60:lib//src/usb_int.c ****       _SetEPRxStatus(ENDP0, EP_RX_NAK);
+  61:lib//src/usb_int.c ****       _SetEPTxStatus(ENDP0, EP_TX_NAK);
+  62:lib//src/usb_int.c **** 
+  63:lib//src/usb_int.c **** 
+  64:lib//src/usb_int.c ****       /* DIR bit = origin of the interrupt */
+  65:lib//src/usb_int.c **** 
+  66:lib//src/usb_int.c ****       if ((wIstr & ISTR_DIR) == 0)
+  67:lib//src/usb_int.c ****       {
+  68:lib//src/usb_int.c ****         /* DIR = 0 */
+  69:lib//src/usb_int.c **** 
+  70:lib//src/usb_int.c ****         /* DIR = 0      => IN  int */
+  71:lib//src/usb_int.c ****         /* DIR = 0 implies that (EP_CTR_TX = 1) always  */
+  72:lib//src/usb_int.c **** 
+  73:lib//src/usb_int.c **** 
+  74:lib//src/usb_int.c ****         _ClearEP_CTR_TX(ENDP0);
+  75:lib//src/usb_int.c ****         In0_Process();
+  76:lib//src/usb_int.c **** 
+  77:lib//src/usb_int.c ****            /* before terminate set Tx & Rx status */
+  78:lib//src/usb_int.c ****           _SetEPRxStatus(ENDP0, SaveRState);
+  79:lib//src/usb_int.c ****           _SetEPTxStatus(ENDP0, SaveTState);
+  80:lib//src/usb_int.c ****           return;
+  81:lib//src/usb_int.c ****       }
+  82:lib//src/usb_int.c ****       else
+  83:lib//src/usb_int.c ****       {
+  84:lib//src/usb_int.c ****         /* DIR = 1 */
+  85:lib//src/usb_int.c **** 
+  86:lib//src/usb_int.c ****         /* DIR = 1 & CTR_RX       => SETUP or OUT int */
+  87:lib//src/usb_int.c ****         /* DIR = 1 & (CTR_TX | CTR_RX) => 2 int pending */
+  88:lib//src/usb_int.c **** 
+  89:lib//src/usb_int.c ****         wEPVal = _GetENDPOINT(ENDP0);
+  90:lib//src/usb_int.c ****         if ((wEPVal & EP_CTR_TX) != 0)
+  91:lib//src/usb_int.c ****         {
+  92:lib//src/usb_int.c ****           _ClearEP_CTR_TX(ENDP0);
+  93:lib//src/usb_int.c ****           In0_Process();
+  94:lib//src/usb_int.c ****           /* before terminate set Tx & Rx status */
+  95:lib//src/usb_int.c ****           _SetEPRxStatus(ENDP0, SaveRState);
+  96:lib//src/usb_int.c ****           _SetEPTxStatus(ENDP0, SaveTState);
+  97:lib//src/usb_int.c ****           return;
+  98:lib//src/usb_int.c ****         }
+  99:lib//src/usb_int.c ****         else if ((wEPVal &EP_SETUP) != 0)
+ 100:lib//src/usb_int.c ****         {
+ 101:lib//src/usb_int.c ****           _ClearEP_CTR_RX(ENDP0); /* SETUP bit kept frozen while CTR_RX = 1 */
+ 102:lib//src/usb_int.c ****           Setup0_Process();
+ 103:lib//src/usb_int.c ****           /* before terminate set Tx & Rx status */
+ 104:lib//src/usb_int.c ****           _SetEPRxStatus(ENDP0, SaveRState);
+ 105:lib//src/usb_int.c ****           _SetEPTxStatus(ENDP0, SaveTState);
+ 106:lib//src/usb_int.c ****           return;
+ 107:lib//src/usb_int.c ****         }
+ 108:lib//src/usb_int.c **** 
+ 109:lib//src/usb_int.c ****         else if ((wEPVal & EP_CTR_RX) != 0)
+ 110:lib//src/usb_int.c ****         {
+ 111:lib//src/usb_int.c ****           _ClearEP_CTR_RX(ENDP0);
+ 112:lib//src/usb_int.c ****           Out0_Process();
+ 113:lib//src/usb_int.c ****           /* before terminate set Tx & Rx status */
+ 114:lib//src/usb_int.c ****           _SetEPRxStatus(ENDP0, SaveRState);
+ 115:lib//src/usb_int.c ****           _SetEPTxStatus(ENDP0, SaveTState);
+ 116:lib//src/usb_int.c ****           return;
+ 117:lib//src/usb_int.c ****         }
+ 118:lib//src/usb_int.c ****       }
+ 119:lib//src/usb_int.c ****     }/* if(EPindex == 0) */
+ 120:lib//src/usb_int.c ****     else
+ 121:lib//src/usb_int.c ****     {
+ 122:lib//src/usb_int.c ****       /* Decode and service non control endpoints interrupt  */
+ 123:lib//src/usb_int.c **** 
+ 124:lib//src/usb_int.c ****       /* process related endpoint register */
+ 125:lib//src/usb_int.c ****       wEPVal = _GetENDPOINT(EPindex);
+ 126:lib//src/usb_int.c ****       if ((wEPVal & EP_CTR_RX) != 0)
+ 127:lib//src/usb_int.c ****       {
+ 128:lib//src/usb_int.c ****         /* clear int flag */
+ 129:lib//src/usb_int.c ****         _ClearEP_CTR_RX(EPindex);
+ 130:lib//src/usb_int.c **** 
+ 131:lib//src/usb_int.c ****         /* call OUT service function */
+ 132:lib//src/usb_int.c ****         (*pEpInt_OUT[EPindex-1])();
+ 133:lib//src/usb_int.c **** 
+ 134:lib//src/usb_int.c ****       } /* if((wEPVal & EP_CTR_RX) */
+ 135:lib//src/usb_int.c **** 
+ 136:lib//src/usb_int.c ****       if ((wEPVal & EP_CTR_TX) != 0)
+ 137:lib//src/usb_int.c ****       {
+ 138:lib//src/usb_int.c ****         /* clear int flag */
+ 139:lib//src/usb_int.c ****         _ClearEP_CTR_TX(EPindex);
+ 140:lib//src/usb_int.c **** 
+ 141:lib//src/usb_int.c ****         /* call IN service function */
+ 142:lib//src/usb_int.c ****         (*pEpInt_IN[EPindex-1])();
+ 143:lib//src/usb_int.c ****       } /* if((wEPVal & EP_CTR_TX) != 0) */
+ 144:lib//src/usb_int.c **** 
+ 145:lib//src/usb_int.c ****     }/* if(EPindex == 0) else */
+ 146:lib//src/usb_int.c **** 
+ 147:lib//src/usb_int.c ****   }/* while(...) */
+ 148:lib//src/usb_int.c **** }
+ 149:lib//src/usb_int.c **** 
+ 150:lib//src/usb_int.c **** /*******************************************************************************
+ 151:lib//src/usb_int.c **** * Function Name  : CTR_HP.
+ 152:lib//src/usb_int.c **** * Description    : High Priority Endpoint Correct Transfer interrupt's service 
+ 153:lib//src/usb_int.c **** *                  routine.
+ 154:lib//src/usb_int.c **** * Input          : None.
+ 155:lib//src/usb_int.c **** * Output         : None.
+ 156:lib//src/usb_int.c **** * Return         : None.
+ 157:lib//src/usb_int.c **** *******************************************************************************/
+ 158:lib//src/usb_int.c **** void CTR_HP(void)
+ 159:lib//src/usb_int.c **** {
+  30              		.loc 1 159 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+ 160:lib//src/usb_int.c ****   u32 wEPVal = 0;
+ 161:lib//src/usb_int.c **** 
+ 162:lib//src/usb_int.c ****   while (((wIstr = _GetISTR()) & ISTR_CTR) != 0)
+  35              		.loc 1 162 0
+  36 0002 29E0     		b	.L7
+  37              	.L4:
+ 163:lib//src/usb_int.c ****   {
+ 164:lib//src/usb_int.c ****     _SetISTR((u16)CLR_CTR); /* clear CTR flag */
+  38              		.loc 1 164 0
+  39 0004 47F6FF70 		movw	r0, #32767
+  40 0008 0860     		str	r0, [r1, #0]
+ 165:lib//src/usb_int.c ****     /* extract highest priority endpoint number */
+ 166:lib//src/usb_int.c ****     EPindex = (u8)(wIstr & ISTR_EP_ID);
+  41              		.loc 1 166 0
+  42 000a 1988     		ldrh	r1, [r3, #0]
+  43 000c 01F00F01 		and	r1, r1, #15
+  44              	.LVL0:
+ 167:lib//src/usb_int.c ****     /* process related endpoint register */
+ 168:lib//src/usb_int.c ****     wEPVal = _GetENDPOINT(EPindex);
+  45              		.loc 1 168 0
+  46 0010 8B00     		lsls	r3, r1, #2
+  47 0012 03F18043 		add	r3, r3, #1073741824
+  48              		.loc 1 166 0
+  49 0016 1170     		strb	r1, [r2, #0]
+  50              		.loc 1 168 0
+  51 0018 03F5B843 		add	r3, r3, #23552
+  52 001c 1968     		ldr	r1, [r3, #0]
+  53              	.LVL1:
+  54 001e 89B2     		uxth	r1, r1
+  55              	.LVL2:
+ 169:lib//src/usb_int.c ****     if ((wEPVal & EP_CTR_RX) != 0)
+  56              		.loc 1 169 0
+  57 0020 11F4004F 		tst	r1, #32768
+  58 0024 09D0     		beq	.L3
+ 170:lib//src/usb_int.c ****     {
+ 171:lib//src/usb_int.c ****       /* clear int flag */
+ 172:lib//src/usb_int.c ****       _ClearEP_CTR_RX(EPindex);
+  59              		.loc 1 172 0
+  60 0026 1868     		ldr	r0, [r3, #0]
+  61 0028 40F68F71 		movw	r1, #3983
+  62              	.LVL3:
+  63 002c 00EA0101 		and	r1, r0, r1
+  64 0030 1960     		str	r1, [r3, #0]
+ 173:lib//src/usb_int.c **** 
+ 174:lib//src/usb_int.c ****       /* call OUT service function */
+ 175:lib//src/usb_int.c ****       (*pEpInt_OUT[EPindex-1])();
+  65              		.loc 1 175 0
+  66 0032 1278     		ldrb	r2, [r2, #0]	@ zero_extendqisi2
+  67 0034 0E4B     		ldr	r3, .L10
+  68 0036 013A     		subs	r2, r2, #1
+  69 0038 0BE0     		b	.L8
+  70              	.LVL4:
+  71              	.L3:
+ 176:lib//src/usb_int.c **** 
+ 177:lib//src/usb_int.c ****     } /* if((wEPVal & EP_CTR_RX) */
+ 178:lib//src/usb_int.c ****     else if ((wEPVal & EP_CTR_TX) != 0)
+  72              		.loc 1 178 0
+  73 003a 11F0800F 		tst	r1, #128
+  74 003e 0BD0     		beq	.L7
+ 179:lib//src/usb_int.c ****     {
+ 180:lib//src/usb_int.c ****       /* clear int flag */
+ 181:lib//src/usb_int.c ****       _ClearEP_CTR_TX(EPindex);
+  75              		.loc 1 181 0
+  76 0040 1868     		ldr	r0, [r3, #0]
+  77 0042 48F60F71 		movw	r1, #36623
+  78              	.LVL5:
+  79 0046 00EA0101 		and	r1, r0, r1
+  80 004a 1960     		str	r1, [r3, #0]
+ 182:lib//src/usb_int.c **** 
+ 183:lib//src/usb_int.c ****       /* call IN service function */
+ 184:lib//src/usb_int.c ****       (*pEpInt_IN[EPindex-1])();
+  81              		.loc 1 184 0
+  82 004c 1278     		ldrb	r2, [r2, #0]	@ zero_extendqisi2
+  83 004e 094B     		ldr	r3, .L10+4
+  84 0050 013A     		subs	r2, r2, #1
+  85              	.L8:
+  86 0052 53F82230 		ldr	r3, [r3, r2, lsl #2]
+  87 0056 9847     		blx	r3
+  88              	.LVL6:
+  89              	.L7:
+  90              		.loc 1 162 0
+  91 0058 0749     		ldr	r1, .L10+8
+  92              	.LVL7:
+  93 005a 084B     		ldr	r3, .L10+12
+  94 005c 0868     		ldr	r0, [r1, #0]
+  95              		.loc 1 166 0
+  96 005e 084A     		ldr	r2, .L10+16
+  97              		.loc 1 162 0
+  98 0060 80B2     		uxth	r0, r0
+  99              	.LVL8:
+ 100 0062 1880     		strh	r0, [r3, #0]	@ movhi
+ 101 0064 1888     		ldrh	r0, [r3, #0]
+ 102              	.LVL9:
+ 103 0066 00B2     		sxth	r0, r0
+ 104 0068 0028     		cmp	r0, #0
+ 105 006a CBDB     		blt	.L4
+ 185:lib//src/usb_int.c **** 
+ 186:lib//src/usb_int.c **** 
+ 187:lib//src/usb_int.c ****     } /* if((wEPVal & EP_CTR_TX) != 0) */
+ 188:lib//src/usb_int.c **** 
+ 189:lib//src/usb_int.c ****   }/* while(...) */
+ 190:lib//src/usb_int.c **** }
+ 106              		.loc 1 190 0
+ 107 006c 08BD     		pop	{r3, pc}
+ 108              	.L11:
+ 109 006e 00BF     		.align	2
+ 110              	.L10:
+ 111 0070 00000000 		.word	pEpInt_OUT
+ 112 0074 00000000 		.word	pEpInt_IN
+ 113 0078 445C0040 		.word	1073765444
+ 114 007c 00000000 		.word	wIstr
+ 115 0080 00000000 		.word	EPindex
+ 116              	.LFE1:
+ 118              		.align	2
+ 119              		.global	CTR_LP
+ 120              		.thumb
+ 121              		.thumb_func
+ 123              	CTR_LP:
+ 124              	.LFB0:
+ 125              		.loc 1 42 0
+ 126              		@ args = 0, pretend = 0, frame = 0
+ 127              		@ frame_needed = 0, uses_anonymous_args = 0
+ 128 0084 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 129              	.LCFI1:
+ 130              		.loc 1 45 0
+ 131 0086 9AE0     		b	.L39
+ 132              	.LVL10:
+ 133              	.L36:
+ 134              		.loc 1 47 0
+ 135 0088 47F6FF76 		movw	r6, #32767
+ 136              	.LVL11:
+ 137 008c 1E60     		str	r6, [r3, #0]
+ 138              		.loc 1 49 0
+ 139 008e 1688     		ldrh	r6, [r2, #0]
+ 140 0090 564F     		ldr	r7, .L58
+ 141 0092 06F00F06 		and	r6, r6, #15
+ 142              	.LVL12:
+ 143              		.loc 1 125 0
+ 144 0096 B300     		lsls	r3, r6, #2
+ 145 0098 03F18043 		add	r3, r3, #1073741824
+ 146 009c 03F5B843 		add	r3, r3, #23552
+ 147              		.loc 1 49 0
+ 148 00a0 3E70     		strb	r6, [r7, #0]
+ 149              		.loc 1 50 0
+ 150 00a2 002E     		cmp	r6, #0
+ 151 00a4 64D1     		bne	.L14
+ 152              		.loc 1 58 0
+ 153 00a6 2768     		ldr	r7, [r4, #0]
+ 154              		.loc 1 59 0
+ 155 00a8 2668     		ldr	r6, [r4, #0]
+ 156              	.LVL13:
+ 157              	.LBB2:
+ 158              		.loc 1 60 0
+ 159 00aa 2368     		ldr	r3, [r4, #0]
+ 160              	.LBE2:
+ 161              		.loc 1 58 0
+ 162 00ac 07F4405C 		and	ip, r7, #12288
+ 163              	.LBB3:
+ 164              		.loc 1 60 0
+ 165 00b0 03EA0000 		and	r0, r3, r0
+ 166              	.LVL14:
+ 167 00b4 80F40050 		eor	r0, r0, #8192
+ 168              	.LVL15:
+ 169 00b8 2060     		str	r0, [r4, #0]
+ 170              	.LBE3:
+ 171              	.LBB4:
+ 172              		.loc 1 61 0
+ 173 00ba 2368     		ldr	r3, [r4, #0]
+ 174              	.LBE4:
+ 175              		.loc 1 59 0
+ 176 00bc 06F03000 		and	r0, r6, #48
+ 177              	.LBB5:
+ 178              		.loc 1 61 0
+ 179 00c0 03EA0101 		and	r1, r3, r1
+ 180              	.LVL16:
+ 181 00c4 81F02001 		eor	r1, r1, #32
+ 182              	.LVL17:
+ 183 00c8 2160     		str	r1, [r4, #0]
+ 184              	.LBE5:
+ 185              		.loc 1 66 0
+ 186 00ca 1388     		ldrh	r3, [r2, #0]
+ 187              		.loc 1 59 0
+ 188 00cc 484A     		ldr	r2, .L58+4
+ 189              		.loc 1 66 0
+ 190 00ce 13F0100F 		tst	r3, #16
+ 191              		.loc 1 59 0
+ 192 00d2 1080     		strh	r0, [r2, #0]	@ movhi
+ 193              		.loc 1 58 0
+ 194 00d4 A5F800C0 		strh	ip, [r5, #0]	@ movhi
+ 195              		.loc 1 66 0
+ 196 00d8 04D0     		beq	.L57
+ 197              		.loc 1 89 0
+ 198 00da 2368     		ldr	r3, [r4, #0]
+ 199 00dc 9BB2     		uxth	r3, r3
+ 200              	.LVL18:
+ 201              		.loc 1 90 0
+ 202 00de 13F0800F 		tst	r3, #128
+ 203 00e2 08D0     		beq	.L21
+ 204              	.L57:
+ 205              		.loc 1 92 0
+ 206 00e4 2268     		ldr	r2, [r4, #0]
+ 207 00e6 48F60F73 		movw	r3, #36623
+ 208              	.LVL19:
+ 209 00ea 02EA0303 		and	r3, r2, r3
+ 210 00ee 2360     		str	r3, [r4, #0]
+ 211              		.loc 1 93 0
+ 212 00f0 FFF7FEFF 		bl	In0_Process
+ 213 00f4 16E0     		b	.L54
+ 214              	.LVL20:
+ 215              	.L21:
+ 216              		.loc 1 99 0
+ 217 00f6 13F4006F 		tst	r3, #2048
+ 218 00fa 08D0     		beq	.L26
+ 219              		.loc 1 101 0
+ 220 00fc 2268     		ldr	r2, [r4, #0]
+ 221 00fe 40F68F73 		movw	r3, #3983
+ 222              	.LVL21:
+ 223 0102 02EA0303 		and	r3, r2, r3
+ 224 0106 2360     		str	r3, [r4, #0]
+ 225              		.loc 1 102 0
+ 226 0108 FFF7FEFF 		bl	Setup0_Process
+ 227 010c 0AE0     		b	.L54
+ 228              	.LVL22:
+ 229              	.L26:
+ 230              		.loc 1 109 0
+ 231 010e 13F4004F 		tst	r3, #32768
+ 232 0112 54D0     		beq	.L39
+ 233              		.loc 1 111 0
+ 234 0114 2268     		ldr	r2, [r4, #0]
+ 235 0116 40F68F73 		movw	r3, #3983
+ 236              	.LVL23:
+ 237 011a 02EA0303 		and	r3, r2, r3
+ 238 011e 2360     		str	r3, [r4, #0]
+ 239              		.loc 1 112 0
+ 240 0120 FFF7FEFF 		bl	Out0_Process
+ 241              	.L54:
+ 242              	.LBB6:
+ 243              		.loc 1 114 0
+ 244 0124 2168     		ldr	r1, [r4, #0]
+ 245 0126 2A88     		ldrh	r2, [r5, #0]
+ 246 0128 4BF68F73 		movw	r3, #49039
+ 247              	.LVL24:
+ 248 012c 01EA0303 		and	r3, r1, r3
+ 249              	.LVL25:
+ 250 0130 12F4805F 		tst	r2, #4096
+ 251 0134 18BF     		it	ne
+ 252 0136 83F48053 		eorne	r3, r3, #4096
+ 253              	.LVL26:
+ 254 013a 12F4005F 		tst	r2, #8192
+ 255 013e 2D4A     		ldr	r2, .L58+8
+ 256 0140 18BF     		it	ne
+ 257 0142 83F40053 		eorne	r3, r3, #8192
+ 258              	.LVL27:
+ 259 0146 1360     		str	r3, [r2, #0]
+ 260              	.LBE6:
+ 261              	.LBB7:
+ 262              		.loc 1 115 0
+ 263 0148 294B     		ldr	r3, .L58+4
+ 264              	.LVL28:
+ 265 014a 1168     		ldr	r1, [r2, #0]
+ 266 014c 1A88     		ldrh	r2, [r3, #0]
+ 267 014e 48F6BF73 		movw	r3, #36799
+ 268              	.LVL29:
+ 269 0152 01EA0303 		and	r3, r1, r3
+ 270              	.LVL30:
+ 271 0156 12F0100F 		tst	r2, #16
+ 272 015a 18BF     		it	ne
+ 273 015c 83F01003 		eorne	r3, r3, #16
+ 274              	.LVL31:
+ 275 0160 12F0200F 		tst	r2, #32
+ 276 0164 234A     		ldr	r2, .L58+8
+ 277 0166 18BF     		it	ne
+ 278 0168 83F02003 		eorne	r3, r3, #32
+ 279              	.LVL32:
+ 280 016c 1360     		str	r3, [r2, #0]
+ 281              	.LBE7:
+ 282              		.loc 1 116 0
+ 283 016e 3BE0     		b	.L37
+ 284              	.LVL33:
+ 285              	.L14:
+ 286              		.loc 1 125 0
+ 287 0170 1C68     		ldr	r4, [r3, #0]
+ 288 0172 A4B2     		uxth	r4, r4
+ 289              	.LVL34:
+ 290              		.loc 1 126 0
+ 291 0174 14F4004F 		tst	r4, #32768
+ 292 0178 0BD0     		beq	.L35
+ 293              		.loc 1 129 0
+ 294 017a 1968     		ldr	r1, [r3, #0]
+ 295              	.LVL35:
+ 296 017c 40F68F72 		movw	r2, #3983
+ 297 0180 01EA0202 		and	r2, r1, r2
+ 298 0184 1A60     		str	r2, [r3, #0]
+ 299              		.loc 1 132 0
+ 300 0186 3A78     		ldrb	r2, [r7, #0]	@ zero_extendqisi2
+ 301              	.LVL36:
+ 302 0188 1B4B     		ldr	r3, .L58+12
+ 303 018a 013A     		subs	r2, r2, #1
+ 304 018c 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 305 0190 9847     		blx	r3
+ 306              	.LVL37:
+ 307              	.L35:
+ 308              		.loc 1 136 0
+ 309 0192 14F0800F 		tst	r4, #128
+ 310 0196 12D0     		beq	.L39
+ 311              		.loc 1 139 0
+ 312 0198 1449     		ldr	r1, .L58
+ 313              	.LVL38:
+ 314 019a 48F60F72 		movw	r2, #36623
+ 315 019e 0B78     		ldrb	r3, [r1, #0]	@ zero_extendqisi2
+ 316              	.LVL39:
+ 317 01a0 9B00     		lsls	r3, r3, #2
+ 318 01a2 03F18043 		add	r3, r3, #1073741824
+ 319 01a6 03F5B843 		add	r3, r3, #23552
+ 320 01aa 1868     		ldr	r0, [r3, #0]
+ 321              	.LVL40:
+ 322 01ac 00EA0202 		and	r2, r0, r2
+ 323 01b0 1A60     		str	r2, [r3, #0]
+ 324              		.loc 1 142 0
+ 325 01b2 0A78     		ldrb	r2, [r1, #0]	@ zero_extendqisi2
+ 326 01b4 114B     		ldr	r3, .L58+16
+ 327 01b6 013A     		subs	r2, r2, #1
+ 328 01b8 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 329 01bc 9847     		blx	r3
+ 330              	.LVL41:
+ 331              	.L39:
+ 332              		.loc 1 45 0
+ 333 01be 104B     		ldr	r3, .L58+20
+ 334 01c0 104A     		ldr	r2, .L58+24
+ 335 01c2 1D68     		ldr	r5, [r3, #0]
+ 336              		.loc 1 58 0
+ 337 01c4 0B4C     		ldr	r4, .L58+8
+ 338              	.LVL42:
+ 339              		.loc 1 45 0
+ 340 01c6 1FFA85FC 		uxth	ip, r5
+ 341              	.LVL43:
+ 342 01ca A2F800C0 		strh	ip, [r2, #0]	@ movhi
+ 343 01ce B2F800C0 		ldrh	ip, [r2, #0]
+ 344              	.LVL44:
+ 345              	.LBB8:
+ 346              		.loc 1 60 0
+ 347 01d2 4BF68F70 		movw	r0, #49039
+ 348              	.LBE8:
+ 349              		.loc 1 45 0
+ 350 01d6 0FFA8CFC 		sxth	ip, ip
+ 351 01da BCF1000F 		cmp	ip, #0
+ 352              	.LBB9:
+ 353              		.loc 1 61 0
+ 354 01de 48F6BF71 		movw	r1, #36799
+ 355              	.LBE9:
+ 356              		.loc 1 58 0
+ 357 01e2 094D     		ldr	r5, .L58+28
+ 358              		.loc 1 45 0
+ 359 01e4 FFF650AF 		blt	.L36
+ 360              	.LVL45:
+ 361              	.L37:
+ 362              		.loc 1 148 0
+ 363 01e8 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 364              	.L59:
+ 365 01ea 00BF     		.align	2
+ 366              	.L58:
+ 367 01ec 00000000 		.word	EPindex
+ 368 01f0 00000000 		.word	SaveTState
+ 369 01f4 005C0040 		.word	1073765376
+ 370 01f8 00000000 		.word	pEpInt_OUT
+ 371 01fc 00000000 		.word	pEpInt_IN
+ 372 0200 445C0040 		.word	1073765444
+ 373 0204 00000000 		.word	wIstr
+ 374 0208 00000000 		.word	SaveRState
+ 375              	.LFE0:
+ 377              		.comm	SaveRState,2,2
+ 378              		.comm	SaveTState,2,2
+ 443              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 usb_int.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccvIZH5a.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccvIZH5a.s:27     .text:00000000 CTR_HP
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccvIZH5a.s:111    .text:00000070 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccvIZH5a.s:118    .text:00000084 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccvIZH5a.s:123    .text:00000084 CTR_LP
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccvIZH5a.s:367    .text:000001ec $d
+                            *COM*:00000002 SaveTState
+                            *COM*:00000002 SaveRState
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccvIZH5a.s:392    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+pEpInt_OUT
+pEpInt_IN
+wIstr
+EPindex
+In0_Process
+Setup0_Process
+Out0_Process

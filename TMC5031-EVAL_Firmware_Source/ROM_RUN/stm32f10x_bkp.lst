@@ -1,0 +1,612 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_bkp.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	BKP_TamperPinLevelConfig
+  24              		.thumb
+  25              		.thumb_func
+  27              	BKP_TamperPinLevelConfig:
+  28              	.LFB1:
+  29              		.file 1 "lib//src/stm32f10x_bkp.c"
+   1:lib//src/stm32f10x_bkp.c **** /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+   2:lib//src/stm32f10x_bkp.c **** * File Name          : stm32f10x_bkp.c
+   3:lib//src/stm32f10x_bkp.c **** * Author             : MCD Application Team
+   4:lib//src/stm32f10x_bkp.c **** * Version            : V2.0
+   5:lib//src/stm32f10x_bkp.c **** * Date               : 05/23/2008
+   6:lib//src/stm32f10x_bkp.c **** * Description        : This file provides all the BKP firmware functions.
+   7:lib//src/stm32f10x_bkp.c **** ********************************************************************************
+   8:lib//src/stm32f10x_bkp.c **** * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+   9:lib//src/stm32f10x_bkp.c **** * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  10:lib//src/stm32f10x_bkp.c **** * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+  11:lib//src/stm32f10x_bkp.c **** * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+  12:lib//src/stm32f10x_bkp.c **** * CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+  13:lib//src/stm32f10x_bkp.c **** * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  14:lib//src/stm32f10x_bkp.c **** * FOR MORE INFORMATION PLEASE CAREFULLY READ THE LICENSE AGREEMENT FILE LOCATED 
+  15:lib//src/stm32f10x_bkp.c **** * IN THE ROOT DIRECTORY OF THIS FIRMWARE PACKAGE.
+  16:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+  17:lib//src/stm32f10x_bkp.c **** 
+  18:lib//src/stm32f10x_bkp.c **** /* Includes ------------------------------------------------------------------*/
+  19:lib//src/stm32f10x_bkp.c **** #include "stm32f10x_bkp.h"
+  20:lib//src/stm32f10x_bkp.c **** #include "stm32f10x_rcc.h"
+  21:lib//src/stm32f10x_bkp.c **** 
+  22:lib//src/stm32f10x_bkp.c **** /* Private typedef -----------------------------------------------------------*/
+  23:lib//src/stm32f10x_bkp.c **** /* Private define ------------------------------------------------------------*/
+  24:lib//src/stm32f10x_bkp.c **** /* ------------ BKP registers bit address in the alias region ----------- */
+  25:lib//src/stm32f10x_bkp.c **** #define BKP_OFFSET        (BKP_BASE - PERIPH_BASE)
+  26:lib//src/stm32f10x_bkp.c **** 
+  27:lib//src/stm32f10x_bkp.c **** /* --- CR Register ---*/
+  28:lib//src/stm32f10x_bkp.c **** /* Alias word address of TPAL bit */
+  29:lib//src/stm32f10x_bkp.c **** #define CR_OFFSET         (BKP_OFFSET + 0x30)
+  30:lib//src/stm32f10x_bkp.c **** #define TPAL_BitNumber    0x01
+  31:lib//src/stm32f10x_bkp.c **** #define CR_TPAL_BB        (PERIPH_BB_BASE + (CR_OFFSET * 32) + (TPAL_BitNumber * 4))
+  32:lib//src/stm32f10x_bkp.c **** 
+  33:lib//src/stm32f10x_bkp.c **** /* Alias word address of TPE bit */
+  34:lib//src/stm32f10x_bkp.c **** #define TPE_BitNumber     0x00
+  35:lib//src/stm32f10x_bkp.c **** #define CR_TPE_BB         (PERIPH_BB_BASE + (CR_OFFSET * 32) + (TPE_BitNumber * 4))
+  36:lib//src/stm32f10x_bkp.c **** 
+  37:lib//src/stm32f10x_bkp.c **** /* --- CSR Register ---*/
+  38:lib//src/stm32f10x_bkp.c **** /* Alias word address of TPIE bit */
+  39:lib//src/stm32f10x_bkp.c **** #define CSR_OFFSET        (BKP_OFFSET + 0x34)
+  40:lib//src/stm32f10x_bkp.c **** #define TPIE_BitNumber    0x02
+  41:lib//src/stm32f10x_bkp.c **** #define CSR_TPIE_BB       (PERIPH_BB_BASE + (CSR_OFFSET * 32) + (TPIE_BitNumber * 4))
+  42:lib//src/stm32f10x_bkp.c **** 
+  43:lib//src/stm32f10x_bkp.c **** /* Alias word address of TIF bit */
+  44:lib//src/stm32f10x_bkp.c **** #define TIF_BitNumber     0x09
+  45:lib//src/stm32f10x_bkp.c **** #define CSR_TIF_BB        (PERIPH_BB_BASE + (CSR_OFFSET * 32) + (TIF_BitNumber * 4))
+  46:lib//src/stm32f10x_bkp.c **** 
+  47:lib//src/stm32f10x_bkp.c **** /* Alias word address of TEF bit */
+  48:lib//src/stm32f10x_bkp.c **** #define TEF_BitNumber     0x08
+  49:lib//src/stm32f10x_bkp.c **** #define CSR_TEF_BB        (PERIPH_BB_BASE + (CSR_OFFSET * 32) + (TEF_BitNumber * 4))
+  50:lib//src/stm32f10x_bkp.c **** 
+  51:lib//src/stm32f10x_bkp.c **** 
+  52:lib//src/stm32f10x_bkp.c **** /* ---------------------- BKP registers bit mask ------------------------ */
+  53:lib//src/stm32f10x_bkp.c **** /* RTCCR register bit mask */
+  54:lib//src/stm32f10x_bkp.c **** #define RTCCR_CAL_Mask    ((u16)0xFF80)
+  55:lib//src/stm32f10x_bkp.c **** #define RTCCR_Mask        ((u16)0xFC7F)
+  56:lib//src/stm32f10x_bkp.c **** 
+  57:lib//src/stm32f10x_bkp.c **** /* CSR register bit mask */
+  58:lib//src/stm32f10x_bkp.c **** #define CSR_CTE_Set       ((u16)0x0001)
+  59:lib//src/stm32f10x_bkp.c **** #define CSR_CTI_Set       ((u16)0x0002)
+  60:lib//src/stm32f10x_bkp.c **** 
+  61:lib//src/stm32f10x_bkp.c **** /* Private macro -------------------------------------------------------------*/
+  62:lib//src/stm32f10x_bkp.c **** /* Private variables ---------------------------------------------------------*/
+  63:lib//src/stm32f10x_bkp.c **** /* Private function prototypes -----------------------------------------------*/
+  64:lib//src/stm32f10x_bkp.c **** /* Private functions ---------------------------------------------------------*/
+  65:lib//src/stm32f10x_bkp.c **** 
+  66:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+  67:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_DeInit
+  68:lib//src/stm32f10x_bkp.c **** * Description    : Deinitializes the BKP peripheral registers to their default
+  69:lib//src/stm32f10x_bkp.c **** *                  reset values.
+  70:lib//src/stm32f10x_bkp.c **** * Input          : None
+  71:lib//src/stm32f10x_bkp.c **** * Output         : None
+  72:lib//src/stm32f10x_bkp.c **** * Return         : None
+  73:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+  74:lib//src/stm32f10x_bkp.c **** void BKP_DeInit(void)
+  75:lib//src/stm32f10x_bkp.c **** {
+  76:lib//src/stm32f10x_bkp.c ****   RCC_BackupResetCmd(ENABLE);
+  77:lib//src/stm32f10x_bkp.c ****   RCC_BackupResetCmd(DISABLE);
+  78:lib//src/stm32f10x_bkp.c **** }
+  79:lib//src/stm32f10x_bkp.c **** 
+  80:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+  81:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_TamperPinLevelConfig
+  82:lib//src/stm32f10x_bkp.c **** * Description    : Configures the Tamper Pin active level.
+  83:lib//src/stm32f10x_bkp.c **** * Input          : - BKP_TamperPinLevel: specifies the Tamper Pin active level.
+  84:lib//src/stm32f10x_bkp.c **** *                    This parameter can be one of the following values:
+  85:lib//src/stm32f10x_bkp.c **** *                       - BKP_TamperPinLevel_High: Tamper pin active on high level
+  86:lib//src/stm32f10x_bkp.c **** *                       - BKP_TamperPinLevel_Low: Tamper pin active on low level
+  87:lib//src/stm32f10x_bkp.c **** * Output         : None
+  88:lib//src/stm32f10x_bkp.c **** * Return         : None
+  89:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+  90:lib//src/stm32f10x_bkp.c **** void BKP_TamperPinLevelConfig(u16 BKP_TamperPinLevel)
+  91:lib//src/stm32f10x_bkp.c **** {
+  30              		.loc 1 91 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+  92:lib//src/stm32f10x_bkp.c ****   /* Check the parameters */
+  93:lib//src/stm32f10x_bkp.c ****   assert_param(IS_BKP_TAMPER_PIN_LEVEL(BKP_TamperPinLevel));
+  94:lib//src/stm32f10x_bkp.c **** 
+  95:lib//src/stm32f10x_bkp.c ****   *(vu32 *) CR_TPAL_BB = BKP_TamperPinLevel;
+  35              		.loc 1 95 0
+  36 0000 014B     		ldr	r3, .L3
+  37 0002 1860     		str	r0, [r3, #0]
+  96:lib//src/stm32f10x_bkp.c **** }
+  38              		.loc 1 96 0
+  39 0004 7047     		bx	lr
+  40              	.L4:
+  41 0006 00BF     		.align	2
+  42              	.L3:
+  43 0008 04860D42 		.word	1108182532
+  44              	.LFE1:
+  46              		.align	2
+  47              		.global	BKP_TamperPinCmd
+  48              		.thumb
+  49              		.thumb_func
+  51              	BKP_TamperPinCmd:
+  52              	.LFB2:
+  97:lib//src/stm32f10x_bkp.c **** 
+  98:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+  99:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_TamperPinCmd
+ 100:lib//src/stm32f10x_bkp.c **** * Description    : Enables or disables the Tamper Pin activation.
+ 101:lib//src/stm32f10x_bkp.c **** * Input          : - NewState: new state of the Tamper Pin activation.
+ 102:lib//src/stm32f10x_bkp.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 103:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 104:lib//src/stm32f10x_bkp.c **** * Return         : None
+ 105:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 106:lib//src/stm32f10x_bkp.c **** void BKP_TamperPinCmd(FunctionalState NewState)
+ 107:lib//src/stm32f10x_bkp.c **** {
+  53              		.loc 1 107 0
+  54              		@ args = 0, pretend = 0, frame = 0
+  55              		@ frame_needed = 0, uses_anonymous_args = 0
+  56              		@ link register save eliminated.
+  57              	.LVL1:
+ 108:lib//src/stm32f10x_bkp.c ****   /* Check the parameters */
+ 109:lib//src/stm32f10x_bkp.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 110:lib//src/stm32f10x_bkp.c **** 
+ 111:lib//src/stm32f10x_bkp.c ****   *(vu32 *) CR_TPE_BB = (u32)NewState;
+  58              		.loc 1 111 0
+  59 000c 014B     		ldr	r3, .L7
+  60 000e 1860     		str	r0, [r3, #0]
+ 112:lib//src/stm32f10x_bkp.c **** }
+  61              		.loc 1 112 0
+  62 0010 7047     		bx	lr
+  63              	.L8:
+  64 0012 00BF     		.align	2
+  65              	.L7:
+  66 0014 00860D42 		.word	1108182528
+  67              	.LFE2:
+  69              		.align	2
+  70              		.global	BKP_ITConfig
+  71              		.thumb
+  72              		.thumb_func
+  74              	BKP_ITConfig:
+  75              	.LFB3:
+ 113:lib//src/stm32f10x_bkp.c **** 
+ 114:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 115:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_ITConfig
+ 116:lib//src/stm32f10x_bkp.c **** * Description    : Enables or disables the Tamper Pin Interrupt.
+ 117:lib//src/stm32f10x_bkp.c **** * Input          : - NewState: new state of the Tamper Pin Interrupt.
+ 118:lib//src/stm32f10x_bkp.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 119:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 120:lib//src/stm32f10x_bkp.c **** * Return         : None
+ 121:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 122:lib//src/stm32f10x_bkp.c **** void BKP_ITConfig(FunctionalState NewState)
+ 123:lib//src/stm32f10x_bkp.c **** {
+  76              		.loc 1 123 0
+  77              		@ args = 0, pretend = 0, frame = 0
+  78              		@ frame_needed = 0, uses_anonymous_args = 0
+  79              		@ link register save eliminated.
+  80              	.LVL2:
+ 124:lib//src/stm32f10x_bkp.c ****   /* Check the parameters */
+ 125:lib//src/stm32f10x_bkp.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 126:lib//src/stm32f10x_bkp.c **** 
+ 127:lib//src/stm32f10x_bkp.c ****   *(vu32 *) CSR_TPIE_BB = (u32)NewState;
+  81              		.loc 1 127 0
+  82 0018 014B     		ldr	r3, .L11
+  83 001a 1860     		str	r0, [r3, #0]
+ 128:lib//src/stm32f10x_bkp.c **** }
+  84              		.loc 1 128 0
+  85 001c 7047     		bx	lr
+  86              	.L12:
+  87 001e 00BF     		.align	2
+  88              	.L11:
+  89 0020 88860D42 		.word	1108182664
+  90              	.LFE3:
+  92              		.align	2
+  93              		.global	BKP_RTCOutputConfig
+  94              		.thumb
+  95              		.thumb_func
+  97              	BKP_RTCOutputConfig:
+  98              	.LFB4:
+ 129:lib//src/stm32f10x_bkp.c **** 
+ 130:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 131:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_RTCOutputConfig
+ 132:lib//src/stm32f10x_bkp.c **** * Description    : Select the RTC output source to output on the Tamper pin.
+ 133:lib//src/stm32f10x_bkp.c **** * Input          : - BKP_RTCOutputSource: specifies the RTC output source.
+ 134:lib//src/stm32f10x_bkp.c **** *                    This parameter can be one of the following values:
+ 135:lib//src/stm32f10x_bkp.c **** *                       - BKP_RTCOutputSource_None: no RTC output on the Tamper pin.
+ 136:lib//src/stm32f10x_bkp.c **** *                       - BKP_RTCOutputSource_CalibClock: output the RTC clock
+ 137:lib//src/stm32f10x_bkp.c **** *                         with frequency divided by 64 on the Tamper pin.
+ 138:lib//src/stm32f10x_bkp.c **** *                       - BKP_RTCOutputSource_Alarm: output the RTC Alarm pulse 
+ 139:lib//src/stm32f10x_bkp.c **** *                         signal on the Tamper pin.
+ 140:lib//src/stm32f10x_bkp.c **** *                       - BKP_RTCOutputSource_Second: output the RTC Second pulse 
+ 141:lib//src/stm32f10x_bkp.c **** *                         signal on the Tamper pin.  
+ 142:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 143:lib//src/stm32f10x_bkp.c **** * Return         : None
+ 144:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 145:lib//src/stm32f10x_bkp.c **** void BKP_RTCOutputConfig(u16 BKP_RTCOutputSource)
+ 146:lib//src/stm32f10x_bkp.c **** {
+  99              		.loc 1 146 0
+ 100              		@ args = 0, pretend = 0, frame = 0
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102              		@ link register save eliminated.
+ 103              	.LVL3:
+ 147:lib//src/stm32f10x_bkp.c ****   u16 tmpreg = 0;
+ 148:lib//src/stm32f10x_bkp.c **** 
+ 149:lib//src/stm32f10x_bkp.c ****   /* Check the parameters */
+ 150:lib//src/stm32f10x_bkp.c ****   assert_param(IS_BKP_RTC_OUTPUT_SOURCE(BKP_RTCOutputSource));
+ 151:lib//src/stm32f10x_bkp.c **** 
+ 152:lib//src/stm32f10x_bkp.c ****   tmpreg = BKP->RTCCR;
+ 104              		.loc 1 152 0
+ 105 0024 044A     		ldr	r2, .L15
+ 106 0026 938D     		ldrh	r3, [r2, #44]
+ 153:lib//src/stm32f10x_bkp.c **** 
+ 154:lib//src/stm32f10x_bkp.c ****   /* Clear CCO, ASOE and ASOS bits */
+ 155:lib//src/stm32f10x_bkp.c ****   tmpreg &= RTCCR_Mask;
+ 107              		.loc 1 155 0
+ 108 0028 23F46073 		bic	r3, r3, #896
+ 109              	.LVL4:
+ 110 002c 1B04     		lsls	r3, r3, #16
+ 111              	.LVL5:
+ 112 002e 1B0C     		lsrs	r3, r3, #16
+ 113              	.LVL6:
+ 156:lib//src/stm32f10x_bkp.c ****   
+ 157:lib//src/stm32f10x_bkp.c ****   /* Set CCO, ASOE and ASOS bits according to BKP_RTCOutputSource value */
+ 158:lib//src/stm32f10x_bkp.c ****   tmpreg |= BKP_RTCOutputSource;
+ 114              		.loc 1 158 0
+ 115 0030 40EA0303 		orr	r3, r0, r3
+ 116              	.LVL7:
+ 159:lib//src/stm32f10x_bkp.c **** 
+ 160:lib//src/stm32f10x_bkp.c ****   /* Store the new value */
+ 161:lib//src/stm32f10x_bkp.c ****   BKP->RTCCR = tmpreg;
+ 117              		.loc 1 161 0
+ 118 0034 9385     		strh	r3, [r2, #44]	@ movhi
+ 162:lib//src/stm32f10x_bkp.c **** }
+ 119              		.loc 1 162 0
+ 120 0036 7047     		bx	lr
+ 121              	.L16:
+ 122              		.align	2
+ 123              	.L15:
+ 124 0038 006C0040 		.word	1073769472
+ 125              	.LFE4:
+ 127              		.align	2
+ 128              		.global	BKP_SetRTCCalibrationValue
+ 129              		.thumb
+ 130              		.thumb_func
+ 132              	BKP_SetRTCCalibrationValue:
+ 133              	.LFB5:
+ 163:lib//src/stm32f10x_bkp.c **** 
+ 164:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 165:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_SetRTCCalibrationValue
+ 166:lib//src/stm32f10x_bkp.c **** * Description    : Sets RTC Clock Calibration value.
+ 167:lib//src/stm32f10x_bkp.c **** * Input          : - CalibrationValue: specifies the RTC Clock Calibration value.
+ 168:lib//src/stm32f10x_bkp.c **** *                    This parameter must be a number between 0 and 0x7F.
+ 169:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 170:lib//src/stm32f10x_bkp.c **** * Return         : None
+ 171:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 172:lib//src/stm32f10x_bkp.c **** void BKP_SetRTCCalibrationValue(u8 CalibrationValue)
+ 173:lib//src/stm32f10x_bkp.c **** {
+ 134              		.loc 1 173 0
+ 135              		@ args = 0, pretend = 0, frame = 0
+ 136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137              		@ link register save eliminated.
+ 138              	.LVL8:
+ 174:lib//src/stm32f10x_bkp.c ****   u16 tmpreg = 0;
+ 175:lib//src/stm32f10x_bkp.c **** 
+ 176:lib//src/stm32f10x_bkp.c ****   /* Check the parameters */
+ 177:lib//src/stm32f10x_bkp.c ****   assert_param(IS_BKP_CALIBRATION_VALUE(CalibrationValue));
+ 178:lib//src/stm32f10x_bkp.c **** 
+ 179:lib//src/stm32f10x_bkp.c ****   tmpreg = BKP->RTCCR;
+ 139              		.loc 1 179 0
+ 140 003c 044A     		ldr	r2, .L19
+ 141 003e 938D     		ldrh	r3, [r2, #44]
+ 180:lib//src/stm32f10x_bkp.c **** 
+ 181:lib//src/stm32f10x_bkp.c ****   /* Clear CAL[6:0] bits */
+ 182:lib//src/stm32f10x_bkp.c ****   tmpreg &= RTCCR_CAL_Mask;
+ 142              		.loc 1 182 0
+ 143 0040 23F07F03 		bic	r3, r3, #127
+ 144              	.LVL9:
+ 145 0044 1B04     		lsls	r3, r3, #16
+ 146              	.LVL10:
+ 147 0046 1B0C     		lsrs	r3, r3, #16
+ 148              	.LVL11:
+ 183:lib//src/stm32f10x_bkp.c **** 
+ 184:lib//src/stm32f10x_bkp.c ****   /* Set CAL[6:0] bits according to CalibrationValue value */
+ 185:lib//src/stm32f10x_bkp.c ****   tmpreg |= CalibrationValue;
+ 149              		.loc 1 185 0
+ 150 0048 40EA0303 		orr	r3, r0, r3
+ 151              	.LVL12:
+ 186:lib//src/stm32f10x_bkp.c **** 
+ 187:lib//src/stm32f10x_bkp.c ****   /* Store the new value */
+ 188:lib//src/stm32f10x_bkp.c ****   BKP->RTCCR = tmpreg;
+ 152              		.loc 1 188 0
+ 153 004c 9385     		strh	r3, [r2, #44]	@ movhi
+ 189:lib//src/stm32f10x_bkp.c **** }
+ 154              		.loc 1 189 0
+ 155 004e 7047     		bx	lr
+ 156              	.L20:
+ 157              		.align	2
+ 158              	.L19:
+ 159 0050 006C0040 		.word	1073769472
+ 160              	.LFE5:
+ 162              		.align	2
+ 163              		.global	BKP_WriteBackupRegister
+ 164              		.thumb
+ 165              		.thumb_func
+ 167              	BKP_WriteBackupRegister:
+ 168              	.LFB6:
+ 190:lib//src/stm32f10x_bkp.c **** 
+ 191:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 192:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_WriteBackupRegister
+ 193:lib//src/stm32f10x_bkp.c **** * Description    : Writes user data to the specified Data Backup Register.
+ 194:lib//src/stm32f10x_bkp.c **** * Input          : - BKP_DR: specifies the Data Backup Register.
+ 195:lib//src/stm32f10x_bkp.c **** *                    This parameter can be BKP_DRx where x:[1, 42]
+ 196:lib//src/stm32f10x_bkp.c **** *                  - Data: data to write
+ 197:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 198:lib//src/stm32f10x_bkp.c **** * Return         : None
+ 199:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 200:lib//src/stm32f10x_bkp.c **** void BKP_WriteBackupRegister(u16 BKP_DR, u16 Data)
+ 201:lib//src/stm32f10x_bkp.c **** {
+ 169              		.loc 1 201 0
+ 170              		@ args = 0, pretend = 0, frame = 0
+ 171              		@ frame_needed = 0, uses_anonymous_args = 0
+ 172              		@ link register save eliminated.
+ 173              	.LVL13:
+ 202:lib//src/stm32f10x_bkp.c ****   /* Check the parameters */
+ 203:lib//src/stm32f10x_bkp.c ****   assert_param(IS_BKP_DR(BKP_DR));
+ 204:lib//src/stm32f10x_bkp.c **** 
+ 205:lib//src/stm32f10x_bkp.c ****   *(vu16 *) (BKP_BASE + BKP_DR) = Data;
+ 174              		.loc 1 205 0
+ 175 0054 014B     		ldr	r3, .L23
+ 176 0056 C152     		strh	r1, [r0, r3]	@ movhi
+ 206:lib//src/stm32f10x_bkp.c **** }
+ 177              		.loc 1 206 0
+ 178 0058 7047     		bx	lr
+ 179              	.L24:
+ 180 005a 00BF     		.align	2
+ 181              	.L23:
+ 182 005c 006C0040 		.word	1073769472
+ 183              	.LFE6:
+ 185              		.align	2
+ 186              		.global	BKP_ReadBackupRegister
+ 187              		.thumb
+ 188              		.thumb_func
+ 190              	BKP_ReadBackupRegister:
+ 191              	.LFB7:
+ 207:lib//src/stm32f10x_bkp.c **** 
+ 208:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 209:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_ReadBackupRegister
+ 210:lib//src/stm32f10x_bkp.c **** * Description    : Reads data from the specified Data Backup Register.
+ 211:lib//src/stm32f10x_bkp.c **** * Input          : - BKP_DR: specifies the Data Backup Register.
+ 212:lib//src/stm32f10x_bkp.c **** *                    This parameter can be BKP_DRx where x:[1, 42]
+ 213:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 214:lib//src/stm32f10x_bkp.c **** * Return         : The content of the specified Data Backup Register
+ 215:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 216:lib//src/stm32f10x_bkp.c **** u16 BKP_ReadBackupRegister(u16 BKP_DR)
+ 217:lib//src/stm32f10x_bkp.c **** {
+ 192              		.loc 1 217 0
+ 193              		@ args = 0, pretend = 0, frame = 0
+ 194              		@ frame_needed = 0, uses_anonymous_args = 0
+ 195              		@ link register save eliminated.
+ 196              	.LVL14:
+ 218:lib//src/stm32f10x_bkp.c ****   /* Check the parameters */
+ 219:lib//src/stm32f10x_bkp.c ****   assert_param(IS_BKP_DR(BKP_DR));
+ 220:lib//src/stm32f10x_bkp.c **** 
+ 221:lib//src/stm32f10x_bkp.c ****   return (*(vu16 *) (BKP_BASE + BKP_DR));
+ 197              		.loc 1 221 0
+ 198 0060 014B     		ldr	r3, .L27
+ 199 0062 C05A     		ldrh	r0, [r0, r3]
+ 200              	.LVL15:
+ 222:lib//src/stm32f10x_bkp.c **** }
+ 201              		.loc 1 222 0
+ 202 0064 80B2     		uxth	r0, r0
+ 203 0066 7047     		bx	lr
+ 204              	.L28:
+ 205              		.align	2
+ 206              	.L27:
+ 207 0068 006C0040 		.word	1073769472
+ 208              	.LFE7:
+ 210              		.align	2
+ 211              		.global	BKP_GetFlagStatus
+ 212              		.thumb
+ 213              		.thumb_func
+ 215              	BKP_GetFlagStatus:
+ 216              	.LFB8:
+ 223:lib//src/stm32f10x_bkp.c **** 
+ 224:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 225:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_GetFlagStatus
+ 226:lib//src/stm32f10x_bkp.c **** * Description    : Checks whether the Tamper Pin Event flag is set or not.
+ 227:lib//src/stm32f10x_bkp.c **** * Input          : None
+ 228:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 229:lib//src/stm32f10x_bkp.c **** * Return         : The new state of the Tamper Pin Event flag (SET or RESET).
+ 230:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 231:lib//src/stm32f10x_bkp.c **** FlagStatus BKP_GetFlagStatus(void)
+ 232:lib//src/stm32f10x_bkp.c **** {
+ 217              		.loc 1 232 0
+ 218              		@ args = 0, pretend = 0, frame = 0
+ 219              		@ frame_needed = 0, uses_anonymous_args = 0
+ 220              		@ link register save eliminated.
+ 233:lib//src/stm32f10x_bkp.c ****   return (FlagStatus)(*(vu32 *) CSR_TEF_BB);
+ 221              		.loc 1 233 0
+ 222 006c 014B     		ldr	r3, .L31
+ 223 006e 1868     		ldr	r0, [r3, #0]
+ 234:lib//src/stm32f10x_bkp.c **** }
+ 224              		.loc 1 234 0
+ 225 0070 C0B2     		uxtb	r0, r0
+ 226 0072 7047     		bx	lr
+ 227              	.L32:
+ 228              		.align	2
+ 229              	.L31:
+ 230 0074 A0860D42 		.word	1108182688
+ 231              	.LFE8:
+ 233              		.align	2
+ 234              		.global	BKP_ClearFlag
+ 235              		.thumb
+ 236              		.thumb_func
+ 238              	BKP_ClearFlag:
+ 239              	.LFB9:
+ 235:lib//src/stm32f10x_bkp.c **** 
+ 236:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 237:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_ClearFlag
+ 238:lib//src/stm32f10x_bkp.c **** * Description    : Clears Tamper Pin Event pending flag.
+ 239:lib//src/stm32f10x_bkp.c **** * Input          : None
+ 240:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 241:lib//src/stm32f10x_bkp.c **** * Return         : None
+ 242:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 243:lib//src/stm32f10x_bkp.c **** void BKP_ClearFlag(void)
+ 244:lib//src/stm32f10x_bkp.c **** {
+ 240              		.loc 1 244 0
+ 241              		@ args = 0, pretend = 0, frame = 0
+ 242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 243              		@ link register save eliminated.
+ 245:lib//src/stm32f10x_bkp.c ****   /* Set CTE bit to clear Tamper Pin Event flag */
+ 246:lib//src/stm32f10x_bkp.c ****   BKP->CSR |= CSR_CTE_Set;
+ 244              		.loc 1 246 0
+ 245 0078 034B     		ldr	r3, .L35
+ 246 007a 9A8E     		ldrh	r2, [r3, #52]
+ 247 007c 92B2     		uxth	r2, r2
+ 248 007e 42F00102 		orr	r2, r2, #1
+ 249 0082 9A86     		strh	r2, [r3, #52]	@ movhi
+ 247:lib//src/stm32f10x_bkp.c **** }
+ 250              		.loc 1 247 0
+ 251 0084 7047     		bx	lr
+ 252              	.L36:
+ 253 0086 00BF     		.align	2
+ 254              	.L35:
+ 255 0088 006C0040 		.word	1073769472
+ 256              	.LFE9:
+ 258              		.align	2
+ 259              		.global	BKP_GetITStatus
+ 260              		.thumb
+ 261              		.thumb_func
+ 263              	BKP_GetITStatus:
+ 264              	.LFB10:
+ 248:lib//src/stm32f10x_bkp.c **** 
+ 249:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 250:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_GetITStatus
+ 251:lib//src/stm32f10x_bkp.c **** * Description    : Checks whether the Tamper Pin Interrupt has occurred or not.
+ 252:lib//src/stm32f10x_bkp.c **** * Input          : None
+ 253:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 254:lib//src/stm32f10x_bkp.c **** * Return         : The new state of the Tamper Pin Interrupt (SET or RESET).
+ 255:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 256:lib//src/stm32f10x_bkp.c **** ITStatus BKP_GetITStatus(void)
+ 257:lib//src/stm32f10x_bkp.c **** {
+ 265              		.loc 1 257 0
+ 266              		@ args = 0, pretend = 0, frame = 0
+ 267              		@ frame_needed = 0, uses_anonymous_args = 0
+ 268              		@ link register save eliminated.
+ 258:lib//src/stm32f10x_bkp.c ****   return (ITStatus)(*(vu32 *) CSR_TIF_BB);
+ 269              		.loc 1 258 0
+ 270 008c 014B     		ldr	r3, .L39
+ 271 008e 1868     		ldr	r0, [r3, #0]
+ 259:lib//src/stm32f10x_bkp.c **** }
+ 272              		.loc 1 259 0
+ 273 0090 C0B2     		uxtb	r0, r0
+ 274 0092 7047     		bx	lr
+ 275              	.L40:
+ 276              		.align	2
+ 277              	.L39:
+ 278 0094 A4860D42 		.word	1108182692
+ 279              	.LFE10:
+ 281              		.align	2
+ 282              		.global	BKP_ClearITPendingBit
+ 283              		.thumb
+ 284              		.thumb_func
+ 286              	BKP_ClearITPendingBit:
+ 287              	.LFB11:
+ 260:lib//src/stm32f10x_bkp.c **** 
+ 261:lib//src/stm32f10x_bkp.c **** /*******************************************************************************
+ 262:lib//src/stm32f10x_bkp.c **** * Function Name  : BKP_ClearITPendingBit
+ 263:lib//src/stm32f10x_bkp.c **** * Description    : Clears Tamper Pin Interrupt pending bit.
+ 264:lib//src/stm32f10x_bkp.c **** * Input          : None
+ 265:lib//src/stm32f10x_bkp.c **** * Output         : None
+ 266:lib//src/stm32f10x_bkp.c **** * Return         : None
+ 267:lib//src/stm32f10x_bkp.c **** *******************************************************************************/
+ 268:lib//src/stm32f10x_bkp.c **** void BKP_ClearITPendingBit(void)
+ 269:lib//src/stm32f10x_bkp.c **** {
+ 288              		.loc 1 269 0
+ 289              		@ args = 0, pretend = 0, frame = 0
+ 290              		@ frame_needed = 0, uses_anonymous_args = 0
+ 291              		@ link register save eliminated.
+ 270:lib//src/stm32f10x_bkp.c ****   /* Set CTI bit to clear Tamper Pin Interrupt pending bit */
+ 271:lib//src/stm32f10x_bkp.c ****   BKP->CSR |= CSR_CTI_Set;
+ 292              		.loc 1 271 0
+ 293 0098 034B     		ldr	r3, .L43
+ 294 009a 9A8E     		ldrh	r2, [r3, #52]
+ 295 009c 92B2     		uxth	r2, r2
+ 296 009e 42F00202 		orr	r2, r2, #2
+ 297 00a2 9A86     		strh	r2, [r3, #52]	@ movhi
+ 272:lib//src/stm32f10x_bkp.c **** }
+ 298              		.loc 1 272 0
+ 299 00a4 7047     		bx	lr
+ 300              	.L44:
+ 301 00a6 00BF     		.align	2
+ 302              	.L43:
+ 303 00a8 006C0040 		.word	1073769472
+ 304              	.LFE11:
+ 306              		.align	2
+ 307              		.global	BKP_DeInit
+ 308              		.thumb
+ 309              		.thumb_func
+ 311              	BKP_DeInit:
+ 312              	.LFB0:
+ 313              		.loc 1 75 0
+ 314              		@ args = 0, pretend = 0, frame = 0
+ 315              		@ frame_needed = 0, uses_anonymous_args = 0
+ 316              		.loc 1 76 0
+ 317 00ac 0120     		movs	r0, #1
+ 318              		.loc 1 75 0
+ 319 00ae 08B5     		push	{r3, lr}
+ 320              	.LCFI0:
+ 321              		.loc 1 76 0
+ 322 00b0 FFF7FEFF 		bl	RCC_BackupResetCmd
+ 323              		.loc 1 77 0
+ 324 00b4 0020     		movs	r0, #0
+ 325 00b6 FFF7FEFF 		bl	RCC_BackupResetCmd
+ 326              		.loc 1 78 0
+ 327 00ba 08BD     		pop	{r3, pc}
+ 328              	.LFE0:
+ 452              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_bkp.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:27     .text:00000000 BKP_TamperPinLevelConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:43     .text:00000008 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:46     .text:0000000c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:51     .text:0000000c BKP_TamperPinCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:66     .text:00000014 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:69     .text:00000018 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:74     .text:00000018 BKP_ITConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:89     .text:00000020 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:92     .text:00000024 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:97     .text:00000024 BKP_RTCOutputConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:124    .text:00000038 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:127    .text:0000003c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:132    .text:0000003c BKP_SetRTCCalibrationValue
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:159    .text:00000050 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:162    .text:00000054 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:167    .text:00000054 BKP_WriteBackupRegister
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:182    .text:0000005c $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:185    .text:00000060 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:190    .text:00000060 BKP_ReadBackupRegister
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:207    .text:00000068 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:210    .text:0000006c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:215    .text:0000006c BKP_GetFlagStatus
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:230    .text:00000074 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:233    .text:00000078 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:238    .text:00000078 BKP_ClearFlag
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:255    .text:00000088 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:258    .text:0000008c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:263    .text:0000008c BKP_GetITStatus
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:278    .text:00000094 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:281    .text:00000098 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:286    .text:00000098 BKP_ClearITPendingBit
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:303    .text:000000a8 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:306    .text:000000ac $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:311    .text:000000ac BKP_DeInit
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc6jSCP1.s:343    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_BackupResetCmd

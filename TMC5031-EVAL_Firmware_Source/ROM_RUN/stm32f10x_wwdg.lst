@@ -1,0 +1,428 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_wwdg.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	WWDG_SetPrescaler
+  24              		.thumb
+  25              		.thumb_func
+  27              	WWDG_SetPrescaler:
+  28              	.LFB1:
+  29              		.file 1 "lib//src/stm32f10x_wwdg.c"
+   1:lib//src/stm32f10x_wwdg.c **** /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+   2:lib//src/stm32f10x_wwdg.c **** * File Name          : stm32f10x_wwdg.c
+   3:lib//src/stm32f10x_wwdg.c **** * Author             : MCD Application Team
+   4:lib//src/stm32f10x_wwdg.c **** * Version            : V2.0
+   5:lib//src/stm32f10x_wwdg.c **** * Date               : 05/23/2008
+   6:lib//src/stm32f10x_wwdg.c **** * Description        : This file provides all the WWDG firmware functions.
+   7:lib//src/stm32f10x_wwdg.c **** ********************************************************************************
+   8:lib//src/stm32f10x_wwdg.c **** * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+   9:lib//src/stm32f10x_wwdg.c **** * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  10:lib//src/stm32f10x_wwdg.c **** * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+  11:lib//src/stm32f10x_wwdg.c **** * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+  12:lib//src/stm32f10x_wwdg.c **** * CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+  13:lib//src/stm32f10x_wwdg.c **** * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  14:lib//src/stm32f10x_wwdg.c **** * FOR MORE INFORMATION PLEASE CAREFULLY READ THE LICENSE AGREEMENT FILE LOCATED 
+  15:lib//src/stm32f10x_wwdg.c **** * IN THE ROOT DIRECTORY OF THIS FIRMWARE PACKAGE.
+  16:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+  17:lib//src/stm32f10x_wwdg.c **** 
+  18:lib//src/stm32f10x_wwdg.c **** /* Includes ------------------------------------------------------------------*/
+  19:lib//src/stm32f10x_wwdg.c **** #include "stm32f10x_wwdg.h"
+  20:lib//src/stm32f10x_wwdg.c **** #include "stm32f10x_rcc.h"
+  21:lib//src/stm32f10x_wwdg.c **** 
+  22:lib//src/stm32f10x_wwdg.c **** /* Private typedef -----------------------------------------------------------*/
+  23:lib//src/stm32f10x_wwdg.c **** /* Private define ------------------------------------------------------------*/
+  24:lib//src/stm32f10x_wwdg.c **** /* ----------- WWDG registers bit address in the alias region ----------- */
+  25:lib//src/stm32f10x_wwdg.c **** #define WWDG_OFFSET       (WWDG_BASE - PERIPH_BASE)
+  26:lib//src/stm32f10x_wwdg.c **** 
+  27:lib//src/stm32f10x_wwdg.c **** /* Alias word address of EWI bit */
+  28:lib//src/stm32f10x_wwdg.c **** #define CFR_OFFSET        (WWDG_OFFSET + 0x04)
+  29:lib//src/stm32f10x_wwdg.c **** #define EWI_BitNumber     0x09
+  30:lib//src/stm32f10x_wwdg.c **** #define CFR_EWI_BB        (PERIPH_BB_BASE + (CFR_OFFSET * 32) + (EWI_BitNumber * 4))
+  31:lib//src/stm32f10x_wwdg.c **** 
+  32:lib//src/stm32f10x_wwdg.c **** /* Alias word address of EWIF bit */
+  33:lib//src/stm32f10x_wwdg.c **** #define SR_OFFSET         (WWDG_OFFSET + 0x08)
+  34:lib//src/stm32f10x_wwdg.c **** #define EWIF_BitNumber    0x00
+  35:lib//src/stm32f10x_wwdg.c **** #define SR_EWIF_BB        (PERIPH_BB_BASE + (SR_OFFSET * 32) + (EWIF_BitNumber * 4))
+  36:lib//src/stm32f10x_wwdg.c **** 
+  37:lib//src/stm32f10x_wwdg.c **** /* --------------------- WWDG registers bit mask ------------------------ */
+  38:lib//src/stm32f10x_wwdg.c **** /* CR register bit mask */
+  39:lib//src/stm32f10x_wwdg.c **** #define CR_WDGA_Set       ((u32)0x00000080)
+  40:lib//src/stm32f10x_wwdg.c **** 
+  41:lib//src/stm32f10x_wwdg.c **** /* CFR register bit mask */
+  42:lib//src/stm32f10x_wwdg.c **** #define CFR_WDGTB_Mask    ((u32)0xFFFFFE7F)
+  43:lib//src/stm32f10x_wwdg.c **** #define CFR_W_Mask        ((u32)0xFFFFFF80)
+  44:lib//src/stm32f10x_wwdg.c **** 
+  45:lib//src/stm32f10x_wwdg.c **** #define BIT_Mask          ((u8)0x7F)
+  46:lib//src/stm32f10x_wwdg.c **** 
+  47:lib//src/stm32f10x_wwdg.c **** /* Private macro -------------------------------------------------------------*/
+  48:lib//src/stm32f10x_wwdg.c **** /* Private variables ---------------------------------------------------------*/
+  49:lib//src/stm32f10x_wwdg.c **** /* Private function prototypes -----------------------------------------------*/
+  50:lib//src/stm32f10x_wwdg.c **** /* Private functions ---------------------------------------------------------*/
+  51:lib//src/stm32f10x_wwdg.c **** 
+  52:lib//src/stm32f10x_wwdg.c **** /*******************************************************************************
+  53:lib//src/stm32f10x_wwdg.c **** * Function Name  : WWDG_DeInit
+  54:lib//src/stm32f10x_wwdg.c **** * Description    : Deinitializes the WWDG  peripheral registers to their default
+  55:lib//src/stm32f10x_wwdg.c **** *                  reset values.
+  56:lib//src/stm32f10x_wwdg.c **** * Input          : None
+  57:lib//src/stm32f10x_wwdg.c **** * Output         : None
+  58:lib//src/stm32f10x_wwdg.c **** * Return         : None
+  59:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+  60:lib//src/stm32f10x_wwdg.c **** void WWDG_DeInit(void)
+  61:lib//src/stm32f10x_wwdg.c **** {
+  62:lib//src/stm32f10x_wwdg.c ****   RCC_APB1PeriphResetCmd(RCC_APB1Periph_WWDG, ENABLE);
+  63:lib//src/stm32f10x_wwdg.c ****   RCC_APB1PeriphResetCmd(RCC_APB1Periph_WWDG, DISABLE);
+  64:lib//src/stm32f10x_wwdg.c **** }
+  65:lib//src/stm32f10x_wwdg.c **** 
+  66:lib//src/stm32f10x_wwdg.c **** /*******************************************************************************
+  67:lib//src/stm32f10x_wwdg.c **** * Function Name  : WWDG_SetPrescaler
+  68:lib//src/stm32f10x_wwdg.c **** * Description    : Sets the WWDG Prescaler.
+  69:lib//src/stm32f10x_wwdg.c **** * Input          : - WWDG_Prescaler: specifies the WWDG Prescaler.
+  70:lib//src/stm32f10x_wwdg.c **** *                    This parameter can be one of the following values:
+  71:lib//src/stm32f10x_wwdg.c **** *                       - WWDG_Prescaler_1: WWDG counter clock = (PCLK1/4096)/1
+  72:lib//src/stm32f10x_wwdg.c **** *                       - WWDG_Prescaler_2: WWDG counter clock = (PCLK1/4096)/2
+  73:lib//src/stm32f10x_wwdg.c **** *                       - WWDG_Prescaler_4: WWDG counter clock = (PCLK1/4096)/4
+  74:lib//src/stm32f10x_wwdg.c **** *                       - WWDG_Prescaler_8: WWDG counter clock = (PCLK1/4096)/8
+  75:lib//src/stm32f10x_wwdg.c **** * Output         : None
+  76:lib//src/stm32f10x_wwdg.c **** * Return         : None
+  77:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+  78:lib//src/stm32f10x_wwdg.c **** void WWDG_SetPrescaler(u32 WWDG_Prescaler)
+  79:lib//src/stm32f10x_wwdg.c **** {
+  30              		.loc 1 79 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+  80:lib//src/stm32f10x_wwdg.c ****   u32 tmpreg = 0;
+  81:lib//src/stm32f10x_wwdg.c **** 
+  82:lib//src/stm32f10x_wwdg.c ****   /* Check the parameters */
+  83:lib//src/stm32f10x_wwdg.c ****   assert_param(IS_WWDG_PRESCALER(WWDG_Prescaler));
+  84:lib//src/stm32f10x_wwdg.c **** 
+  85:lib//src/stm32f10x_wwdg.c ****   /* Clear WDGTB[1:0] bits */
+  86:lib//src/stm32f10x_wwdg.c ****   tmpreg = WWDG->CFR & CFR_WDGTB_Mask;
+  35              		.loc 1 86 0
+  36 0000 034B     		ldr	r3, .L3
+  37 0002 5A68     		ldr	r2, [r3, #4]
+  38 0004 22F4C072 		bic	r2, r2, #384
+  39              	.LVL1:
+  87:lib//src/stm32f10x_wwdg.c **** 
+  88:lib//src/stm32f10x_wwdg.c ****   /* Set WDGTB[1:0] bits according to WWDG_Prescaler value */
+  89:lib//src/stm32f10x_wwdg.c ****   tmpreg |= WWDG_Prescaler;
+  40              		.loc 1 89 0
+  41 0008 40EA0202 		orr	r2, r0, r2
+  42              	.LVL2:
+  90:lib//src/stm32f10x_wwdg.c **** 
+  91:lib//src/stm32f10x_wwdg.c ****   /* Store the new value */
+  92:lib//src/stm32f10x_wwdg.c ****   WWDG->CFR = tmpreg;
+  43              		.loc 1 92 0
+  44 000c 5A60     		str	r2, [r3, #4]
+  93:lib//src/stm32f10x_wwdg.c **** }
+  45              		.loc 1 93 0
+  46 000e 7047     		bx	lr
+  47              	.L4:
+  48              		.align	2
+  49              	.L3:
+  50 0010 002C0040 		.word	1073753088
+  51              	.LFE1:
+  53              		.align	2
+  54              		.global	WWDG_SetWindowValue
+  55              		.thumb
+  56              		.thumb_func
+  58              	WWDG_SetWindowValue:
+  59              	.LFB2:
+  94:lib//src/stm32f10x_wwdg.c **** 
+  95:lib//src/stm32f10x_wwdg.c **** /*******************************************************************************
+  96:lib//src/stm32f10x_wwdg.c **** * Function Name  : WWDG_SetWindowValue
+  97:lib//src/stm32f10x_wwdg.c **** * Description    : Sets the WWDG window value.
+  98:lib//src/stm32f10x_wwdg.c **** * Input          : - WindowValue: specifies the window value to be compared to
+  99:lib//src/stm32f10x_wwdg.c **** *                    the downcounter.
+ 100:lib//src/stm32f10x_wwdg.c **** *                    This parameter value must be lower than 0x80.
+ 101:lib//src/stm32f10x_wwdg.c **** * Output         : None
+ 102:lib//src/stm32f10x_wwdg.c **** * Return         : None
+ 103:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+ 104:lib//src/stm32f10x_wwdg.c **** void WWDG_SetWindowValue(u8 WindowValue)
+ 105:lib//src/stm32f10x_wwdg.c **** {
+  60              		.loc 1 105 0
+  61              		@ args = 0, pretend = 0, frame = 0
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63              		@ link register save eliminated.
+  64              	.LVL3:
+ 106:lib//src/stm32f10x_wwdg.c ****   u32 tmpreg = 0;
+ 107:lib//src/stm32f10x_wwdg.c **** 
+ 108:lib//src/stm32f10x_wwdg.c ****   /* Check the parameters */
+ 109:lib//src/stm32f10x_wwdg.c ****   assert_param(IS_WWDG_WINDOW_VALUE(WindowValue));
+ 110:lib//src/stm32f10x_wwdg.c **** 
+ 111:lib//src/stm32f10x_wwdg.c ****   /* Clear W[6:0] bits */
+ 112:lib//src/stm32f10x_wwdg.c ****   tmpreg = WWDG->CFR & CFR_W_Mask;
+  65              		.loc 1 112 0
+  66 0014 044B     		ldr	r3, .L7
+ 113:lib//src/stm32f10x_wwdg.c **** 
+ 114:lib//src/stm32f10x_wwdg.c ****   /* Set W[6:0] bits according to WindowValue value */
+ 115:lib//src/stm32f10x_wwdg.c ****   tmpreg |= WindowValue & BIT_Mask;
+  67              		.loc 1 115 0
+  68 0016 00F07F00 		and	r0, r0, #127
+  69              	.LVL4:
+  70              		.loc 1 112 0
+  71 001a 5A68     		ldr	r2, [r3, #4]
+  72 001c 22F07F02 		bic	r2, r2, #127
+  73              	.LVL5:
+  74              		.loc 1 115 0
+  75 0020 1043     		orrs	r0, r0, r2
+  76              	.LVL6:
+ 116:lib//src/stm32f10x_wwdg.c **** 
+ 117:lib//src/stm32f10x_wwdg.c ****   /* Store the new value */
+ 118:lib//src/stm32f10x_wwdg.c ****   WWDG->CFR = tmpreg;
+  77              		.loc 1 118 0
+  78 0022 5860     		str	r0, [r3, #4]
+ 119:lib//src/stm32f10x_wwdg.c **** }
+  79              		.loc 1 119 0
+  80 0024 7047     		bx	lr
+  81              	.L8:
+  82 0026 00BF     		.align	2
+  83              	.L7:
+  84 0028 002C0040 		.word	1073753088
+  85              	.LFE2:
+  87              		.align	2
+  88              		.global	WWDG_EnableIT
+  89              		.thumb
+  90              		.thumb_func
+  92              	WWDG_EnableIT:
+  93              	.LFB3:
+ 120:lib//src/stm32f10x_wwdg.c **** 
+ 121:lib//src/stm32f10x_wwdg.c **** /*******************************************************************************
+ 122:lib//src/stm32f10x_wwdg.c **** * Function Name  : WWDG_EnableIT
+ 123:lib//src/stm32f10x_wwdg.c **** * Description    : Enables the WWDG Early Wakeup interrupt(EWI).
+ 124:lib//src/stm32f10x_wwdg.c **** * Input          : None
+ 125:lib//src/stm32f10x_wwdg.c **** * Output         : None
+ 126:lib//src/stm32f10x_wwdg.c **** * Return         : None
+ 127:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+ 128:lib//src/stm32f10x_wwdg.c **** void WWDG_EnableIT(void)
+ 129:lib//src/stm32f10x_wwdg.c **** {
+  94              		.loc 1 129 0
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97              		@ link register save eliminated.
+ 130:lib//src/stm32f10x_wwdg.c ****   *(vu32 *) CFR_EWI_BB = (u32)ENABLE;
+  98              		.loc 1 130 0
+  99 002c 014B     		ldr	r3, .L11
+ 100 002e 0122     		movs	r2, #1
+ 101 0030 1A60     		str	r2, [r3, #0]
+ 131:lib//src/stm32f10x_wwdg.c **** }
+ 102              		.loc 1 131 0
+ 103 0032 7047     		bx	lr
+ 104              	.L12:
+ 105              		.align	2
+ 106              	.L11:
+ 107 0034 A4800542 		.word	1107656868
+ 108              	.LFE3:
+ 110              		.align	2
+ 111              		.global	WWDG_SetCounter
+ 112              		.thumb
+ 113              		.thumb_func
+ 115              	WWDG_SetCounter:
+ 116              	.LFB4:
+ 132:lib//src/stm32f10x_wwdg.c **** 
+ 133:lib//src/stm32f10x_wwdg.c **** /*******************************************************************************
+ 134:lib//src/stm32f10x_wwdg.c **** * Function Name  : WWDG_SetCounter
+ 135:lib//src/stm32f10x_wwdg.c **** * Description    : Sets the WWDG counter value.
+ 136:lib//src/stm32f10x_wwdg.c **** * Input          : - Counter: specifies the watchdog counter value.
+ 137:lib//src/stm32f10x_wwdg.c **** *                    This parameter must be a number between 0x40 and 0x7F.
+ 138:lib//src/stm32f10x_wwdg.c **** * Output         : None
+ 139:lib//src/stm32f10x_wwdg.c **** * Return         : None
+ 140:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+ 141:lib//src/stm32f10x_wwdg.c **** void WWDG_SetCounter(u8 Counter)
+ 142:lib//src/stm32f10x_wwdg.c **** {
+ 117              		.loc 1 142 0
+ 118              		@ args = 0, pretend = 0, frame = 0
+ 119              		@ frame_needed = 0, uses_anonymous_args = 0
+ 120              		@ link register save eliminated.
+ 121              	.LVL7:
+ 143:lib//src/stm32f10x_wwdg.c ****   /* Check the parameters */
+ 144:lib//src/stm32f10x_wwdg.c ****   assert_param(IS_WWDG_COUNTER(Counter));
+ 145:lib//src/stm32f10x_wwdg.c **** 
+ 146:lib//src/stm32f10x_wwdg.c ****   /* Write to T[6:0] bits to configure the counter value, no need to do
+ 147:lib//src/stm32f10x_wwdg.c ****      a read-modify-write; writing a 0 to WDGA bit does nothing */
+ 148:lib//src/stm32f10x_wwdg.c ****   WWDG->CR = Counter & BIT_Mask;
+ 122              		.loc 1 148 0
+ 123 0038 024B     		ldr	r3, .L15
+ 124 003a 00F07F00 		and	r0, r0, #127
+ 125              	.LVL8:
+ 126 003e 1860     		str	r0, [r3, #0]
+ 149:lib//src/stm32f10x_wwdg.c **** }
+ 127              		.loc 1 149 0
+ 128 0040 7047     		bx	lr
+ 129              	.L16:
+ 130 0042 00BF     		.align	2
+ 131              	.L15:
+ 132 0044 002C0040 		.word	1073753088
+ 133              	.LFE4:
+ 135              		.align	2
+ 136              		.global	WWDG_Enable
+ 137              		.thumb
+ 138              		.thumb_func
+ 140              	WWDG_Enable:
+ 141              	.LFB5:
+ 150:lib//src/stm32f10x_wwdg.c **** 
+ 151:lib//src/stm32f10x_wwdg.c **** /*******************************************************************************
+ 152:lib//src/stm32f10x_wwdg.c **** * Function Name  : WWDG_Enable
+ 153:lib//src/stm32f10x_wwdg.c **** * Description    : Enables WWDG and load the counter value.
+ 154:lib//src/stm32f10x_wwdg.c **** *                  - Counter: specifies the watchdog counter value.
+ 155:lib//src/stm32f10x_wwdg.c **** *                    This parameter must be a number between 0x40 and 0x7F.
+ 156:lib//src/stm32f10x_wwdg.c **** * Input          : None
+ 157:lib//src/stm32f10x_wwdg.c **** * Output         : None
+ 158:lib//src/stm32f10x_wwdg.c **** * Return         : None
+ 159:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+ 160:lib//src/stm32f10x_wwdg.c **** void WWDG_Enable(u8 Counter)
+ 161:lib//src/stm32f10x_wwdg.c **** {
+ 142              		.loc 1 161 0
+ 143              		@ args = 0, pretend = 0, frame = 0
+ 144              		@ frame_needed = 0, uses_anonymous_args = 0
+ 145              		@ link register save eliminated.
+ 146              	.LVL9:
+ 162:lib//src/stm32f10x_wwdg.c ****   /* Check the parameters */
+ 163:lib//src/stm32f10x_wwdg.c ****   assert_param(IS_WWDG_COUNTER(Counter));
+ 164:lib//src/stm32f10x_wwdg.c **** 
+ 165:lib//src/stm32f10x_wwdg.c ****   WWDG->CR = CR_WDGA_Set | Counter;
+ 147              		.loc 1 165 0
+ 148 0048 024B     		ldr	r3, .L19
+ 149 004a 40F08000 		orr	r0, r0, #128
+ 150              	.LVL10:
+ 151 004e 1860     		str	r0, [r3, #0]
+ 166:lib//src/stm32f10x_wwdg.c **** }
+ 152              		.loc 1 166 0
+ 153 0050 7047     		bx	lr
+ 154              	.L20:
+ 155 0052 00BF     		.align	2
+ 156              	.L19:
+ 157 0054 002C0040 		.word	1073753088
+ 158              	.LFE5:
+ 160              		.align	2
+ 161              		.global	WWDG_GetFlagStatus
+ 162              		.thumb
+ 163              		.thumb_func
+ 165              	WWDG_GetFlagStatus:
+ 166              	.LFB6:
+ 167:lib//src/stm32f10x_wwdg.c **** 
+ 168:lib//src/stm32f10x_wwdg.c **** /*******************************************************************************
+ 169:lib//src/stm32f10x_wwdg.c **** * Function Name  : WWDG_GetFlagStatus
+ 170:lib//src/stm32f10x_wwdg.c **** * Description    : Checks whether the Early Wakeup interrupt flag is set or not.
+ 171:lib//src/stm32f10x_wwdg.c **** * Input          : None
+ 172:lib//src/stm32f10x_wwdg.c **** * Output         : None
+ 173:lib//src/stm32f10x_wwdg.c **** * Return         : The new state of the Early Wakeup interrupt flag (SET or RESET)
+ 174:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+ 175:lib//src/stm32f10x_wwdg.c **** FlagStatus WWDG_GetFlagStatus(void)
+ 176:lib//src/stm32f10x_wwdg.c **** {
+ 167              		.loc 1 176 0
+ 168              		@ args = 0, pretend = 0, frame = 0
+ 169              		@ frame_needed = 0, uses_anonymous_args = 0
+ 170              		@ link register save eliminated.
+ 177:lib//src/stm32f10x_wwdg.c ****   return (FlagStatus)(*(vu32 *) SR_EWIF_BB);
+ 171              		.loc 1 177 0
+ 172 0058 014B     		ldr	r3, .L23
+ 173 005a 1868     		ldr	r0, [r3, #0]
+ 178:lib//src/stm32f10x_wwdg.c **** }
+ 174              		.loc 1 178 0
+ 175 005c C0B2     		uxtb	r0, r0
+ 176 005e 7047     		bx	lr
+ 177              	.L24:
+ 178              		.align	2
+ 179              	.L23:
+ 180 0060 00810542 		.word	1107656960
+ 181              	.LFE6:
+ 183              		.align	2
+ 184              		.global	WWDG_ClearFlag
+ 185              		.thumb
+ 186              		.thumb_func
+ 188              	WWDG_ClearFlag:
+ 189              	.LFB7:
+ 179:lib//src/stm32f10x_wwdg.c **** 
+ 180:lib//src/stm32f10x_wwdg.c **** /*******************************************************************************
+ 181:lib//src/stm32f10x_wwdg.c **** * Function Name  : WWDG_ClearFlag
+ 182:lib//src/stm32f10x_wwdg.c **** * Description    : Clears Early Wakeup interrupt flag.
+ 183:lib//src/stm32f10x_wwdg.c **** * Input          : None
+ 184:lib//src/stm32f10x_wwdg.c **** * Output         : None
+ 185:lib//src/stm32f10x_wwdg.c **** * Return         : None
+ 186:lib//src/stm32f10x_wwdg.c **** *******************************************************************************/
+ 187:lib//src/stm32f10x_wwdg.c **** void WWDG_ClearFlag(void)
+ 188:lib//src/stm32f10x_wwdg.c **** {
+ 190              		.loc 1 188 0
+ 191              		@ args = 0, pretend = 0, frame = 0
+ 192              		@ frame_needed = 0, uses_anonymous_args = 0
+ 193              		@ link register save eliminated.
+ 189:lib//src/stm32f10x_wwdg.c ****   WWDG->SR = (u32)RESET;
+ 194              		.loc 1 189 0
+ 195 0064 014B     		ldr	r3, .L27
+ 196 0066 0022     		movs	r2, #0
+ 197 0068 9A60     		str	r2, [r3, #8]
+ 190:lib//src/stm32f10x_wwdg.c **** }
+ 198              		.loc 1 190 0
+ 199 006a 7047     		bx	lr
+ 200              	.L28:
+ 201              		.align	2
+ 202              	.L27:
+ 203 006c 002C0040 		.word	1073753088
+ 204              	.LFE7:
+ 206              		.align	2
+ 207              		.global	WWDG_DeInit
+ 208              		.thumb
+ 209              		.thumb_func
+ 211              	WWDG_DeInit:
+ 212              	.LFB0:
+ 213              		.loc 1 61 0
+ 214              		@ args = 0, pretend = 0, frame = 0
+ 215              		@ frame_needed = 0, uses_anonymous_args = 0
+ 216              		.loc 1 62 0
+ 217 0070 0121     		movs	r1, #1
+ 218              		.loc 1 61 0
+ 219 0072 08B5     		push	{r3, lr}
+ 220              	.LCFI0:
+ 221              		.loc 1 62 0
+ 222 0074 4FF40060 		mov	r0, #2048
+ 223 0078 FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 224              		.loc 1 63 0
+ 225 007c 4FF40060 		mov	r0, #2048
+ 226 0080 0021     		movs	r1, #0
+ 227 0082 FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 228              		.loc 1 64 0
+ 229 0086 08BD     		pop	{r3, pc}
+ 230              	.LFE0:
+ 322              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_wwdg.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:27     .text:00000000 WWDG_SetPrescaler
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:50     .text:00000010 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:53     .text:00000014 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:58     .text:00000014 WWDG_SetWindowValue
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:84     .text:00000028 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:87     .text:0000002c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:92     .text:0000002c WWDG_EnableIT
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:107    .text:00000034 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:110    .text:00000038 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:115    .text:00000038 WWDG_SetCounter
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:132    .text:00000044 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:135    .text:00000048 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:140    .text:00000048 WWDG_Enable
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:157    .text:00000054 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:160    .text:00000058 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:165    .text:00000058 WWDG_GetFlagStatus
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:180    .text:00000060 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:183    .text:00000064 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:188    .text:00000064 WWDG_ClearFlag
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:203    .text:0000006c $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:206    .text:00000070 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:211    .text:00000070 WWDG_DeInit
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccsZa9jw.s:245    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB1PeriphResetCmd

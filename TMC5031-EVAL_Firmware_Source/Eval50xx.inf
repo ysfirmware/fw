@@ -1,0 +1,53 @@
+; "virtual serial port" for the TMC562 evaluation board
+; for Windows 2000, XP, Vista, 7
+
+
+
+[Version]                                                       ; Version section
+Signature="$Chicago$"                                           ; All Windows versions
+Class=Ports                                                     ; This is a serial port driver
+ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}                ; Associated GUID
+Provider=%Trinamic%
+DriverVer=09/12/2006,1.1.1.5
+
+[DestinationDirs]                                               ; DestinationDirs section
+DefaultDestDir=12                                               ; Default install directory is \drivers or \IOSubSys
+FakeModemCopyFileSection=12
+
+[Manufacturer]                                                  ; Manufacturer section
+%TRINAMIC%=TrinamicMfg, NTx86, NTamd64                          ; Only one manufacturer (TRINAMIC), models section is named
+                                                                ; TrinamicMfg
+
+[TrinamicMfg.NTx86]                                             ; Models section corresponding to TRINAMIC
+%TMC562Eval%=USBtoSer.Install,USB\VID_16D0&PID_0654             ; Identifies a device with Vendor ID (16D0h) and
+                                                                ; Product ID equal to 0654h. Corresponding Install section
+                                                                ; is named USBtoSer.Install ( CDCHID )
+
+[TrinamicMfg.NTamd64]
+%TMC562Eval%=USBtoSer.Install,USB\VID_16D0&PID_0654             ; Models section corresponding to TRINAMIC
+                                                                ; for 64 bit systems
+
+[USBtoSer.Install]                                              ; Install section
+include=mdmcpq.inf
+CopyFiles=FakeModemCopyFileSection
+AddReg=USBtoSer.AddReg                                          ; Registry keys to add are listed in USBtoSer.AddReg
+
+[USBtoSer.AddReg]                                               ; AddReg section
+HKR,,DevLoader,,*ntkern                                         ;
+HKR,,NTMPDriver,,usbser.sys
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
+
+[USBtoSer.Install.Services]                                     ; Services section
+AddService=usbser,0x00000002,USBtoSer.AddService                ; Assign usbser as the PnP driver for the device
+
+[USBtoSer.AddService]                                           ; Service install section
+DisplayName=%USBSer%                                            ; Name of the serial driver
+ServiceType=1                                                   ; Service kernel driver
+StartType=3                                                     ; Driver is started by the PnP manager
+ErrorControl=1                                                  ; Warn about errors
+ServiceBinary=%12%\usbser.sys                                   ; Driver filename
+
+[Strings]                                                       ; Strings section
+TRINAMIC="Trinamic Motion Control GmbH & Co KG"                 ; String value for the TRINAMIC symbol
+TMC562Eval="Trinamic TMC562-EVAL (virtual COM)"                 ; String value for the USBtoSerialConverter symbol
+USBSer="USB Serial Emulation Driver"                            ; String value for the USBSer symbol

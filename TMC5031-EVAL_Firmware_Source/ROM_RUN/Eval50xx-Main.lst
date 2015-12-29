@@ -1,0 +1,460 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"Eval50xx-Main.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	InitMotorDrivers
+  24              		.thumb
+  25              		.thumb_func
+  27              	InitMotorDrivers:
+  28              	.LFB2:
+  29              		.file 1 "Eval50xx-Main.c"
+   1:Eval50xx-Main.c **** /****************************************************
+   2:Eval50xx-Main.c ****   Projekt: TMC562-Eval
+   3:Eval50xx-Main.c **** 
+   4:Eval50xx-Main.c ****   Modul:   Eval562-Main.c
+   5:Eval50xx-Main.c ****            Hauptprogramm für das TMC562-Evalboard
+   6:Eval50xx-Main.c **** 
+   7:Eval50xx-Main.c ****   Datum:   14.10.2011 OK
+   8:Eval50xx-Main.c **** *****************************************************/
+   9:Eval50xx-Main.c **** 
+  10:Eval50xx-Main.c **** #include <stdlib.h>
+  11:Eval50xx-Main.c **** 
+  12:Eval50xx-Main.c **** #include "stm32f10x_lib.h"
+  13:Eval50xx-Main.c **** #include "bits.h"
+  14:Eval50xx-Main.c **** 
+  15:Eval50xx-Main.c **** #include "Eval50xx.h"
+  16:Eval50xx-Main.c **** #include "Eval50xx-IO.h"
+  17:Eval50xx-Main.c **** #include "Eval50xx-SPI.h"
+  18:Eval50xx-Main.c **** #include "Eval50xx-UART.h"
+  19:Eval50xx-Main.c **** #include "Eval50xx-USB.h"
+  20:Eval50xx-Main.c **** #include "Eval50xx-SysTick.h"
+  21:Eval50xx-Main.c **** #include "Eval50xx-Commands.h"
+  22:Eval50xx-Main.c **** #include "Eval50xx-Registers.h"
+  23:Eval50xx-Main.c **** 
+  24:Eval50xx-Main.c **** const char *VersionString="5031V100";
+  25:Eval50xx-Main.c **** UCHAR ExtClockFlag;
+  26:Eval50xx-Main.c **** 
+  27:Eval50xx-Main.c **** 
+  28:Eval50xx-Main.c **** /*******************************************************************************
+  29:Eval50xx-Main.c **** * Function Name  : RCC_Configuration
+  30:Eval50xx-Main.c **** * Description    : Configures the different system clocks.
+  31:Eval50xx-Main.c **** * Input          : None
+  32:Eval50xx-Main.c **** * Output         : None
+  33:Eval50xx-Main.c **** * Return         : None
+  34:Eval50xx-Main.c **** *******************************************************************************/
+  35:Eval50xx-Main.c **** static void RCC_Configuration(void)
+  36:Eval50xx-Main.c **** {
+  37:Eval50xx-Main.c ****   ErrorStatus HSEStartUpStatus;
+  38:Eval50xx-Main.c **** 
+  39:Eval50xx-Main.c ****   /* RCC system reset(for debug purpose) */
+  40:Eval50xx-Main.c ****   RCC_DeInit();
+  41:Eval50xx-Main.c **** 
+  42:Eval50xx-Main.c ****   /* Enable HSE */
+  43:Eval50xx-Main.c ****   RCC_HSEConfig(RCC_HSE_ON);
+  44:Eval50xx-Main.c **** 
+  45:Eval50xx-Main.c ****   /* Wait till HSE is ready */
+  46:Eval50xx-Main.c ****   HSEStartUpStatus = RCC_WaitForHSEStartUp();
+  47:Eval50xx-Main.c **** 
+  48:Eval50xx-Main.c ****   if(HSEStartUpStatus == SUCCESS)
+  49:Eval50xx-Main.c ****   {
+  50:Eval50xx-Main.c ****     /* Enable Prefetch Buffer */
+  51:Eval50xx-Main.c ****     FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
+  52:Eval50xx-Main.c **** 
+  53:Eval50xx-Main.c ****     /* Flash 2 wait state */
+  54:Eval50xx-Main.c ****     FLASH_SetLatency(FLASH_Latency_2);
+  55:Eval50xx-Main.c **** 
+  56:Eval50xx-Main.c ****     /* HCLK = SYSCLK */
+  57:Eval50xx-Main.c ****     RCC_HCLKConfig(RCC_SYSCLK_Div1);
+  58:Eval50xx-Main.c **** 
+  59:Eval50xx-Main.c ****     /* PCLK2 = HCLK */
+  60:Eval50xx-Main.c ****     RCC_PCLK2Config(RCC_HCLK_Div1);
+  61:Eval50xx-Main.c **** 
+  62:Eval50xx-Main.c ****     /* PCLK1 = HCLK/2 */
+  63:Eval50xx-Main.c ****     RCC_PCLK1Config(RCC_HCLK_Div2);
+  64:Eval50xx-Main.c **** 
+  65:Eval50xx-Main.c ****     /* PLLCLK = 8MHz * 9 = 72 MHz */
+  66:Eval50xx-Main.c ****     RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);
+  67:Eval50xx-Main.c **** 
+  68:Eval50xx-Main.c ****     /* Enable PLL */
+  69:Eval50xx-Main.c ****     RCC_PLLCmd(ENABLE);
+  70:Eval50xx-Main.c **** 
+  71:Eval50xx-Main.c ****     /* Wait till PLL is ready */
+  72:Eval50xx-Main.c ****     while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)
+  73:Eval50xx-Main.c ****     {
+  74:Eval50xx-Main.c ****     }
+  75:Eval50xx-Main.c **** 
+  76:Eval50xx-Main.c ****     /* Select PLL as system clock source */
+  77:Eval50xx-Main.c ****     RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+  78:Eval50xx-Main.c **** 
+  79:Eval50xx-Main.c ****     /* Wait till PLL is used as system clock source */
+  80:Eval50xx-Main.c ****     while(RCC_GetSYSCLKSource() != 0x08)
+  81:Eval50xx-Main.c ****     {
+  82:Eval50xx-Main.c ****     }
+  83:Eval50xx-Main.c **** 
+  84:Eval50xx-Main.c ****     ExtClockFlag=TRUE;
+  85:Eval50xx-Main.c ****   }
+  86:Eval50xx-Main.c **** 
+  87:Eval50xx-Main.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+  88:Eval50xx-Main.c **** }
+  89:Eval50xx-Main.c **** 
+  90:Eval50xx-Main.c **** 
+  91:Eval50xx-Main.c **** /*******************************************************************************
+  92:Eval50xx-Main.c **** * Function Name  : NVIC_Configuration
+  93:Eval50xx-Main.c **** * Description    : Configures Vector Table base location.
+  94:Eval50xx-Main.c **** * Input          : None
+  95:Eval50xx-Main.c **** * Output         : None
+  96:Eval50xx-Main.c **** * Return         : None
+  97:Eval50xx-Main.c **** *******************************************************************************/
+  98:Eval50xx-Main.c **** static void NVIC_Configuration(void)
+  99:Eval50xx-Main.c **** {
+ 100:Eval50xx-Main.c **** #ifdef  VECT_TAB_RAM
+ 101:Eval50xx-Main.c ****   /* Set the Vector Table base location at 0x20000000 */
+ 102:Eval50xx-Main.c ****   NVIC_SetVectorTable(NVIC_VectTab_RAM, 0x0);
+ 103:Eval50xx-Main.c **** #else  /* VECT_TAB_FLASH  */
+ 104:Eval50xx-Main.c ****   #if defined(BOOTLOADER)
+ 105:Eval50xx-Main.c ****   //Set the vector table base location at 0x08004000 (right after the TMCM boot loader)
+ 106:Eval50xx-Main.c ****   NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x4000);
+ 107:Eval50xx-Main.c ****   #else
+ 108:Eval50xx-Main.c ****   /* Set the Vector Table base location at 0x08000000 */
+ 109:Eval50xx-Main.c ****   NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
+ 110:Eval50xx-Main.c ****   #endif
+ 111:Eval50xx-Main.c **** #endif
+ 112:Eval50xx-Main.c ****   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+ 113:Eval50xx-Main.c **** }
+ 114:Eval50xx-Main.c **** 
+ 115:Eval50xx-Main.c **** 
+ 116:Eval50xx-Main.c **** /*******************************************************************
+ 117:Eval50xx-Main.c ****    Funktion: InitMotorDrivers()
+ 118:Eval50xx-Main.c ****    Parameter: ---
+ 119:Eval50xx-Main.c **** 
+ 120:Eval50xx-Main.c ****    Rückgabewert: ---
+ 121:Eval50xx-Main.c **** 
+ 122:Eval50xx-Main.c ****    Zweck: Initialisierung der Motortreiber-Einstellungen aufgrund
+ 123:Eval50xx-Main.c ****           der Jumper.
+ 124:Eval50xx-Main.c **** ********************************************************************/
+ 125:Eval50xx-Main.c **** void InitMotorDrivers(void)
+ 126:Eval50xx-Main.c **** {
+  30              		.loc 1 126 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 73B5     		push	{r0, r1, r4, r5, r6, lr}
+  34              	.LCFI0:
+ 127:Eval50xx-Main.c ****   //Richtung von Motor 2 invertieren (damit beide gleich laufen)
+ 128:Eval50xx-Main.c ****   WriteTMC562Datagram(0x00, 0x00, 0x00, 0x02, 0x00);
+  35              		.loc 1 128 0
+  36 0002 0024     		movs	r4, #0
+  37 0004 2046     		mov	r0, r4
+  38 0006 2146     		mov	r1, r4
+  39 0008 2246     		mov	r2, r4
+  40 000a 0223     		movs	r3, #2
+  41 000c 0094     		str	r4, [sp, #0]
+  42 000e FFF7FEFF 		bl	WriteTMC562Datagram
+ 129:Eval50xx-Main.c **** 
+ 130:Eval50xx-Main.c ****   //Basiskonfiguration der Treiber einstellen
+ 131:Eval50xx-Main.c ****   //Motor 1
+ 132:Eval50xx-Main.c ****   WriteTMC562Datagram(0x6c, 0x00, 0x01, 0x01, 0xd5);
+  43              		.loc 1 132 0
+  44 0012 0122     		movs	r2, #1
+  45 0014 1346     		mov	r3, r2
+  46 0016 D526     		movs	r6, #213
+  47 0018 6C20     		movs	r0, #108
+  48 001a 2146     		mov	r1, r4
+ 133:Eval50xx-Main.c ****   WriteTMC562Datagram(0x30, 0x00, 0x07, 0x17, 0x03);
+  49              		.loc 1 133 0
+  50 001c 0325     		movs	r5, #3
+  51              		.loc 1 132 0
+  52 001e 0096     		str	r6, [sp, #0]
+  53 0020 FFF7FEFF 		bl	WriteTMC562Datagram
+  54              		.loc 1 133 0
+  55 0024 3020     		movs	r0, #48
+  56 0026 2146     		mov	r1, r4
+  57 0028 0722     		movs	r2, #7
+  58 002a 1723     		movs	r3, #23
+  59 002c 0095     		str	r5, [sp, #0]
+  60 002e FFF7FEFF 		bl	WriteTMC562Datagram
+ 134:Eval50xx-Main.c **** 
+ 135:Eval50xx-Main.c ****   //Motor 2
+ 136:Eval50xx-Main.c ****   WriteTMC562Datagram(0x7c, 0x00, 0x01, 0x01, 0xd5);
+  61              		.loc 1 136 0
+  62 0032 0122     		movs	r2, #1
+  63 0034 1346     		mov	r3, r2
+  64 0036 7C20     		movs	r0, #124
+  65 0038 2146     		mov	r1, r4
+  66 003a 0096     		str	r6, [sp, #0]
+  67 003c FFF7FEFF 		bl	WriteTMC562Datagram
+ 137:Eval50xx-Main.c ****   WriteTMC562Datagram(0x50, 0x00, 0x07, 0x17, 0x03);
+  68              		.loc 1 137 0
+  69 0040 2146     		mov	r1, r4
+  70 0042 5020     		movs	r0, #80
+  71 0044 0722     		movs	r2, #7
+  72 0046 1723     		movs	r3, #23
+  73 0048 0095     		str	r5, [sp, #0]
+  74 004a FFF7FEFF 		bl	WriteTMC562Datagram
+ 138:Eval50xx-Main.c **** }
+  75              		.loc 1 138 0
+  76 004e 7CBD     		pop	{r2, r3, r4, r5, r6, pc}
+  77              	.LFE2:
+  79              		.align	2
+  80              		.global	main
+  81              		.thumb
+  82              		.thumb_func
+  84              	main:
+  85              	.LFB3:
+ 139:Eval50xx-Main.c **** 
+ 140:Eval50xx-Main.c **** 
+ 141:Eval50xx-Main.c **** //Hauptprogramm
+ 142:Eval50xx-Main.c **** int main(void)
+ 143:Eval50xx-Main.c **** {
+  86              		.loc 1 143 0
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89 0050 10B5     		push	{r4, lr}
+  90              	.LCFI1:
+  91              	.LBB6:
+  92              	.LBB7:
+  93              		.loc 1 40 0
+  94 0052 FFF7FEFF 		bl	RCC_DeInit
+  95              		.loc 1 43 0
+  96 0056 4FF48030 		mov	r0, #65536
+  97 005a FFF7FEFF 		bl	RCC_HSEConfig
+  98              		.loc 1 46 0
+  99 005e FFF7FEFF 		bl	RCC_WaitForHSEStartUp
+ 100              		.loc 1 48 0
+ 101 0062 0128     		cmp	r0, #1
+ 102              		.loc 1 46 0
+ 103 0064 0446     		mov	r4, r0
+ 104              		.loc 1 48 0
+ 105 0066 27D1     		bne	.L4
+ 106              		.loc 1 51 0
+ 107 0068 1020     		movs	r0, #16
+ 108 006a FFF7FEFF 		bl	FLASH_PrefetchBufferCmd
+ 109              		.loc 1 54 0
+ 110 006e 0220     		movs	r0, #2
+ 111 0070 FFF7FEFF 		bl	FLASH_SetLatency
+ 112              		.loc 1 57 0
+ 113 0074 0020     		movs	r0, #0
+ 114 0076 FFF7FEFF 		bl	RCC_HCLKConfig
+ 115              		.loc 1 60 0
+ 116 007a 0020     		movs	r0, #0
+ 117 007c FFF7FEFF 		bl	RCC_PCLK2Config
+ 118              		.loc 1 63 0
+ 119 0080 4FF48060 		mov	r0, #1024
+ 120 0084 FFF7FEFF 		bl	RCC_PCLK1Config
+ 121              		.loc 1 66 0
+ 122 0088 4FF48030 		mov	r0, #65536
+ 123 008c 4FF4E011 		mov	r1, #1835008
+ 124 0090 FFF7FEFF 		bl	RCC_PLLConfig
+ 125              		.loc 1 69 0
+ 126 0094 2046     		mov	r0, r4
+ 127 0096 FFF7FEFF 		bl	RCC_PLLCmd
+ 128              	.L5:
+ 129              		.loc 1 72 0
+ 130 009a 3920     		movs	r0, #57
+ 131 009c FFF7FEFF 		bl	RCC_GetFlagStatus
+ 132 00a0 0028     		cmp	r0, #0
+ 133 00a2 FAD0     		beq	.L5
+ 134              		.loc 1 77 0
+ 135 00a4 0220     		movs	r0, #2
+ 136 00a6 FFF7FEFF 		bl	RCC_SYSCLKConfig
+ 137              	.L6:
+ 138              		.loc 1 80 0
+ 139 00aa FFF7FEFF 		bl	RCC_GetSYSCLKSource
+ 140 00ae 0828     		cmp	r0, #8
+ 141 00b0 FBD1     		bne	.L6
+ 142              		.loc 1 84 0
+ 143 00b2 234B     		ldr	r3, .L14
+ 144 00b4 0122     		movs	r2, #1
+ 145 00b6 1A70     		strb	r2, [r3, #0]
+ 146              	.L4:
+ 147              		.loc 1 87 0
+ 148 00b8 0120     		movs	r0, #1
+ 149 00ba 0146     		mov	r1, r0
+ 150 00bc FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 151              	.LBE7:
+ 152              	.LBE6:
+ 144:Eval50xx-Main.c ****   UINT Delay;
+ 145:Eval50xx-Main.c **** 
+ 146:Eval50xx-Main.c ****   //Konfiguration des Systemtaktes
+ 147:Eval50xx-Main.c ****   RCC_Configuration();
+ 148:Eval50xx-Main.c **** 
+ 149:Eval50xx-Main.c ****   //Konfiguration des NVIC
+ 150:Eval50xx-Main.c ****   NVIC_Configuration();
+ 151:Eval50xx-Main.c **** 
+ 152:Eval50xx-Main.c ****   //Initialisierung der Peripherie
+ 153:Eval50xx-Main.c ****   InitIO();
+ 154:Eval50xx-Main.c **** 
+ 155:Eval50xx-Main.c ****   if(IS_CPU_DISABLE())
+ 153              		.loc 1 155 0
+ 154 00c0 204C     		ldr	r4, .L14+4
+ 155              	.LBB8:
+ 156              	.LBB9:
+ 157              		.loc 1 106 0
+ 158 00c2 4FF48041 		mov	r1, #16384
+ 159 00c6 4FF00060 		mov	r0, #134217728
+ 160 00ca FFF7FEFF 		bl	NVIC_SetVectorTable
+ 161              		.loc 1 112 0
+ 162 00ce 4FF44070 		mov	r0, #768
+ 163 00d2 FFF7FEFF 		bl	NVIC_PriorityGroupConfig
+ 164              	.LBE9:
+ 165              	.LBE8:
+ 166              		.loc 1 153 0
+ 167 00d6 FFF7FEFF 		bl	InitIO
+ 168              		.loc 1 155 0
+ 169 00da A368     		ldr	r3, [r4, #8]
+ 170 00dc 13F4805F 		tst	r3, #4096
+ 171 00e0 06D1     		bne	.L7
+ 156:Eval50xx-Main.c ****   {
+ 157:Eval50xx-Main.c ****     DisablePins();
+ 172              		.loc 1 157 0
+ 173 00e2 FFF7FEFF 		bl	DisablePins
+ 158:Eval50xx-Main.c ****     LED_LEFT_OFF();
+ 174              		.loc 1 158 0
+ 175 00e6 2023     		movs	r3, #32
+ 176 00e8 2361     		str	r3, [r4, #16]
+ 159:Eval50xx-Main.c ****     LED_RIGHT_ON();
+ 177              		.loc 1 159 0
+ 178 00ea DB18     		adds	r3, r3, r3
+ 179 00ec 6361     		str	r3, [r4, #20]
+ 180              	.L8:
+ 181 00ee FEE7     		b	.L8
+ 182              	.L7:
+ 160:Eval50xx-Main.c ****     for(;;) RESET_WATCHDOG();
+ 161:Eval50xx-Main.c ****   }
+ 162:Eval50xx-Main.c ****   else
+ 163:Eval50xx-Main.c ****   {
+ 164:Eval50xx-Main.c ****     InitSPI();
+ 183              		.loc 1 164 0
+ 184 00f0 FFF7FEFF 		bl	InitSPI
+ 165:Eval50xx-Main.c ****     EnableInterrupts();
+ 185              		.loc 1 165 0
+ 186 00f4 FFF7FEFF 		bl	EnableInterrupts
+ 166:Eval50xx-Main.c ****     InitSysTick();
+ 187              		.loc 1 166 0
+ 188 00f8 FFF7FEFF 		bl	InitSysTick
+ 167:Eval50xx-Main.c ****   }
+ 168:Eval50xx-Main.c **** 
+ 169:Eval50xx-Main.c ****   InitUART(115200);
+ 189              		.loc 1 169 0
+ 190 00fc 4FF4E130 		mov	r0, #115200
+ 191 0100 FFF7FEFF 		bl	InitUART
+ 170:Eval50xx-Main.c ****   SetUARTTransmitDelay(0);
+ 192              		.loc 1 170 0
+ 193 0104 0020     		movs	r0, #0
+ 194 0106 FFF7FEFF 		bl	SetUARTTransmitDelay
+ 171:Eval50xx-Main.c **** 
+ 172:Eval50xx-Main.c ****   InitUSB();
+ 195              		.loc 1 172 0
+ 196 010a FFF7FEFF 		bl	InitUSB
+ 173:Eval50xx-Main.c **** 
+ 174:Eval50xx-Main.c ****   //Software-Initialisierung
+ 175:Eval50xx-Main.c ****   Delay=0;
+ 176:Eval50xx-Main.c **** 
+ 177:Eval50xx-Main.c ****   //Grundkonfiguration der Motortreiber
+ 178:Eval50xx-Main.c ****   InitMotorDrivers();
+ 197              		.loc 1 178 0
+ 198 010e FFF7FEFF 		bl	InitMotorDrivers
+ 199 0112 0024     		movs	r4, #0
+ 200              	.LVL0:
+ 201              	.L12:
+ 179:Eval50xx-Main.c **** 
+ 180:Eval50xx-Main.c ****   //Hauptschleife
+ 181:Eval50xx-Main.c ****   for(;;)
+ 182:Eval50xx-Main.c ****   {
+ 183:Eval50xx-Main.c ****     RESET_WATCHDOG();
+ 184:Eval50xx-Main.c ****     ProcessCommands();
+ 202              		.loc 1 184 0
+ 203 0114 FFF7FEFF 		bl	ProcessCommands
+ 185:Eval50xx-Main.c ****     SystemControl();
+ 204              		.loc 1 185 0
+ 205 0118 FFF7FEFF 		bl	SystemControl
+ 186:Eval50xx-Main.c **** 
+ 187:Eval50xx-Main.c ****     if(abs(GetSysTimer()-Delay)>1000)
+ 206              		.loc 1 187 0
+ 207 011c FFF7FEFF 		bl	GetSysTimer
+ 208 0120 001B     		subs	r0, r0, r4
+ 209 0122 0028     		cmp	r0, #0
+ 210 0124 B8BF     		it	lt
+ 211 0126 4042     		rsblt	r0, r0, #0
+ 212 0128 B0F57A7F 		cmp	r0, #1000
+ 213 012c F2DD     		ble	.L12
+ 188:Eval50xx-Main.c ****     {
+ 189:Eval50xx-Main.c ****       LED_LEFT_TOGGLE();
+ 214              		.loc 1 189 0
+ 215 012e 054B     		ldr	r3, .L14+4
+ 216 0130 DA68     		ldr	r2, [r3, #12]
+ 217 0132 82F02002 		eor	r2, r2, #32
+ 218 0136 DA60     		str	r2, [r3, #12]
+ 190:Eval50xx-Main.c ****       Delay=GetSysTimer();
+ 219              		.loc 1 190 0
+ 220 0138 FFF7FEFF 		bl	GetSysTimer
+ 221 013c 0446     		mov	r4, r0
+ 222 013e E9E7     		b	.L12
+ 223              	.L15:
+ 224              		.align	2
+ 225              	.L14:
+ 226 0140 00000000 		.word	ExtClockFlag
+ 227 0144 000C0140 		.word	1073810432
+ 228              	.LFE3:
+ 230              		.global	VersionString
+ 231              		.comm	ExtClockFlag,1,1
+ 232              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 233              	.LC0:
+ 234 0000 35303331 		.ascii	"5031V100\000"
+ 234      56313030 
+ 234      00
+ 235              		.data
+ 236              		.align	2
+ 239              	VersionString:
+ 240 0000 00000000 		.word	.LC0
+ 305              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Eval50xx-Main.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc0pOtzU.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc0pOtzU.s:27     .text:00000000 InitMotorDrivers
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc0pOtzU.s:84     .text:00000050 main
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc0pOtzU.s:226    .text:00000140 $d
+                            *COM*:00000001 ExtClockFlag
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc0pOtzU.s:239    .data:00000000 VersionString
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc0pOtzU.s:236    .data:00000000 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc0pOtzU.s:254    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+WriteTMC562Datagram
+RCC_DeInit
+RCC_HSEConfig
+RCC_WaitForHSEStartUp
+FLASH_PrefetchBufferCmd
+FLASH_SetLatency
+RCC_HCLKConfig
+RCC_PCLK2Config
+RCC_PCLK1Config
+RCC_PLLConfig
+RCC_PLLCmd
+RCC_GetFlagStatus
+RCC_SYSCLKConfig
+RCC_GetSYSCLKSource
+RCC_APB2PeriphClockCmd
+NVIC_SetVectorTable
+NVIC_PriorityGroupConfig
+InitIO
+DisablePins
+InitSPI
+EnableInterrupts
+InitSysTick
+InitUART
+SetUARTTransmitDelay
+InitUSB
+ProcessCommands
+SystemControl
+GetSysTimer

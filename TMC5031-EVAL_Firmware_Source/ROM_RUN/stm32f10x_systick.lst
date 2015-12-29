@@ -1,0 +1,404 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f10x_systick.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	SysTick_CLKSourceConfig
+  24              		.thumb
+  25              		.thumb_func
+  27              	SysTick_CLKSourceConfig:
+  28              	.LFB0:
+  29              		.file 1 "lib//src/stm32f10x_systick.c"
+   1:lib//src/stm32f10x_systick.c **** /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+   2:lib//src/stm32f10x_systick.c **** * File Name          : stm32f10x_systick.c
+   3:lib//src/stm32f10x_systick.c **** * Author             : MCD Application Team
+   4:lib//src/stm32f10x_systick.c **** * Version            : V2.0
+   5:lib//src/stm32f10x_systick.c **** * Date               : 05/23/2008
+   6:lib//src/stm32f10x_systick.c **** * Description        : This file provides all the SysTick firmware functions.
+   7:lib//src/stm32f10x_systick.c **** ********************************************************************************
+   8:lib//src/stm32f10x_systick.c **** * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+   9:lib//src/stm32f10x_systick.c **** * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  10:lib//src/stm32f10x_systick.c **** * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+  11:lib//src/stm32f10x_systick.c **** * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+  12:lib//src/stm32f10x_systick.c **** * CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+  13:lib//src/stm32f10x_systick.c **** * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  14:lib//src/stm32f10x_systick.c **** * FOR MORE INFORMATION PLEASE CAREFULLY READ THE LICENSE AGREEMENT FILE LOCATED 
+  15:lib//src/stm32f10x_systick.c **** * IN THE ROOT DIRECTORY OF THIS FIRMWARE PACKAGE.
+  16:lib//src/stm32f10x_systick.c **** *******************************************************************************/
+  17:lib//src/stm32f10x_systick.c **** 
+  18:lib//src/stm32f10x_systick.c **** /* Includes ------------------------------------------------------------------*/
+  19:lib//src/stm32f10x_systick.c **** #include "stm32f10x_systick.h"
+  20:lib//src/stm32f10x_systick.c **** 
+  21:lib//src/stm32f10x_systick.c **** /* Private typedef -----------------------------------------------------------*/
+  22:lib//src/stm32f10x_systick.c **** /* Private define ------------------------------------------------------------*/
+  23:lib//src/stm32f10x_systick.c **** /* ---------------------- SysTick registers bit mask -------------------- */
+  24:lib//src/stm32f10x_systick.c **** /* CTRL TICKINT Mask */
+  25:lib//src/stm32f10x_systick.c **** #define CTRL_TICKINT_Set      ((u32)0x00000002)
+  26:lib//src/stm32f10x_systick.c **** #define CTRL_TICKINT_Reset    ((u32)0xFFFFFFFD)
+  27:lib//src/stm32f10x_systick.c **** 
+  28:lib//src/stm32f10x_systick.c **** /* Private macro -------------------------------------------------------------*/
+  29:lib//src/stm32f10x_systick.c **** /* Private variables ---------------------------------------------------------*/
+  30:lib//src/stm32f10x_systick.c **** /* Private function prototypes -----------------------------------------------*/
+  31:lib//src/stm32f10x_systick.c **** /* Private functions ---------------------------------------------------------*/
+  32:lib//src/stm32f10x_systick.c **** 
+  33:lib//src/stm32f10x_systick.c **** /*******************************************************************************
+  34:lib//src/stm32f10x_systick.c **** * Function Name  : SysTick_CLKSourceConfig
+  35:lib//src/stm32f10x_systick.c **** * Description    : Configures the SysTick clock source.
+  36:lib//src/stm32f10x_systick.c **** * Input          : - SysTick_CLKSource: specifies the SysTick clock source.
+  37:lib//src/stm32f10x_systick.c **** *                    This parameter can be one of the following values:
+  38:lib//src/stm32f10x_systick.c **** *                       - SysTick_CLKSource_HCLK_Div8: AHB clock divided by 8
+  39:lib//src/stm32f10x_systick.c **** *                         selected as SysTick clock source.
+  40:lib//src/stm32f10x_systick.c **** *                       - SysTick_CLKSource_HCLK: AHB clock selected as
+  41:lib//src/stm32f10x_systick.c **** *                         SysTick clock source.
+  42:lib//src/stm32f10x_systick.c **** * Output         : None
+  43:lib//src/stm32f10x_systick.c **** * Return         : None
+  44:lib//src/stm32f10x_systick.c **** *******************************************************************************/
+  45:lib//src/stm32f10x_systick.c **** void SysTick_CLKSourceConfig(u32 SysTick_CLKSource)
+  46:lib//src/stm32f10x_systick.c **** {
+  30              		.loc 1 46 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+  47:lib//src/stm32f10x_systick.c ****   /* Check the parameters */
+  48:lib//src/stm32f10x_systick.c ****   assert_param(IS_SYSTICK_CLK_SOURCE(SysTick_CLKSource));
+  49:lib//src/stm32f10x_systick.c **** 
+  50:lib//src/stm32f10x_systick.c ****   if (SysTick_CLKSource == SysTick_CLKSource_HCLK)
+  35              		.loc 1 50 0
+  36 0000 0428     		cmp	r0, #4
+  37 0002 04D1     		bne	.L2
+  51:lib//src/stm32f10x_systick.c ****   {
+  52:lib//src/stm32f10x_systick.c ****     SysTick->CTRL |= SysTick_CLKSource_HCLK;
+  38              		.loc 1 52 0
+  39 0004 054B     		ldr	r3, .L7
+  40 0006 1A68     		ldr	r2, [r3, #0]
+  41 0008 42F00402 		orr	r2, r2, #4
+  42 000c 03E0     		b	.L5
+  43              	.L2:
+  53:lib//src/stm32f10x_systick.c ****   }
+  54:lib//src/stm32f10x_systick.c ****   else
+  55:lib//src/stm32f10x_systick.c ****   {
+  56:lib//src/stm32f10x_systick.c ****     SysTick->CTRL &= SysTick_CLKSource_HCLK_Div8;
+  44              		.loc 1 56 0
+  45 000e 034B     		ldr	r3, .L7
+  46 0010 1A68     		ldr	r2, [r3, #0]
+  47 0012 22F00402 		bic	r2, r2, #4
+  48              	.L5:
+  49 0016 1A60     		str	r2, [r3, #0]
+  57:lib//src/stm32f10x_systick.c ****   }
+  58:lib//src/stm32f10x_systick.c **** }
+  50              		.loc 1 58 0
+  51 0018 7047     		bx	lr
+  52              	.L8:
+  53 001a 00BF     		.align	2
+  54              	.L7:
+  55 001c 10E000E0 		.word	-536813552
+  56              	.LFE0:
+  58              		.align	2
+  59              		.global	SysTick_SetReload
+  60              		.thumb
+  61              		.thumb_func
+  63              	SysTick_SetReload:
+  64              	.LFB1:
+  59:lib//src/stm32f10x_systick.c **** 
+  60:lib//src/stm32f10x_systick.c **** /*******************************************************************************
+  61:lib//src/stm32f10x_systick.c **** * Function Name  : SysTick_SetReload
+  62:lib//src/stm32f10x_systick.c **** * Description    : Sets SysTick Reload value.
+  63:lib//src/stm32f10x_systick.c **** * Input          : - Reload: SysTick Reload new value.
+  64:lib//src/stm32f10x_systick.c **** *                    This parameter must be a number between 1 and 0xFFFFFF.
+  65:lib//src/stm32f10x_systick.c **** * Output         : None
+  66:lib//src/stm32f10x_systick.c **** * Return         : None
+  67:lib//src/stm32f10x_systick.c **** *******************************************************************************/
+  68:lib//src/stm32f10x_systick.c **** void SysTick_SetReload(u32 Reload)
+  69:lib//src/stm32f10x_systick.c **** {
+  65              		.loc 1 69 0
+  66              		@ args = 0, pretend = 0, frame = 0
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68              		@ link register save eliminated.
+  69              	.LVL1:
+  70:lib//src/stm32f10x_systick.c ****   /* Check the parameters */
+  71:lib//src/stm32f10x_systick.c ****   assert_param(IS_SYSTICK_RELOAD(Reload));
+  72:lib//src/stm32f10x_systick.c **** 
+  73:lib//src/stm32f10x_systick.c ****   SysTick->LOAD = Reload;
+  70              		.loc 1 73 0
+  71 0020 014B     		ldr	r3, .L11
+  72 0022 5860     		str	r0, [r3, #4]
+  74:lib//src/stm32f10x_systick.c **** }
+  73              		.loc 1 74 0
+  74 0024 7047     		bx	lr
+  75              	.L12:
+  76 0026 00BF     		.align	2
+  77              	.L11:
+  78 0028 10E000E0 		.word	-536813552
+  79              	.LFE1:
+  81              		.align	2
+  82              		.global	SysTick_CounterCmd
+  83              		.thumb
+  84              		.thumb_func
+  86              	SysTick_CounterCmd:
+  87              	.LFB2:
+  75:lib//src/stm32f10x_systick.c **** 
+  76:lib//src/stm32f10x_systick.c **** /*******************************************************************************
+  77:lib//src/stm32f10x_systick.c **** * Function Name  : SysTick_CounterCmd
+  78:lib//src/stm32f10x_systick.c **** * Description    : Enables or disables the SysTick counter.
+  79:lib//src/stm32f10x_systick.c **** * Input          : - SysTick_Counter: new state of the SysTick counter.
+  80:lib//src/stm32f10x_systick.c **** *                    This parameter can be one of the following values:
+  81:lib//src/stm32f10x_systick.c **** *                       - SysTick_Counter_Disable: Disable counter
+  82:lib//src/stm32f10x_systick.c **** *                       - SysTick_Counter_Enable: Enable counter
+  83:lib//src/stm32f10x_systick.c **** *                       - SysTick_Counter_Clear: Clear counter value to 0
+  84:lib//src/stm32f10x_systick.c **** * Output         : None
+  85:lib//src/stm32f10x_systick.c **** * Return         : None
+  86:lib//src/stm32f10x_systick.c **** *******************************************************************************/
+  87:lib//src/stm32f10x_systick.c **** void SysTick_CounterCmd(u32 SysTick_Counter)
+  88:lib//src/stm32f10x_systick.c **** {
+  88              		.loc 1 88 0
+  89              		@ args = 0, pretend = 0, frame = 0
+  90              		@ frame_needed = 0, uses_anonymous_args = 0
+  91              		@ link register save eliminated.
+  92              	.LVL2:
+  89:lib//src/stm32f10x_systick.c ****   /* Check the parameters */
+  90:lib//src/stm32f10x_systick.c ****   assert_param(IS_SYSTICK_COUNTER(SysTick_Counter));
+  91:lib//src/stm32f10x_systick.c **** 
+  92:lib//src/stm32f10x_systick.c ****   if (SysTick_Counter == SysTick_Counter_Enable)
+  93              		.loc 1 92 0
+  94 002c 0128     		cmp	r0, #1
+  95 002e 04D1     		bne	.L14
+  93:lib//src/stm32f10x_systick.c ****   {
+  94:lib//src/stm32f10x_systick.c ****     SysTick->CTRL |= SysTick_Counter_Enable;
+  96              		.loc 1 94 0
+  97 0030 084B     		ldr	r3, .L19
+  98 0032 1A68     		ldr	r2, [r3, #0]
+  99 0034 42F00102 		orr	r2, r2, #1
+ 100 0038 06E0     		b	.L18
+ 101              	.L14:
+  95:lib//src/stm32f10x_systick.c ****   }
+  96:lib//src/stm32f10x_systick.c ****   else if (SysTick_Counter == SysTick_Counter_Disable) 
+ 102              		.loc 1 96 0
+ 103 003a 10F1020F 		cmn	r0, #2
+ 104 003e 05D1     		bne	.L16
+  97:lib//src/stm32f10x_systick.c ****   {
+  98:lib//src/stm32f10x_systick.c ****     SysTick->CTRL &= SysTick_Counter_Disable;
+ 105              		.loc 1 98 0
+ 106 0040 044B     		ldr	r3, .L19
+ 107 0042 1A68     		ldr	r2, [r3, #0]
+ 108 0044 22F00102 		bic	r2, r2, #1
+ 109              	.L18:
+ 110 0048 1A60     		str	r2, [r3, #0]
+ 111 004a 02E0     		b	.L17
+ 112              	.L16:
+  99:lib//src/stm32f10x_systick.c ****   }
+ 100:lib//src/stm32f10x_systick.c ****   else /* SysTick_Counter == SysTick_Counter_Clear */
+ 101:lib//src/stm32f10x_systick.c ****   {
+ 102:lib//src/stm32f10x_systick.c ****     SysTick->VAL = SysTick_Counter_Clear;
+ 113              		.loc 1 102 0
+ 114 004c 014B     		ldr	r3, .L19
+ 115 004e 0022     		movs	r2, #0
+ 116 0050 9A60     		str	r2, [r3, #8]
+ 117              	.L17:
+ 103:lib//src/stm32f10x_systick.c ****   }    
+ 104:lib//src/stm32f10x_systick.c **** }
+ 118              		.loc 1 104 0
+ 119 0052 7047     		bx	lr
+ 120              	.L20:
+ 121              		.align	2
+ 122              	.L19:
+ 123 0054 10E000E0 		.word	-536813552
+ 124              	.LFE2:
+ 126              		.align	2
+ 127              		.global	SysTick_ITConfig
+ 128              		.thumb
+ 129              		.thumb_func
+ 131              	SysTick_ITConfig:
+ 132              	.LFB3:
+ 105:lib//src/stm32f10x_systick.c **** 
+ 106:lib//src/stm32f10x_systick.c **** /*******************************************************************************
+ 107:lib//src/stm32f10x_systick.c **** * Function Name  : SysTick_ITConfig
+ 108:lib//src/stm32f10x_systick.c **** * Description    : Enables or disables the SysTick Interrupt.
+ 109:lib//src/stm32f10x_systick.c **** * Input          : - NewState: new state of the SysTick Interrupt.
+ 110:lib//src/stm32f10x_systick.c **** *                    This parameter can be: ENABLE or DISABLE.
+ 111:lib//src/stm32f10x_systick.c **** * Output         : None
+ 112:lib//src/stm32f10x_systick.c **** * Return         : None
+ 113:lib//src/stm32f10x_systick.c **** *******************************************************************************/
+ 114:lib//src/stm32f10x_systick.c **** void SysTick_ITConfig(FunctionalState NewState)
+ 115:lib//src/stm32f10x_systick.c **** {
+ 133              		.loc 1 115 0
+ 134              		@ args = 0, pretend = 0, frame = 0
+ 135              		@ frame_needed = 0, uses_anonymous_args = 0
+ 136              		@ link register save eliminated.
+ 137              	.LVL3:
+ 116:lib//src/stm32f10x_systick.c ****   /* Check the parameters */
+ 117:lib//src/stm32f10x_systick.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
+ 118:lib//src/stm32f10x_systick.c **** 
+ 119:lib//src/stm32f10x_systick.c ****   if (NewState != DISABLE)
+ 138              		.loc 1 119 0
+ 139 0058 20B1     		cbz	r0, .L22
+ 120:lib//src/stm32f10x_systick.c ****   {
+ 121:lib//src/stm32f10x_systick.c ****     SysTick->CTRL |= CTRL_TICKINT_Set;
+ 140              		.loc 1 121 0
+ 141 005a 054B     		ldr	r3, .L26
+ 142 005c 1A68     		ldr	r2, [r3, #0]
+ 143 005e 42F00202 		orr	r2, r2, #2
+ 144 0062 03E0     		b	.L25
+ 145              	.L22:
+ 122:lib//src/stm32f10x_systick.c ****   }
+ 123:lib//src/stm32f10x_systick.c ****   else
+ 124:lib//src/stm32f10x_systick.c ****   {
+ 125:lib//src/stm32f10x_systick.c ****     SysTick->CTRL &= CTRL_TICKINT_Reset;
+ 146              		.loc 1 125 0
+ 147 0064 024B     		ldr	r3, .L26
+ 148 0066 1A68     		ldr	r2, [r3, #0]
+ 149 0068 22F00202 		bic	r2, r2, #2
+ 150              	.L25:
+ 151 006c 1A60     		str	r2, [r3, #0]
+ 126:lib//src/stm32f10x_systick.c ****   }
+ 127:lib//src/stm32f10x_systick.c **** }
+ 152              		.loc 1 127 0
+ 153 006e 7047     		bx	lr
+ 154              	.L27:
+ 155              		.align	2
+ 156              	.L26:
+ 157 0070 10E000E0 		.word	-536813552
+ 158              	.LFE3:
+ 160              		.align	2
+ 161              		.global	SysTick_GetCounter
+ 162              		.thumb
+ 163              		.thumb_func
+ 165              	SysTick_GetCounter:
+ 166              	.LFB4:
+ 128:lib//src/stm32f10x_systick.c **** 
+ 129:lib//src/stm32f10x_systick.c **** /*******************************************************************************
+ 130:lib//src/stm32f10x_systick.c **** * Function Name  : SysTick_GetCounter
+ 131:lib//src/stm32f10x_systick.c **** * Description    : Gets SysTick counter value.
+ 132:lib//src/stm32f10x_systick.c **** * Input          : None
+ 133:lib//src/stm32f10x_systick.c **** * Output         : None
+ 134:lib//src/stm32f10x_systick.c **** * Return         : SysTick current value
+ 135:lib//src/stm32f10x_systick.c **** *******************************************************************************/
+ 136:lib//src/stm32f10x_systick.c **** u32 SysTick_GetCounter(void)
+ 137:lib//src/stm32f10x_systick.c **** {
+ 167              		.loc 1 137 0
+ 168              		@ args = 0, pretend = 0, frame = 0
+ 169              		@ frame_needed = 0, uses_anonymous_args = 0
+ 170              		@ link register save eliminated.
+ 138:lib//src/stm32f10x_systick.c ****   return(SysTick->VAL);
+ 171              		.loc 1 138 0
+ 172 0074 014B     		ldr	r3, .L30
+ 173 0076 9868     		ldr	r0, [r3, #8]
+ 139:lib//src/stm32f10x_systick.c **** }
+ 174              		.loc 1 139 0
+ 175 0078 7047     		bx	lr
+ 176              	.L31:
+ 177 007a 00BF     		.align	2
+ 178              	.L30:
+ 179 007c 10E000E0 		.word	-536813552
+ 180              	.LFE4:
+ 182              		.align	2
+ 183              		.global	SysTick_GetFlagStatus
+ 184              		.thumb
+ 185              		.thumb_func
+ 187              	SysTick_GetFlagStatus:
+ 188              	.LFB5:
+ 140:lib//src/stm32f10x_systick.c **** 
+ 141:lib//src/stm32f10x_systick.c **** /*******************************************************************************
+ 142:lib//src/stm32f10x_systick.c **** * Function Name  : SysTick_GetFlagStatus
+ 143:lib//src/stm32f10x_systick.c **** * Description    : Checks whether the specified SysTick flag is set or not.
+ 144:lib//src/stm32f10x_systick.c **** * Input          : - SysTick_FLAG: specifies the flag to check.
+ 145:lib//src/stm32f10x_systick.c **** *                    This parameter can be one of the following values:
+ 146:lib//src/stm32f10x_systick.c **** *                       - SysTick_FLAG_COUNT
+ 147:lib//src/stm32f10x_systick.c **** *                       - SysTick_FLAG_SKEW
+ 148:lib//src/stm32f10x_systick.c **** *                       - SysTick_FLAG_NOREF
+ 149:lib//src/stm32f10x_systick.c **** * Output         : None
+ 150:lib//src/stm32f10x_systick.c **** * Return         : None
+ 151:lib//src/stm32f10x_systick.c **** *******************************************************************************/
+ 152:lib//src/stm32f10x_systick.c **** FlagStatus SysTick_GetFlagStatus(u8 SysTick_FLAG)
+ 153:lib//src/stm32f10x_systick.c **** {
+ 189              		.loc 1 153 0
+ 190              		@ args = 0, pretend = 0, frame = 0
+ 191              		@ frame_needed = 0, uses_anonymous_args = 0
+ 192              		@ link register save eliminated.
+ 193              	.LVL4:
+ 154:lib//src/stm32f10x_systick.c ****   u32 statusreg = 0, tmp = 0 ;
+ 155:lib//src/stm32f10x_systick.c ****   FlagStatus bitstatus = RESET;
+ 156:lib//src/stm32f10x_systick.c **** 
+ 157:lib//src/stm32f10x_systick.c ****   /* Check the parameters */
+ 158:lib//src/stm32f10x_systick.c ****   assert_param(IS_SYSTICK_FLAG(SysTick_FLAG));
+ 159:lib//src/stm32f10x_systick.c **** 
+ 160:lib//src/stm32f10x_systick.c ****   /* Get the SysTick register index */
+ 161:lib//src/stm32f10x_systick.c ****   tmp = SysTick_FLAG >> 3;
+ 162:lib//src/stm32f10x_systick.c **** 
+ 163:lib//src/stm32f10x_systick.c ****   if (tmp == 2) /* The flag to check is in CTRL register */
+ 194              		.loc 1 163 0
+ 195 0080 C308     		lsrs	r3, r0, #3
+ 196 0082 022B     		cmp	r3, #2
+ 164:lib//src/stm32f10x_systick.c ****   {
+ 165:lib//src/stm32f10x_systick.c ****     statusreg = SysTick->CTRL;
+ 197              		.loc 1 165 0
+ 198 0084 0BBF     		itete	eq
+ 199 0086 044B     		ldreq	r3, .L36
+ 166:lib//src/stm32f10x_systick.c ****   }
+ 167:lib//src/stm32f10x_systick.c ****   else          /* The flag to check is in CALIB register */
+ 168:lib//src/stm32f10x_systick.c ****   {
+ 169:lib//src/stm32f10x_systick.c ****     statusreg = SysTick->CALIB;
+ 200              		.loc 1 169 0
+ 201 0088 034B     		ldrne	r3, .L36
+ 202              		.loc 1 165 0
+ 203 008a 1B68     		ldreq	r3, [r3, #0]
+ 204              	.LVL5:
+ 205              		.loc 1 169 0
+ 206 008c DB68     		ldrne	r3, [r3, #12]
+ 207              	.LVL6:
+ 208 008e 33FA00F0 		lsrs	r0, r3, r0
+ 209              	.LVL7:
+ 170:lib//src/stm32f10x_systick.c ****   }
+ 171:lib//src/stm32f10x_systick.c **** 
+ 172:lib//src/stm32f10x_systick.c ****   if ((statusreg & ((u32)1 << SysTick_FLAG)) != (u32)RESET)
+ 173:lib//src/stm32f10x_systick.c ****   {
+ 174:lib//src/stm32f10x_systick.c ****     bitstatus = SET;
+ 175:lib//src/stm32f10x_systick.c ****   }
+ 176:lib//src/stm32f10x_systick.c ****   else
+ 177:lib//src/stm32f10x_systick.c ****   {
+ 178:lib//src/stm32f10x_systick.c ****     bitstatus = RESET;
+ 179:lib//src/stm32f10x_systick.c ****   }
+ 180:lib//src/stm32f10x_systick.c ****   return bitstatus;
+ 181:lib//src/stm32f10x_systick.c **** }
+ 210              		.loc 1 181 0
+ 211 0092 00F00100 		and	r0, r0, #1
+ 212 0096 7047     		bx	lr
+ 213              	.L37:
+ 214              		.align	2
+ 215              	.L36:
+ 216 0098 10E000E0 		.word	-536813552
+ 217              	.LFE5:
+ 283              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f10x_systick.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:27     .text:00000000 SysTick_CLKSourceConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:55     .text:0000001c $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:58     .text:00000020 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:63     .text:00000020 SysTick_SetReload
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:78     .text:00000028 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:81     .text:0000002c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:86     .text:0000002c SysTick_CounterCmd
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:123    .text:00000054 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:126    .text:00000058 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:131    .text:00000058 SysTick_ITConfig
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:157    .text:00000070 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:160    .text:00000074 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:165    .text:00000074 SysTick_GetCounter
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:179    .text:0000007c $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:182    .text:00000080 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:187    .text:00000080 SysTick_GetFlagStatus
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:216    .text:00000098 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\cc5JAmuC.s:232    .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,787 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"Eval50xx-IO.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	GetMeasuredSpeed
+  24              		.thumb
+  25              		.thumb_func
+  27              	GetMeasuredSpeed:
+  28              	.LFB2:
+  29              		.file 1 "Eval50xx-IO.c"
+   1:Eval50xx-IO.c **** /****************************************************
+   2:Eval50xx-IO.c ****   Projekt: TMC562-EVAL
+   3:Eval50xx-IO.c **** 
+   4:Eval50xx-IO.c ****   Modul:   Eval562-IO.c
+   5:Eval50xx-IO.c ****            I/O-Funktionen
+   6:Eval50xx-IO.c **** 
+   7:Eval50xx-IO.c ****   Datum:   17.10.2011 OK
+   8:Eval50xx-IO.c **** *****************************************************/
+   9:Eval50xx-IO.c **** 
+  10:Eval50xx-IO.c **** #include <stdlib.h>
+  11:Eval50xx-IO.c **** 
+  12:Eval50xx-IO.c **** #include "stm32f10x_lib.h"
+  13:Eval50xx-IO.c **** #include "bits.h"
+  14:Eval50xx-IO.c **** #include "Eval50xx.h"
+  15:Eval50xx-IO.c **** #include "Eval50xx-UART.h"
+  16:Eval50xx-IO.c **** #include "Eval50xx-SysTick.h"
+  17:Eval50xx-IO.c **** #include "Eval50xx-Registers.h"
+  18:Eval50xx-IO.c **** 
+  19:Eval50xx-IO.c **** 
+  20:Eval50xx-IO.c **** static int TOld[2];
+  21:Eval50xx-IO.c **** static int XOld[2];
+  22:Eval50xx-IO.c **** static int MeasuredSpeed[2];
+  23:Eval50xx-IO.c **** 
+  24:Eval50xx-IO.c **** 
+  25:Eval50xx-IO.c **** /*******************************************************************
+  26:Eval50xx-IO.c ****    Funktion: InitIO
+  27:Eval50xx-IO.c ****    Parameter: ---
+  28:Eval50xx-IO.c **** 
+  29:Eval50xx-IO.c ****    Rückgabewert: ---
+  30:Eval50xx-IO.c **** 
+  31:Eval50xx-IO.c ****    Zweck: Initialisierung der I/O-Ports.
+  32:Eval50xx-IO.c **** ********************************************************************/
+  33:Eval50xx-IO.c **** void InitIO(void)
+  34:Eval50xx-IO.c **** {
+  35:Eval50xx-IO.c ****   GPIO_InitTypeDef GPIO_InitStructure;
+  36:Eval50xx-IO.c ****   TIM_TimeBaseInitTypeDef TIM_Base;
+  37:Eval50xx-IO.c ****   TIM_OCInitTypeDef       TIM_Oc;
+  38:Eval50xx-IO.c **** 
+  39:Eval50xx-IO.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+  40:Eval50xx-IO.c ****   GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+  41:Eval50xx-IO.c **** 
+  42:Eval50xx-IO.c ****   //---------Port A
+  43:Eval50xx-IO.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+  44:Eval50xx-IO.c **** 
+  45:Eval50xx-IO.c ****   //Ausgänge Port A
+  46:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_4|GPIO_Pin_8;
+  47:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  48:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  49:Eval50xx-IO.c ****   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  50:Eval50xx-IO.c ****   GPIOA->BSRR=BIT4;   //CS_562 high
+  51:Eval50xx-IO.c **** 
+  52:Eval50xx-IO.c ****   //Eingänge Port A (mit Pull-up)
+  53:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6|GPIO_Pin_14;
+  54:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  55:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  56:Eval50xx-IO.c ****   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  57:Eval50xx-IO.c **** 
+  58:Eval50xx-IO.c ****   //---------Port B
+  59:Eval50xx-IO.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+  60:Eval50xx-IO.c **** 
+  61:Eval50xx-IO.c ****   //Ausgänge Port B
+  62:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7|
+  63:Eval50xx-IO.c ****                                 GPIO_Pin_8|GPIO_Pin_9|GPIO_Pin_10|GPIO_Pin_11|GPIO_Pin_15;
+  64:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  65:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  66:Eval50xx-IO.c ****   GPIO_Init(GPIOB, &GPIO_InitStructure);
+  67:Eval50xx-IO.c ****   GPIOB->BSRR=BIT5|BIT6;             //LEDs aus
+  68:Eval50xx-IO.c ****   GPIOB->BRR=BIT7;                   //DRV_ENN low => eingeschaltet
+  69:Eval50xx-IO.c **** 
+  70:Eval50xx-IO.c ****   //Eingänge Port B (mit Pull-up)
+  71:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14|GPIO_Pin_13|GPIO_Pin_12;
+  72:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  73:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  74:Eval50xx-IO.c ****   GPIO_Init(GPIOB, &GPIO_InitStructure);
+  75:Eval50xx-IO.c **** 
+  76:Eval50xx-IO.c ****   //---------Port C
+  77:Eval50xx-IO.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+  78:Eval50xx-IO.c **** 
+  79:Eval50xx-IO.c ****   //Ausgänge Port C
+  80:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13|GPIO_Pin_14;
+  81:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  82:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  83:Eval50xx-IO.c ****   GPIO_Init(GPIOC, &GPIO_InitStructure);
+  84:Eval50xx-IO.c **** 
+  85:Eval50xx-IO.c ****   //Eingänge Port C (ohne Pull-up)
+  86:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+  87:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  88:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  89:Eval50xx-IO.c ****   GPIO_Init(GPIOC, &GPIO_InitStructure);
+  90:Eval50xx-IO.c **** 
+  91:Eval50xx-IO.c ****   //---------Timer 2 Kanal 3 erzeugt Taktfrequenz für den TMC562 (an PB10)
+  92:Eval50xx-IO.c ****   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+  93:Eval50xx-IO.c ****   TIM_DeInit(TIM2);
+  94:Eval50xx-IO.c ****   TIM_Base.TIM_Period = 2;
+  95:Eval50xx-IO.c ****   TIM_Base.TIM_Prescaler = 0;
+  96:Eval50xx-IO.c ****   TIM_Base.TIM_ClockDivision = TIM_CKD_DIV1;
+  97:Eval50xx-IO.c ****   TIM_Base.TIM_CounterMode = TIM_CounterMode_CenterAligned1;
+  98:Eval50xx-IO.c ****   TIM_TimeBaseInit(TIM2, &TIM_Base);
+  99:Eval50xx-IO.c **** 
+ 100:Eval50xx-IO.c ****   //Einstellungen für Kanal 3
+ 101:Eval50xx-IO.c ****   TIM_Oc.TIM_OCMode = TIM_OCMode_PWM1;
+ 102:Eval50xx-IO.c ****   TIM_Oc.TIM_OutputState = TIM_OutputState_Enable;
+ 103:Eval50xx-IO.c ****   TIM_Oc.TIM_Pulse = 1;
+ 104:Eval50xx-IO.c ****   TIM_Oc.TIM_OCPolarity = TIM_OCPolarity_High;
+ 105:Eval50xx-IO.c ****   TIM_OC3Init(TIM2, &TIM_Oc);
+ 106:Eval50xx-IO.c ****   TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Enable);
+ 107:Eval50xx-IO.c ****   TIM_ARRPreloadConfig(TIM2, ENABLE);
+ 108:Eval50xx-IO.c ****   TIM_Cmd(TIM2, ENABLE);
+ 109:Eval50xx-IO.c **** 
+ 110:Eval50xx-IO.c ****   //Ausgang 3 des Timer 2 mit PB10 verbinden
+ 111:Eval50xx-IO.c ****   GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
+ 112:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+ 113:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 114:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+ 115:Eval50xx-IO.c ****   GPIO_Init(GPIOB, &GPIO_InitStructure);
+ 116:Eval50xx-IO.c **** }
+ 117:Eval50xx-IO.c **** 
+ 118:Eval50xx-IO.c **** 
+ 119:Eval50xx-IO.c **** /*******************************************************************
+ 120:Eval50xx-IO.c ****    Funktion: DisablePins
+ 121:Eval50xx-IO.c ****    Parameter: ---
+ 122:Eval50xx-IO.c **** 
+ 123:Eval50xx-IO.c ****    Rückgabewert: ---
+ 124:Eval50xx-IO.c **** 
+ 125:Eval50xx-IO.c ****    Zweck: Abschalten aller Pins, die zum TMC50xx gehen (außer Takt).
+ 126:Eval50xx-IO.c **** ********************************************************************/
+ 127:Eval50xx-IO.c **** void DisablePins(void)
+ 128:Eval50xx-IO.c **** {
+ 129:Eval50xx-IO.c ****   GPIO_InitTypeDef GPIO_InitStructure;
+ 130:Eval50xx-IO.c **** 
+ 131:Eval50xx-IO.c ****   //PA7, PA6, PA5, PA4
+ 132:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7|GPIO_Pin_6|GPIO_Pin_5|GPIO_Pin_4;
+ 133:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 134:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+ 135:Eval50xx-IO.c ****   GPIO_Init(GPIOA, &GPIO_InitStructure);
+ 136:Eval50xx-IO.c **** 
+ 137:Eval50xx-IO.c ****   //PB12
+ 138:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+ 139:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 140:Eval50xx-IO.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+ 141:Eval50xx-IO.c ****   GPIO_Init(GPIOB, &GPIO_InitStructure);
+ 142:Eval50xx-IO.c **** }
+ 143:Eval50xx-IO.c **** 
+ 144:Eval50xx-IO.c **** 
+ 145:Eval50xx-IO.c **** /*******************************************************************
+ 146:Eval50xx-IO.c ****    Funktion: GetMeasuredSpeed
+ 147:Eval50xx-IO.c ****    Parameter: Axis: 0 oder 1
+ 148:Eval50xx-IO.c **** 
+ 149:Eval50xx-IO.c ****    Rückgabewert: gemessene Geschwindigkeit
+ 150:Eval50xx-IO.c **** 
+ 151:Eval50xx-IO.c ****    Zweck: Abfragen der gemessenen Geschwindigkeit.
+ 152:Eval50xx-IO.c **** ********************************************************************/
+ 153:Eval50xx-IO.c **** int GetMeasuredSpeed(UINT Axis)
+ 154:Eval50xx-IO.c **** {
+  30              		.loc 1 154 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+ 155:Eval50xx-IO.c ****   if(Axis<2)
+  35              		.loc 1 155 0
+  36 0000 0128     		cmp	r0, #1
+  37 0002 01D9     		bls	.L2
+  38 0004 0020     		movs	r0, #0
+  39              	.LVL1:
+  40 0006 02E0     		b	.L3
+  41              	.LVL2:
+  42              	.L2:
+ 156:Eval50xx-IO.c ****     return MeasuredSpeed[Axis];
+  43              		.loc 1 156 0
+  44 0008 014B     		ldr	r3, .L6
+  45 000a 53F82000 		ldr	r0, [r3, r0, lsl #2]
+  46              	.LVL3:
+  47              	.L3:
+ 157:Eval50xx-IO.c ****   else
+ 158:Eval50xx-IO.c ****     return 0;
+ 159:Eval50xx-IO.c **** }
+  48              		.loc 1 159 0
+  49 000e 7047     		bx	lr
+  50              	.L7:
+  51              		.align	2
+  52              	.L6:
+  53 0010 00000000 		.word	.LANCHOR0
+  54              	.LFE2:
+  56              		.align	2
+  57              		.global	EnableInterrupts
+  58              		.thumb
+  59              		.thumb_func
+  61              	EnableInterrupts:
+  62              	.LFB5:
+ 160:Eval50xx-IO.c **** 
+ 161:Eval50xx-IO.c **** 
+ 162:Eval50xx-IO.c **** /*******************************************************************
+ 163:Eval50xx-IO.c ****    Funktion: SystemControl
+ 164:Eval50xx-IO.c ****    Parameter: ---
+ 165:Eval50xx-IO.c **** 
+ 166:Eval50xx-IO.c ****    Rückgabewert: ---
+ 167:Eval50xx-IO.c **** 
+ 168:Eval50xx-IO.c ****    Zweck: Messen der Geschwindigkeit für dcStep.
+ 169:Eval50xx-IO.c **** ********************************************************************/
+ 170:Eval50xx-IO.c **** void SystemControl(void)
+ 171:Eval50xx-IO.c **** {
+ 172:Eval50xx-IO.c ****   int XActual;
+ 173:Eval50xx-IO.c ****   int t2;
+ 174:Eval50xx-IO.c **** 
+ 175:Eval50xx-IO.c ****   if(abs(GetSysTimer()-TOld[0])>10)
+ 176:Eval50xx-IO.c ****   {
+ 177:Eval50xx-IO.c ****     t2=GetSysTimer();
+ 178:Eval50xx-IO.c ****     XActual=ReadTMC562Int(0x21);
+ 179:Eval50xx-IO.c **** 
+ 180:Eval50xx-IO.c ****     MeasuredSpeed[0]=((float) (XActual-XOld[0])/ (float) (t2-TOld[0]))*1048.576;
+ 181:Eval50xx-IO.c ****     TOld[0]=t2;
+ 182:Eval50xx-IO.c ****     XOld[0]=XActual;
+ 183:Eval50xx-IO.c ****   }
+ 184:Eval50xx-IO.c **** 
+ 185:Eval50xx-IO.c ****   if(abs(GetSysTimer()-TOld[1])>10)
+ 186:Eval50xx-IO.c ****   {
+ 187:Eval50xx-IO.c ****     t2=GetSysTimer();
+ 188:Eval50xx-IO.c ****     XActual=ReadTMC562Int(0x41);
+ 189:Eval50xx-IO.c **** 
+ 190:Eval50xx-IO.c ****     MeasuredSpeed[1]=((float) (XActual-XOld[1])/ (float) (t2-TOld[1]))*1048.576;
+ 191:Eval50xx-IO.c ****     TOld[1]=t2;
+ 192:Eval50xx-IO.c ****     XOld[1]=XActual;
+ 193:Eval50xx-IO.c ****   }
+ 194:Eval50xx-IO.c **** }
+ 195:Eval50xx-IO.c **** 
+ 196:Eval50xx-IO.c **** 
+ 197:Eval50xx-IO.c **** /*******************************************************************
+ 198:Eval50xx-IO.c ****    Funktion: ResetCPU
+ 199:Eval50xx-IO.c ****    Parameter: ResetPeripherals: Gibt an, ob nur die eigentliche CPU
+ 200:Eval50xx-IO.c ****               oder auch die On-Chip-Peripherie zurückgesetzt werden
+ 201:Eval50xx-IO.c ****               soll (TRUE = auch Peripherie, FALSE = nur Core).
+ 202:Eval50xx-IO.c **** 
+ 203:Eval50xx-IO.c ****    Rückgabewert: ---
+ 204:Eval50xx-IO.c **** 
+ 205:Eval50xx-IO.c ****    Zweck: Reset der CPU mit oder ohne der integrierten Peripherie.
+ 206:Eval50xx-IO.c **** ********************************************************************/
+ 207:Eval50xx-IO.c **** void ResetCPU(UCHAR ResetPeripherals)
+ 208:Eval50xx-IO.c **** {
+ 209:Eval50xx-IO.c ****   if(ResetPeripherals)
+ 210:Eval50xx-IO.c ****     NVIC_GenerateSystemReset();
+ 211:Eval50xx-IO.c ****   else
+ 212:Eval50xx-IO.c ****     NVIC_GenerateCoreReset();
+ 213:Eval50xx-IO.c **** }
+ 214:Eval50xx-IO.c **** 
+ 215:Eval50xx-IO.c **** 
+ 216:Eval50xx-IO.c **** /*******************************************************************
+ 217:Eval50xx-IO.c ****    Funktion: EnableInterrupts
+ 218:Eval50xx-IO.c ****    Parameter: ---
+ 219:Eval50xx-IO.c **** 
+ 220:Eval50xx-IO.c ****    Rückgabewert: ---
+ 221:Eval50xx-IO.c **** 
+ 222:Eval50xx-IO.c ****    Zweck: Globales Freigeben aller Interrupts.
+ 223:Eval50xx-IO.c **** ********************************************************************/
+ 224:Eval50xx-IO.c **** void EnableInterrupts(void)
+ 225:Eval50xx-IO.c **** {
+  63              		.loc 1 225 0
+  64              		@ args = 0, pretend = 0, frame = 0
+  65              		@ frame_needed = 0, uses_anonymous_args = 0
+  66              		@ link register save eliminated.
+ 226:Eval50xx-IO.c ****   asm volatile("CPSIE I\n");
+  67              		.loc 1 226 0
+  68              	@ 226 "Eval50xx-IO.c" 1
+  69 0014 62B6     		CPSIE I
+  70              	
+  71              	@ 0 "" 2
+ 227:Eval50xx-IO.c **** }
+  72              		.loc 1 227 0
+  73              		.thumb
+  74 0016 7047     		bx	lr
+  75              	.LFE5:
+  77              		.align	2
+  78              		.global	DisableInterrupts
+  79              		.thumb
+  80              		.thumb_func
+  82              	DisableInterrupts:
+  83              	.LFB6:
+ 228:Eval50xx-IO.c **** 
+ 229:Eval50xx-IO.c **** 
+ 230:Eval50xx-IO.c **** /*******************************************************************
+ 231:Eval50xx-IO.c ****    Funktion: DisableInterrupts
+ 232:Eval50xx-IO.c ****    Parameter: ---
+ 233:Eval50xx-IO.c **** 
+ 234:Eval50xx-IO.c ****    Rückgabewert: ---
+ 235:Eval50xx-IO.c **** 
+ 236:Eval50xx-IO.c ****    Zweck: Globales Sperren aller Interrupts.
+ 237:Eval50xx-IO.c **** ********************************************************************/
+ 238:Eval50xx-IO.c **** void DisableInterrupts(void)
+ 239:Eval50xx-IO.c **** {
+  84              		.loc 1 239 0
+  85              		@ args = 0, pretend = 0, frame = 0
+  86              		@ frame_needed = 0, uses_anonymous_args = 0
+  87              		@ link register save eliminated.
+ 240:Eval50xx-IO.c ****   asm volatile("CPSID I\n");
+  88              		.loc 1 240 0
+  89              	@ 240 "Eval50xx-IO.c" 1
+  90 0018 72B6     		CPSID I
+  91              	
+  92              	@ 0 "" 2
+ 241:Eval50xx-IO.c **** }
+  93              		.loc 1 241 0
+  94              		.thumb
+  95 001a 7047     		bx	lr
+  96              	.LFE6:
+  98              		.align	2
+  99              		.global	ResetCPU
+ 100              		.thumb
+ 101              		.thumb_func
+ 103              	ResetCPU:
+ 104              	.LFB4:
+ 105              		.loc 1 208 0
+ 106              		@ args = 0, pretend = 0, frame = 0
+ 107              		@ frame_needed = 0, uses_anonymous_args = 0
+ 108              	.LVL4:
+ 109 001c 08B5     		push	{r3, lr}
+ 110              	.LCFI0:
+ 111              		.loc 1 209 0
+ 112 001e 10B1     		cbz	r0, .L13
+ 113              		.loc 1 210 0
+ 114 0020 FFF7FEFF 		bl	NVIC_GenerateSystemReset
+ 115              	.LVL5:
+ 116 0024 01E0     		b	.L15
+ 117              	.LVL6:
+ 118              	.L13:
+ 119              		.loc 1 212 0
+ 120 0026 FFF7FEFF 		bl	NVIC_GenerateCoreReset
+ 121              	.LVL7:
+ 122              	.L15:
+ 123              		.loc 1 213 0
+ 124 002a 08BD     		pop	{r3, pc}
+ 125              	.LFE4:
+ 127              		.global	__aeabi_i2f
+ 128              		.global	__aeabi_fdiv
+ 129              		.global	__aeabi_f2d
+ 130              		.global	__aeabi_dmul
+ 131              		.global	__aeabi_d2iz
+ 132              		.align	2
+ 133              		.global	SystemControl
+ 134              		.thumb
+ 135              		.thumb_func
+ 137              	SystemControl:
+ 138              	.LFB3:
+ 139              		.loc 1 171 0
+ 140              		@ args = 0, pretend = 0, frame = 0
+ 141              		@ frame_needed = 0, uses_anonymous_args = 0
+ 142 002c F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 143              	.LCFI1:
+ 144              		.loc 1 175 0
+ 145 002e FFF7FEFF 		bl	GetSysTimer
+ 146 0032 2B4C     		ldr	r4, .L20+8
+ 147 0034 A368     		ldr	r3, [r4, #8]
+ 148 0036 C31A     		subs	r3, r0, r3
+ 149 0038 002B     		cmp	r3, #0
+ 150 003a B8BF     		it	lt
+ 151 003c 5B42     		rsblt	r3, r3, #0
+ 152 003e 0A2B     		cmp	r3, #10
+ 153 0040 1FDD     		ble	.L17
+ 154              		.loc 1 177 0
+ 155 0042 FFF7FEFF 		bl	GetSysTimer
+ 156 0046 0546     		mov	r5, r0
+ 157              		.loc 1 178 0
+ 158 0048 2120     		movs	r0, #33
+ 159 004a FFF7FEFF 		bl	ReadTMC562Int
+ 160 004e 0646     		mov	r6, r0
+ 161              	.LVL8:
+ 162              		.loc 1 180 0
+ 163 0050 2069     		ldr	r0, [r4, #16]
+ 164 0052 301A     		subs	r0, r6, r0
+ 165 0054 FFF7FEFF 		bl	__aeabi_i2f
+ 166 0058 0746     		mov	r7, r0
+ 167 005a A068     		ldr	r0, [r4, #8]
+ 168 005c 281A     		subs	r0, r5, r0
+ 169 005e FFF7FEFF 		bl	__aeabi_i2f
+ 170 0062 0146     		mov	r1, r0
+ 171 0064 3846     		mov	r0, r7
+ 172 0066 FFF7FEFF 		bl	__aeabi_fdiv
+ 173 006a FFF7FEFF 		bl	__aeabi_f2d
+ 174 006e 1AA3     		adr	r3, .L20
+ 175 0070 D3E90023 		ldrd	r2, [r3]
+ 176 0074 FFF7FEFF 		bl	__aeabi_dmul
+ 177 0078 FFF7FEFF 		bl	__aeabi_d2iz
+ 178              		.loc 1 182 0
+ 179 007c 2661     		str	r6, [r4, #16]
+ 180              		.loc 1 180 0
+ 181 007e 2060     		str	r0, [r4, #0]
+ 182              		.loc 1 181 0
+ 183 0080 A560     		str	r5, [r4, #8]
+ 184              	.L17:
+ 185              		.loc 1 185 0
+ 186 0082 FFF7FEFF 		bl	GetSysTimer
+ 187 0086 164C     		ldr	r4, .L20+8
+ 188 0088 E368     		ldr	r3, [r4, #12]
+ 189 008a C31A     		subs	r3, r0, r3
+ 190 008c 002B     		cmp	r3, #0
+ 191 008e B8BF     		it	lt
+ 192 0090 5B42     		rsblt	r3, r3, #0
+ 193 0092 0A2B     		cmp	r3, #10
+ 194 0094 1FDD     		ble	.L19
+ 195              		.loc 1 187 0
+ 196 0096 FFF7FEFF 		bl	GetSysTimer
+ 197 009a 0546     		mov	r5, r0
+ 198              		.loc 1 188 0
+ 199 009c 4120     		movs	r0, #65
+ 200 009e FFF7FEFF 		bl	ReadTMC562Int
+ 201 00a2 0646     		mov	r6, r0
+ 202              	.LVL9:
+ 203              		.loc 1 190 0
+ 204 00a4 6069     		ldr	r0, [r4, #20]
+ 205 00a6 301A     		subs	r0, r6, r0
+ 206 00a8 FFF7FEFF 		bl	__aeabi_i2f
+ 207 00ac 0746     		mov	r7, r0
+ 208 00ae E068     		ldr	r0, [r4, #12]
+ 209 00b0 281A     		subs	r0, r5, r0
+ 210 00b2 FFF7FEFF 		bl	__aeabi_i2f
+ 211 00b6 0146     		mov	r1, r0
+ 212 00b8 3846     		mov	r0, r7
+ 213 00ba FFF7FEFF 		bl	__aeabi_fdiv
+ 214 00be FFF7FEFF 		bl	__aeabi_f2d
+ 215 00c2 05A3     		adr	r3, .L20
+ 216 00c4 D3E90023 		ldrd	r2, [r3]
+ 217 00c8 FFF7FEFF 		bl	__aeabi_dmul
+ 218 00cc FFF7FEFF 		bl	__aeabi_d2iz
+ 219              		.loc 1 192 0
+ 220 00d0 6661     		str	r6, [r4, #20]
+ 221              		.loc 1 190 0
+ 222 00d2 6060     		str	r0, [r4, #4]
+ 223              		.loc 1 191 0
+ 224 00d4 E560     		str	r5, [r4, #12]
+ 225              	.L19:
+ 226              		.loc 1 194 0
+ 227 00d6 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 228              	.L21:
+ 229              		.align	3
+ 230              	.L20:
+ 231 00d8 FCA9F1D2 		.word	-755914244
+ 232 00dc 4D629040 		.word	1083204173
+ 233 00e0 00000000 		.word	.LANCHOR0
+ 234              	.LFE3:
+ 236              		.align	2
+ 237              		.global	DisablePins
+ 238              		.thumb
+ 239              		.thumb_func
+ 241              	DisablePins:
+ 242              	.LFB1:
+ 243              		.loc 1 128 0
+ 244              		@ args = 0, pretend = 0, frame = 8
+ 245              		@ frame_needed = 0, uses_anonymous_args = 0
+ 246 00e4 73B5     		push	{r0, r1, r4, r5, r6, lr}
+ 247              	.LCFI2:
+ 248              		.loc 1 135 0
+ 249 00e6 01AE     		add	r6, sp, #4
+ 250              		.loc 1 133 0
+ 251 00e8 0325     		movs	r5, #3
+ 252              		.loc 1 134 0
+ 253 00ea 0424     		movs	r4, #4
+ 254              		.loc 1 135 0
+ 255 00ec 3146     		mov	r1, r6
+ 256              		.loc 1 132 0
+ 257 00ee 4FF0F003 		mov	r3, #240	@ movhi
+ 258              		.loc 1 135 0
+ 259 00f2 0B48     		ldr	r0, .L24
+ 260              		.loc 1 132 0
+ 261 00f4 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 262              		.loc 1 133 0
+ 263 00f8 8DF80650 		strb	r5, [sp, #6]
+ 264              		.loc 1 134 0
+ 265 00fc 8DF80740 		strb	r4, [sp, #7]
+ 266              		.loc 1 135 0
+ 267 0100 FFF7FEFF 		bl	GPIO_Init
+ 268              		.loc 1 138 0
+ 269 0104 4FF48053 		mov	r3, #4096	@ movhi
+ 270              		.loc 1 141 0
+ 271 0108 3146     		mov	r1, r6
+ 272 010a 0648     		ldr	r0, .L24+4
+ 273              		.loc 1 139 0
+ 274 010c 8DF80650 		strb	r5, [sp, #6]
+ 275              		.loc 1 140 0
+ 276 0110 8DF80740 		strb	r4, [sp, #7]
+ 277              		.loc 1 138 0
+ 278 0114 ADF80430 		strh	r3, [sp, #4]	@ movhi
+ 279              		.loc 1 141 0
+ 280 0118 FFF7FEFF 		bl	GPIO_Init
+ 281              		.loc 1 142 0
+ 282 011c 7CBD     		pop	{r2, r3, r4, r5, r6, pc}
+ 283              	.L25:
+ 284 011e 00BF     		.align	2
+ 285              	.L24:
+ 286 0120 00080140 		.word	1073809408
+ 287 0124 000C0140 		.word	1073810432
+ 288              	.LFE1:
+ 290              		.align	2
+ 291              		.global	InitIO
+ 292              		.thumb
+ 293              		.thumb_func
+ 295              	InitIO:
+ 296              	.LFB0:
+ 297              		.loc 1 34 0
+ 298              		@ args = 0, pretend = 0, frame = 32
+ 299              		@ frame_needed = 0, uses_anonymous_args = 0
+ 300 0128 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, sl, lr}
+ 301              	.LCFI3:
+ 302              		.loc 1 39 0
+ 303 012c 0120     		movs	r0, #1
+ 304              		.loc 1 34 0
+ 305 012e 88B0     		sub	sp, sp, #32
+ 306              	.LCFI4:
+ 307              		.loc 1 39 0
+ 308 0130 0146     		mov	r1, r0
+ 309 0132 FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 310              		.loc 1 49 0
+ 311 0136 DFF87C81 		ldr	r8, .L28+12
+ 312              		.loc 1 40 0
+ 313 013a 0121     		movs	r1, #1
+ 314 013c 5A48     		ldr	r0, .L28
+ 315              		.loc 1 49 0
+ 316 013e 07AD     		add	r5, sp, #28
+ 317              		.loc 1 40 0
+ 318 0140 FFF7FEFF 		bl	GPIO_PinRemapConfig
+ 319              		.loc 1 43 0
+ 320 0144 0420     		movs	r0, #4
+ 321 0146 0121     		movs	r1, #1
+ 322 0148 FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 323              		.loc 1 47 0
+ 324 014c 0324     		movs	r4, #3
+ 325              		.loc 1 48 0
+ 326 014e 1027     		movs	r7, #16
+ 327              		.loc 1 49 0
+ 328 0150 4046     		mov	r0, r8
+ 329 0152 2946     		mov	r1, r5
+ 330              		.loc 1 46 0
+ 331 0154 40F21313 		movw	r3, 275	@ movhi
+ 332              		.loc 1 66 0
+ 333 0158 544E     		ldr	r6, .L28+4
+ 334              		.loc 1 46 0
+ 335 015a ADF81C30 		strh	r3, [sp, #28]	@ movhi
+ 336              		.loc 1 48 0
+ 337 015e 8DF81F70 		strb	r7, [sp, #31]
+ 338              		.loc 1 55 0
+ 339 0162 4FF04809 		mov	r9, #72
+ 340              		.loc 1 47 0
+ 341 0166 8DF81E40 		strb	r4, [sp, #30]
+ 342              		.loc 1 49 0
+ 343 016a FFF7FEFF 		bl	GPIO_Init
+ 344              		.loc 1 53 0
+ 345 016e 44F24003 		movw	r3, 16448	@ movhi
+ 346              		.loc 1 56 0
+ 347 0172 4046     		mov	r0, r8
+ 348 0174 2946     		mov	r1, r5
+ 349              		.loc 1 50 0
+ 350 0176 C8F81070 		str	r7, [r8, #16]
+ 351              		.loc 1 53 0
+ 352 017a ADF81C30 		strh	r3, [sp, #28]	@ movhi
+ 353              		.loc 1 54 0
+ 354 017e 8DF81E40 		strb	r4, [sp, #30]
+ 355              		.loc 1 55 0
+ 356 0182 8DF81F90 		strb	r9, [sp, #31]
+ 357              		.loc 1 56 0
+ 358 0186 FFF7FEFF 		bl	GPIO_Init
+ 359              		.loc 1 59 0
+ 360 018a 0820     		movs	r0, #8
+ 361 018c 0121     		movs	r1, #1
+ 362 018e FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 363              		.loc 1 66 0
+ 364 0192 3046     		mov	r0, r6
+ 365 0194 2946     		mov	r1, r5
+ 366              		.loc 1 62 0
+ 367 0196 48F6E773 		movw	r3, 36839	@ movhi
+ 368 019a ADF81C30 		strh	r3, [sp, #28]	@ movhi
+ 369              		.loc 1 65 0
+ 370 019e 8DF81F70 		strb	r7, [sp, #31]
+ 371              		.loc 1 67 0
+ 372 01a2 4FF0600A 		mov	sl, #96
+ 373              		.loc 1 64 0
+ 374 01a6 8DF81E40 		strb	r4, [sp, #30]
+ 375              		.loc 1 66 0
+ 376 01aa FFF7FEFF 		bl	GPIO_Init
+ 377              		.loc 1 68 0
+ 378 01ae 8023     		movs	r3, #128
+ 379              		.loc 1 74 0
+ 380 01b0 2946     		mov	r1, r5
+ 381 01b2 3046     		mov	r0, r6
+ 382              		.loc 1 67 0
+ 383 01b4 C6F810A0 		str	sl, [r6, #16]
+ 384              		.loc 1 68 0
+ 385 01b8 7361     		str	r3, [r6, #20]
+ 386              		.loc 1 71 0
+ 387 01ba 4FF4E043 		mov	r3, #28672	@ movhi
+ 388 01be ADF81C30 		strh	r3, [sp, #28]	@ movhi
+ 389              		.loc 1 83 0
+ 390 01c2 08F50068 		add	r8, r8, #2048
+ 391              		.loc 1 73 0
+ 392 01c6 8DF81F90 		strb	r9, [sp, #31]
+ 393              		.loc 1 72 0
+ 394 01ca 8DF81E40 		strb	r4, [sp, #30]
+ 395              		.loc 1 74 0
+ 396 01ce FFF7FEFF 		bl	GPIO_Init
+ 397              		.loc 1 77 0
+ 398 01d2 3846     		mov	r0, r7
+ 399 01d4 0121     		movs	r1, #1
+ 400 01d6 FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 401              		.loc 1 83 0
+ 402 01da 4046     		mov	r0, r8
+ 403 01dc 2946     		mov	r1, r5
+ 404              		.loc 1 80 0
+ 405 01de 4FF4C043 		mov	r3, #24576	@ movhi
+ 406              		.loc 1 82 0
+ 407 01e2 8DF81F70 		strb	r7, [sp, #31]
+ 408              		.loc 1 80 0
+ 409 01e6 ADF81C30 		strh	r3, [sp, #28]	@ movhi
+ 410              		.loc 1 81 0
+ 411 01ea 8DF81E40 		strb	r4, [sp, #30]
+ 412              		.loc 1 83 0
+ 413 01ee FFF7FEFF 		bl	GPIO_Init
+ 414              		.loc 1 88 0
+ 415 01f2 0423     		movs	r3, #4
+ 416              		.loc 1 89 0
+ 417 01f4 4046     		mov	r0, r8
+ 418 01f6 2946     		mov	r1, r5
+ 419              		.loc 1 88 0
+ 420 01f8 8DF81F30 		strb	r3, [sp, #31]
+ 421              		.loc 1 86 0
+ 422 01fc 48F20003 		movw	r3, 32768	@ movhi
+ 423 0200 ADF81C30 		strh	r3, [sp, #28]	@ movhi
+ 424              		.loc 1 87 0
+ 425 0204 8DF81E40 		strb	r4, [sp, #30]
+ 426              		.loc 1 89 0
+ 427 0208 FFF7FEFF 		bl	GPIO_Init
+ 428              		.loc 1 92 0
+ 429 020c 0120     		movs	r0, #1
+ 430 020e 0146     		mov	r1, r0
+ 431 0210 FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+ 432              		.loc 1 93 0
+ 433 0214 4FF08040 		mov	r0, #1073741824
+ 434 0218 FFF7FEFF 		bl	TIM_DeInit
+ 435              		.loc 1 94 0
+ 436 021c 4FF00203 		mov	r3, #2	@ movhi
+ 437              		.loc 1 95 0
+ 438 0220 4FF00008 		mov	r8, #0
+ 439              		.loc 1 98 0
+ 440 0224 0DEB0701 		add	r1, sp, r7
+ 441              		.loc 1 94 0
+ 442 0228 ADF81430 		strh	r3, [sp, #20]	@ movhi
+ 443              		.loc 1 98 0
+ 444 022c 4FF08040 		mov	r0, #1073741824
+ 445              		.loc 1 97 0
+ 446 0230 4FF02003 		mov	r3, #32	@ movhi
+ 447 0234 ADF81230 		strh	r3, [sp, #18]	@ movhi
+ 448              		.loc 1 102 0
+ 449 0238 0127     		movs	r7, #1
+ 450              		.loc 1 95 0
+ 451 023a ADF81080 		strh	r8, [sp, #16]	@ movhi
+ 452              		.loc 1 96 0
+ 453 023e ADF81680 		strh	r8, [sp, #22]	@ movhi
+ 454              		.loc 1 98 0
+ 455 0242 FFF7FEFF 		bl	TIM_TimeBaseInit
+ 456              		.loc 1 105 0
+ 457 0246 6946     		mov	r1, sp
+ 458 0248 4FF08040 		mov	r0, #1073741824
+ 459              		.loc 1 101 0
+ 460 024c ADF800A0 		strh	sl, [sp, #0]	@ movhi
+ 461              		.loc 1 104 0
+ 462 0250 ADF80880 		strh	r8, [sp, #8]	@ movhi
+ 463              		.loc 1 102 0
+ 464 0254 ADF80270 		strh	r7, [sp, #2]	@ movhi
+ 465              		.loc 1 103 0
+ 466 0258 ADF80670 		strh	r7, [sp, #6]	@ movhi
+ 467              		.loc 1 105 0
+ 468 025c FFF7FEFF 		bl	TIM_OC3Init
+ 469              		.loc 1 106 0
+ 470 0260 0821     		movs	r1, #8
+ 471 0262 4FF08040 		mov	r0, #1073741824
+ 472 0266 FFF7FEFF 		bl	TIM_OC3PreloadConfig
+ 473              		.loc 1 107 0
+ 474 026a 3946     		mov	r1, r7
+ 475 026c 4FF08040 		mov	r0, #1073741824
+ 476 0270 FFF7FEFF 		bl	TIM_ARRPreloadConfig
+ 477              		.loc 1 108 0
+ 478 0274 3946     		mov	r1, r7
+ 479 0276 4FF08040 		mov	r0, #1073741824
+ 480 027a FFF7FEFF 		bl	TIM_Cmd
+ 481              		.loc 1 111 0
+ 482 027e 3946     		mov	r1, r7
+ 483 0280 0B48     		ldr	r0, .L28+8
+ 484 0282 FFF7FEFF 		bl	GPIO_PinRemapConfig
+ 485              		.loc 1 114 0
+ 486 0286 1823     		movs	r3, #24
+ 487 0288 8DF81F30 		strb	r3, [sp, #31]
+ 488              		.loc 1 115 0
+ 489 028c 3046     		mov	r0, r6
+ 490              		.loc 1 112 0
+ 491 028e 4FF48063 		mov	r3, #1024	@ movhi
+ 492              		.loc 1 115 0
+ 493 0292 2946     		mov	r1, r5
+ 494              		.loc 1 113 0
+ 495 0294 8DF81E40 		strb	r4, [sp, #30]
+ 496              		.loc 1 112 0
+ 497 0298 ADF81C30 		strh	r3, [sp, #28]	@ movhi
+ 498              		.loc 1 115 0
+ 499 029c FFF7FEFF 		bl	GPIO_Init
+ 500              		.loc 1 116 0
+ 501 02a0 08B0     		add	sp, sp, #32
+ 502 02a2 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, sl, pc}
+ 503              	.L29:
+ 504 02a6 00BF     		.align	2
+ 505              	.L28:
+ 506 02a8 00023000 		.word	3146240
+ 507 02ac 000C0140 		.word	1073810432
+ 508 02b0 00031800 		.word	1573632
+ 509 02b4 00080140 		.word	1073809408
+ 510              	.LFE0:
+ 512              		.bss
+ 513              		.align	2
+ 514              		.set	.LANCHOR0,. + 0
+ 517              	MeasuredSpeed:
+ 518 0000 00000000 		.space	8
+ 518      00000000 
+ 521              	TOld:
+ 522 0008 00000000 		.space	8
+ 522      00000000 
+ 525              	XOld:
+ 526 0010 00000000 		.space	8
+ 526      00000000 
+ 685              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Eval50xx-IO.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:27     .text:00000000 GetMeasuredSpeed
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:53     .text:00000010 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:56     .text:00000014 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:61     .text:00000014 EnableInterrupts
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:82     .text:00000018 DisableInterrupts
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:103    .text:0000001c ResetCPU
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:137    .text:0000002c SystemControl
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:231    .text:000000d8 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:236    .text:000000e4 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:241    .text:000000e4 DisablePins
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:286    .text:00000120 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:290    .text:00000128 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:295    .text:00000128 InitIO
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:506    .text:000002a8 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:513    .bss:00000000 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:517    .bss:00000000 MeasuredSpeed
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:521    .bss:00000008 TOld
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:525    .bss:00000010 XOld
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccYKlUJ5.s:540    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+NVIC_GenerateSystemReset
+NVIC_GenerateCoreReset
+__aeabi_i2f
+__aeabi_fdiv
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_d2iz
+GetSysTimer
+ReadTMC562Int
+GPIO_Init
+RCC_APB2PeriphClockCmd
+GPIO_PinRemapConfig
+RCC_APB1PeriphClockCmd
+TIM_DeInit
+TIM_TimeBaseInit
+TIM_OC3Init
+TIM_OC3PreloadConfig
+TIM_ARRPreloadConfig
+TIM_Cmd

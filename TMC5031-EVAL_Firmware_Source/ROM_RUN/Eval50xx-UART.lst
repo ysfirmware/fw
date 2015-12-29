@@ -1,0 +1,867 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"Eval50xx-UART.c"
+  21              	.Ltext0:
+  22              		.align	2
+  23              		.global	ReadUART
+  24              		.thumb
+  25              		.thumb_func
+  27              	ReadUART:
+  28              	.LFB3:
+  29              		.file 1 "Eval50xx-UART.c"
+   1:Eval50xx-UART.c **** /****************************************************
+   2:Eval50xx-UART.c ****   Projekt: TMC562-EVAL
+   3:Eval50xx-UART.c **** 
+   4:Eval50xx-UART.c ****   Modul:   Eval562-UART.c
+   5:Eval50xx-UART.c ****            UART-Funktionen (Bytes Senden/Empfangen)
+   6:Eval50xx-UART.c **** 
+   7:Eval50xx-UART.c ****   Datum:   17.10.2011 OK
+   8:Eval50xx-UART.c **** *****************************************************/
+   9:Eval50xx-UART.c **** 
+  10:Eval50xx-UART.c **** 
+  11:Eval50xx-UART.c **** #include "stm32f10x_lib.h"
+  12:Eval50xx-UART.c **** #include "bits.h"
+  13:Eval50xx-UART.c **** #include "Eval50xx.h"
+  14:Eval50xx-UART.c **** 
+  15:Eval50xx-UART.c **** #if defined(UART_INTERFACE_1)
+  16:Eval50xx-UART.c **** 
+  17:Eval50xx-UART.c **** #define UART_INTR_PRI        7
+  18:Eval50xx-UART.c **** 
+  19:Eval50xx-UART.c **** #define UART_BUFFER_SIZE 32
+  20:Eval50xx-UART.c **** #define UART_TIMEOUT_VALUE 10   //Timeout-Wert in 0.5ms (also 10 => 5ms)
+  21:Eval50xx-UART.c **** 
+  22:Eval50xx-UART.c **** #if UART_INTERFACE_1==UART_1
+  23:Eval50xx-UART.c ****   #define USARTx USART1
+  24:Eval50xx-UART.c **** #elif UART_INTERFACE_1==UART_2
+  25:Eval50xx-UART.c ****   #define USARTx USART2
+  26:Eval50xx-UART.c **** #elif UART_INTERFACE_1==UART_3
+  27:Eval50xx-UART.c ****   #define USARTx USART3
+  28:Eval50xx-UART.c **** #else
+  29:Eval50xx-UART.c ****   #error "UART device not supported"
+  30:Eval50xx-UART.c **** #endif
+  31:Eval50xx-UART.c **** 
+  32:Eval50xx-UART.c **** 
+  33:Eval50xx-UART.c **** static volatile UCHAR UART1RxBuffer[UART_BUFFER_SIZE];
+  34:Eval50xx-UART.c **** static volatile UCHAR UART1TxBuffer[UART_BUFFER_SIZE];
+  35:Eval50xx-UART.c **** static volatile int UART1RxReadPtr;
+  36:Eval50xx-UART.c **** static volatile int UART1RxWritePtr;
+  37:Eval50xx-UART.c **** static volatile int UART1TxReadPtr;
+  38:Eval50xx-UART.c **** static volatile int UART1TxWritePtr;
+  39:Eval50xx-UART.c **** volatile UCHAR UART1TimeoutFlag;
+  40:Eval50xx-UART.c **** volatile UINT UART1TimeoutTimer;
+  41:Eval50xx-UART.c **** static volatile UINT UART1TransmitDelay;
+  42:Eval50xx-UART.c **** volatile UINT UART1TransmitDelayTimer;
+  43:Eval50xx-UART.c **** 
+  44:Eval50xx-UART.c **** 
+  45:Eval50xx-UART.c **** /*******************************************************************
+  46:Eval50xx-UART.c ****    Funktion: InitUART()
+  47:Eval50xx-UART.c ****    Parameter: Baudrate: Baudrate der Schnittstelle (z.B. 9600)
+  48:Eval50xx-UART.c **** 
+  49:Eval50xx-UART.c ****    Zweck: Intialisierung der UART
+  50:Eval50xx-UART.c **** ********************************************************************/
+  51:Eval50xx-UART.c **** void InitUART(int BaudRate)
+  52:Eval50xx-UART.c **** {
+  53:Eval50xx-UART.c ****   USART_InitTypeDef  UART_InitStructure;
+  54:Eval50xx-UART.c ****   NVIC_InitTypeDef NVIC_InitStructure;
+  55:Eval50xx-UART.c ****   GPIO_InitTypeDef GPIO_InitStructure;
+  56:Eval50xx-UART.c **** 
+  57:Eval50xx-UART.c ****   #if UART_INTERFACE_1 == UART_2
+  58:Eval50xx-UART.c ****   //UART2 aktivieren
+  59:Eval50xx-UART.c ****   USART_DeInit(USART2);
+  60:Eval50xx-UART.c ****   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+  61:Eval50xx-UART.c **** 
+  62:Eval50xx-UART.c ****   //GPIOA aktivieren (UART2-Pins)
+  63:Eval50xx-UART.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+  64:Eval50xx-UART.c ****   RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOA, DISABLE);
+  65:Eval50xx-UART.c ****   GPIO_PinRemapConfig(GPIO_Remap_USART2, DISABLE);
+  66:Eval50xx-UART.c **** 
+  67:Eval50xx-UART.c ****   //UART2-Pins zuweisen (PA2 und PA3)
+  68:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  69:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  70:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+  71:Eval50xx-UART.c ****   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  72:Eval50xx-UART.c **** 
+  73:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  74:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+  75:Eval50xx-UART.c ****   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  76:Eval50xx-UART.c **** 
+  77:Eval50xx-UART.c ****   #elif UART_INTERFACE_1 == UART_1
+  78:Eval50xx-UART.c ****   //UART1 aktivieren
+  79:Eval50xx-UART.c ****   USART_DeInit(USART1);
+  80:Eval50xx-UART.c ****   RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+  81:Eval50xx-UART.c **** 
+  82:Eval50xx-UART.c **** 
+  83:Eval50xx-UART.c ****   //UART1-Pins zuweisen (PB6 und PB7)
+  84:Eval50xx-UART.c ****   GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);
+  85:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  86:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  87:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+  88:Eval50xx-UART.c ****   GPIO_Init(GPIOB, &GPIO_InitStructure);
+  89:Eval50xx-UART.c **** 
+  90:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  91:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+  92:Eval50xx-UART.c ****   GPIO_Init(GPIOB, &GPIO_InitStructure);
+  93:Eval50xx-UART.c **** 
+  94:Eval50xx-UART.c ****   #elif UART_INTERFACE_1 == UART_3
+  95:Eval50xx-UART.c ****   //UART3 aktivieren
+  96:Eval50xx-UART.c ****   USART_DeInit(USART3);
+  97:Eval50xx-UART.c ****   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+  98:Eval50xx-UART.c **** 
+  99:Eval50xx-UART.c **** 
+ 100:Eval50xx-UART.c ****   //UART3-Pins zuweisen (PB10 und PB11)
+ 101:Eval50xx-UART.c ****   GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, DISABLE);
+ 102:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 103:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+ 104:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+ 105:Eval50xx-UART.c ****   GPIO_Init(GPIOB, &GPIO_InitStructure);
+ 106:Eval50xx-UART.c **** 
+ 107:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+ 108:Eval50xx-UART.c ****   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+ 109:Eval50xx-UART.c ****   GPIO_Init(GPIOB, &GPIO_InitStructure);
+ 110:Eval50xx-UART.c **** 
+ 111:Eval50xx-UART.c ****   #else
+ 112:Eval50xx-UART.c ****   #error "UART pin mapping not defined"
+ 113:Eval50xx-UART.c ****   #endif
+ 114:Eval50xx-UART.c **** 
+ 115:Eval50xx-UART.c ****   //UART konfigurieren
+ 116:Eval50xx-UART.c ****   USART_StructInit(&UART_InitStructure);
+ 117:Eval50xx-UART.c ****   UART_InitStructure.USART_BaudRate=BaudRate;
+ 118:Eval50xx-UART.c **** 
+ 119:Eval50xx-UART.c ****   USART_Init(USARTx,&UART_InitStructure);
+ 120:Eval50xx-UART.c **** 
+ 121:Eval50xx-UART.c ****   //Interrupt für UART aktivieren
+ 122:Eval50xx-UART.c ****   #if UART_INTERFACE_1 == UART_2
+ 123:Eval50xx-UART.c ****   NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQChannel;
+ 124:Eval50xx-UART.c ****   #elif UART_INTERFACE_1 == UART_1
+ 125:Eval50xx-UART.c ****   NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
+ 126:Eval50xx-UART.c ****   #elif UART_INTERFACE_1 == UART_3
+ 127:Eval50xx-UART.c ****   NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQChannel;
+ 128:Eval50xx-UART.c ****   #else
+ 129:Eval50xx-UART.c ****   #error "Device not supported!"
+ 130:Eval50xx-UART.c ****   #endif
+ 131:Eval50xx-UART.c ****   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = UART_INTR_PRI;
+ 132:Eval50xx-UART.c ****   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+ 133:Eval50xx-UART.c ****   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+ 134:Eval50xx-UART.c ****   NVIC_Init(&NVIC_InitStructure);
+ 135:Eval50xx-UART.c **** 
+ 136:Eval50xx-UART.c **** 
+ 137:Eval50xx-UART.c ****   USART_ClearFlag(USARTx, USART_FLAG_CTS | USART_FLAG_LBD  | USART_FLAG_TXE  |
+ 138:Eval50xx-UART.c ****                           USART_FLAG_TC  | USART_FLAG_RXNE | USART_FLAG_IDLE |
+ 139:Eval50xx-UART.c ****                           USART_FLAG_ORE | USART_FLAG_NE   | USART_FLAG_FE |
+ 140:Eval50xx-UART.c ****                           USART_FLAG_PE);
+ 141:Eval50xx-UART.c ****   USART_ITConfig(USARTx,USART_IT_PE  ,DISABLE);
+ 142:Eval50xx-UART.c ****   USART_ITConfig(USARTx,USART_IT_TXE ,ENABLE);
+ 143:Eval50xx-UART.c ****   USART_ITConfig(USARTx,USART_IT_TC  ,ENABLE);
+ 144:Eval50xx-UART.c ****   USART_ITConfig(USARTx,USART_IT_RXNE,ENABLE);
+ 145:Eval50xx-UART.c ****   USART_ITConfig(USARTx,USART_IT_IDLE,DISABLE);
+ 146:Eval50xx-UART.c ****   USART_ITConfig(USARTx,USART_IT_LBD ,DISABLE);
+ 147:Eval50xx-UART.c ****   USART_ITConfig(USARTx,USART_IT_CTS ,DISABLE);
+ 148:Eval50xx-UART.c ****   USART_ITConfig(USARTx,USART_IT_ERR ,DISABLE);
+ 149:Eval50xx-UART.c **** 
+ 150:Eval50xx-UART.c ****   USART_Cmd(USARTx, ENABLE);
+ 151:Eval50xx-UART.c **** }
+ 152:Eval50xx-UART.c **** 
+ 153:Eval50xx-UART.c **** 
+ 154:Eval50xx-UART.c **** /*******************************************************************
+ 155:Eval50xx-UART.c ****   UART-Interrupthandler
+ 156:Eval50xx-UART.c ****   Wird durch den NVIC aufgerufen, wenn ein UART-Interrupt auftritt.
+ 157:Eval50xx-UART.c ****   Dies paasiert, wenn ein Zeichen angekommen ist oder
+ 158:Eval50xx-UART.c ****   ein Zeichen gesendet werden kann.
+ 159:Eval50xx-UART.c ****   Der Aufruf dieser Funktion muß in stm32f10x_it.c eingetragen werden.
+ 160:Eval50xx-UART.c **** ********************************************************************/
+ 161:Eval50xx-UART.c **** #if UART_INTERFACE_1 == UART_1
+ 162:Eval50xx-UART.c **** void USART1_IRQHandler(void)
+ 163:Eval50xx-UART.c **** #elif UART_INTERFACE_1 == UART_2
+ 164:Eval50xx-UART.c **** void USART2_IRQHandler(void)
+ 165:Eval50xx-UART.c **** #elif UART_INTERFACE_1 == UART_3
+ 166:Eval50xx-UART.c **** void USART3_IRQHandler(void)
+ 167:Eval50xx-UART.c **** #else
+ 168:Eval50xx-UART.c **** #error "UART interrupt handler not defined"
+ 169:Eval50xx-UART.c **** #endif
+ 170:Eval50xx-UART.c **** {
+ 171:Eval50xx-UART.c ****   int i;
+ 172:Eval50xx-UART.c **** 
+ 173:Eval50xx-UART.c ****   //Ist ein Zeichen  abgekommen?
+ 174:Eval50xx-UART.c ****   if(USARTx->SR & USART_FLAG_RXNE)
+ 175:Eval50xx-UART.c ****   {
+ 176:Eval50xx-UART.c ****     //Wenn RS485 gerade auf Senden geschaltet ist, dann ist
+ 177:Eval50xx-UART.c ****     //es ein Echo, das hier ignoriert wird.
+ 178:Eval50xx-UART.c ****     if(IS_RS485_SENDING_1())
+ 179:Eval50xx-UART.c ****     {
+ 180:Eval50xx-UART.c ****       i=USARTx->DR;
+ 181:Eval50xx-UART.c ****     }
+ 182:Eval50xx-UART.c ****     else
+ 183:Eval50xx-UART.c ****     {
+ 184:Eval50xx-UART.c ****       //Zeichen in den Empfangspuffer kopieren
+ 185:Eval50xx-UART.c ****       i=UART1RxWritePtr+1;
+ 186:Eval50xx-UART.c ****       if(i==UART_BUFFER_SIZE) i=0;
+ 187:Eval50xx-UART.c **** 
+ 188:Eval50xx-UART.c ****       if(i!=UART1RxReadPtr)
+ 189:Eval50xx-UART.c ****       {
+ 190:Eval50xx-UART.c ****         UART1RxBuffer[UART1RxWritePtr]=USARTx->DR;
+ 191:Eval50xx-UART.c ****         UART1RxWritePtr=i;
+ 192:Eval50xx-UART.c ****       }
+ 193:Eval50xx-UART.c **** 
+ 194:Eval50xx-UART.c ****       //Empfangs-Timeout auf Startwert setzen
+ 195:Eval50xx-UART.c ****       UART1TimeoutTimer=UART_TIMEOUT_VALUE;
+ 196:Eval50xx-UART.c **** 
+ 197:Eval50xx-UART.c ****       //Sendeverzögerung auf Startwert setzen
+ 198:Eval50xx-UART.c ****       UART1TransmitDelayTimer=UART1TransmitDelay;
+ 199:Eval50xx-UART.c ****     }
+ 200:Eval50xx-UART.c ****   }
+ 201:Eval50xx-UART.c **** 
+ 202:Eval50xx-UART.c ****   //Kann das nächste Zeichen gesendet werden?
+ 203:Eval50xx-UART.c ****   if(USARTx->SR & USART_FLAG_TXE)
+ 204:Eval50xx-UART.c ****   {
+ 205:Eval50xx-UART.c ****     if(UART1TransmitDelayTimer==0)
+ 206:Eval50xx-UART.c ****     {
+ 207:Eval50xx-UART.c ****       if(UART1TxWritePtr!=UART1TxReadPtr)
+ 208:Eval50xx-UART.c ****       {
+ 209:Eval50xx-UART.c ****         SET_RS485_SEND_MODE_1();
+ 210:Eval50xx-UART.c ****         USARTx->DR=UART1TxBuffer[UART1TxReadPtr++];
+ 211:Eval50xx-UART.c ****         if(UART1TxReadPtr==UART_BUFFER_SIZE) UART1TxReadPtr=0;
+ 212:Eval50xx-UART.c ****       }
+ 213:Eval50xx-UART.c ****       else
+ 214:Eval50xx-UART.c ****       {
+ 215:Eval50xx-UART.c ****         //Sendeinterrupt deaktivieren, wenn kein Zeichen im Sendepuffer ist
+ 216:Eval50xx-UART.c ****         USART_ITConfig(USARTx,USART_IT_TXE ,DISABLE);
+ 217:Eval50xx-UART.c ****       }
+ 218:Eval50xx-UART.c ****     }
+ 219:Eval50xx-UART.c ****   }
+ 220:Eval50xx-UART.c **** 
+ 221:Eval50xx-UART.c ****   //Allerletztes Bit gesendet?
+ 222:Eval50xx-UART.c ****   if(USARTx->SR & USART_FLAG_TC)
+ 223:Eval50xx-UART.c ****   {
+ 224:Eval50xx-UART.c ****     USART_ClearITPendingBit(USARTx, USART_IT_TC);
+ 225:Eval50xx-UART.c ****     if(UART1TxReadPtr==UART1TxWritePtr) SET_RS485_RECEIVE_MODE_1();
+ 226:Eval50xx-UART.c ****   }
+ 227:Eval50xx-UART.c **** }
+ 228:Eval50xx-UART.c **** 
+ 229:Eval50xx-UART.c **** 
+ 230:Eval50xx-UART.c **** /*******************************************************************
+ 231:Eval50xx-UART.c ****    Funktion: WriteUART()
+ 232:Eval50xx-UART.c ****    Parameter: ch: Zu schreibendes Zeichen
+ 233:Eval50xx-UART.c **** 
+ 234:Eval50xx-UART.c ****    Zweck: Senden eines Zeichens über UART3
+ 235:Eval50xx-UART.c ****           (Einstellen in den Sendepuffer)
+ 236:Eval50xx-UART.c **** ********************************************************************/
+ 237:Eval50xx-UART.c **** void WriteUART(UCHAR ch)
+ 238:Eval50xx-UART.c **** {
+ 239:Eval50xx-UART.c ****   int i;
+ 240:Eval50xx-UART.c **** 
+ 241:Eval50xx-UART.c ****   //Zeichen in die Warteschlange stellen
+ 242:Eval50xx-UART.c ****   i=UART1TxWritePtr+1;
+ 243:Eval50xx-UART.c ****   if(i==UART_BUFFER_SIZE) i=0;
+ 244:Eval50xx-UART.c **** 
+ 245:Eval50xx-UART.c ****   if(i!=UART1TxReadPtr)
+ 246:Eval50xx-UART.c ****   {
+ 247:Eval50xx-UART.c ****     UART1TxBuffer[UART1TxWritePtr]=ch;
+ 248:Eval50xx-UART.c ****     UART1TxWritePtr=i;
+ 249:Eval50xx-UART.c **** 
+ 250:Eval50xx-UART.c ****     //Sendeinterrupt aktivieren
+ 251:Eval50xx-UART.c ****     USART_ITConfig(USARTx, USART_IT_TXE, ENABLE);
+ 252:Eval50xx-UART.c ****   }
+ 253:Eval50xx-UART.c **** }
+ 254:Eval50xx-UART.c **** 
+ 255:Eval50xx-UART.c **** 
+ 256:Eval50xx-UART.c **** /*******************************************************************
+ 257:Eval50xx-UART.c ****    Funktion: ReadUART()
+ 258:Eval50xx-UART.c ****    Parameter: *ch: Zeiger auf Variable für zu lesendes Zeichen
+ 259:Eval50xx-UART.c **** 
+ 260:Eval50xx-UART.c ****    Rückgabewert: TRUE bei Erfolg
+ 261:Eval50xx-UART.c ****                  FALSE wenn kein Zeichen da war
+ 262:Eval50xx-UART.c ****    Zweck: Lesen eines Zeichens aus dem Empfangspuffer der UART3
+ 263:Eval50xx-UART.c ****           (Einstellen in den Sendepuffer)
+ 264:Eval50xx-UART.c **** ********************************************************************/
+ 265:Eval50xx-UART.c **** UCHAR ReadUART(UCHAR *ch)
+ 266:Eval50xx-UART.c **** {
+  30              		.loc 1 266 0
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+ 267:Eval50xx-UART.c ****   //Kein Zeichen vorhanden?
+ 268:Eval50xx-UART.c ****   if(UART1RxReadPtr==UART1RxWritePtr) return FALSE;
+  35              		.loc 1 268 0
+  36 0000 094B     		ldr	r3, .L8
+  37 0002 1968     		ldr	r1, [r3, #0]
+  38 0004 5A68     		ldr	r2, [r3, #4]
+  39 0006 9142     		cmp	r1, r2
+  40 0008 01D1     		bne	.L2
+  41 000a 0020     		movs	r0, #0
+  42              	.LVL1:
+  43 000c 0BE0     		b	.L3
+  44              	.LVL2:
+  45              	.L2:
+ 269:Eval50xx-UART.c **** 
+ 270:Eval50xx-UART.c ****   //Zeichen aus dem Puffer holen
+ 271:Eval50xx-UART.c ****   *ch=UART1RxBuffer[UART1RxReadPtr++];
+  46              		.loc 1 271 0
+  47 000e 1A68     		ldr	r2, [r3, #0]
+  48 0010 D118     		adds	r1, r2, r3
+  49 0012 097A     		ldrb	r1, [r1, #8]	@ zero_extendqisi2
+  50 0014 0132     		adds	r2, r2, #1
+  51 0016 0170     		strb	r1, [r0, #0]
+  52 0018 1A60     		str	r2, [r3, #0]
+ 272:Eval50xx-UART.c ****   if(UART1RxReadPtr==UART_BUFFER_SIZE)  UART1RxReadPtr=0;
+  53              		.loc 1 272 0
+  54 001a 1A68     		ldr	r2, [r3, #0]
+  55 001c 202A     		cmp	r2, #32
+  56 001e 01D1     		bne	.L6
+  57 0020 0022     		movs	r2, #0
+  58 0022 1A60     		str	r2, [r3, #0]
+  59              	.L6:
+  60 0024 0120     		movs	r0, #1
+  61              	.LVL3:
+  62              	.L3:
+ 273:Eval50xx-UART.c **** 
+ 274:Eval50xx-UART.c ****   return TRUE;
+ 275:Eval50xx-UART.c **** }
+  63              		.loc 1 275 0
+  64 0026 7047     		bx	lr
+  65              	.L9:
+  66              		.align	2
+  67              	.L8:
+  68 0028 00000000 		.word	.LANCHOR0
+  69              	.LFE3:
+  71              		.align	2
+  72              		.global	SetUARTTransmitDelay
+  73              		.thumb
+  74              		.thumb_func
+  76              	SetUARTTransmitDelay:
+  77              	.LFB4:
+ 276:Eval50xx-UART.c **** 
+ 277:Eval50xx-UART.c **** 
+ 278:Eval50xx-UART.c **** /*******************************************************************
+ 279:Eval50xx-UART.c ****    Funktion: SetUARTTransmitDelay()
+ 280:Eval50xx-UART.c ****    Parameter: Delay: Sendeverzögerung in ms
+ 281:Eval50xx-UART.c **** 
+ 282:Eval50xx-UART.c ****    Rückgabewert: ---
+ 283:Eval50xx-UART.c **** 
+ 284:Eval50xx-UART.c ****    Zweck: Setzen der Sendeverzögerung
+ 285:Eval50xx-UART.c ****           (für einige RS485-Adapter wichtig)
+ 286:Eval50xx-UART.c **** ********************************************************************/
+ 287:Eval50xx-UART.c **** void SetUARTTransmitDelay(UINT Delay)
+ 288:Eval50xx-UART.c **** {
+  78              		.loc 1 288 0
+  79              		@ args = 0, pretend = 0, frame = 0
+  80              		@ frame_needed = 0, uses_anonymous_args = 0
+  81              		@ link register save eliminated.
+  82              	.LVL4:
+ 289:Eval50xx-UART.c ****   UART1TransmitDelay=Delay;
+  83              		.loc 1 289 0
+  84 002c 014B     		ldr	r3, .L12
+  85 002e 9862     		str	r0, [r3, #40]
+ 290:Eval50xx-UART.c **** }
+  86              		.loc 1 290 0
+  87 0030 7047     		bx	lr
+  88              	.L13:
+  89 0032 00BF     		.align	2
+  90              	.L12:
+  91 0034 00000000 		.word	.LANCHOR0
+  92              	.LFE4:
+  94              		.align	2
+  95              		.global	CheckUARTTimeout
+  96              		.thumb
+  97              		.thumb_func
+  99              	CheckUARTTimeout:
+ 100              	.LFB5:
+ 291:Eval50xx-UART.c **** 
+ 292:Eval50xx-UART.c **** 
+ 293:Eval50xx-UART.c **** /*******************************************************************
+ 294:Eval50xx-UART.c ****    Funktion: CheckUARTTimeout()
+ 295:Eval50xx-UART.c ****    Parameter: ---
+ 296:Eval50xx-UART.c **** 
+ 297:Eval50xx-UART.c ****    Rückgabewert: TRUE wenn zwischenzeitlich ein Timeout aufgetreten ist
+ 298:Eval50xx-UART.c ****                  FALSE wenn kein Timeout aufgetreten ist
+ 299:Eval50xx-UART.c ****    Zweck: Prüfen, ob beim Empfangen ein Timeout aufgetreten ist (also
+ 300:Eval50xx-UART.c ****           Zeit zwischen zwei Bytes >5ms) und Zurücksetzen des
+ 301:Eval50xx-UART.c ****           Timeout-Flag.
+ 302:Eval50xx-UART.c **** ********************************************************************/
+ 303:Eval50xx-UART.c **** UINT CheckUARTTimeout(void)
+ 304:Eval50xx-UART.c **** {
+ 101              		.loc 1 304 0
+ 102              		@ args = 0, pretend = 0, frame = 0
+ 103              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104              		@ link register save eliminated.
+ 305:Eval50xx-UART.c ****   if(UART1TimeoutFlag)
+ 105              		.loc 1 305 0
+ 106 0038 034B     		ldr	r3, .L18
+ 107 003a 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 108 003c 1046     		mov	r0, r2
+ 109 003e 12B1     		cbz	r2, .L16
+ 306:Eval50xx-UART.c ****   {
+ 307:Eval50xx-UART.c ****     UART1TimeoutFlag=FALSE;
+ 110              		.loc 1 307 0
+ 111 0040 0022     		movs	r2, #0
+ 112 0042 1A70     		strb	r2, [r3, #0]
+ 113 0044 0120     		movs	r0, #1
+ 114              	.L16:
+ 308:Eval50xx-UART.c ****     return TRUE;
+ 309:Eval50xx-UART.c ****   }
+ 310:Eval50xx-UART.c ****   else return FALSE;
+ 311:Eval50xx-UART.c **** }
+ 115              		.loc 1 311 0
+ 116 0046 7047     		bx	lr
+ 117              	.L19:
+ 118              		.align	2
+ 119              	.L18:
+ 120 0048 00000000 		.word	UART1TimeoutFlag
+ 121              	.LFE5:
+ 123              		.align	2
+ 124              		.global	ClearUARTRxBuffer
+ 125              		.thumb
+ 126              		.thumb_func
+ 128              	ClearUARTRxBuffer:
+ 129              	.LFB6:
+ 312:Eval50xx-UART.c **** 
+ 313:Eval50xx-UART.c **** 
+ 314:Eval50xx-UART.c **** /*******************************************************************
+ 315:Eval50xx-UART.c ****    Funktion: ClearUARTRxBuffer()
+ 316:Eval50xx-UART.c ****    Parameter: ---
+ 317:Eval50xx-UART.c **** 
+ 318:Eval50xx-UART.c ****    Rückgabewert: ---
+ 319:Eval50xx-UART.c **** 
+ 320:Eval50xx-UART.c ****    Zweck: Löschen des Empfangspuffers
+ 321:Eval50xx-UART.c **** ********************************************************************/
+ 322:Eval50xx-UART.c **** void ClearUARTRxBuffer(void)
+ 323:Eval50xx-UART.c **** {
+ 130              		.loc 1 323 0
+ 131              		@ args = 0, pretend = 0, frame = 0
+ 132              		@ frame_needed = 0, uses_anonymous_args = 0
+ 133 004c 08B5     		push	{r3, lr}
+ 134              	.LCFI0:
+ 324:Eval50xx-UART.c ****   DisableInterrupts();
+ 135              		.loc 1 324 0
+ 136 004e FFF7FEFF 		bl	DisableInterrupts
+ 325:Eval50xx-UART.c ****   UART1RxReadPtr=0;
+ 137              		.loc 1 325 0
+ 138 0052 034B     		ldr	r3, .L22
+ 139 0054 0022     		movs	r2, #0
+ 140 0056 1A60     		str	r2, [r3, #0]
+ 326:Eval50xx-UART.c ****   UART1RxWritePtr=0;
+ 141              		.loc 1 326 0
+ 142 0058 5A60     		str	r2, [r3, #4]
+ 327:Eval50xx-UART.c ****   EnableInterrupts();
+ 143              		.loc 1 327 0
+ 144 005a FFF7FEFF 		bl	EnableInterrupts
+ 328:Eval50xx-UART.c **** }
+ 145              		.loc 1 328 0
+ 146 005e 08BD     		pop	{r3, pc}
+ 147              	.L23:
+ 148              		.align	2
+ 149              	.L22:
+ 150 0060 00000000 		.word	.LANCHOR0
+ 151              	.LFE6:
+ 153              		.align	2
+ 154              		.global	WriteUART
+ 155              		.thumb
+ 156              		.thumb_func
+ 158              	WriteUART:
+ 159              	.LFB2:
+ 160              		.loc 1 238 0
+ 161              		@ args = 0, pretend = 0, frame = 0
+ 162              		@ frame_needed = 0, uses_anonymous_args = 0
+ 163              	.LVL5:
+ 164 0064 38B5     		push	{r3, r4, r5, lr}
+ 165              	.LCFI1:
+ 166              		.loc 1 242 0
+ 167 0066 0B4B     		ldr	r3, .L28
+ 168              		.loc 1 238 0
+ 169 0068 8446     		mov	ip, r0
+ 170              		.loc 1 242 0
+ 171 006a DC6A     		ldr	r4, [r3, #44]
+ 172              		.loc 1 245 0
+ 173 006c 1A6B     		ldr	r2, [r3, #48]
+ 174              		.loc 1 242 0
+ 175 006e 0134     		adds	r4, r4, #1
+ 176              	.LVL6:
+ 177              		.loc 1 243 0
+ 178 0070 202C     		cmp	r4, #32
+ 179 0072 08BF     		it	eq
+ 180 0074 0024     		moveq	r4, #0
+ 181              		.loc 1 245 0
+ 182 0076 9442     		cmp	r4, r2
+ 183 0078 0AD0     		beq	.L27
+ 184              	.LVL7:
+ 185              		.loc 1 247 0
+ 186 007a DD6A     		ldr	r5, [r3, #44]
+ 187              		.loc 1 251 0
+ 188 007c 0648     		ldr	r0, .L28+4
+ 189              		.loc 1 247 0
+ 190 007e ED18     		adds	r5, r5, r3
+ 191 0080 85F834C0 		strb	ip, [r5, #52]
+ 192              		.loc 1 251 0
+ 193 0084 40F22771 		movw	r1, #1831
+ 194 0088 0122     		movs	r2, #1
+ 195              		.loc 1 248 0
+ 196 008a DC62     		str	r4, [r3, #44]
+ 197              		.loc 1 251 0
+ 198 008c FFF7FEFF 		bl	USART_ITConfig
+ 199              	.LVL8:
+ 200              	.L27:
+ 201              		.loc 1 253 0
+ 202 0090 38BD     		pop	{r3, r4, r5, pc}
+ 203              	.L29:
+ 204 0092 00BF     		.align	2
+ 205              	.L28:
+ 206 0094 00000000 		.word	.LANCHOR0
+ 207 0098 00440040 		.word	1073759232
+ 208              	.LFE2:
+ 210              		.align	2
+ 211              		.global	USART2_IRQHandler
+ 212              		.thumb
+ 213              		.thumb_func
+ 215              	USART2_IRQHandler:
+ 216              	.LFB1:
+ 217              		.loc 1 170 0
+ 218              		@ args = 0, pretend = 0, frame = 0
+ 219              		@ frame_needed = 0, uses_anonymous_args = 0
+ 220              		.loc 1 174 0
+ 221 009c 2349     		ldr	r1, .L38
+ 222              		.loc 1 170 0
+ 223 009e 10B5     		push	{r4, lr}
+ 224              	.LCFI2:
+ 225              		.loc 1 174 0
+ 226 00a0 0B88     		ldrh	r3, [r1, #0]
+ 227 00a2 13F0200F 		tst	r3, #32
+ 228 00a6 15D0     		beq	.L31
+ 229              		.loc 1 185 0
+ 230 00a8 214B     		ldr	r3, .L38+4
+ 231 00aa 5A68     		ldr	r2, [r3, #4]
+ 232              		.loc 1 188 0
+ 233 00ac 1868     		ldr	r0, [r3, #0]
+ 234              		.loc 1 185 0
+ 235 00ae 0132     		adds	r2, r2, #1
+ 236              	.LVL9:
+ 237              		.loc 1 186 0
+ 238 00b0 202A     		cmp	r2, #32
+ 239 00b2 08BF     		it	eq
+ 240 00b4 0022     		moveq	r2, #0
+ 241              		.loc 1 188 0
+ 242 00b6 8242     		cmp	r2, r0
+ 243 00b8 05D0     		beq	.L33
+ 244              		.loc 1 190 0
+ 245 00ba 5C68     		ldr	r4, [r3, #4]
+ 246 00bc 8888     		ldrh	r0, [r1, #4]
+ 247 00be E118     		adds	r1, r4, r3
+ 248 00c0 C0B2     		uxtb	r0, r0
+ 249 00c2 0872     		strb	r0, [r1, #8]
+ 250              		.loc 1 191 0
+ 251 00c4 5A60     		str	r2, [r3, #4]
+ 252              	.L33:
+ 253              		.loc 1 195 0
+ 254 00c6 1B4B     		ldr	r3, .L38+8
+ 255 00c8 0A22     		movs	r2, #10
+ 256              	.LVL10:
+ 257 00ca 1A60     		str	r2, [r3, #0]
+ 258              		.loc 1 198 0
+ 259 00cc 184B     		ldr	r3, .L38+4
+ 260 00ce 9A6A     		ldr	r2, [r3, #40]
+ 261 00d0 194B     		ldr	r3, .L38+12
+ 262 00d2 1A60     		str	r2, [r3, #0]
+ 263              	.L31:
+ 264              		.loc 1 203 0
+ 265 00d4 1548     		ldr	r0, .L38
+ 266 00d6 0388     		ldrh	r3, [r0, #0]
+ 267 00d8 13F0800F 		tst	r3, #128
+ 268 00dc 18D0     		beq	.L34
+ 269              		.loc 1 205 0
+ 270 00de 164B     		ldr	r3, .L38+12
+ 271 00e0 1A68     		ldr	r2, [r3, #0]
+ 272 00e2 AAB9     		cbnz	r2, .L34
+ 273              		.loc 1 207 0
+ 274 00e4 124B     		ldr	r3, .L38+4
+ 275 00e6 DC6A     		ldr	r4, [r3, #44]
+ 276 00e8 196B     		ldr	r1, [r3, #48]
+ 277 00ea 8C42     		cmp	r4, r1
+ 278 00ec 0CD0     		beq	.L35
+ 279              		.loc 1 210 0
+ 280 00ee 196B     		ldr	r1, [r3, #48]
+ 281 00f0 CC18     		adds	r4, r1, r3
+ 282 00f2 94F834C0 		ldrb	ip, [r4, #52]	@ zero_extendqisi2
+ 283 00f6 0131     		adds	r1, r1, #1
+ 284 00f8 A0F804C0 		strh	ip, [r0, #4]	@ movhi
+ 285 00fc 1963     		str	r1, [r3, #48]
+ 286              		.loc 1 211 0
+ 287 00fe 196B     		ldr	r1, [r3, #48]
+ 288 0100 2029     		cmp	r1, #32
+ 289 0102 05D1     		bne	.L34
+ 290 0104 1A63     		str	r2, [r3, #48]
+ 291 0106 03E0     		b	.L34
+ 292              	.L35:
+ 293              		.loc 1 216 0
+ 294 0108 40F22771 		movw	r1, #1831
+ 295 010c FFF7FEFF 		bl	USART_ITConfig
+ 296              	.L34:
+ 297              		.loc 1 222 0
+ 298 0110 0648     		ldr	r0, .L38
+ 299 0112 0388     		ldrh	r3, [r0, #0]
+ 300 0114 13F0400F 		tst	r3, #64
+ 301 0118 06D0     		beq	.L37
+ 302              		.loc 1 224 0
+ 303 011a 40F22661 		movw	r1, #1574
+ 304 011e FFF7FEFF 		bl	USART_ClearITPendingBit
+ 305              		.loc 1 225 0
+ 306 0122 034B     		ldr	r3, .L38+4
+ 307 0124 1A6B     		ldr	r2, [r3, #48]
+ 308 0126 DB6A     		ldr	r3, [r3, #44]
+ 309              	.L37:
+ 310              		.loc 1 227 0
+ 311 0128 10BD     		pop	{r4, pc}
+ 312              	.L39:
+ 313 012a 00BF     		.align	2
+ 314              	.L38:
+ 315 012c 00440040 		.word	1073759232
+ 316 0130 00000000 		.word	.LANCHOR0
+ 317 0134 00000000 		.word	UART1TimeoutTimer
+ 318 0138 00000000 		.word	UART1TransmitDelayTimer
+ 319              	.LFE1:
+ 321              		.align	2
+ 322              		.global	InitUART
+ 323              		.thumb
+ 324              		.thumb_func
+ 326              	InitUART:
+ 327              	.LFB0:
+ 328              		.loc 1 52 0
+ 329              		@ args = 0, pretend = 0, frame = 24
+ 330              		@ frame_needed = 0, uses_anonymous_args = 0
+ 331              	.LVL11:
+ 332 013c 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 333              	.LCFI3:
+ 334              		.loc 1 59 0
+ 335 0140 404C     		ldr	r4, .L42
+ 336              		.loc 1 52 0
+ 337 0142 86B0     		sub	sp, sp, #24
+ 338              	.LCFI4:
+ 339              		.loc 1 52 0
+ 340 0144 0746     		mov	r7, r0
+ 341              		.loc 1 59 0
+ 342 0146 2046     		mov	r0, r4
+ 343              	.LVL12:
+ 344 0148 FFF7FEFF 		bl	USART_DeInit
+ 345              		.loc 1 60 0
+ 346 014c 0121     		movs	r1, #1
+ 347 014e 4FF40030 		mov	r0, #131072
+ 348 0152 FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+ 349              		.loc 1 63 0
+ 350 0156 0420     		movs	r0, #4
+ 351 0158 0121     		movs	r1, #1
+ 352 015a FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 353              		.loc 1 64 0
+ 354 015e 0420     		movs	r0, #4
+ 355 0160 0021     		movs	r1, #0
+ 356 0162 FFF7FEFF 		bl	RCC_APB2PeriphResetCmd
+ 357              		.loc 1 70 0
+ 358 0166 06AD     		add	r5, sp, #24
+ 359              		.loc 1 65 0
+ 360 0168 0820     		movs	r0, #8
+ 361 016a 0021     		movs	r1, #0
+ 362              		.loc 1 70 0
+ 363 016c 4FF00408 		mov	r8, #4
+ 364              		.loc 1 71 0
+ 365 0170 354E     		ldr	r6, .L42+4
+ 366              		.loc 1 65 0
+ 367 0172 FFF7FEFF 		bl	GPIO_PinRemapConfig
+ 368              		.loc 1 70 0
+ 369 0176 25F8088D 		strh	r8, [r5, #-8]!	@ movhi
+ 370              		.loc 1 68 0
+ 371 017a 0323     		movs	r3, #3
+ 372              		.loc 1 71 0
+ 373 017c 3046     		mov	r0, r6
+ 374 017e 2946     		mov	r1, r5
+ 375              		.loc 1 68 0
+ 376 0180 8DF81230 		strb	r3, [sp, #18]
+ 377              		.loc 1 69 0
+ 378 0184 1533     		adds	r3, r3, #21
+ 379 0186 8DF81330 		strb	r3, [sp, #19]
+ 380              		.loc 1 71 0
+ 381 018a FFF7FEFF 		bl	GPIO_Init
+ 382              		.loc 1 74 0
+ 383 018e 4FF00803 		mov	r3, #8	@ movhi
+ 384              		.loc 1 75 0
+ 385 0192 2946     		mov	r1, r5
+ 386 0194 3046     		mov	r0, r6
+ 387              		.loc 1 74 0
+ 388 0196 ADF81030 		strh	r3, [sp, #16]	@ movhi
+ 389              		.loc 1 73 0
+ 390 019a 8DF81380 		strb	r8, [sp, #19]
+ 391              		.loc 1 75 0
+ 392 019e FFF7FEFF 		bl	GPIO_Init
+ 393              		.loc 1 116 0
+ 394 01a2 6846     		mov	r0, sp
+ 395 01a4 FFF7FEFF 		bl	USART_StructInit
+ 396              		.loc 1 119 0
+ 397 01a8 6946     		mov	r1, sp
+ 398 01aa 2046     		mov	r0, r4
+ 399              		.loc 1 117 0
+ 400 01ac 0097     		str	r7, [sp, #0]
+ 401              		.loc 1 119 0
+ 402 01ae FFF7FEFF 		bl	USART_Init
+ 403              		.loc 1 123 0
+ 404 01b2 2623     		movs	r3, #38
+ 405              		.loc 1 132 0
+ 406 01b4 0025     		movs	r5, #0
+ 407              		.loc 1 133 0
+ 408 01b6 0126     		movs	r6, #1
+ 409              		.loc 1 134 0
+ 410 01b8 05A8     		add	r0, sp, #20
+ 411              		.loc 1 123 0
+ 412 01ba 8DF81430 		strb	r3, [sp, #20]
+ 413              		.loc 1 131 0
+ 414 01be 0723     		movs	r3, #7
+ 415 01c0 8DF81530 		strb	r3, [sp, #21]
+ 416              		.loc 1 132 0
+ 417 01c4 8DF81650 		strb	r5, [sp, #22]
+ 418              		.loc 1 133 0
+ 419 01c8 8DF81760 		strb	r6, [sp, #23]
+ 420              		.loc 1 134 0
+ 421 01cc FFF7FEFF 		bl	NVIC_Init
+ 422              		.loc 1 137 0
+ 423 01d0 2046     		mov	r0, r4
+ 424 01d2 40F2FF31 		movw	r1, #1023
+ 425 01d6 FFF7FEFF 		bl	USART_ClearFlag
+ 426              		.loc 1 141 0
+ 427 01da 2046     		mov	r0, r4
+ 428 01dc 2821     		movs	r1, #40
+ 429 01de 2A46     		mov	r2, r5
+ 430 01e0 FFF7FEFF 		bl	USART_ITConfig
+ 431              		.loc 1 142 0
+ 432 01e4 2046     		mov	r0, r4
+ 433 01e6 3246     		mov	r2, r6
+ 434 01e8 40F22771 		movw	r1, #1831
+ 435 01ec FFF7FEFF 		bl	USART_ITConfig
+ 436              		.loc 1 143 0
+ 437 01f0 2046     		mov	r0, r4
+ 438 01f2 3246     		mov	r2, r6
+ 439 01f4 40F22661 		movw	r1, #1574
+ 440 01f8 FFF7FEFF 		bl	USART_ITConfig
+ 441              		.loc 1 144 0
+ 442 01fc 2046     		mov	r0, r4
+ 443 01fe 3246     		mov	r2, r6
+ 444 0200 40F22551 		movw	r1, #1317
+ 445 0204 FFF7FEFF 		bl	USART_ITConfig
+ 446              		.loc 1 145 0
+ 447 0208 2046     		mov	r0, r4
+ 448 020a 2A46     		mov	r2, r5
+ 449 020c 40F22441 		movw	r1, #1060
+ 450 0210 FFF7FEFF 		bl	USART_ITConfig
+ 451              		.loc 1 146 0
+ 452 0214 2046     		mov	r0, r4
+ 453 0216 2A46     		mov	r2, r5
+ 454 0218 40F64601 		movw	r1, #2118
+ 455 021c FFF7FEFF 		bl	USART_ITConfig
+ 456              		.loc 1 147 0
+ 457 0220 2046     		mov	r0, r4
+ 458 0222 2A46     		mov	r2, r5
+ 459 0224 40F66A11 		movw	r1, #2410
+ 460 0228 FFF7FEFF 		bl	USART_ITConfig
+ 461              		.loc 1 148 0
+ 462 022c 2046     		mov	r0, r4
+ 463 022e 2A46     		mov	r2, r5
+ 464 0230 6021     		movs	r1, #96
+ 465 0232 FFF7FEFF 		bl	USART_ITConfig
+ 466              		.loc 1 150 0
+ 467 0236 2046     		mov	r0, r4
+ 468 0238 3146     		mov	r1, r6
+ 469 023a FFF7FEFF 		bl	USART_Cmd
+ 470              		.loc 1 151 0
+ 471 023e 06B0     		add	sp, sp, #24
+ 472 0240 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 473              	.L43:
+ 474              		.align	2
+ 475              	.L42:
+ 476 0244 00440040 		.word	1073759232
+ 477 0248 00080140 		.word	1073809408
+ 478              	.LFE0:
+ 480              		.comm	UART1TimeoutFlag,1,1
+ 481              		.comm	UART1TimeoutTimer,4,4
+ 482              		.comm	UART1TransmitDelayTimer,4,4
+ 483              		.bss
+ 484              		.align	2
+ 485              		.set	.LANCHOR0,. + 0
+ 488              	UART1RxReadPtr:
+ 489 0000 00000000 		.space	4
+ 492              	UART1RxWritePtr:
+ 493 0004 00000000 		.space	4
+ 496              	UART1RxBuffer:
+ 497 0008 00000000 		.space	32
+ 497      00000000 
+ 497      00000000 
+ 497      00000000 
+ 497      00000000 
+ 500              	UART1TransmitDelay:
+ 501 0028 00000000 		.space	4
+ 504              	UART1TxWritePtr:
+ 505 002c 00000000 		.space	4
+ 508              	UART1TxReadPtr:
+ 509 0030 00000000 		.space	4
+ 512              	UART1TxBuffer:
+ 513 0034 00000000 		.space	32
+ 513      00000000 
+ 513      00000000 
+ 513      00000000 
+ 513      00000000 
+ 648              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Eval50xx-UART.c
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:22     .text:00000000 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:27     .text:00000000 ReadUART
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:68     .text:00000028 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:71     .text:0000002c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:76     .text:0000002c SetUARTTransmitDelay
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:91     .text:00000034 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:94     .text:00000038 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:99     .text:00000038 CheckUARTTimeout
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:120    .text:00000048 $d
+                            *COM*:00000001 UART1TimeoutFlag
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:123    .text:0000004c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:128    .text:0000004c ClearUARTRxBuffer
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:150    .text:00000060 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:153    .text:00000064 $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:158    .text:00000064 WriteUART
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:206    .text:00000094 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:210    .text:0000009c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:215    .text:0000009c USART2_IRQHandler
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:315    .text:0000012c $d
+                            *COM*:00000004 UART1TimeoutTimer
+                            *COM*:00000004 UART1TransmitDelayTimer
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:321    .text:0000013c $t
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:326    .text:0000013c InitUART
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:476    .text:00000244 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:484    .bss:00000000 $d
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:488    .bss:00000000 UART1RxReadPtr
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:492    .bss:00000004 UART1RxWritePtr
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:496    .bss:00000008 UART1RxBuffer
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:500    .bss:00000028 UART1TransmitDelay
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:504    .bss:0000002c UART1TxWritePtr
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:508    .bss:00000030 UART1TxReadPtr
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:512    .bss:00000034 UART1TxBuffer
+C:\DOKUME~1\Kahlbaum\LOKALE~1\Temp\ccdE0oAi.s:527    .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+DisableInterrupts
+EnableInterrupts
+USART_ITConfig
+USART_ClearITPendingBit
+USART_DeInit
+RCC_APB1PeriphClockCmd
+RCC_APB2PeriphClockCmd
+RCC_APB2PeriphResetCmd
+GPIO_PinRemapConfig
+GPIO_Init
+USART_StructInit
+USART_Init
+NVIC_Init
+USART_ClearFlag
+USART_Cmd
