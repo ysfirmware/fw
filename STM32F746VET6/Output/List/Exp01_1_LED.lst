@@ -1,0 +1,256 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        19/Dec/2015  11:28:32
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  E:\fw\STM32F746VET6\Exp01_1_LED.c
+#    Command line =  
+#        E:\fw\STM32F746VET6\Exp01_1_LED.c -lC E:\fw\STM32F746VET6\Output\List\
+#        -o E:\fw\STM32F746VET6\Output\Obj\ --debug --endian=little
+#        --cpu=Cortex-M7 -e --fpu=VFPv5_sp --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 7.2\arm\INC\c\DLib_Config_Full.h"
+#        -I E:\fw\STM32F746VET6\ -I E:\fw\STM32F746VET6\include\ -I
+#        E:\fw\STM32F746VET6\include\CMSIS\ -I
+#        E:\fw\STM32F746VET6\include\STM32F7xx_HAL_Driver\Inc\ -I
+#        E:\fw\STM32F746VET6\include\STM32F7xx_HAL_Driver\Src\ -Ohz
+#        --use_c++_inline -I "C:\Program Files (x86)\IAR Systems\Embedded
+#        Workbench 7.2\arm\CMSIS\Include\" -D ARM_MATH_CM7
+#    List file    =  E:\fw\STM32F746VET6\Output\List\Exp01_1_LED.lst
+#    Object file  =  E:\fw\STM32F746VET6\Output\Obj\Exp01_1_LED.o
+#
+###############################################################################
+
+E:\fw\STM32F746VET6\Exp01_1_LED.c
+      1          /* ============================================================================ */
+      2          /*	Exp01_1_LED.c : 기본 LED 및 버저 출력 프로그램(16MHz HSI 사용)          */
+      3          /* ============================================================================ */
+      4          /*					Programmed by Duck-Yong Yoon in 2015.   */
+      5          
+      6          #include "stm32f746xx.h"
+      7          
+      8          void Delay_us(unsigned int time_us);		/* time delay for us in 16MHz */
+      9          void Delay_ms(unsigned int time_ms);		/* time delay for ms in 16MHz */
+     10          void Beep(void);				/* beep for 50 ms */
+     11          
+     12          /* ----- 메인 프로그램 -------------------------------------------------------- */
+     13          
+
+   \                                 In section .text, align 2, keep-with-next
+     14          int main(void)
+     15          {
+   \                     main: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+     16            unsigned int i;
+     17          
+     18            RCC->AHB1ENR = 0x00000014;			// port C and E clock enable
+   \   00000002   0x2014             MOVS     R0,#+20
+   \   00000004   0x....             LDR.N    R1,??DataTable1  ;; 0x40023830
+   \   00000006   0x6008             STR      R0,[R1, #+0]
+     19          
+     20            GPIOC->MODER &= 0x3FFFFFFF;			// set PC15(buzzer) to output
+   \   00000008   0x....             LDR.N    R0,??DataTable1_1  ;; 0x40020800
+     21            GPIOC->MODER |= 0x40000000;
+     22          
+     23            GPIOE->MODER &= 0x3FFFFFFF;			// set PE15(LED) to output
+   \   0000000A   0x....             LDR.N    R4,??DataTable1_2  ;; 0x40021000
+   \   0000000C   0x6801             LDR      R1,[R0, #+0]
+   \   0000000E   0x0089             LSLS     R1,R1,#+2
+   \   00000010   0x0889             LSRS     R1,R1,#+2
+   \   00000012   0x6001             STR      R1,[R0, #+0]
+   \   00000014   0x6801             LDR      R1,[R0, #+0]
+   \   00000016   0xF041 0x4180      ORR      R1,R1,#0x40000000
+   \   0000001A   0x6001             STR      R1,[R0, #+0]
+   \   0000001C   0x6820             LDR      R0,[R4, #+0]
+   \   0000001E   0x0080             LSLS     R0,R0,#+2
+   \   00000020   0x0880             LSRS     R0,R0,#+2
+   \   00000022   0x6020             STR      R0,[R4, #+0]
+     24            GPIOE->MODER |= 0x40000000;
+   \   00000024   0x6820             LDR      R0,[R4, #+0]
+   \   00000026   0xF040 0x4080      ORR      R0,R0,#0x40000000
+   \   0000002A   0x6020             STR      R0,[R4, #+0]
+     25          
+     26            while(1)
+     27              { for(i = 0; i < 5; i++)
+   \                     ??main_0: (+1)
+   \   0000002C   0x2505             MOVS     R5,#+5
+     28                  { GPIOE->BSRR = 0x00008000;		// LED on
+   \                     ??main_1: (+1)
+   \   0000002E   0xF44F 0x4000      MOV      R0,#+32768
+   \   00000032   0x.... 0x....      BL       ?Subroutine0
+     29                    Delay_ms(500);
+     30          	  GPIOE->BSRR = 0x80000000;		// LED off
+   \                     ??CrossCallReturnLabel_1: (+1)
+   \   00000036   0xF04F 0x4000      MOV      R0,#-2147483648
+   \   0000003A   0x.... 0x....      BL       ?Subroutine0
+     31          	  Delay_ms(500);
+     32                  }
+   \                     ??CrossCallReturnLabel_0: (+1)
+   \   0000003E   0x1E6D             SUBS     R5,R5,#+1
+   \   00000040   0xD1F5             BNE.N    ??main_1
+     33          
+     34                Beep();					// beep
+   \   00000042   0x.... 0x....      BL       Beep
+   \   00000046   0xE7F1             B.N      ??main_0
+     35              }
+     36          }
+
+   \                                 In section .text, align 2, keep-with-next
+   \                     ?Subroutine0: (+1)
+   \   00000000   0x61A0             STR      R0,[R4, #+24]
+   \   00000002   0xF44F 0x70FA      MOV      R0,#+500
+   \   00000006   0x....             B.N      Delay_ms
+     37          
+     38          /* ----- 사용자 함수 ---------------------------------------------------------- */
+     39          
+
+   \                                 In section .text, align 4, keep-with-next
+     40          void SystemInit(void)				/* dummy system function */
+     41          {
+     42            asm volatile("NOP");
+   \                     SystemInit: (+1)
+   \   00000000   0xBF00             NOP
+     43          }
+   \   00000002   0x4770             BX       LR               ;; return
+     44          
+
+   \                                 In section .text, align 4, keep-with-next
+     45          void Delay_us(unsigned int time_us)		/* time delay for us in 16MHz */
+     46          {
+     47            register unsigned int i;
+     48          
+     49            for(i = 0; i < time_us; i++)			// 3 cycle
+   \                     Delay_us: (+1)
+   \   00000000   0x2100             MOVS     R1,#+0
+   \   00000002   0xE00D             B.N      ??Delay_us_0
+     50              { asm volatile("NOP");
+   \                     ??Delay_us_1: (+1)
+   \   00000004   0xBF00             NOP
+     51                asm volatile("NOP");
+   \   00000006   0xBF00             NOP
+     52                asm volatile("NOP");
+   \   00000008   0xBF00             NOP
+     53                asm volatile("NOP");
+   \   0000000A   0xBF00             NOP
+     54                asm volatile("NOP");
+   \   0000000C   0xBF00             NOP
+     55                asm volatile("NOP");
+   \   0000000E   0xBF00             NOP
+     56                asm volatile("NOP");
+   \   00000010   0xBF00             NOP
+     57                asm volatile("NOP");
+   \   00000012   0xBF00             NOP
+     58                asm volatile("NOP");
+   \   00000014   0xBF00             NOP
+     59                asm volatile("NOP");
+   \   00000016   0xBF00             NOP
+     60                asm volatile("NOP");
+   \   00000018   0xBF00             NOP
+     61                asm volatile("NOP");
+   \   0000001A   0xBF00             NOP
+     62                asm volatile("NOP");			// 13 cycle
+   \   0000001C   0xBF00             NOP
+     63              }
+   \   0000001E   0x1C49             ADDS     R1,R1,#+1
+   \                     ??Delay_us_0: (+1)
+   \   00000020   0x4281             CMP      R1,R0
+   \   00000022   0xD3EF             BCC.N    ??Delay_us_1
+     64          }
+   \   00000024   0x4770             BX       LR               ;; return
+     65          
+
+   \                                 In section .text, align 2, keep-with-next
+     66          void Delay_ms(unsigned int time_ms)		/* time delay for ms in 16MHz */
+     67          {
+   \                     Delay_ms: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+   \   00000002   0x4604             MOV      R4,R0
+     68            register unsigned int i;
+     69          
+     70            for(i = 0; i < time_ms; i++)
+   \   00000004   0x2500             MOVS     R5,#+0
+   \   00000006   0xE004             B.N      ??Delay_ms_0
+     71              Delay_us(1000);
+   \                     ??Delay_ms_1: (+1)
+   \   00000008   0xF44F 0x707A      MOV      R0,#+1000
+   \   0000000C   0x1C6D             ADDS     R5,R5,#+1
+   \   0000000E   0x.... 0x....      BL       Delay_us
+   \                     ??Delay_ms_0: (+1)
+   \   00000012   0x42A5             CMP      R5,R4
+   \   00000014   0xD3F8             BCC.N    ??Delay_ms_1
+     72          }
+   \   00000016   0xBD31             POP      {R0,R4,R5,PC}    ;; return
+     73          
+
+   \                                 In section .text, align 2, keep-with-next
+     74          void Beep(void)					/* beep for 50 ms */
+     75          { 
+   \                     Beep: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+     76            GPIOC->BSRR = 0x00008000;   			// buzzer on
+   \   00000002   0x....             LDR.N    R4,??DataTable1_3  ;; 0x40020818
+   \   00000004   0xF44F 0x4000      MOV      R0,#+32768
+   \   00000008   0x6020             STR      R0,[R4, #+0]
+     77            Delay_ms(50);					// delay 50 ms
+   \   0000000A   0x2032             MOVS     R0,#+50
+   \   0000000C   0x.... 0x....      BL       Delay_ms
+     78            GPIOC->BSRR = 0x80000000;			// buzzer off
+   \   00000010   0xF04F 0x4000      MOV      R0,#-2147483648
+   \   00000014   0x6020             STR      R0,[R4, #+0]
+     79          }
+   \   00000016   0xBD10             POP      {R4,PC}          ;; return
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable1:
+   \   00000000   0x40023830         DC32     0x40023830
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable1_1:
+   \   00000000   0x40020800         DC32     0x40020800
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable1_2:
+   \   00000000   0x40021000         DC32     0x40021000
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable1_3:
+   \   00000000   0x40020818         DC32     0x40020818
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   Beep
+         8   -> Delay_ms
+      16   Delay_ms
+        16   -> Delay_us
+       0   Delay_us
+       0   SystemInit
+      16   main
+        16   -> Beep
+        16   -> Delay_ms
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable1
+       4  ??DataTable1_1
+       4  ??DataTable1_2
+       4  ??DataTable1_3
+       8  ?Subroutine0
+      24  Beep
+      24  Delay_ms
+      38  Delay_us
+       4  SystemInit
+      72  main
+
+ 
+ 186 bytes in section .text
+ 
+ 186 bytes of CODE memory
+
+Errors: none
+Warnings: none
