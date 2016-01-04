@@ -54,7 +54,7 @@ void LCD_signed_float(float number, U08 integral, U08 fractional);   // display 
 /*		OK-STM746 키트 기본 함수					*/
 /* ---------------------------------------------------------------------------- */
 
-#define ILI9320					// ILI9320 initialize apply
+//#define ILI9320					// ILI9320 initialize apply
 
 #define CACHE_FLAG	1			// CACHE flag (1 = use, 0 = not use)
 
