@@ -1,12 +1,12 @@
-"C:\IAR Systems\Embedded Workbench 7.4\arm\bin\armproc.dll" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\arm\bin\armproc.dll" 
 
-"C:\IAR Systems\Embedded Workbench 7.4\arm\bin\armsim2.dll" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\arm\bin\armsim2.dll" 
 
-"C:\IAR Systems\STM32F746VET6\Output\Exe\OK-STM746.out" 
+"E:\fw\STM32F746VET6\Output\Exe\OK-STM746.out" 
 
---plugin "C:\IAR Systems\Embedded Workbench 7.4\arm\bin\armbat.dll" 
+--plugin "C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\arm\bin\armbat.dll" 
 
---device_macro "C:\IAR Systems\Embedded Workbench 7.4\arm\config\debugger\ST\STM32F4xx.dmac" 
+--device_macro "C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\arm\config\debugger\ST\STM32F4xx.dmac" 
 
 
 

@@ -97,7 +97,7 @@ void SysTick_Handler(void)			/* SysTick interrupt function */
   if(toggle_flag == 1)
     DAC->DHR12R1 = 0;				// clear output data
   else
-    DAC->DHR12R1 = 150 * volume^2;		// output data
+    DAC->DHR12R1 = 3000;		// output data
 }
 
 /* ----- 메인 프로그램 -------------------------------------------------------- */

@@ -970,7 +970,7 @@
   <group>
     <name>User</name>
     <file>
-      <name>$PROJ_DIR$\kit_test.c</name>
+      <name>$PROJ_DIR$\Exp14_4_organ(1).c</name>
     </file>
   </group>
 </project>

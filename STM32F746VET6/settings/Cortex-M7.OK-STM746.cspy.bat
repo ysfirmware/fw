@@ -25,7 +25,7 @@ if not "%1" == "" goto debugFile
 
 @echo on 
 
-"C:\IAR Systems\Embedded Workbench 7.4\common\bin\cspybat" -f "C:\IAR Systems\STM32F746VET6\settings\Cortex-M7.OK-STM746.general.xcl" --backend -f "C:\IAR Systems\STM32F746VET6\settings\Cortex-M7.OK-STM746.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "E:\fw\STM32F746VET6\settings\Cortex-M7.OK-STM746.general.xcl" --backend -f "E:\fw\STM32F746VET6\settings\Cortex-M7.OK-STM746.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\IAR Systems\Embedded Workbench 7.4\common\bin\cspybat" -f "C:\IAR Systems\STM32F746VET6\settings\Cortex-M7.OK-STM746.general.xcl" "--debug_file=%1" --backend -f "C:\IAR Systems\STM32F746VET6\settings\Cortex-M7.OK-STM746.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "E:\fw\STM32F746VET6\settings\Cortex-M7.OK-STM746.general.xcl" "--debug_file=%1" --backend -f "E:\fw\STM32F746VET6\settings\Cortex-M7.OK-STM746.driver.xcl" 
 
 @echo off 
 :end
