@@ -21,12 +21,12 @@
 
 #include "stm32f4xx.h"
 
-#define LED_R_PERIPH            RCC_AHB1Periph_GPIOA
-#define LED_R_PORT              GPIOA
-#define LED_R_PIN               GPIO_Pin_15
+#define LED_R_PERIPH            RCC_AHB1Periph_GPIOC
+#define LED_R_PORT              GPIOC
+#define LED_R_PIN               GPIO_Pin_5
 
-#define LED_G_PERIPH            RCC_AHB1Periph_GPIOB
-#define LED_G_PORT              GPIOB
+#define LED_G_PERIPH            RCC_AHB1Periph_GPIOC
+#define LED_G_PORT              GPIOC
 #define LED_G_PIN               GPIO_Pin_4
 
 
@@ -50,8 +50,8 @@
         do {                                                                    \
             GPIO_InitTypeDef GPIO_InitStructure;                                \
             RCC_AHB1PeriphClockCmd(LED_##X##_PERIPH, ENABLE);                   \
-            GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_CAN1);            \
-            GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_CAN1);             \
+            GPIO_PinAFConfig(GPIOC, GPIO_PinSource5, GPIO_AF_CAN1);            \
+            GPIO_PinAFConfig(GPIOC, GPIO_PinSource4, GPIO_AF_CAN1);             \
             GPIO_InitStructure.GPIO_Pin   = LED_##X##_PIN;                      \
             GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;                      \
             GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;                   \
