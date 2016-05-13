@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>NX48HA/Debug</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1395</ColumnWidth1><ColumnWidth2>372</ColumnWidth2><ColumnWidth3>93</ColumnWidth3></Build>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>240</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+    </Static>
+    <Windows>
+      
+      
+    <Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-28125-24196</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd1><Wnd3>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-6105-24199</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>NX48HA</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd3></Windows>
+    <Editor>
+      
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\main.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>201</SelStart2><SelEnd2>201</SelEnd2></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\main.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>6</YPos2><SelStart2>1269</SelStart2><SelEnd2>1269</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\InitMpu.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>529</SelStart2><SelEnd2>529</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>15</YPos2><SelStart2>991</SelStart2><SelEnd2>991</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\stm32f4xx_it.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pcl6144.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><ActiveTab>2</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\motion.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab></Pane><Sizes><Pane><X>500000</X><Y>500000</Y></Pane><Pane><X>500000</X><Y>500000</Y></Pane></Sizes><SplitMode>4</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-003D9708><key>iaridepm.enu1</key></Toolbar-003D9708></Sizes></Row0></Top><Left><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>755</Bottom><Right>314</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>104167</sizeHorzCX><sizeHorzCY>200401</sizeHorzCY><sizeVertCX>164583</sizeVertCX><sizeVertCY>758517</sizeVertCY></Rect></Wnd3></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>198</Bottom><Right>1922</Right><x>-2</x><y>-2</y><xscreen>1924</xscreen><yscreen>200</yscreen><sizeHorzCX>1002083</sizeHorzCX><sizeHorzCY>200401</sizeHorzCY><sizeVertCX>104167</sizeVertCX><sizeVertCY>200401</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+
