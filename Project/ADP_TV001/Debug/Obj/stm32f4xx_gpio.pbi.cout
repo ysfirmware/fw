@@ -10,8 +10,6 @@ D:\WORK\1. PROJECT\2. ADP\7. Source Code\TV001\Project\ADP_TV001\..\..\Libraries
 -I
 D:\WORK\1. PROJECT\2. ADP\7. Source Code\TV001\Project\ADP_TV001\..\..\Utilities\STM32_EVAL\Common
 -I
-D:\WORK\1. PROJECT\2. ADP\7. Source Code\TV001\Project\ADP_TV001\..\..\Utilities\STM32_EVAL\STM3240_41G_EVAL
--I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\arm\CMSIS\Include
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\arm\inc
@@ -26,12 +24,10 @@ D:\WORK\1. PROJECT\2. ADP\7. Source Code\TV001\Libraries\STM32F4xx_StdPeriph_Dri
 -I
 D:\WORK\1. PROJECT\2. ADP\7. Source Code\TV001\Utilities\STM32_EVAL\Common
 -I
-D:\WORK\1. PROJECT\2. ADP\7. Source Code\TV001\Utilities\STM32_EVAL\STM3240_41G_EVAL
--I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\arm\CMSIS\Include
--DUSE_STDPERIPH_DRIVER=1
+-DHSE_VALUE=8000000
 -DSTM32F40_41xxx=1
--DUSE_STM324xG_EVAL=1
+-DUSE_STDPERIPH_DRIVER=1
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0
@@ -168,7 +164,7 @@ C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\arm\CMSIS\Include
 -D__UINTPTR_T_MAX__=0xffffffffUL
 -D__INTPTR_SIZE_PREFIX__="l"
 -D__JMP_BUF_ELEMENT_TYPE__=unsigned long long int
--D__JMP_BUF_NUM_ELEMENTS__=16
+-D__JMP_BUF_NUM_ELEMENTS__=8
 -D__TID__=0xcf60
 -D__VER__=7050001
 -D__BUILD_NUMBER__=10123
@@ -209,7 +205,7 @@ C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\arm\CMSIS\Include
 -D__DEF_HEAP_MEM__=__data
 -D__PRAGMA_PACK_ON__=1
 -D__MULTIPLE_INHERITANCE__=1
--D__AAPCS_VFP__=1
+-D__AAPCS__=1
 -D__ARM4TM__=4
 -D__ARM5TM__=5
 -D__ARM5T__=5
@@ -221,16 +217,6 @@ C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\arm\CMSIS\Include
 -D__ARM6__=6
 -D__ARM7EM__=13
 -D__ARM7__=7
--D__ARMVFPV1__=1
--D__ARMVFPV2__=2
--D__ARMVFPV3_D16__=1
--D__ARMVFPV3_FP16__=1
--D__ARMVFPV3__=3
--D__ARMVFPV4__=4
--D__ARMVFP_D16__=1
--D__ARMVFP_FP16__=1
--D__ARMVFP_SP__=1
--D__ARMVFP__=__ARMVFPV4__
 -D__ARM_MEDIA__=1
 -D__ARM_PROFILE_M__=1
 -D__CORE__=__ARM7EM__

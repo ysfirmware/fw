@@ -28,6 +28,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "InitMpu.h"
+#include "motion.h"	  
 /** @addtogroup Template_Project
   * @{
   */ 
@@ -49,12 +50,12 @@ static void Delay(__IO uint32_t nTime);
   * @param  None
   * @retval None
   */
+	u8 temp;
 int main(void)
 {
+	//define symbol USE_STM324xG_EVAL
 	SystemInit();   // setup STM32 system (clock, PLL and Flash configuration)
 	
-	GPIO_InitTypeDef GPIO_InitStructure;
-
 	/*!< At this stage the microcontroller clock setting is already configured, 
 	   this is done through SystemInit() function which is called from startup
 	   files before to branch to application main.
@@ -76,12 +77,19 @@ int main(void)
 
 
 	/* SYSCLK/4 clock selected to output on MCO2 pin(PC9)*/
-	RCC_MCO2Config(RCC_MCO2Source_SYSCLK, RCC_MCO2Div_4);
-
-	 
+	//RCC_MCO2Config(RCC_MCO2Source_SYSCLK, RCC_MCO2Div_4);
+	LED1_SET(1);
+	LED2_SET(1);
+	temp = RCC_GetSYSCLKSource() ;
 	/* Infinite loop */
 	while (1)
 	{
+		Motion_main();
+		Comm_main();
+		//USART_SendData(USART2, 0x55);
+		
+		GPIO_ToggleBits(GPIOC, GPIO_Pin_4);
+		Delay(5);
 	}
 }
 
@@ -126,8 +134,9 @@ void assert_failed(uint8_t* file, uint32_t line)
 
   /* Infinite loop */
   while (1)
-  {
-  }
+	{
+		
+	}
 }
 #endif
 

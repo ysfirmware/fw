@@ -36,24 +36,50 @@ static u32 TMC562SoftwareCopy[128];    //Software-Kopien aller TMC562-Register (
 //===========================================================================//
 u8 ReadWriteSPI(u8 DeviceNumber, u8 Data, u8 LastTransfer)
 {
-  switch(DeviceNumber)
-  {
-  case 1://SPI_DEV_TMC50xx:
-      //SELECT_TMC50xx();
+	switch(DeviceNumber)
+	{
+	case 1://SPI_DEV_TMC50xx:
+	  //en
+		
+		ZCS_SET(1);
 
-      while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE)==RESET);
-      SPI_I2S_SendData(SPI1, Data);
-      while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE)==RESET);
+		while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE)==RESET);
+		SPI_I2S_SendData(SPI1, Data);
+		while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE)==RESET);
 
-      //if(LastTransfer) DESELECT_TMC50xx();
+		//dis
+		if(LastTransfer) ZCS_SET(0);
+		
+		return SPI_I2S_ReceiveData(SPI1);
+		/*
+		DCS_SET(1);
 
-      return SPI_I2S_ReceiveData(SPI1);
-      break;
+		while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE)==RESET);
+		SPI_I2S_SendData(SPI2, Data);
+		while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE)==RESET);
 
-    default:
-      return 0;
-      break;
-  }
+		//dis
+		if(LastTransfer) DCS_SET(0);
+
+		return SPI_I2S_ReceiveData(SPI2);
+		*/
+		break;
+	case 2:
+		DCS_SET(1);
+
+		while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE)==RESET);
+		SPI_I2S_SendData(SPI2, Data);
+		while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE)==RESET);
+
+		//dis
+		if(LastTransfer) DCS_SET(0);
+
+		return SPI_I2S_ReceiveData(SPI2);
+		break;
+	default:
+		return 0;
+		break;
+	}
 }
 
 
@@ -64,24 +90,24 @@ u8 ReadWriteSPI(u8 DeviceNumber, u8 Data, u8 LastTransfer)
 //===========================================================================//
 void WriteTMC562Datagram(u8 Address, u8 x1, u8 x2, u8 x3, u8 x4)
 {
-  int Value;
+	int Value;
 
-  //Register im TMC562 beschreiben
-  ReadWriteSPI(SPI_DEV_TMC50xx, Address|0x80, FALSE);
-  ReadWriteSPI(SPI_DEV_TMC50xx, x1, FALSE);
-  ReadWriteSPI(SPI_DEV_TMC50xx, x2, FALSE);
-  ReadWriteSPI(SPI_DEV_TMC50xx, x3, FALSE);
-  ReadWriteSPI(SPI_DEV_TMC50xx, x4, TRUE);
+	//Register im TMC562 beschreiben
+	ReadWriteSPI(SPI_DEV_TMC50xx, Address|0x80, FALSE);
+	ReadWriteSPI(SPI_DEV_TMC50xx, x1, FALSE);
+	ReadWriteSPI(SPI_DEV_TMC50xx, x2, FALSE);
+	ReadWriteSPI(SPI_DEV_TMC50xx, x3, FALSE);
+	ReadWriteSPI(SPI_DEV_TMC50xx, x4, TRUE);
 
-  //Softwarekopie aktualisieren
-  Value=x1;
-  Value<<=8;
-  Value|=x2;
-  Value<<=8;
-  Value|=x3;
-  Value<<=8;
-  Value|=x4;
-  TMC562SoftwareCopy[Address & 0x7f]=Value;
+	//Softwarekopie aktualisieren
+	Value=x1;
+	Value<<=8;
+	Value|=x2;
+	Value<<=8;
+	Value|=x3;
+	Value<<=8;
+	Value|=x4;
+	TMC562SoftwareCopy[Address & 0x7f]=Value;
 }
 
 
@@ -90,17 +116,17 @@ void WriteTMC562Datagram(u8 Address, u8 x1, u8 x2, u8 x3, u8 x4)
 //  -> WriteTMC562Int
 //  @ :
 //===========================================================================//
-void WriteTMC562Int(u8 Address, u32 Value)
+void WriteTMC562Int(u8 Address, int Value)
 {
-  //Register im TMC562 beschreiben
-  ReadWriteSPI(SPI_DEV_TMC50xx, Address|0x80, FALSE);
-  ReadWriteSPI(SPI_DEV_TMC50xx, Value >> 24, FALSE);
-  ReadWriteSPI(SPI_DEV_TMC50xx, Value >> 16, FALSE);
-  ReadWriteSPI(SPI_DEV_TMC50xx, Value >> 8, FALSE);
-  ReadWriteSPI(SPI_DEV_TMC50xx, Value & 0xff, TRUE);
+	//Register im TMC562 beschreiben
+	ReadWriteSPI(SPI_DEV_TMC50xx, Address|0x80, FALSE);
+	ReadWriteSPI(SPI_DEV_TMC50xx, Value >> 24, FALSE);
+	ReadWriteSPI(SPI_DEV_TMC50xx, Value >> 16, FALSE);
+	ReadWriteSPI(SPI_DEV_TMC50xx, Value >> 8, FALSE);
+	ReadWriteSPI(SPI_DEV_TMC50xx, Value & 0xff, TRUE);
 
-  //Softwarekopie aktualisieren
-  TMC562SoftwareCopy[Address & 0x7f]=Value;
+	//Softwarekopie aktualisieren
+	TMC562SoftwareCopy[Address & 0x7f]=Value;
 }
 
 //==========================================================================//
@@ -147,3 +173,4 @@ int ReadTMC562Int(u8 Address)
   }
 }
 
+ 

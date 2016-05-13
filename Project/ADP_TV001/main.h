@@ -30,15 +30,23 @@
 #define __MAIN_H
 
 /* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
 #include "stm32f4xx.h"
 
 
 /* Exported types ------------------------------------------------------------*/
-#define TRUE		1
-#define FALSE		0
+#define TRUE			1
+#define FALSE			0
+#define	LED1_SET(i)		GPIO_WriteBit(GPIOC, GPIO_Pin_4, (i)?Bit_SET:Bit_RESET)
+#define LED2_SET(i)		GPIO_WriteBit(GPIOC, GPIO_Pin_5, (i)?Bit_SET:Bit_RESET)
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+
+extern void Comm_main();
+
+
+void Delay(__IO uint32_t nTime);
 void TimingDelay_Decrement(void);
 
 #endif /* __MAIN_H */
