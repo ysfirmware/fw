@@ -2181,7 +2181,28 @@
   <group>
     <name>USER</name>
     <file>
+      <name>$PROJ_DIR$\ad7792.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\comm.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Eecom.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\heater.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\InitMpu.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\main.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\motion.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\pcl6144.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\stm32f10x_it.c</name>
